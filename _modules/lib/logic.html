@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.logic &mdash; Anwenderdokumentation v1.9.2.1 develop v1.9.2.1 develop (Stand 27. May 2022, commit ad68ac0) Dokumentation</title>
+  <title>lib.logic &mdash; Anwenderdokumentation v1.9.2.1 develop v1.9.2.1 develop (Stand 28. May 2022, commit 212e7c4) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -3748,7 +3748,7 @@
         <span class="n">logic</span> <span class="o">=</span> <span class="n">Logic</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="bp">self</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">logic</span><span class="p">,</span> <span class="s1">&#39;_bytecode&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logics</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">logic</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logicname_prefix</span><span class="o">+</span><span class="n">name</span><span class="p">,</span> <span class="n">logic</span><span class="p">,</span> <span class="n">logic</span><span class="o">.</span><span class="n">prio</span><span class="p">,</span> <span class="n">logic</span><span class="o">.</span><span class="n">_crontab</span><span class="p">,</span> <span class="n">logic</span><span class="o">.</span><span class="n">_cycle</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logicname_prefix</span><span class="o">+</span><span class="n">name</span><span class="p">,</span> <span class="n">logic</span><span class="p">,</span> <span class="n">logic</span><span class="o">.</span><span class="n">_prio</span><span class="p">,</span> <span class="n">logic</span><span class="o">.</span><span class="n">_crontab</span><span class="p">,</span> <span class="n">logic</span><span class="o">.</span><span class="n">_cycle</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="c1"># plugin hook</span>
@@ -3967,7 +3967,7 @@
             <span class="n">info</span><span class="p">[</span><span class="s1">&#39;watch_item&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="n">info</span><span class="p">[</span><span class="s1">&#39;userlogic&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_userlogic</span><span class="p">(</span><span class="n">logic</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="n">info</span><span class="p">[</span><span class="s1">&#39;logictype&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_logictype</span><span class="p">(</span><span class="n">logic</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="n">info</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">logic</span><span class="o">.</span><span class="n">filename</span>
+        <span class="n">info</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">logic</span><span class="o">.</span><span class="n">_filename</span>
         <span class="n">info</span><span class="p">[</span><span class="s1">&#39;pathname&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">logic</span><span class="o">.</span><span class="n">_pathname</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">info</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">logic</span><span class="o">.</span><span class="n">description</span>
@@ -4161,12 +4161,12 @@
         <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_userlogics</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_userlogics</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_userlogics</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;_filename&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
             <span class="k">except</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;return_logictype: self._userlogics[name] = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_userlogics</span><span class="p">[</span><span class="n">name</span><span class="p">])))</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;return_logictype: self._userlogics = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_userlogics</span><span class="p">)))</span>
         <span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_systemlogics</span><span class="p">:</span>
-            <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_systemlogics</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_systemlogics</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;_filename&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
             <span class="n">logic_type</span> <span class="o">=</span> <span class="s1">&#39;Python&#39;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;return_logictype: name </span><span class="si">{}</span><span class="s2"> is not loaded&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
@@ -4541,10 +4541,12 @@
         <span class="c1">#self.enabled = self._enabled</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_crontab</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cycle</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">prio</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prio</span> <span class="o">=</span> <span class="mi">3</span>
         <span class="c1">#self.last = None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_last_run</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">conf</span> <span class="o">=</span> <span class="n">attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trigger_dict</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_watch_item</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_conf</span> <span class="o">=</span> <span class="n">attributes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="o">=</span> <span class="n">Logics</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span><span class="o">.</span><span class="n">scheduler</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__methods_to_trigger</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">attributes</span> <span class="o">!=</span> <span class="s1">&#39;None&#39;</span><span class="p">:</span>
@@ -4552,13 +4554,17 @@
             <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="n">attributes</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">attribute</span> <span class="o">==</span> <span class="s1">&#39;pathname&#39;</span><span class="p">:</span>
                     <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)[</span><span class="s1">&#39;_pathname&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="n">attribute</span> <span class="o">==</span> <span class="s1">&#39;filename&#39;</span><span class="p">:</span>
+                    <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)[</span><span class="s1">&#39;_filename&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="n">attribute</span> <span class="o">==</span> <span class="s1">&#39;watch_item&#39;</span><span class="p">:</span>
+                    <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)[</span><span class="s1">&#39;_watch_item&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span>
                 <span class="k">elif</span> <span class="n">attribute</span> <span class="o">==</span> <span class="s1">&#39;cycle&#39;</span><span class="p">:</span>
                     <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)[</span><span class="s1">&#39;_cycle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span>
                 <span class="k">elif</span> <span class="n">attribute</span> <span class="o">==</span> <span class="s1">&#39;crontab&#39;</span><span class="p">:</span>
                     <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)[</span><span class="s1">&#39;_crontab&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span>
                 <span class="k">elif</span> <span class="n">attribute</span> <span class="o">!=</span> <span class="s1">&#39;enabled&#39;</span><span class="p">:</span>
                     <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)[</span><span class="n">attribute</span><span class="p">]</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">prio</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prio</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_prio</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prio</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_generate_bytecode</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Logic </span><span class="si">{}</span><span class="s2"> is not configured correctly (configuration has no attibutes)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">))</span>
@@ -4575,7 +4581,7 @@
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="s1">&#39;Logic&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enabled</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logicname_prefix</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">prio</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prio</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="n">dest</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logicname_prefix</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">prio</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_prio</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="n">dest</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -4628,15 +4634,22 @@
         <span class="k">return</span>
 
 
-    <span class="c1">#@property</span>
-    <span class="c1">#def filename(self):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">filename</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Property: filename</span>
 
 <span class="sd">        :return: filename of the logic</span>
 <span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-    <span class="c1">#    return self._filename</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filename</span>
+
+    <span class="nd">@filename</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_readonly_warning</span><span class="p">(</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span>
+
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">pathname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -4652,6 +4665,23 @@
     <span class="k">def</span> <span class="nf">pathname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">log_readonly_warning</span><span class="p">(</span><span class="s1">&#39;pathname&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">conf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Property: conf</span>
+
+<span class="sd">        :return: conf of the logic</span>
+<span class="sd">        :rtype: collections.OrderedDict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conf</span>
+
+    <span class="nd">@conf</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">conf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_readonly_warning</span><span class="p">(</span><span class="s1">&#39;conf&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="k">return</span>
 
 
@@ -4686,6 +4716,60 @@
     <span class="k">def</span> <span class="nf">crontab</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">log_readonly_warning</span><span class="p">(</span><span class="s1">&#39;crontab&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">prio</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Property: prio</span>
+
+<span class="sd">        :return: prio attribute of the logic</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prio</span>
+
+    <span class="nd">@prio</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">prio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+
+        <span class="c1">#self.log_readonly_warning(&#39;prio&#39;, value)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prio</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">return</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">trigger_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Property: trigger_dict</span>
+
+<span class="sd">        :return: trigger_dict attribute of the logic</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trigger_dict</span>
+
+    <span class="nd">@trigger_dict</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">trigger_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+
+        <span class="c1">#self.log_readonly_warning(&#39;trigger_dict&#39;, value)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trigger_dict</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">return</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">watch_item</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Property: watch_item</span>
+
+<span class="sd">        :return: watch_item attribute of the logic</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_watch_item</span>
+
+    <span class="nd">@watch_item</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">watch_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+
+        <span class="c1">#self.log_readonly_warning(&#39;watch_item&#39;, value)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_watch_item</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">return</span>
 
 
@@ -4728,7 +4812,7 @@
 
 <div class="viewcode-block" id="Logic.trigger"><a class="viewcode-back" href="../../lib/logic.html#lib.logic.Logic.trigger">[Doku]</a>    <span class="k">def</span> <span class="nf">trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="s1">&#39;Logic&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enabled</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logicname_prefix</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">prio</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prio</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="n">by</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="n">dest</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logicname_prefix</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">prio</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_prio</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="n">by</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="n">dest</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;trigger: Logic &#39;</span><span class="si">{}</span><span class="s2">&#39; not triggered because it is disabled&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">))</span></div>
 

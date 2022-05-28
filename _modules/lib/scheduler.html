@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.scheduler &mdash; Anwenderdokumentation v1.9.2.1 develop v1.9.2.1 develop (Stand 27. May 2022, commit ad68ac0) Dokumentation</title>
+  <title>lib.scheduler &mdash; Anwenderdokumentation v1.9.2.1 develop v1.9.2.1 develop (Stand 28. May 2022, commit 212e7c4) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4274,16 +4274,16 @@
         <span class="n">trigger</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;by&#39;</span><span class="p">:</span> <span class="n">by</span><span class="p">,</span> <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="n">source</span><span class="p">,</span> <span class="s1">&#39;source_details&#39;</span><span class="p">:</span> <span class="n">source_details</span><span class="p">,</span> <span class="s1">&#39;dest&#39;</span><span class="p">:</span> <span class="n">dest</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">value</span><span class="p">}</span>  <span class="c1"># noqa</span>
 
         <span class="c1"># following variables are assigned to be available during logic execution</span>
-        <span class="n">sh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span>  <span class="c1"># noqa</span>
-        <span class="n">shtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span>
-        <span class="n">items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span>
+        <span class="c1">#sh = self._sh  # noqa</span>
+        <span class="c1">#shtime = self.shtime</span>
+        <span class="c1">#items = self.items</span>
 
         <span class="c1"># set the logic environment here (for use within functions in logics):</span>
         <span class="c1">#logic = obj  # noqa</span>
-        <span class="n">logic</span><span class="o">.</span><span class="n">sh</span> <span class="o">=</span> <span class="n">sh</span>
+        <span class="n">logic</span><span class="o">.</span><span class="n">sh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span>
         <span class="n">logic</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
-        <span class="n">logic</span><span class="o">.</span><span class="n">shtime</span> <span class="o">=</span> <span class="n">shtime</span>
-        <span class="n">logic</span><span class="o">.</span><span class="n">items</span> <span class="o">=</span> <span class="n">items</span>
+        <span class="n">logic</span><span class="o">.</span><span class="n">shtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span>
+        <span class="n">logic</span><span class="o">.</span><span class="n">items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span>
         <span class="n">logic</span><span class="o">.</span><span class="n">trigger_dict</span> <span class="o">=</span> <span class="n">trigger</span>  <span class="c1"># logic.trigger has naming conflict with method logic.trigger of lib.item</span>
 
         <span class="n">logics</span> <span class="o">=</span> <span class="n">logic</span><span class="o">.</span><span class="n">_logics</span>
@@ -4291,16 +4291,27 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">mqtt</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">_lib_modules_found</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">mqtt</span> <span class="o">=</span> <span class="n">Modules</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span><span class="o">.</span><span class="n">get_module</span><span class="p">(</span><span class="s1">&#39;mqtt&#39;</span><span class="p">)</span>
-        <span class="n">mqtt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mqtt</span>
-        <span class="n">logic</span><span class="o">.</span><span class="n">mqtt</span> <span class="o">=</span> <span class="n">mqtt</span>
+        <span class="c1">#mqtt = self.mqtt</span>
+        <span class="n">logic</span><span class="o">.</span><span class="n">mqtt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mqtt</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">logic</span><span class="o">.</span><span class="n">_enabled</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">sh</span><span class="o">.</span><span class="n">shng_status</span><span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">20</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">shng_status</span><span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">20</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Logik ignoriert, SmartHomeNG ist noch nicht vollständig initialisiert - Logik wurde getriggert durch </span><span class="si">{</span><span class="n">trigger</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># set up &quot;globals&quot; environment for the logic</span>
+                    <span class="n">logic_globals</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
+                    <span class="n">logic_globals</span><span class="p">[</span><span class="s1">&#39;sh&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span>
+                    <span class="n">logic_globals</span><span class="p">[</span><span class="s1">&#39;logger&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">logic</span><span class="o">.</span><span class="n">logger</span>
+                    <span class="n">logic_globals</span><span class="p">[</span><span class="s1">&#39;mqtt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mqtt</span>
+                    <span class="n">logic_globals</span><span class="p">[</span><span class="s1">&#39;shtime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span>
+                    <span class="n">logic_globals</span><span class="p">[</span><span class="s1">&#39;items&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span>
+                    <span class="n">logic_globals</span><span class="p">[</span><span class="s1">&#39;trigger&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">logic</span><span class="o">.</span><span class="n">trigger_dict</span>
+                    <span class="n">logic_globals</span><span class="p">[</span><span class="s1">&#39;logic&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">logic</span>
+
+                    <span class="c1"># execute logic</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Getriggert durch: </span><span class="si">{</span><span class="n">trigger</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="n">exec</span><span class="p">(</span><span class="n">logic</span><span class="o">.</span><span class="n">_bytecode</span><span class="p">)</span>
+                    <span class="n">exec</span><span class="p">(</span><span class="n">logic</span><span class="o">.</span><span class="n">_bytecode</span><span class="p">,</span> <span class="n">logic_globals</span><span class="p">)</span>
                     <span class="c1"># store timestamp of last run</span>
                     <span class="n">logic</span><span class="o">.</span><span class="n">set_last_run</span><span class="p">()</span>
                     <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">logic</span><span class="o">.</span><span class="n">get_method_triggers</span><span class="p">():</span>
