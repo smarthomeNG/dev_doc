@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MQTT Broker installieren &mdash; Anwenderdokumentation v1.9.2.2 v1.9.2.2 develop (Stand 13. June 2022, commit dd8136d) Dokumentation</title>
+  <title>MQTT Broker installieren &mdash; Dokumentation v1.9.2.2 v1.9.2.2 develop (Stand 13. June 2022, commit c7e7315) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -31,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> Anwenderdokumentation v1.9.2.2
+            <a href="../../index.html" class="icon icon-home"> Dokumentation v1.9.2.2
             <img src="../../_static/logo_long_inverse3.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
@@ -87,6 +87,7 @@
 </li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">MQTT Broker installieren</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#mosquitto-installieren">Mosquitto installieren</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mosquitto-als-service-einrichten">Mosquitto als Service einrichten</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mosquitto-konfigurieren">Mosquitto konfigurieren</a></li>
 </ul>
 </li>
@@ -3606,7 +3607,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">Anwenderdokumentation v1.9.2.2</a>
+          <a href="../../index.html">Dokumentation v1.9.2.2</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -3634,7 +3635,8 @@ SmartHomeNG installiert wird, auch ein Broker installiert werden.</p>
 <p class="topic-title">Schritte der Installation</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#mosquitto-installieren" id="id1">Mosquitto installieren</a></p></li>
-<li><p><a class="reference internal" href="#mosquitto-konfigurieren" id="id2">Mosquitto konfigurieren</a></p></li>
+<li><p><a class="reference internal" href="#mosquitto-als-service-einrichten" id="id2">Mosquitto als Service einrichten</a></p></li>
+<li><p><a class="reference internal" href="#mosquitto-konfigurieren" id="id3">Mosquitto konfigurieren</a></p></li>
 </ul>
 </div>
 <section id="mosquitto-installieren">
@@ -3647,7 +3649,7 @@ dem folgenden Kommando installiert werden:</p>
 </pre></div>
 </div>
 <p>Anschließend kann mit dem Befehl</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo service mosquitto status
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>systemctl status mosquitto
 </pre></div>
 </div>
 <p>überprüft werden, ob der Broker läuft. Wenn der Service läuft, sieht man eine ähnliche Ausgabe wie folgende:</p>
@@ -3663,15 +3665,44 @@ Mai <span class="m">30</span> <span class="m">13</span>:39:47 SmartHomeNG mosqui
 Mai <span class="m">30</span> <span class="m">13</span>:39:47 SmartHomeNG systemd<span class="o">[</span><span class="m">1</span><span class="o">]</span>: Started LSB: mosquitto MQTT v3.1 message
 </pre></div>
 </div>
-<p>Der Service kann dann mit den folgenden Befehlen gestartet, gestoppt und neugestartet werden:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo service mosquitto start
-sudo service mosquitto stop
-sudo service mosquitto restart
+<p>Der Service kann dann mit den folgenden Befehlen gestartet, gestoppt und neu gestartet werden:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo systemctl start mosquitto
+sudo systemctl stop mosquitto
+systemctl restart mosquitto
 </pre></div>
 </div>
 </section>
+<section id="mosquitto-als-service-einrichten">
+<h2><a class="toc-backref" href="#id2">Mosquitto als Service einrichten</a><a class="headerlink" href="#mosquitto-als-service-einrichten" title="Link zu dieser Überschrift"></a></h2>
+<p>Falls die Abfrage des Status einen Fehler liefert:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Unit mosquitto.service could not be found
+</pre></div>
+</div>
+<p>muss noch eine Startup-Datei für <strong>systemd</strong> erstellt werden.</p>
+<p>Zum Einrichten den Texteditor starten mit:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo nano /etc/systemd/system/mosquitto.service
+</pre></div>
+</div>
+<p>und folgenden Text hineinkopieren:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>Unit<span class="o">]</span>
+<span class="nv">Description</span><span class="o">=</span>mosquitto MQTT message broker
+<span class="nv">After</span><span class="o">=</span>network.target
+
+<span class="o">[</span>Service<span class="o">]</span>
+<span class="nv">ExecStart</span><span class="o">=</span>/usr/sbin/mosquitto -c /etc/mosquitto/mosquitto.conf
+<span class="nv">WorkingDirectory</span><span class="o">=</span>/etc/mosquitto
+<span class="nv">User</span><span class="o">=</span>mosquitto
+<span class="nv">Restart</span><span class="o">=</span>always
+<span class="nv">TimeoutStartSec</span><span class="o">=</span><span class="m">90</span>
+
+<span class="o">[</span>Install<span class="o">]</span>
+<span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
+</pre></div>
+</div>
+<p>Der Servicee kann dann wie oben beschrieben gestartet werden.</p>
+</section>
 <section id="mosquitto-konfigurieren">
-<h2><a class="toc-backref" href="#id2">Mosquitto konfigurieren</a><a class="headerlink" href="#mosquitto-konfigurieren" title="Link zu dieser Überschrift"></a></h2>
+<h2><a class="toc-backref" href="#id3">Mosquitto konfigurieren</a><a class="headerlink" href="#mosquitto-konfigurieren" title="Link zu dieser Überschrift"></a></h2>
 <p>Nach der Installation ist der Broker ohne weitere Konfiguration nutzbar. Allerdings kann
 jeder Client den Broker nutzen, da der Client sich nicht authentifizieren muss.</p>
 <p>Wenn eine Authentifizierung gewünscht wird, muss Mosquitto entsprechend der Dokumentation
