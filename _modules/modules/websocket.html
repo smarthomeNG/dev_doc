@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>modules.websocket &mdash; Dokumentation v1.9.2.2 v1.9.2.2 develop (Stand 17. June 2022, commit c7e7315) Dokumentation</title>
+  <title>modules.websocket &mdash; Dokumentation v1.9.2.2 v1.9.2.2 develop (Stand 02. July 2022, commit 6a0c2f0) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4056,7 +4056,13 @@
         <span class="c1"># items = []</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">return_logs</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">add_event_listener</span><span class="p">([</span><span class="s1">&#39;log&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_visulog</span><span class="p">)</span>
+
+        <span class="c1"># Prevent the event listener for event types &quot;log&quot; from being added multiple times:</span>
+        <span class="n">known_log_listeners</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">return_event_listeners</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_visulog</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">known_log_listeners</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">add_event_listener</span><span class="p">([</span><span class="s1">&#39;log&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_visulog</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;smartVISU_protocol_v4: self.update_visulog function already subscribed as event listener&quot;</span><span class="p">)</span>
 
         <span class="n">client_addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_address</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
         <span class="n">client_ip</span> <span class="o">=</span> <span class="n">websocket</span><span class="o">.</span><span class="n">remote_address</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -4767,6 +4773,7 @@
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">event</span> <span class="o">!=</span> <span class="s1">&#39;log&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;update_visulog: Unknown event </span><span class="si">{</span><span class="n">event</span><span class="si">}</span><span class="s2"> received.&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="n">log_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># don&#39;t filter the orignal data dict</span>
