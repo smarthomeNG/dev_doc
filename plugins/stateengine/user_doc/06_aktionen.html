@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aktionen &mdash; Dokumentation v1.9.2.2 v1.9.2.2 develop (Stand 04. September 2022, commit 09da31d) Dokumentation</title>
+  <title>Aktionen &mdash; Dokumentation v1.9.2.2 v1.9.2.2 develop (Stand 10. September 2022, commit 09da31d) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -3886,15 +3886,39 @@ Aktionen werden in aufsteigender Reihenfolge der zugewiesenen Zahlen ausgeführt
 </pre></div>
 </div>
 <p><strong>conditionset: &lt;conditionset regex&gt;</strong></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="s">&#39;conditionset:</span><span class="nv"> </span><span class="s">[&quot;regex:enter_(.*)_test&quot;,</span><span class="nv"> </span><span class="s">&quot;eval:sh.itemX.property.name&quot;]&#39;</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="s">&#39;conditionset:</span><span class="nv"> </span><span class="s">[&quot;regex:enter_(.*)_test&quot;,</span><span class="nv"> </span><span class="s">&quot;eval:sh.itemX.property.value&quot;]&#39;</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Über das Attribut wird festgelegt, dass die Aktion nur dann ausgeführt werden
 soll, wenn der Zustand durch die angegebene Bedingungsgruppe eingenommen wurde.
-Zum Vergleich wird immer der volle Pfad der Bedingungsgruppe herangezogen.
+Zum Vergleich wird immer der volle Pfad (die ID) der Bedingungsgruppe herangezogen.
 Conditionset erlaubt sowohl einzelne Werte mittels value, regex oder eval, als auch eine Liste.
-Wichtig ist, reguläre Ausdrücke unter Anführungszeichen zu setzen (und dann Hochkomma um den gesamten Eintrag).
-Der gesamte Pfad könnte wie folgt evaluiert werden:</p>
+Die Liste kann zum einen wie oben angeführt mit eckigen Klammern, als auch wie gewohnt mit
+„-““ in einzelnen Zeilen (siehe unten) angegeben werden. Wichtig ist, im ersten Fall reguläre Ausdrücke
+unter Anführungszeichen zu setzen (und dann Hochkomma um den gesamten Eintrag). Im zweiten Fall sind keine
+Anführungszeichen notwendig.</p>
+<p>Die einzelnen Angaben einer Liste werden als <a href="#id2"><span class="problematic" id="id3">``</span></a>OR` evaluiert.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<dl>
+<dt>screens:</dt><dd><dl>
+<dt>conditionset_to_check:</dt><dd><blockquote>
+<div><p>type: str
+value: „screens.osten_s1.automatik.rules.abend.enter_abend“</p>
+</div></blockquote>
+<dl class="simple">
+<dt>conditionset:</dt><dd><ul class="simple">
+<li><p>regex:enter_(.*)_test</p></li>
+<li><p>eval:sh.screens.conditionset_to_check.property.name</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Der gesamte Pfad könnte wie folgt evaluiert werden:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="s">&quot;eval:se_eval.get_relative_itemid(&#39;{}.&lt;bedingungsset&gt;&#39;.format(se_eval.get_relative_itemvalue(&#39;..state_id&#39;)))&quot;</span><span class="w"></span>
 </pre></div>
 </div>
@@ -3925,6 +3949,20 @@ regnet hingegen auf den Wert, der in den Settings hinterlegt ist.</p>
 <span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">diverse andere Bedingungen</span><span class="w"></span>
 </pre></div>
 </div>
+<p><strong>previousconditionset: &lt;conditionset regex&gt;</strong></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">previousconditionset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">regex:enter_(.*)_test&quot;</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Über das Attribut wird festgelegt, dass die Aktion nur dann ausgeführt werden
+soll, wenn die vorherige Bedingungsgruppe des aktuellen Zustands mit dem angegebenen Ausdruck übereinstimmt.
+Die Abfrage erfolgt dabei nach den gleichen Regeln wie bei <code class="docutils literal notranslate"><span class="pre">conditionset</span></code> oben angegeben.</p>
+<p><strong>previousstate_conditionset: &lt;conditionset regex&gt;</strong></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">previousstate_conditionset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">regex:enter_(.*)_test&quot;</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Über das Attribut wird festgelegt, dass die Aktion nur dann ausgeführt werden
+soll, wenn die Bedingungsgruppe, mit der der vorherige Zustand eingenommen wurde, mit dem angegebenen Ausdruck übereinstimmt.
+Die Abfrage erfolgt dabei ebenfalls nach den gleichen Regeln wie bei <code class="docutils literal notranslate"><span class="pre">conditionset</span></code> oben angegeben.</p>
 </section>
 <section id="templates-fur-aktionen">
 <h2>Templates für Aktionen<a class="headerlink" href="#templates-fur-aktionen" title="Link zu dieser Überschrift"></a></h2>
