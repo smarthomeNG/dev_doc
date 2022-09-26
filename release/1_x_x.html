@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Release 1.x.x - tt. mmm 2022 &mdash; Dokumentation v1.9.2.2 v1.9.2.2 develop (Stand 26. September 2022, commit f4db221) Dokumentation</title>
+  <title>Release 1.9.x - tt. mmm 2022 &mdash; Dokumentation v1.9.2.2 v1.9.2.2 develop (Stand 26. September 2022, commit 78229f6) Dokumentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -3341,7 +3341,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../faq.html">FAQ - Häufig gestellte Fragen</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="release.html">Release Notes</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Release 1.x.x - tt. mmm 2022</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Release 1.9.x - tt. mmm 2022</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#uberblick">Überblick</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#minimum-python-version">Minimum Python Version</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#unterstutzte-python-versionen">Unterstützte Python Versionen</a></li>
@@ -3614,7 +3614,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="release.html">Release Notes</a> &raquo;</li>
-      <li>Release 1.x.x - tt. mmm 2022</li>
+      <li>Release 1.9.x - tt. mmm 2022</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -3623,8 +3623,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="release-1-x-x-tt-mmm-2022">
-<h1>Release 1.x.x - tt. mmm 2022<a class="headerlink" href="#release-1-x-x-tt-mmm-2022" title="Link zu dieser Überschrift"></a></h1>
+  <section id="release-1-9-x-tt-mmm-2022">
+<h1>Release 1.9.x - tt. mmm 2022<a class="headerlink" href="#release-1-9-x-tt-mmm-2022" title="Link zu dieser Überschrift"></a></h1>
 <p>Dieses Release ist ein Wartungs-Release. Außer Bugfixes gibt es einige neue Features im Core von SmartHomeNG,
 sowie Updates zu einigen Plugins.</p>
 <div class="admonition note">
@@ -3632,10 +3632,10 @@ sowie Updates zu einigen Plugins.</p>
 <p>Diese Release Notes sind ein Arbeitsstand.</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>Berücksichtigt sind Commits im smarthome Repository bis incl. 28. Mai 2022
-(Documentation undates; bump version to 1.9.2.2)</p></li>
-<li><p>Berücksichtigt sind Commits im plugins Repository bis incl. 27. Mai 2022
-(remove Travis-CI settings)</p></li>
+<li><p>Berücksichtigt sind Commits im smarthome Repository bis incl. 24. Sept 2022
+(doc installation regarding knx/knxd)</p></li>
+<li><p>Berücksichtigt sind Commits im plugins Repository bis incl. 25. Sept 2022
+(russound plugin: provide two functions to suspend and activate plugin…)</p></li>
 </ul>
 </div></blockquote>
 </div>
@@ -3740,6 +3740,12 @@ zu unterstützten Python Versionen)</p>
 <li><p>Loglevels adjusted in api_loggers.py</p></li>
 </ul>
 </li>
+<li><p>modules.websocket:</p>
+<ul>
+<li><p>Prevent event listener for event type log from being registered multiple times. Otherwise,
+this error could lead to multiple entries in status.log widgets.</p></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><p>Plugins:</p>
@@ -3760,6 +3766,17 @@ zu unterstützten Python Versionen)</p>
 </section>
 <section id="anderungen-bei-plugins">
 <h2>Änderungen bei Plugins<a class="headerlink" href="#anderungen-bei-plugins" title="Link zu dieser Überschrift"></a></h2>
+<p>Allgmein</p>
+<ul class="simple">
+<li><p>Workflows:</p>
+<ul>
+<li><p>Disabled unittests on PRs for the moment because the workflow didn’t handle it correctly</p></li>
+<li><p>Removed lines that trigger test on pull_request</p></li>
+<li><p>Removed disabled triggers on test_dispatch_workflow.yml</p></li>
+<li><p>Changed comment for ‚PR to wrong branch‘</p></li>
+</ul>
+</li>
+</ul>
 <section id="neue-plugins">
 <h3>Neue Plugins<a class="headerlink" href="#neue-plugins" title="Link zu dieser Überschrift"></a></h3>
 <p>Für Details zu den neuen Plugins, bitte die Dokumentation des jeweiligen Plugins unter
@@ -3772,57 +3789,170 @@ zu unterstützten Python Versionen)</p>
 <h3>Plugin Updates<a class="headerlink" href="#plugin-updates" title="Link zu dieser Überschrift"></a></h3>
 <p>Für Details zu den Änderungen an den einzelnen Plugins, bitte die Dokumentation des jeweiligen Plugins unter
 <a class="reference external" href="http://www.smarthomeng.de/user/plugins_all.html">http://www.smarthomeng.de/user/plugins_all.html</a> konsultieren.</p>
-<ul>
+<ul class="simple">
 <li><p>avm:</p>
-<p><a href="#id1"><span class="problematic" id="id2">*</span></a>Improvement for HKRs: Allow set temperature to be set directly to value 126.5 (off/frost protection mode).</p>
+<ul>
+<li><p>Improvement for HKRs: Allow set temperature to be set directly to value 126.5 (off/frost protection mode).</p></li>
+<li><p>Minor fix for error handling</p></li>
+</ul>
 </li>
 <li><p>backend:</p>
-<ul class="simple">
+<ul>
 <li><p>Fixed deprecation warnings</p></li>
 </ul>
 </li>
 <li><p>casambi:</p>
-<ul class="simple">
+<ul>
 <li><p>Minor fix for casambi_id (now integer instead of num)</p></li>
 </ul>
 </li>
 <li><p>database:</p>
-<ul class="simple">
+<ul>
 <li><p>Reinserted ‚duplicate_use‘ to metadata for item_attribute ‚database‘</p></li>
 </ul>
 </li>
+<li><p>enocean:</p>
+<ul>
+<li><p>Added plausibility check for powermeters</p></li>
+</ul>
+</li>
 <li><p>hue2:</p>
-<ul class="simple">
+<ul>
 <li><p>Changed requirements to resolve conflict with appletv plugin</p></li>
 </ul>
 </li>
+<li><p>husky2:</p>
+<ul>
+<li><p>Added aioautomower version to requirements</p></li>
+<li><p>Corrected item structure</p></li>
+<li><p>Fixed type error, corrected cases and updated valid lists</p></li>
+<li><p>Removed unused command from list</p></li>
+<li><p>Corrected cases</p></li>
+<li><p>Added version info to doc</p></li>
+<li><p>Changed login method to client credentials using apisecret</p></li>
+<li><p>Added possibility to store last gps points in gpspoints item</p></li>
+<li><p>Updated version of openlayers</p></li>
+<li><p>Switched order of lat lng in gpspoints item</p></li>
+<li><p>Switched order of lat lng for webif</p></li>
+<li><p>Changed aioautomower version to 2022.9.0</p></li>
+<li><p>Fixed token refresh by doing a re login</p></li>
+<li><p>Removed unused items.yaml file</p></li>
+<li><p>Updated user doc</p></li>
+<li><p>Corrected token expiration in webif and close asyncio event loop on plugin stop</p></li>
+<li><p>Added debug messages to plugin logger on token refresh</p></li>
+<li><p>Raised plugin version to 2.1.0</p></li>
+<li><p>Added missing activity and added note to user doc</p></li>
+<li><p>Added unknown command to error log</p></li>
+<li><p>Fixed to early closing of session on plugin stop</p></li>
+<li><p>Added SV widget to show actual position and path of mower in google maps</p></li>
+<li><p>Added eventloop stop before close</p></li>
+<li><p>Added zoom level and path color to widget options</p></li>
+<li><p>Removed not existing park command</p></li>
+<li><p>Renamed SV widget</p></li>
+<li><p>Packed asyncio eventloop into thread</p></li>
+</ul>
+</li>
 <li><p>knx:</p>
-<ul class="simple">
+<ul>
 <li><p>Fixed deprecation warnings</p></li>
 </ul>
 </li>
+<li><p>modbus_tcp:</p>
+<ul>
+<li><p>Keep connection open and use locking to ensure thread safety</p></li>
+</ul>
+</li>
+<li><p>mpd:</p>
+<ul>
+<li><p>Fixed bugs with network data receive and parsing</p></li>
+<li><p>Increase version number</p></li>
+</ul>
+</li>
+<li><p>neato:</p>
+<ul>
+<li><p>Added decoding of command availability status, e.g. „start“ command available</p></li>
+<li><p>If start command with persistent map is rejected due to „not_on_charge_base“ error,
+retry start with non-persistent map</p></li>
+</ul>
+</li>
 <li><p>nut:</p>
-<ul class="simple">
+<ul>
 <li><p>Fixed initialization of parent class (smartPlugin)</p></li>
 </ul>
 </li>
+<li><p>openweathermap:</p>
+<ul>
+<li><p>Update SV widget import</p></li>
+</ul>
+</li>
+<li><p>pluggit:</p>
+<ul>
+<li><p>Created a previous version (v1.2.3) before accepting pull request</p></li>
+</ul>
+</li>
 <li><p>resol:</p>
-<ul class="simple">
+<ul>
 <li><p>Minor improvement-&gt; cleaned-up update_item method</p></li>
+<li><p>Added frame CRC check</p></li>
+</ul>
+</li>
+<li><p>rtr:</p>
+<ul>
+<li><p>Update SV widget import</p></li>
+</ul>
+</li>
+<li><p>rtr2:</p>
+<ul>
+<li><p>Update SV widget import</p></li>
+</ul>
+</li>
+<li><p>russound:</p>
+<ul>
+<li><p>Provide two functions to suspend and activate plugin without reload</p></li>
+</ul>
+</li>
+<li><p>simulation:</p>
+<ul>
+<li><p>Update SV widget import</p></li>
 </ul>
 </li>
 <li><p>sonos:</p>
-<ul class="simple">
+<ul>
 <li><p>Added appdirs to requirements.txt (needed for SoCo framework)</p></li>
 <li><p>improved webinterface - list discovered speakers</p></li>
+<li><p>Fixed play_tunein command; catched ConnectionResetError</p></li>
+<li><p>Catched WebIf exception occurring for offline speaker</p></li>
+</ul>
+</li>
+<li><p>stateengine:</p>
+<ul>
+<li><p>Fix release state (issue when defined after suspend state)</p></li>
+<li><p>Fix release state</p></li>
+<li><p>Adapt widget to new SV icon handling</p></li>
+<li><p>Fix typo in log</p></li>
+<li><p>Improve laststate and lastconditionset handling</p></li>
+<li><p>Update laststate after running entry actions instead of before</p></li>
+<li><p>Fix handling of relative item declarations plus minor improvements</p></li>
+<li><p>Introduce option to get previous state (before laststate) and previous
+conditionset being used for actions and conditions</p></li>
+<li><p>Add SV widget namespace import</p></li>
+<li><p>Set proper defaults in widget Twig / php otherwise throws warnings</p></li>
 </ul>
 </li>
 <li><p>telegram:</p>
-<ul class="simple">
+<ul>
 <li><p>Restrict version be &lt;14.0 since then async will be used</p></li>
 </ul>
 </li>
 </ul>
+<p>xiaomi_vac:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Fix issue if no cleaning details are found.</p></li>
+<li><p>Fix issue when no cleaning details are found (after new firmware flash or reset).</p></li>
+<li><p>Bump to version 1.2.1</p></li>
+</ul>
+</div></blockquote>
 </section>
 <section id="outdated-plugins">
 <h3>Outdated Plugins<a class="headerlink" href="#outdated-plugins" title="Link zu dieser Überschrift"></a></h3>
@@ -3897,7 +4027,7 @@ Repositiory aufgenommen.</p>
 <section id="dokumentation">
 <h3>Dokumentation<a class="headerlink" href="#dokumentation" title="Link zu dieser Überschrift"></a></h3>
 <ul class="simple">
-<li><p>…</p></li>
+<li><p>Multiple updates</p></li>
 <li><p>…</p></li>
 </ul>
 </section>
