@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Logging - Best Practices &mdash; Dokumentation v1.9.2.2 v1.9.2.2 develop (Stand 02. October 2022, commit 78229f6) Dokumentation</title>
+  <title>Logging - Best Practices &mdash; Dokumentation v1.9.2.2 v1.9.2.2 develop (Stand 04. October 2022, commit 48466a9) Dokumentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -3919,6 +3919,22 @@ ein Leerzeichen und der relevante Filtercode. ‚2[0-4]{1}‘ filtert alles zwis
 Da das Datum als YYYY-MM-DD HH:MM:SS angegeben wird, können natürlich auch
 nur in bestimmten Monaten Einträge geschrieben werden. Für die Fälle, in denen
 jemand gerne eine Logdatei pro Kalendermonat hätte ;)</p>
+<p>Möchte man bestimmte Sonderzeichen in der Message angeben, ist es u.U.
+notwendig, diese zu escapen.
+Hierbei ist zu beachten, dass doppelte <code class="docutils literal notranslate"><span class="pre">\\</span></code> benutzt werden müssen.
+Möchte man mehrere verschiedene Logeinträge abfangen, können diese als Liste
+angegeben werden.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">filter</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">filter_eintrag_mitSonderzeichen</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">()</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lib.logutils.Filter</span><span class="w"></span>
+<span class="w">        </span><span class="nt">msg</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;(.*)\\(TCP_Client_192\\.0\\.1\\.1:9621\\)</span><span class="nv"> </span><span class="s">TCP</span><span class="nv"> </span><span class="s">connection</span><span class="nv"> </span><span class="s">failed(.*)&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;Error.*TCP_Client.*&quot;</span><span class="p p-Indicator">]</span><span class="w"></span>
+</pre></div>
+</div>
+<p>Erläuterung der RegEx:
+Die Einträge <code class="docutils literal notranslate"><span class="pre">(.*)</span></code> stehen für „beliebige Anzahl an beliebigen Zeichen“, wobei
+die Klammern auch weggelassen werden könnten. Wichtig ist, dass nun vor die
+Klammern und Punkte in der abzufangenden Mitteilung ein doppelter Backslash
+gesetzt wird.</p>
 </section>
 <section id="erweitertes-logging-fur-die-plugin-entwicklung">
 <h3>Erweitertes Logging für die Plugin Entwicklung<a class="headerlink" href="#erweitertes-logging-fur-die-plugin-entwicklung" title="Link zu dieser Überschrift"></a></h3>
