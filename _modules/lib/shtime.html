@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.shtime &mdash; Dokumentation v1.9.2.2 v1.9.2.2 develop (Stand 27. October 2022, commit 48466a9) Dokumentation</title>
+  <title>lib.shtime &mdash; Dokumentation v1.9.2.2 v1.9.2.2 develop (Stand 27. October 2022, commit a35429b) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -3700,11 +3700,16 @@
     <span class="n">HOLIDAYS_imported</span> <span class="o">=</span> <span class="kc">False</span>
 
 
+<span class="c1">#try:</span>
+<span class="c1">#    from zoneinfo import ZoneInfo</span>
+<span class="c1">#except ImportError:</span>
+<span class="c1">#    from backports.zoneinfo import ZoneInfo</span>
+
+
 <span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">import</span> <span class="nn">dateutil</span>
-<span class="kn">import</span> <span class="nn">pytz</span>
-<span class="kn">from</span> <span class="nn">dateutil.tz</span> <span class="kn">import</span> <span class="n">tzlocal</span>
-<span class="kn">from</span> <span class="nn">dateutil</span> <span class="kn">import</span> <span class="n">parser</span>
+<span class="c1">#import pytz</span>
+<span class="kn">import</span> <span class="nn">dateutil.tz</span> <span class="k">as</span> <span class="nn">tz</span>
+<span class="kn">import</span> <span class="nn">dateutil.parser</span>
 <span class="kn">import</span> <span class="nn">dateutil.relativedelta</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -3750,7 +3755,7 @@
 <span class="c1">#        global TZ</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tz</span> <span class="o">=</span> <span class="s1">&#39;UTC&#39;</span>
         <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;TZ&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tz</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_tzinfo</span><span class="p">(</span><span class="n">dateutil</span><span class="o">.</span><span class="n">tz</span><span class="o">.</span><span class="n">gettz</span><span class="p">(</span><span class="s1">&#39;UTC&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_tzinfo</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">gettz</span><span class="p">(</span><span class="s1">&#39;UTC&#39;</span><span class="p">))</span>
 
 
     <span class="c1"># -----------------------------------------------------------------------------------------------------</span>
@@ -3795,25 +3800,27 @@
         <span class="k">return</span> <span class="n">lib_translate</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="nb">vars</span><span class="p">,</span> <span class="n">additional_translations</span><span class="o">=</span><span class="s1">&#39;lib/shtime&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Shtime.set_tz"><a class="viewcode-back" href="../../lib/shtime.html#lib.shtime.Shtime.set_tz">[Doku]</a>    <span class="k">def</span> <span class="nf">set_tz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tz</span><span class="p">):</span>
+<div class="viewcode-block" id="Shtime.set_tz"><a class="viewcode-back" href="../../lib/shtime.html#lib.shtime.Shtime.set_tz">[Doku]</a>    <span class="k">def</span> <span class="nf">set_tz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tzone</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        set timezone info from name of timezone</span>
 
-<span class="sd">        :param tz: Name of the timezone (like &#39;Europe/Berlin&#39;)</span>
-<span class="sd">        :type: tz: str</span>
+<span class="sd">        :param tzone: Name of the timezone (like &#39;Europe/Berlin&#39;)</span>
+<span class="sd">        :type: tzone: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">tzinfo</span> <span class="o">=</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">tz</span><span class="o">.</span><span class="n">gettz</span><span class="p">(</span><span class="n">tz</span><span class="p">)</span>
+        <span class="n">tzinfo</span> <span class="o">=</span> <span class="n">tz</span><span class="o">.</span><span class="n">gettz</span><span class="p">(</span><span class="n">tzone</span><span class="p">)</span>        <span class="c1"># type: tzfile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;set_tz: tz=</span><span class="si">{</span><span class="n">tz</span><span class="si">}</span><span class="s2"> -&gt; tzinfo=</span><span class="si">{</span><span class="n">tzinfo</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">tzinfo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 <span class="c1">#            TZ = tzinfo</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_tz</span> <span class="o">=</span> <span class="n">tz</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tz</span> <span class="o">=</span> <span class="n">tzone</span>
             <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;TZ&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tz</span>
 <span class="c1">#             self._tzinfo = TZ</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_tzinfo</span><span class="p">(</span><span class="n">tzinfo</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_timezone</span> <span class="o">=</span> <span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="n">tz</span><span class="p">)</span>
+            <span class="c1">#self._timezone = pytz.timezone(tzone)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_timezone</span> <span class="o">=</span> <span class="n">tz</span><span class="o">.</span><span class="n">gettz</span><span class="p">(</span><span class="n">tzone</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s2">&quot;Problem parsing timezone &#39;</span><span class="si">{tz}</span><span class="s2">&#39; - Using UTC&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tz</span><span class="o">=</span><span class="n">tz</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_timezone</span> <span class="o">=</span> <span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="s2">&quot;UTC&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s2">&quot;Problem parsing timezone &#39;</span><span class="si">{tz}</span><span class="s2">&#39; - Using UTC&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tz</span><span class="o">=</span><span class="n">tzone</span><span class="p">))</span>
+            <span class="c1">#self._timezone = pytz.timezone(&quot;UTC&quot;)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_timezone</span> <span class="o">=</span> <span class="n">tz</span><span class="o">.</span><span class="n">gettz</span><span class="p">(</span><span class="s2">&quot;UTC&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;self.set_tz: -&gt; self._timezone=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_timezone</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;self.set_tz: -&gt; self._tzinfo=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tzinfo</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span></div>
@@ -3841,7 +3848,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_tzinfo</span> <span class="o">=</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">tz</span><span class="o">.</span><span class="n">gettz</span><span class="p">(</span><span class="s1">&#39;UTC&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tzinfo</span> <span class="o">=</span> <span class="n">tz</span><span class="o">.</span><span class="n">gettz</span><span class="p">()</span>
         <span class="c1"># tz aware &#39;localtime&#39;</span>
         <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tzinfo</span><span class="p">)</span></div>
 
@@ -3862,21 +3869,33 @@
 <span class="sd">        Returns the info about the actual local timezone</span>
 
 <span class="sd">        :return: Timezone info</span>
-<span class="sd">        :rtype: dateutil.tz.tz.tzfile</span>
+<span class="sd">        :rtype: tz.tz.tzfile</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tzinfo</span></div>
 
 
+<div class="viewcode-block" id="Shtime.tzlocal"><a class="viewcode-back" href="../../lib/shtime.html#lib.shtime.Shtime.tzlocal">[Doku]</a>    <span class="k">def</span> <span class="nf">tzlocal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        POSSIBLE REPLACEMENT FOR tz.tzlocal</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">local_now</span> <span class="o">=</span> <span class="n">now</span><span class="o">.</span><span class="n">astimezone</span><span class="p">()</span>
+        <span class="n">local_tz</span> <span class="o">=</span> <span class="n">local_now</span><span class="o">.</span><span class="n">tzinfo</span>
+        <span class="n">local_tzname</span> <span class="o">=</span> <span class="n">local_tz</span><span class="o">.</span><span class="n">tzname</span><span class="p">(</span><span class="n">local_now</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">local_tzname</span></div>
+
+
 <div class="viewcode-block" id="Shtime.tzname"><a class="viewcode-back" href="../../lib/shtime.html#lib.shtime.Shtime.tzname">[Doku]</a>    <span class="k">def</span> <span class="nf">tzname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the name about the actual local timezone (e.g. CET)</span>
+<span class="sd">        Returns the name about the actual local timezone (e.g. CEST)</span>
 
-<span class="sd">        :return: timezone string (like: &#39;CET&#39;)</span>
+<span class="sd">        :return: timezone string (like: &#39;CEST&#39; or &#39;CET&#39;)</span>
 <span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">tzlocal</span><span class="p">())</span><span class="o">.</span><span class="n">tzname</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span><span class="o">.</span><span class="n">tzname</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="Shtime.tznameST"><a class="viewcode-back" href="../../lib/shtime.html#lib.shtime.Shtime.tznameST">[Doku]</a>    <span class="k">def</span> <span class="nf">tznameST</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -3887,7 +3906,7 @@
 <span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">jan</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">timestamp</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">tzlocal</span><span class="p">())</span>
+        <span class="n">jan</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">timestamp</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">jan</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Z&quot;</span><span class="p">)</span></div>
 
 
@@ -3899,7 +3918,7 @@
 <span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">jul</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">timestamp</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">tzlocal</span><span class="p">())</span>
+        <span class="n">jul</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">timestamp</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">jul</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Z&quot;</span><span class="p">)</span></div>
 
 
@@ -3913,7 +3932,7 @@
 
         <span class="c1"># tz aware utc time</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_utctz</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_utctz</span> <span class="o">=</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">tz</span><span class="o">.</span><span class="n">gettz</span><span class="p">(</span><span class="s1">&#39;UTC&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_utctz</span> <span class="o">=</span> <span class="n">tz</span><span class="o">.</span><span class="n">gettz</span><span class="p">(</span><span class="s1">&#39;UTC&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_utctz</span><span class="p">)</span></div>
 
 
@@ -3922,7 +3941,7 @@
 <span class="sd">        Returns the info about the GMT timezone</span>
 
 <span class="sd">        :return: Timezone info</span>
-<span class="sd">        :rtype: dateutil.tz.tz.tzfile</span>
+<span class="sd">        :rtype: tz.tz.tzfile</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_utctz</span></div>
@@ -4146,7 +4165,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s2">&quot;Cannot convert type &#39;</span><span class="si">{key}</span><span class="s2">&#39; to datetime&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)))</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span> <span class="ow">and</span> <span class="n">key</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timezone</span><span class="o">.</span><span class="n">localize</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="c1"># key = self._timezone.localize(key)   # uses a pytz method</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_timezone</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">key</span></div>
 
 

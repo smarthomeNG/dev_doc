@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.item.item &mdash; Dokumentation v1.9.2.2 v1.9.2.2 develop (Stand 27. October 2022, commit 48466a9) Dokumentation</title>
+  <title>lib.item.item &mdash; Dokumentation v1.9.2.2 v1.9.2.2 develop (Stand 27. October 2022, commit a35429b) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -4083,7 +4083,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">__prev_update</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__prev_change</span>
 
                 <span class="c1"># Write item value to log, if Item has attribute log_change set</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_log_on_change</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">,</span> <span class="s1">&#39;Init&#39;</span><span class="p">,</span> <span class="s1">&#39;Cache&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log_on_change</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__changed_by</span><span class="p">,</span> <span class="s1">&#39;Cache&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;[Errno 2]&#39;</span><span class="p">):</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Item </span><span class="si">{}</span><span class="s2">: No cached value: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
@@ -4908,9 +4908,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trigger</span><span class="p">:</span>
             <span class="c1"># Only if item has an eval_trigger</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
                 <span class="c1"># Only if item has an eval expression</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__run_eval</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="s1">&#39;Init&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">,</span> <span class="s1">&#39;caller&#39;</span><span class="p">:</span> <span class="s1">&#39;Init&#39;</span><span class="p">})</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__run_eval</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="s1">&#39;Init&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">,</span> <span class="s1">&#39;caller&#39;</span><span class="p">:</span> <span class="s1">&#39;Init:Eval&#39;</span><span class="p">})</span>
                 <span class="k">return</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="kc">False</span>
 
