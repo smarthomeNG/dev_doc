@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PLUGGIT &mdash; Dokumentation v1.9.2.2 v1.9.2.2 develop (Stand 27. October 2022, commit ab46dc3) Dokumentation</title>
+  <title>pluggit &mdash; Dokumentation v1.9.2.2 v1.9.2.2 develop (Stand 28. October 2022, commit ab46dc3) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -3660,7 +3660,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>PLUGGIT</li>
+      <li>pluggit</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -3670,133 +3670,68 @@
            <div itemprop="articleBody">
              
   <section class="tex2jax_ignore mathjax_ignore" id="pluggit">
-<h1>PLUGGIT<a class="headerlink" href="#pluggit" title="Link zu dieser Überschrift"></a></h1>
-<section id="requirements">
-<h2>Requirements<a class="headerlink" href="#requirements" title="Link zu dieser Überschrift"></a></h2>
-<p>This plugin is based on the lib pymodbus (branch python3):
-https://github.com/bashwork/pymodbus
-https://github.com/bashwork/pymodbus/tree/python3</p>
-</section>
-<section id="supported-hardware">
-<h2>Supported Hardware<a class="headerlink" href="#supported-hardware" title="Link zu dieser Überschrift"></a></h2>
-<p>It is currently working and tested with:</p>
-<ul class="simple">
-<li><p>Pluggit AP310</p></li>
-</ul>
-</section>
-<section id="configuration">
-<h2>Configuration<a class="headerlink" href="#configuration" title="Link zu dieser Überschrift"></a></h2>
-<section id="plugin-yaml">
-<h3>plugin.yaml<a class="headerlink" href="#plugin-yaml" title="Link zu dieser Überschrift"></a></h3>
-<p>The plugin can be configured like this:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pluggit</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">class_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pluggit</span><span class="w"></span>
-<span class="w">    </span><span class="nt">class_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">plugins.pluggit</span><span class="w"></span>
-<span class="w">    </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.0.222</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># cycle: 300</span><span class="w"></span>
+<h1>pluggit<a class="headerlink" href="#pluggit" title="Link zu dieser Überschrift"></a></h1>
+<p>SmartHomeNG plugin pluggit</p>
+<p>Das SmartHomeNG plugin für eine Pluggit AP310 KWL</p>
+<section id="einbindung-in-der-plugin-yaml-mit">
+<h2>Einbindung in der plugin.yaml mit:<a class="headerlink" href="#einbindung-in-der-plugin-yaml-mit" title="Link zu dieser Überschrift"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pluggit</span><span class="p">:</span>
+    <span class="n">class_name</span><span class="p">:</span> <span class="n">Pluggit</span>
+    <span class="n">class_path</span><span class="p">:</span> <span class="n">plugins</span><span class="o">.</span><span class="n">pluggit</span>
+    <span class="n">host</span><span class="p">:</span> <span class="mf">192.168.1.4</span>
+    <span class="c1">#cycle: 300</span>
 </pre></div>
 </div>
-<p>This plugin retrieves data from the KWL Pluggit AP310 based on the modbus register description from the official pluggit homepage ( http://www.pluggit.com/portal/de/faq/bms-building-management-system/verbindung-mit-building-management-system-9737 )</p>
-<p>The data retrieval is done by establishing a modbus tcp network connection via modbus port 502.
-You need to configure the host (or IP) address of your pluggit KWL.</p>
-<p>The cycle parameter defines the update interval and defaults to 300 seconds.</p>
+<p>host = IP-Adresse der pluggit<br />
+cycle = Update-Interfall der abzufragenden Werte (optional)</p>
 </section>
-<section id="items-yaml">
-<h3>items.yaml<a class="headerlink" href="#items-yaml" title="Link zu dieser Überschrift"></a></h3>
-<section id="id1">
-<h4>pluggit<a class="headerlink" href="#id1" title="Link zu dieser Überschrift"></a></h4>
-<p>This attribute references the information to retrieve by the plugin.
-The following list of information can be specified:</p>
-<ul class="simple">
-<li><p>prmRamIdxUnitMode: Active Unit mode&gt; 0x0004 Manual Mode; 0x0008 WeekProgram</p></li>
-<li><p>prmNumOfWeekProgram: Number of the Active Week Program (for Week Program mode)</p></li>
-<li><p>prmRomIdxSpeedLevel: Speed level of Fans in Manual mode; shows a current speed level [4-0]; used for changing of the fan speed level</p></li>
-<li><p>prmFilterRemainingTime: Remaining time of the Filter Lifetime (Days)</p></li>
-<li><p>prmRamIdxT1: Frischluft temperature in degree</p></li>
-<li><p>prmRamIdxT2: Zuluft temperature in degree</p></li>
-<li><p>prmRamIdxT3: Abluft temperature in degree</p></li>
-<li><p>prmRamIdxT4: Fortluft temperature in degree</p></li>
-<li><p>prmRamIdxBypassActualState: Bypass state&gt; Closed 0x0000; In process 0x0001; Closing 0x0020; Opening 0x0040; Opened 0x00FF</p></li>
-<li><p>activatePowerBoost: bool variable that changes the Unit Mode to manual mode and sets the fan speed level to the highest level (4)</p></li>
-</ul>
-</section>
-<section id="example">
-<h4>Example<a class="headerlink" href="#example" title="Link zu dieser Überschrift"></a></h4>
-<p>Example configuration which shows the current unit mode, the actual week program, the fan speed, the remaining filter lifetime and the bypass state.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pluggit</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">foo</span><span class="w"></span>
-
-<span class="w">    </span><span class="nt">unitMode</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"></span>
-<span class="w">        </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span><span class="w"></span>
-<span class="w">        </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;true&#39;</span><span class="w"></span>
-<span class="w">        </span><span class="nt">pluggit_listen</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prmRamIdxUnitMode</span><span class="w"></span>
-
-<span class="w">    </span><span class="nt">weekProgram</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span><span class="w"></span>
-<span class="w">        </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span><span class="w"></span>
-<span class="w">        </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;true&#39;</span><span class="w"></span>
-<span class="w">        </span><span class="nt">pluggit_listen</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prmNumOfWeekProgram</span><span class="w"></span>
-
-<span class="w">    </span><span class="nt">fanSpeed</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span><span class="w"></span>
-<span class="w">        </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span><span class="w"></span>
-<span class="w">        </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;true&#39;</span><span class="w"></span>
-<span class="w">        </span><span class="nt">pluggit_listen</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prmRomIdxSpeedLevel</span><span class="w"></span>
-
-<span class="w">    </span><span class="nt">remainingFilterLifetime</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span><span class="w"></span>
-<span class="w">        </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span><span class="w"></span>
-<span class="w">        </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;true&#39;</span><span class="w"></span>
-<span class="w">        </span><span class="nt">pluggit_listen</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prmFilterRemainingTime</span><span class="w"></span>
-
-<span class="w">    </span><span class="nt">frischluft</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span><span class="w"></span>
-<span class="w">        </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span><span class="w"></span>
-<span class="w">        </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;true&#39;</span><span class="w"></span>
-<span class="w">        </span><span class="nt">pluggit_listen</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prmRamIdxT1</span><span class="w"></span>
-
-<span class="w">    </span><span class="nt">zuluft</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span><span class="w"></span>
-<span class="w">        </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span><span class="w"></span>
-<span class="w">        </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;true&#39;</span><span class="w"></span>
-<span class="w">        </span><span class="nt">pluggit_listen</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prmRamIdxT2</span><span class="w"></span>
-
-<span class="w">    </span><span class="nt">abluft</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span><span class="w"></span>
-<span class="w">        </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span><span class="w"></span>
-<span class="w">        </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;true&#39;</span><span class="w"></span>
-<span class="w">        </span><span class="nt">pluggit_listen</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prmRamIdxT3</span><span class="w"></span>
-
-<span class="w">    </span><span class="nt">fortluft</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span><span class="w"></span>
-<span class="w">        </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span><span class="w"></span>
-<span class="w">        </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;true&#39;</span><span class="w"></span>
-<span class="w">        </span><span class="nt">pluggit_listen</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prmRamIdxT4</span><span class="w"></span>
-
-<span class="w">    </span><span class="nt">bypassState</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span><span class="w"></span>
-<span class="w">        </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span><span class="w"></span>
-<span class="w">        </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;true&#39;</span><span class="w"></span>
-<span class="w">        </span><span class="nt">pluggit_listen</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prmRamIdxBypassActualState</span><span class="w"></span>
-
-<span class="w">    </span><span class="nt">activatePowerBoost</span><span class="p">:</span><span class="w"></span>
-<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span><span class="w"></span>
-<span class="w">        </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rw</span><span class="w"></span>
-<span class="w">        </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;true&#39;</span><span class="w"></span>
-<span class="w">        </span><span class="nt">pluggit_send</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">activatePowerBoost</span><span class="w"></span>
+<section id="einbindung-in-den-items-per-item-struct">
+<h2>Einbindung in den Items per Item-Struct:<a class="headerlink" href="#einbindung-in-den-items-per-item-struct" title="Link zu dieser Überschrift"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">struct</span><span class="p">:</span> <span class="n">pluggit</span><span class="o">.</span><span class="n">pluggit</span>
 </pre></div>
 </div>
 </section>
+<section id="anderungen">
+<h2>Änderungen:<a class="headerlink" href="#anderungen" title="Link zu dieser Überschrift"></a></h2>
+<p>V2.0.3 - 25.10.2022</p>
+<ul class="simple">
+<li><p>Support für pymodbus 3.0</p></li>
+</ul>
+<p>22.05.2022:</p>
+<ul class="simple">
+<li><p>Fehler mit manuellem Bypass behoben</p></li>
+</ul>
+<p>16.02.2022:</p>
+<ul class="simple">
+<li><p>CurentUnitMode.ManualBypass dem Item-struct zugefügt</p></li>
+<li><p>Log-Level für verschiedene Ausgaben angepasst</p></li>
+<li><p>CurrentUnitMode.AwayMode repariert</p></li>
+</ul>
+<p>24.02.2021:</p>
+<ul class="simple">
+<li><p>Item-struct um Zugriffe für SmartVISU erweitert</p></li>
+<li><p>item_attribut um pluggit_convert erweitert</p></li>
+<li><p>scheduler.remove eingebaut</p></li>
+</ul>
+<p>29.08.2020:</p>
+<ul class="simple">
+<li><p>bool-Werte konnten nicht geschrieben werden</p></li>
+</ul>
 </section>
+<section id="folgende-vorteile-ergeben-sich-zu-dem-plugin-1-x">
+<h2>Folgende Vorteile ergeben sich zu dem Plugin 1.x<a class="headerlink" href="#folgende-vorteile-ergeben-sich-zu-dem-plugin-1-x" title="Link zu dieser Überschrift"></a></h2>
+<ul class="simple">
+<li><p>wesentlich mehr Parameter der pluggit können abgefragt werden</p></li>
+<li><p>einige Parameter lassen sich auch schreiben</p></li>
+<li><p>die Werte können intern auch konvertiert werden, sodass man eine vernünftige Ausgabe erhält</p></li>
+</ul>
 </section>
-<section id="logic-yaml">
-<h2>logic.yaml<a class="headerlink" href="#logic-yaml" title="Link zu dieser Überschrift"></a></h2>
-<p>No logic related stuff implemented.</p>
-</section>
-<section id="methods">
-<h2>Methods<a class="headerlink" href="#methods" title="Link zu dieser Überschrift"></a></h2>
-<p>No methods provided currently.</p>
+<section id="es-fehlen-auch-noch-ein-paar-dinge">
+<h2>Es fehlen auch noch ein paar Dinge:<a class="headerlink" href="#es-fehlen-auch-noch-ein-paar-dinge" title="Link zu dieser Überschrift"></a></h2>
+<ul class="simple">
+<li><p>die Programmierung des Auto-Wochenprogramms ist noch nicht implementiert</p></li>
+<li><p>eine Dokumentation der Parameter</p></li>
+</ul>
 </section>
 </section>
 
