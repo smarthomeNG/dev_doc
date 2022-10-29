@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Beispielplugin mit MQTT-Unterstützung new &mdash; Dokumentation v1.9.2.2 v1.9.2.2 develop (Stand 29. October 2022, commit ab46dc3) Dokumentation</title>
+  <title>Beispielplugin mit MQTT-Unterstützung new &mdash; Dokumentation v1.9.2.2 v1.9.2.2 develop (Stand 29. October 2022, commit 9a217f6) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -3732,7 +3732,29 @@
 
 <span class="n">parameters</span><span class="p">:</span>
     <span class="c1"># Definition of parameters to be configured in etc/plugin.yaml (enter &#39;parameters: NONE&#39;, if section should be empty)</span>
-
+    <span class="c1"># This parameter should be included if plugin provides a web interface. It lets users configure the standard number of entries per page</span>
+    <span class="n">webif_pagelength</span><span class="p">:</span>
+        <span class="nb">type</span><span class="p">:</span> <span class="nb">int</span>
+        <span class="n">default</span><span class="p">:</span> <span class="mi">100</span>
+        <span class="n">valid_list</span><span class="p">:</span>
+          <span class="o">-</span> <span class="o">-</span><span class="mi">1</span>
+          <span class="o">-</span> <span class="mi">0</span>
+          <span class="o">-</span> <span class="mi">25</span>
+          <span class="o">-</span> <span class="mi">50</span>
+          <span class="o">-</span> <span class="mi">100</span>
+        <span class="n">description</span><span class="p">:</span>
+            <span class="n">de</span><span class="p">:</span> <span class="s1">&#39;Anzahl an Items, die standardmäßig in einer Web Interface Tabelle pro Seite angezeigt werden.</span>
+                 <span class="mi">0</span> <span class="o">=</span> <span class="n">automatisch</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="o">=</span> <span class="n">alle</span><span class="s1">&#39;</span>
+            <span class="n">en</span><span class="p">:</span> <span class="s1">&#39;Amount of items being listed in a web interface table per page by default.</span>
+                 <span class="mi">0</span> <span class="o">=</span> <span class="n">automatic</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="o">=</span> <span class="nb">all</span><span class="s1">&#39;</span>
+        <span class="n">description_long</span><span class="p">:</span>
+            <span class="n">de</span><span class="p">:</span> <span class="s1">&#39;Anzahl an Items, die standardmäßig in einer Web Interface Tabelle pro Seite angezeigt werden.</span><span class="se">\n</span>
+                 <span class="n">Bei</span> <span class="mi">0</span> <span class="n">wird</span> <span class="n">die</span> <span class="n">Tabelle</span> <span class="n">automatisch</span> <span class="n">an</span> <span class="n">die</span> <span class="n">Höhe</span> <span class="n">des</span> <span class="n">Browserfensters</span> <span class="n">angepasst</span><span class="o">.</span>\<span class="n">n</span>
+                 <span class="n">Bei</span> <span class="o">-</span><span class="mi">1</span> <span class="n">werden</span> <span class="n">alle</span> <span class="n">Tabelleneinträge</span> <span class="n">auf</span> <span class="n">einer</span> <span class="n">Seite</span> <span class="n">angezeigt</span><span class="o">.</span><span class="s1">&#39;</span>
+            <span class="n">en</span><span class="p">:</span> <span class="s1">&#39;Amount of items being listed in a web interface table per page by default.</span><span class="se">\n</span>
+                 <span class="mi">0</span> <span class="n">adjusts</span> <span class="n">the</span> <span class="n">table</span> <span class="n">height</span> <span class="n">automatically</span> <span class="n">based</span> <span class="n">on</span> <span class="n">the</span> <span class="n">height</span> <span class="n">of</span> <span class="n">the</span> <span class="n">browser</span> <span class="n">windows</span><span class="o">.</span>\<span class="n">n</span>
+                 <span class="o">-</span><span class="mi">1</span> <span class="n">shows</span> <span class="nb">all</span> <span class="n">table</span> <span class="n">entries</span> <span class="n">on</span> <span class="n">one</span> <span class="n">page</span><span class="o">.</span><span class="s1">&#39;</span>
+                 
 <span class="n">item_attributes</span><span class="p">:</span>
     <span class="c1"># Definition of item attributes defined by this plugin (enter &#39;item_attributes: NONE&#39;, if section should be empty)</span>
 
@@ -3744,7 +3766,6 @@
 
 <span class="n">logic_parameters</span><span class="p">:</span>
     <span class="c1"># Definition of logic parameters defined by this plugin (enter &#39;logic_parameters: NONE&#39;, if section should be empty)</span>
-
 </pre></div>
 </div>
 </div>
@@ -3815,7 +3836,16 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
         <span class="c1"># get the parameters for the plugin (as defined in metadata plugin.yaml):</span>
-        <span class="c1"># self.param1 = self.get_parameter_value(&#39;param1&#39;)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># webif_pagelength should be included in all plugins using a web interface</span>
+            <span class="c1"># It is used to overwrite the default max number of entries per page in the tables</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">webif_pagelength</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_value</span><span class="p">(</span><span class="s1">&#39;webif_pagelength&#39;</span><span class="p">)</span>
+            <span class="c1"># self.param1 = self.get_parameter_value(&#39;param1&#39;)</span>
+            <span class="k">pass</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Plugin &#39;</span><span class="si">{}</span><span class="s2">&#39;: Inconsistent plugin (invalid metadata definition: </span><span class="si">{}</span><span class="s2"> not defined)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">(),</span> <span class="n">e</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_init_complete</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span>
 
         <span class="c1"># Initialization code goes here</span>
 
@@ -3915,7 +3945,6 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;update_item was called with item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> from caller </span><span class="si">{</span><span class="n">caller</span><span class="si">}</span><span class="s2">, source </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> and dest </span><span class="si">{</span><span class="n">dest</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">pass</span>
-
 </pre></div>
 </div>
 </div>
@@ -3948,14 +3977,45 @@
 --&gt;
 {% block pluginscripts %}
 &lt;script&gt;
+  $(document).ready( function () {
+    $(window).trigger(&#39;datatables_defaults&#39;);
+    try {
+      /* get pagelength from plugin. Also see hidden span element in bodytab1 block! */
+      webif_pagelength = parseInt(document.getElementById(&#39;webif_pagelength&#39;).innerHTML);
+      if (isNaN(parseFloat(webif_pagelength)) || webif_pagelength == 0) {
+        resize = true;
+        webif_pagelength = -1;
+                console.log(&#39;Activating automatic table resize&#39;);
+      }
+      else {
+        resize = false;
+      }
+    }
+    catch (e) {
+      webif_pagelength = 100;
+      resize = false;
+      console.log(&quot;Using default values for page length &quot; + webif_pagelength + &quot;, pageResize: &quot; + resize);
+    }
+        try {
+      table = $(&#39;#maintable&#39;).DataTable( {
+        pageLength: webif_pagelength,
+        pageResize: resize});
+        }
+        catch (e) {
+            console.warn(&quot;Datatable JS not loaded, showing standard table without reorder option &quot; +e);
+    }
+
+  });
+&lt;/script&gt;
+&lt;script&gt;
     function handleUpdatedData(response, dataSet=null) {
         if (dataSet === &#39;devices_info&#39; || dataSet === null) {
             var objResponse = JSON.parse(response);
             myProto = document.getElementById(dataSet);
             for (var device in objResponse) {
                 &lt;!--
-                shngInsertText (device+&#39;_source&#39;, objResponse[device][&#39;source&#39;]);
-                shngInsertText (device+&#39;_powerState&#39;, objResponse[device][&#39;powerState&#39;]);
+                shngInsertText (device+&#39;_source&#39;, objResponse[device][&#39;source&#39;], &#39;maintable&#39;, 10));
+                shngInsertText (device+&#39;_powerState&#39;, objResponse[device][&#39;powerState&#39;], &#39;maintable&#39;, 10));
                 --&gt;
             }
         }
@@ -3965,6 +4025,7 @@
 
 
 {% block headtable %}
+&lt;span id=&#39;webif_pagelength&#39; style=&quot;display:none&quot;&gt;{{ webif_pagelength }}&lt;/span&gt;
 &lt;table class=&quot;table table-striped table-hover&quot;&gt;
     &lt;tbody&gt;
         &lt;tr&gt;
@@ -4026,8 +4087,28 @@
 --&gt;
 {% set tab1title = &quot;&lt;strong&gt;&quot; ~ p.get_shortname() ~ &quot; Items&lt;/strong&gt; (&quot; ~ item_count ~ &quot;)&quot; %}
 {% block bodytab1 %}
-&lt;div class=&quot;container-fluid m-2&quot;&gt;
+&lt;div class=&quot;container-fluid m-2 table-resize&quot;&gt;
     {{ _(&#39;Hier kommt der Inhalt des Webinterfaces hin.&#39;) }}
+    &lt;table id=&quot;maintable&quot;&gt;
+        &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Item&lt;/th&gt;
+        &lt;/tr&gt;
+        &lt;/thead&gt;
+        {% for item in items %}
+            {% if p.has_iattr(item.conf, &#39;mqtt_topic_in&#39;) or p.has_iattr(item.conf, &#39;mqtt_topic_out&#39;) %}
+                &lt;tr&gt;
+                    &lt;td class=&quot;py-1&quot;&gt;{{ item._path }}&lt;/td&gt;
+                    &lt;td class=&quot;py-1&quot;&gt;{{ item._type }}&lt;/td&gt;
+                    &lt;td id=&quot;{{ item.id() }}_value&quot; class=&quot;py-1&quot;&gt;{{ item() }}&lt;/td&gt;
+                    &lt;td class=&quot;py-1&quot;&gt;{% if p.has_iattr(item.conf, &#39;mqtt_topic_in&#39;) %}&lt;strong&gt;in &amp;nbsp; : &lt;/strong&gt;{{ p.get_iattr_value(item.conf, &#39;mqtt_topic_in&#39;) }}&lt;br&gt;{% endif %}
+                        {% if p.has_iattr(item.conf, &#39;mqtt_topic_out&#39;) %}&lt;strong&gt;out: &lt;/strong&gt;{{ p.get_iattr_value(item.conf, &#39;mqtt_topic_out&#39;) }}{% endif %}&lt;/td&gt;
+                    &lt;td id=&quot;{{ item.id() }}_last_update&quot; class=&quot;py-1&quot;&gt;{{ item.last_update().strftime(&#39;%d.%m.%Y %H:%M:%S&#39;) }}&lt;/td&gt;
+                    &lt;td id=&quot;{{ item.id() }}_last_change&quot; class=&quot;py-1&quot;&gt;{{ item.last_change().strftime(&#39;%d.%m.%Y %H:%M:%S&#39;) }}&lt;/td&gt;
+                &lt;/tr&gt;
+            {% endif %}
+        {% endfor %}
+    &lt;/table&gt;
 &lt;/div&gt;
 {% endblock bodytab1 %}
 

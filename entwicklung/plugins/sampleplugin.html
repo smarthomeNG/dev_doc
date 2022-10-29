@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Beispielplugin update &mdash; Dokumentation v1.9.2.2 v1.9.2.2 develop (Stand 29. October 2022, commit ab46dc3) Dokumentation</title>
+  <title>Beispielplugin update &mdash; Dokumentation v1.9.2.2 v1.9.2.2 develop (Stand 29. October 2022, commit 9a217f6) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -3872,11 +3872,15 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
         <span class="c1"># get the parameters for the plugin (as defined in metadata plugin.yaml):</span>
-        <span class="c1"># self.param1 = self.get_parameter_value(&#39;param1&#39;)</span>
-
-        <span class="c1"># webif_pagelength should be included in all plugins using a web interface</span>
-        <span class="c1"># It is used to overwrite the default max number of entries per page in the tables</span>
-        <span class="c1"># self.webif_pagelength = self.get_parameter_value(&#39;webif_pagelength&#39;)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># webif_pagelength should be included in all plugins using a web interface</span>
+            <span class="c1"># It is used to overwrite the default max number of entries per page in the tables</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">webif_pagelength</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_value</span><span class="p">(</span><span class="s1">&#39;webif_pagelength&#39;</span><span class="p">)</span>
+            <span class="c1"># self.param1 = self.get_parameter_value(&#39;param1&#39;)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Plugin &#39;</span><span class="si">{}</span><span class="s2">&#39;: Inconsistent plugin (invalid metadata definition: </span><span class="si">{}</span><span class="s2"> not defined)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">(),</span> <span class="n">e</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_init_complete</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span>
 
         <span class="c1"># cycle time in seconds, only needed, if hardware/interface needs to be</span>
         <span class="c1"># polled for value changes by adding a scheduler entry in the run method of this plugin</span>
@@ -4076,9 +4080,10 @@
       try {
         /* get pagelength from plugin. Also see hidden span element in headtable block! */
         webif_pagelength = parseInt(document.getElementById(&#39;webif_pagelength&#39;).innerHTML);
-        if (webif_pagelength == 0) {
+        if (isNaN(parseFloat(webif_pagelength)) || webif_pagelength == 0) {
           resize = true;
           webif_pagelength = -1;
+                console.log(&#39;Activating automatic table resize&#39;);
         }
         else {
           resize = false;
@@ -4102,10 +4107,21 @@
           pageResize: resize});
       }
       catch (e) {
-        console.log(&quot;Datatable JS not loaded, showing standard table without reorder option &quot; + e);
+        console.warn(&quot;Datatable JS not loaded, showing standard table without reorder option &quot; + e);
       }
     });
 &lt;/script&gt;
+&lt;!--
+This is an example on how to update the page refresh method. You can set the dataSet, update interval, special parameters or (de)activate the auto refresh
+In the example the update is deactivated on the 12th of December 2022 (what might make no sense at all)
+&lt;script&gt;
+  var today = new Date();
+  var today_date = String(today.getDate()) + String(today.getMonth() + 1) + today.getFullYear();
+  let test_date = &quot;12122022&quot;;
+  if (today_date === test_date)
+      window.refresh.update({dataSet:&#39;test&#39;, update_params:&#39;specialitem&#39;, update_interval: 2000, update_active:false});
+  &lt;/script&gt;
+--&gt;
 {% endblock pluginscripts %}
 
 
@@ -4180,7 +4196,7 @@
     {{ _(&#39;Hier kommt der Inhalt des Webinterfaces hin.&#39;) }}
 
     &lt;!-- set id accordingly --&gt;
-    &lt;table id=&quot;maintable&quot; class=&quot;table table-striped table-hover pluginList dataTableAdditional&quot;&gt;
+    &lt;table id=&quot;maintable&quot;&gt;
         &lt;thead&gt;
             &lt;tr&gt;
               &lt;th&gt;{{ _(&#39;Item&#39;) }}&lt;/th&gt;
