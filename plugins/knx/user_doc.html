@@ -3829,6 +3829,20 @@ Unter dem ersten Tab werden die Items die das Plugin nutzen übersichtlich darge
 <img alt="../../_images/tab1_knx_items.png" class="screenshot" src="../../_images/tab1_knx_items.png" />
 <p>Der zweite Tab zeigt Statistiken zu den Gruppenadressen:</p>
 <img alt="../../_images/tab2_ga_statistics.png" class="screenshot" src="../../_images/tab2_ga_statistics.png" />
+<div class="admonition hint">
+<p class="admonition-title">Hinweis</p>
+<p>Wenn es Items gibt, die mit dem Attribut <code class="docutils literal notranslate"><span class="pre">knx_cache</span></code> und einer Gruppenadresse konfiguriert wurden wird SmartHomeNG beim Start
+diese Gruppenadressen vom knxd abfragen.
+Wenn die Werte der Gruppenadressen zu diesem Zeitpunkt nicht im knxd vorliegen wird dieser eine Leseanforderung absetzten um die Werte zubekoammen.
+Schlägt der Versuch fehl oder sind aus anderem Grund keine Werte im Cache des knxd vorhanden dann sendet dieser ein fehlerhaftes Datenpaket
+in dem nur Absender und Empfängeradresse enthalten sind. Die weiteren 2 Bytes mit Kontroll und Dateninformationen fehlen jedoch.
+Daraus lässt sich auch nicht feststellen, ob die Empfängeradresse eine physikalische Adresse oder eine Gruppenadresse ist.
+Das Plugin merkt sich diese Empfängeradresse, interpretiert sie als Gruppenadresse und speichert sie in einer internen Liste.
+Im Webinterface werden alle Items mit <code class="docutils literal notranslate"><span class="pre">knx_cache</span></code> und der zugeordneten Gruppenadresse mit dieser Liste verglichen.
+Taucht die Gruppenadresse dort auf, wird der Eintrag rot eingefärbt als Hinweis das die Konfiguration überprüft werden sollte.
+Oftmals haben knx Geräte für eine Gruppenadresse die mit knx_cache ausgelesenwerden soll kein Leseflag in der ETS gesetzt bekommen.
+Es ist möglich den Loglevel mit dem diese fehlerhaften Rückmeldungen geloggt werden in der Plugin Konfiguration festzulegen.</p>
+</div>
 <p>Der dritte Tab zeigt Statistiken zu den physikalischen Adressen:</p>
 <img alt="../../_images/tab3_pa_statistics.png" class="screenshot" src="../../_images/tab3_pa_statistics.png" />
 <p>Über das Webinterface kann eine Projektdatei aus der ETS hochgeladen werden um zu prüfen ob es Items ohne Zuweisung zu Gruppenadressen gibt
