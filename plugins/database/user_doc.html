@@ -4010,16 +4010,11 @@
   <span class="target" id="index-0"></span><section id="database">
 <span id="index-1"></span><h1>database<a class="headerlink" href="#database" title="Permalink to this heading"></a></h1>
 <p>Database plugin, mit Unterstützung für SQLite 3 und MySQL.</p>
-<p>Verwenden Sie dieses Plugin, um das Log der Elementwerte in einer Datenbank zu speichern. Es unterstützt
+<p>Verwenden Sie dieses Plugin, um Itemwerte in einer Datenbank zu speichern. Es unterstützt
 verschiedene Datenbanken, die eine Python DB API 2 &lt;<a class="reference external" href="http://www.python.org/dev/peps/pep-0249/">http://www.python.org/dev/peps/pep-0249/</a>&gt;`_ Implementierung
 bereitstellen (z. B. <a class="reference external" href="http://docs.python.org/3.2/library/sqlite3.html">SQLite</a>
 welches bereits mit Python oder MySQL gebundeled ist, und über das
 <a class="reference external" href="https://wiki.python.org/moin/MySQL">Implementierungsmodul</a> verwendet wird).</p>
-<p>Use this plugin to store the log of item values into a database. It supports
-different databases which provides a [Python DB API 2](<a class="reference external" href="http://www.python.org/dev/peps/pep-0249/">http://www.python.org/dev/peps/pep-0249/</a>)
-implementation (e.g. [SQLite](<a class="reference external" href="http://docs.python.org/3.2/library/sqlite3.html">http://docs.python.org/3.2/library/sqlite3.html</a>)
-which is already bundled with Python or MySQL by using a
-[implementation module](<a class="reference external" href="https://wiki.python.org/moin/MySQL">https://wiki.python.org/moin/MySQL</a>)).</p>
 <section id="konfiguration">
 <h2>Konfiguration<a class="headerlink" href="#konfiguration" title="Permalink to this heading"></a></h2>
 <p>Die Informationen zur Konfiguration des Plugins sind unter <a class="reference internal" href="../../plugins_doc/config/database.html"><span class="doc">Plugin ‚database‘ Konfiguration</span></a> beschrieben.</p>
@@ -4064,37 +4059,40 @@ Zeile das Icon in der Spalte <strong>Web Interface</strong> anklicken.</p>
 </section>
 <section id="aufbau-der-datenbank">
 <h2>Aufbau der Datenbank<a class="headerlink" href="#aufbau-der-datenbank" title="Permalink to this heading"></a></h2>
-<p>Das Plugin erzeugt folgende Datenbank Struktur:</p>
+<p>Das Plugin erzeugt und verwendet zwei Tabellen in der Datenbank:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>Table <cite>item</cite> - the item table contains all items and thier last known value</p></li>
-<li><p>Table <cite>log</cite> - the history log of the item values</p></li>
+<li><p>Table <cite>item</cite> - Die Tabelle beinhaltet alle Items und ihren letzten bekannten Wert</p></li>
+<li><p>Table <cite>log</cite> - Die Tabelle listet alle historischen Werte der Items auf</p></li>
 </ul>
 </div></blockquote>
-<p>Die <cite>item</cite> Tabelle enthält die folgenden Columns:</p>
+<p>Die <cite>item</cite> Tabelle enthält die folgenden Spalten:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>Column <cite>id</cite> - a unique ID which is incremented by one for each new item</p></li>
-<li><p>Column <cite>name</cite> - the item’s ID / name</p></li>
-<li><p>Column <cite>time</cite> - the unix timestamp in microseconds of last change</p></li>
-<li><p>Column <cite>val_str</cite> - the string value if type is <cite>str</cite></p></li>
-<li><p>Column <cite>val_num</cite> - the number value if type is <cite>num</cite></p></li>
-<li><p>Column <cite>val_bool</cite> - the boolean value if type is <cite>bool</cite> or <cite>num</cite></p></li>
-<li><p>Column <cite>changed</cite> - the unix timestamp in microseconds of record change</p></li>
+<li><p>Column <cite>id</cite> - Eine eindeutige Kennung die für jedes neue Item inkrementiert wird</p></li>
+<li><p>Column <cite>name</cite> - Der ItemName</p></li>
+<li><p>Column <cite>time</cite> - Ein UNIX Zeitstempel in eine Auflösung von Mikrosekunden</p></li>
+<li><p>Column <cite>val_str</cite> - Der Itemwert als Zeichenkette wenn das Item den Typ <cite>str</cite> hat</p></li>
+<li><p>Column <cite>val_num</cite> - Der Itemwert als Zahl, wenn das Item den Typ <cite>num</cite> hat</p></li>
+<li><p>Column <cite>val_bool</cite> - Der Itemwert als Wahrheitswert, das Item den Typ <cite>bool</cite> oder <cite>num</cite> hat</p></li>
+<li><p>Column <cite>changed</cite> - Ein UNIX Zeitstempel (in einer Auflösung von Mikrosekunden) der letzen Änderung</p></li>
 </ul>
 </div></blockquote>
-<p>Die <cite>log</cite> Tabelle enthält die folgenden Columns:</p>
+<p>Die <cite>log</cite> Tabelle enthält die folgenden Spalten:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>Column <cite>time</cite> - the unix timestamp in microseconds of value</p></li>
-<li><p>Column <cite>item_id</cite> - the reference to the unique ID in <cite>item</cite> table</p></li>
-<li><p>Column <cite>duration</cite> - the duration in microseconds</p></li>
-<li><p>Column <cite>val_str</cite> - the string value if type is <cite>str</cite></p></li>
-<li><p>Column <cite>val_num</cite> - the number value if type is <cite>num</cite></p></li>
-<li><p>Column <cite>val_bool</cite> - the boolean value if type is <cite>bool</cite> or <cite>num</cite></p></li>
-<li><p>Column <cite>changed</cite> - the unix timestamp in microseconds of record change</p></li>
+<li><p>Column <cite>time</cite> - Ein UNIX Zeitstempel in eine Auflösung von Mikrosekunden</p></li>
+<li><p>Column <cite>item_id</cite> - Eine Referenz auf eine eindeutige Kennung eines Items in der Tabelle ìtem</p></li>
+<li><p>Column <cite>duration</cite> - Die Dauer in Mikrosekunden</p></li>
+<li><p>Column <cite>val_str</cite> - Der Itemwert als Zeichenkette wenn das Item den Typ <cite>str</cite> hat</p></li>
+<li><p>Column <cite>val_num</cite> - Der Itemwert als Zahl, wenn das Item den Typ <cite>num</cite> hat</p></li>
+<li><p>Column <cite>val_bool</cite> - Der Itemwert als Wahrheitswert, das Item den Typ <cite>bool</cite> oder <cite>num</cite> hat</p></li>
+<li><p>Column <cite>changed</cite> - Ein UNIX Zeitstempel (in einer Auflösung von Mikrosekunden) der letzen Änderung</p></li>
 </ul>
 </div></blockquote>
+<p>Es gibt aktuell nur eine Möglichkeit die Anzahl der Datensätze pro Item zu begrenzen:
+Durch die Angabe des Item Attributs <code class="docutils literal notranslate"><span class="pre">database_maxage</span></code> wird das maximale Alter der Einträge eines Items begrenzt.
+Regelmässig werden Werte deren Zeitstempel älter ist als die angegebene Zeitspanne aus der Datenbank gelöscht.</p>
 </section>
 </section>
 
