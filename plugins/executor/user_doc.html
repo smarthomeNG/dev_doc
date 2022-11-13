@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>executor &mdash; Dokumentation v1.9.3.1 develop v1.9.3.1 develop (Stand 08. November 2022, commit d189684) Dokumentation</title>
+  <title>executor &mdash; Dokumentation v1.9.3.1 develop v1.9.3.1 develop (Stand 13. November 2022, commit d189684) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -428,10 +428,12 @@
 </ul>
 </li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">executor</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#einfuhrung">Einführung</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#konfiguration">Konfiguration</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#beispiele-fur-eval">Beispiele für Eval</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#beispiel-python-code">Beispiel Python Code</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#einfuhrung">Einführung</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#konfiguration">Konfiguration</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#webinterface">Webinterface</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#beispiel-python-code">Beispiel Python Code</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../influxdb2/user_doc.html">influxdb2</a><ul>
@@ -1706,10 +1708,12 @@
 </ul>
 </li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">executor</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#einfuhrung">Einführung</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#konfiguration">Konfiguration</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#beispiele-fur-eval">Beispiele für Eval</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#beispiel-python-code">Beispiel Python Code</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#einfuhrung">Einführung</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#konfiguration">Konfiguration</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#webinterface">Webinterface</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#beispiel-python-code">Beispiel Python Code</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../helios_tcp/user_doc.html">helios_tcp</a><ul>
@@ -4005,33 +4009,39 @@
              
   <span class="target" id="index-0"></span><section id="executor">
 <span id="index-1"></span><h1>executor<a class="headerlink" href="#executor" title="Permalink to this heading"></a></h1>
+<a class="reference internal image-reference" href="../../_images/plugin_logo.svg"><img alt="plugin logo" class="align-left" height="150px" src="../../_images/plugin_logo.svg" width="150px" /></a>
 <section id="einfuhrung">
 <h2>Einführung<a class="headerlink" href="#einfuhrung" title="Permalink to this heading"></a></h2>
-<p>Das executor plugin kann genutzt werden, um <strong>eval Ausdrücke</strong> und <strong>Python Code</strong> (z.B. für <strong>Logiken</strong>) zu testen.</p>
+<p>Das executor plugin kann genutzt werden, um <strong>Python Code</strong> (z.B. für <strong>Logiken</strong>) und <strong>eval Ausdrücke</strong> zu testen.</p>
 <div class="admonition important">
 <p class="admonition-title">Wichtig</p>
-<p>Seien Sie sich bewusst, dass die Aktivierung dieses Plugins ein Sicherheitsrisiko darstellen könnte. Wenn andere Personen Zugriff auf die Web-Schnittstelle erhalten,
+<p>Seien Sie sich bewusst, dass die Aktivierung dieses Plugins ein Sicherheitsrisiko darstellen könnte.
+Wenn andere Personen Zugriff auf die Web-Schnittstelle erhalten,
 kann man das ganze SmartHomeNG-Biest kontrollieren. Seien Sie also vorsichtig!!!</p>
 </div>
-</section>
 <section id="konfiguration">
-<h2>Konfiguration<a class="headerlink" href="#konfiguration" title="Permalink to this heading"></a></h2>
-<p>Das Aktivieren des Plugins ist ausreichend.</p>
+<h3>Konfiguration<a class="headerlink" href="#konfiguration" title="Permalink to this heading"></a></h3>
+<p>Das Aktivieren des Plugins ist ausreichend. Optional kann noch ein Verzeichnis für Skripte konfiguriert werden
+über das Attribut <code class="docutils literal notranslate"><span class="pre">executor_scripts</span></code> in der <code class="docutils literal notranslate"><span class="pre">plugin.yaml</span></code>.
+Damit wird dem Plugin eine relative Pfadangabe unterhalb <em>var</em> angegeben wo Skripte für das Executor Plugin abgelegt werden.</p>
 </section>
-<section id="beispiele-fur-eval">
-<h2>Beispiele für Eval<a class="headerlink" href="#beispiele-fur-eval" title="Permalink to this heading"></a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="mi">12</span> <span class="k">if</span> <span class="mi">23</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">5</span> <span class="k">else</span> <span class="kc">None</span>
-</pre></div>
-</div>
-<p>Würde im Ergebnis <strong>None</strong> resultieren.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sh</span><span class="o">..</span><span class="n">child</span><span class="p">()</span> <span class="o">+</span> <span class="mi">4</span>
-</pre></div>
-</div>
-<p>Da sich im Evalausdruck ein relatives Item befindet, ist es notwendig im Feld „Itempfad“ das Item anzugeben, dem das im Code angegebene Unteritem zugewiesen ist.</p>
+<section id="webinterface">
+<h3>Webinterface<a class="headerlink" href="#webinterface" title="Permalink to this heading"></a></h3>
+<p>Im Webinterface findet sich eine Listbox mit den auf dem Rechner gespeicherten Skripten.
+Um das Skript in den Editor zu laden entweder ein Skript in der Liste einfach anklicken und auf <em>aus Datei laden</em> klicken oder
+direkt in der Liste einen Doppelklick auf die gewünschte Datei ausführen.</p>
+<p>Der Dateiname wird entsprechend der gewählten Datei gesetzt. Mit Klick auf <em>aktuellen Code speichern</em> wird der Code im konfigurierten
+Skript Verzeichnis unter dem aktuell in der Eingabebox vorgegebenem Dateinamen abgespeichert.</p>
+<p>Mit einem Klick auf <em>Code ausführen!</em> oder der Kombination Ctrl+Return wird der Code an SmartHomeNG gesendet und ausgeführt.
+Das kann gerade bei Datenbank Abfragen recht lange dauern. Es kann keine Rückmeldung von SmartHomeNG abgefragt werden wie weit der Code derzeit ist.
+Das Ergebnis wird unten angezeigt. Solange kein Ergebnis vorliegt, steht im Ergebniskasten <strong>… processing …</strong></p>
+<p>Mit einem Klick auf Datei löschen wird versucht die unter Dateiname angezeigte Datei ohne Rückfrage zu löschen.
+Anschliessend wird die Liste der Skripte aktualisiert.</p>
 </section>
 <section id="beispiel-python-code">
-<h2>Beispiel Python Code<a class="headerlink" href="#beispiel-python-code" title="Permalink to this heading"></a></h2>
-<p>Sowohl``logger`` als auch <code class="docutils literal notranslate"><span class="pre">print</span></code> funktionieren für die Ausgabe von Ergebnissen. Die Idee ist, dass Logiken mehr oder weniger 1:1 kopiert und getestet werden können.</p>
+<h3>Beispiel Python Code<a class="headerlink" href="#beispiel-python-code" title="Permalink to this heading"></a></h3>
+<p>Sowohl <code class="docutils literal notranslate"><span class="pre">logger</span></code> als auch <code class="docutils literal notranslate"><span class="pre">print</span></code> funktionieren für die Ausgabe von Ergebnissen.
+Die Idee ist, dass Logiken mehr oder weniger 1:1 kopiert und getestet werden können.</p>
 <p>Loggertest</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Eine Warnung&quot;</span><span class="p">)</span>
 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Eine Info&quot;</span><span class="p">)</span>
@@ -4052,7 +4062,7 @@ kann man das ganze SmartHomeNG-Biest kontrollieren. Seien Sie also vorsichtig!!!
 <span class="nb">print</span><span class="p">(</span><span class="n">pretty</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>würde in folgendem Ergebnis münden.</p>
+<p>würde in folgendem Ergebnis münden:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="nt">&quot;sid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ArbeitszimmerOG.Raumtemperatur|max|1d|now|100&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">  </span><span class="nt">&quot;cmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;series&quot;</span><span class="p">,</span><span class="w"></span>
@@ -4079,6 +4089,8 @@ kann man das ganze SmartHomeNG-Biest kontrollieren. Seien Sie also vorsichtig!!!
 <span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
+<p>Damit die Nutzung</p>
+</section>
 </section>
 </section>
 
