@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Class SmartPlugin &mdash; Dokumentation v1.9.3.1 develop v1.9.3.1 develop (Stand 14. November 2022, commit 53563b6) Dokumentation</title>
+  <title>Class SmartPlugin &mdash; Dokumentation v1.9.3.1 develop v1.9.3.1 develop (Stand 15. November 2022, commit 92e2f72) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4015,9 +4015,9 @@
 <dt class="sig sig-object py" id="lib.model.smartplugin.SmartPlugin">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lib.model.smartplugin.</span></span><span class="sig-name descname"><span class="pre">SmartPlugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/lib/model/smartplugin.html#SmartPlugin"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartplugin.SmartPlugin" title="Link zu dieser Definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SmartObject</span></code>, <a class="reference internal" href="../../lib/utils.html#lib.utils.Utils" title="lib.utils.Utils"><code class="xref py py-class docutils literal notranslate"><span class="pre">Utils</span></code></a></p>
-<p>The class SmartPlugin implements the base class of call smart-plugins.
+<p>The class SmartPlugin implements the base class of all smart-plugins.
 The implemented methods are described below.</p>
-<p>In adition the methods implemented in lib.utils.Utils are inhereted.</p>
+<p>In addition the methods implemented in lib.utils.Utils are inherited.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lib.model.smartplugin.SmartPlugin.ALLOW_MULTIINSTANCE">
 <span class="sig-name descname"><span class="pre">ALLOW_MULTIINSTANCE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#lib.model.smartplugin.SmartPlugin.ALLOW_MULTIINSTANCE" title="Link zu dieser Definition"></a></dt>
@@ -4041,9 +4041,122 @@ The implemented methods are described below.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lib.model.smartplugin.SmartPlugin.deinit">
-<span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/lib/model/smartplugin.html#SmartPlugin.deinit"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartplugin.SmartPlugin.deinit" title="Link zu dieser Definition"></a></dt>
+<span class="sig-name descname"><span class="pre">deinit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/lib/model/smartplugin.html#SmartPlugin.deinit"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartplugin.SmartPlugin.deinit" title="Link zu dieser Definition"></a></dt>
 <dd><p>If the Plugin needs special code to be executed before it is unloaded, this method
-has to be overwirtten with the code needed for de-initialization</p>
+has to be overwritten with the code needed for de-initialization</p>
+<p>If called without parameters, all registered items are unregistered.
+items is a list of items (or a single Item() object).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.model.smartplugin.SmartPlugin.add_item">
+<span class="sig-name descname"><span class="pre">add_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_data_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_command</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/lib/model/smartplugin.html#SmartPlugin.add_item"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartplugin.SmartPlugin.add_item" title="Link zu dieser Definition"></a></dt>
+<dd><p>For items that are used/handled by a plugin, this method stores the configuration information
+that is individual for the plugin. The configuration information is/has to be stored in a dictionary</p>
+<p>The configuration information can be retrieved later by a call to the method get_item_configdata(&lt;item_path&gt;)</p>
+<p>If data is beeing received by the plugin, a ‚device_command‘ has to be specified as an optional 3rd parameter.
+This allows a reverse lookup. The method get_itemlist_for_device_command(&lt;device_command&gt;) returns a list
+of items for the items that have defined the &lt;device_command&gt;. In most cases, the list will have only one
+entry, but if multiple items should receive data from the same device (or command), the list can have more than
+one entry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameter</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>item</strong> (<a class="reference internal" href="../../lib/item_class_item.html#lib.item.item.Item" title="lib.item.item.Item"><em>Item</em></a>) – item</p></li>
+<li><p><strong>config_data_dict</strong> (<em>dict</em>) – Dictionary with the plugin-specific configuration information for the item</p></li>
+<li><p><strong>device_command</strong> (<em>str</em>) – String identifing the origin (source/kind) of received data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Rückgabe</dt>
+<dd class="field-even"><p>True, if the information has been added</p>
+</dd>
+<dt class="field-odd">Rückgabetyp</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.model.smartplugin.SmartPlugin.remove_item">
+<span class="sig-name descname"><span class="pre">remove_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/lib/model/smartplugin.html#SmartPlugin.remove_item"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartplugin.SmartPlugin.remove_item" title="Link zu dieser Definition"></a></dt>
+<dd><p>Remove configuration data for an item (and remove the item from the device_command’s list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameter</dt>
+<dd class="field-odd"><p><strong>item</strong> (<a class="reference internal" href="../../lib/item_class_item.html#lib.item.item.Item" title="lib.item.item.Item"><em>Item</em></a>) – item to remove</p>
+</dd>
+<dt class="field-even">Rückgabe</dt>
+<dd class="field-even"><p>True, if the information has been removed</p>
+</dd>
+<dt class="field-odd">Rückgabetyp</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.model.smartplugin.SmartPlugin.register_updating">
+<span class="sig-name descname"><span class="pre">register_updating</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/lib/model/smartplugin.html#SmartPlugin.register_updating"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartplugin.SmartPlugin.register_updating" title="Link zu dieser Definition"></a></dt>
+<dd><p>Mark item in self._item_dict as registered in shng for updating
+(usually done by returning self.update_item from self.parse_item)</p>
+<p>This method is called by the item object itself</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.model.smartplugin.SmartPlugin.get_item_config">
+<span class="sig-name descname"><span class="pre">get_item_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/lib/model/smartplugin.html#SmartPlugin.get_item_config"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartplugin.SmartPlugin.get_item_config" title="Link zu dieser Definition"></a></dt>
+<dd><p>Returns the plugin-specific configuration information for the given item</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameter</dt>
+<dd class="field-odd"><p><strong>item</strong> (<em>class Item</em>) – item to get config info for</p>
+</dd>
+<dt class="field-even">Rückgabe</dt>
+<dd class="field-even"><p>dict with the configuration information for the given item</p>
+</dd>
+<dt class="field-odd">Rückgabetyp</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.model.smartplugin.SmartPlugin.get_item_path_list">
+<span class="sig-name descname"><span class="pre">get_item_path_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/lib/model/smartplugin.html#SmartPlugin.get_item_path_list"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartplugin.SmartPlugin.get_item_path_list" title="Link zu dieser Definition"></a></dt>
+<dd><p>Return list of stored item paths</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.model.smartplugin.SmartPlugin.get_items">
+<span class="sig-name descname"><span class="pre">get_items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/lib/model/smartplugin.html#SmartPlugin.get_items"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartplugin.SmartPlugin.get_items" title="Link zu dieser Definition"></a></dt>
+<dd><p>Return list of stored items</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.model.smartplugin.SmartPlugin.get_trigger_items">
+<span class="sig-name descname"><span class="pre">get_trigger_items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/lib/model/smartplugin.html#SmartPlugin.get_trigger_items"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartplugin.SmartPlugin.get_trigger_items" title="Link zu dieser Definition"></a></dt>
+<dd><p>Return list of stored items which were marked by register_updating()</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.model.smartplugin.SmartPlugin.get_items_for_command">
+<span class="sig-name descname"><span class="pre">get_items_for_command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device_command</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/lib/model/smartplugin.html#SmartPlugin.get_items_for_command"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartplugin.SmartPlugin.get_items_for_command" title="Link zu dieser Definition"></a></dt>
+<dd><p>Returns a list of items that should receive data for the given device_command</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameter</dt>
+<dd class="field-odd"><p><strong>device_command</strong> (<em>str</em>) – device_command, for which the receiving items should be returned</p>
+</dd>
+<dt class="field-even">Rückgabe</dt>
+<dd class="field-even"><p>List of items</p>
+</dd>
+<dt class="field-odd">Rückgabetyp</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.model.smartplugin.SmartPlugin.unparse_item">
+<span class="sig-name descname"><span class="pre">unparse_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/lib/model/smartplugin.html#SmartPlugin.unparse_item"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartplugin.SmartPlugin.unparse_item" title="Link zu dieser Definition"></a></dt>
+<dd><p>Ensure that changes to &lt;item&gt; are no longer propagated to this plugin</p>
 </dd></dl>
 
 <dl class="py method">
@@ -4233,7 +4346,7 @@ If the parameter is marked as ‚hide‘, only ‚*‘s are returned</p>
 <dd><p>Update the config section of ../etc/plugin.yaml</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameter</dt>
-<dd class="field-odd"><p><strong>param_dict</strong> – dict with the pareters that should be updated</p>
+<dd class="field-odd"><p><strong>param_dict</strong> – dict with the parameters that should be updated</p>
 </dd>
 <dt class="field-even">Rückgabe</dt>
 <dd class="field-even"><p></p>
