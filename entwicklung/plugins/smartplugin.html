@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Class SmartPlugin &mdash; Dokumentation v1.9.3.1 develop v1.9.3.1 develop (Stand 15. November 2022, commit 92e2f72) Dokumentation</title>
+  <title>Class SmartPlugin &mdash; Dokumentation v1.9.3.1 develop v1.9.3.1 develop (Stand 18. November 2022, commit 11d6d37) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4050,7 +4050,7 @@ items is a list of items (or a single Item() object).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lib.model.smartplugin.SmartPlugin.add_item">
-<span class="sig-name descname"><span class="pre">add_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_data_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_command</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/lib/model/smartplugin.html#SmartPlugin.add_item"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartplugin.SmartPlugin.add_item" title="Link zu dieser Definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_data_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_command</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updating</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/lib/model/smartplugin.html#SmartPlugin.add_item"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartplugin.SmartPlugin.add_item" title="Link zu dieser Definition"></a></dt>
 <dd><p>For items that are used/handled by a plugin, this method stores the configuration information
 that is individual for the plugin. The configuration information is/has to be stored in a dictionary</p>
 <p>The configuration information can be retrieved later by a call to the method get_item_configdata(&lt;item_path&gt;)</p>
@@ -4059,6 +4059,7 @@ This allows a reverse lookup. The method get_itemlist_for_device_command(&lt;dev
 of items for the items that have defined the &lt;device_command&gt;. In most cases, the list will have only one
 entry, but if multiple items should receive data from the same device (or command), the list can have more than
 one entry.</p>
+<p>This method is called by the item instance itself.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameter</dt>
 <dd class="field-odd"><ul class="simple">
@@ -4096,9 +4097,14 @@ one entry.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="lib.model.smartplugin.SmartPlugin.register_updating">
 <span class="sig-name descname"><span class="pre">register_updating</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/lib/model/smartplugin.html#SmartPlugin.register_updating"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartplugin.SmartPlugin.register_updating" title="Link zu dieser Definition"></a></dt>
-<dd><p>Mark item in self._item_dict as registered in shng for updating
+<dd><p>Mark item in self._plg_item_dict as registered in shng for updating
 (usually done by returning self.update_item from self.parse_item)</p>
-<p>This method is called by the item object itself</p>
+<p># NOTE: Items are added to _plg_item_dict by the item class as updating
+#       by default. This could only be used if items were added manually
+#       as non-updating first. Registering them as updating usually only
+#       occurs via parse_item(), which in turn makes the item class
+#       add the item as updating.
+#       Is this function needed anyway?</p>
 </dd></dl>
 
 <dl class="py method">
@@ -4133,7 +4139,7 @@ one entry.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="lib.model.smartplugin.SmartPlugin.get_trigger_items">
 <span class="sig-name descname"><span class="pre">get_trigger_items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/lib/model/smartplugin.html#SmartPlugin.get_trigger_items"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartplugin.SmartPlugin.get_trigger_items" title="Link zu dieser Definition"></a></dt>
-<dd><p>Return list of stored items which were marked by register_updating()</p>
+<dd><p>Return list of stored items which were marked as updating</p>
 </dd></dl>
 
 <dl class="py method">

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.9.3.1 develop v1.9.3.1 develop (Stand 15. November 2022, commit 92e2f72) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.9.3.1 develop v1.9.3.1 develop (Stand 18. November 2022, commit 11d6d37) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -4062,7 +4062,7 @@
 
     <span class="n">_pluginname_prefix</span> <span class="o">=</span> <span class="s1">&#39;plugins.&#39;</span>
 
-    <span class="n">_item_dict</span> <span class="o">=</span> <span class="p">{}</span>         <span class="c1"># dict to hold the items assigned to the plugin and their plugin specific information</span>
+    <span class="n">_plg_item_dict</span> <span class="o">=</span> <span class="p">{}</span>     <span class="c1"># dict to hold the items assigned to the plugin and their plugin specific information</span>
     <span class="n">_item_lookup_dict</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># dict for the reverse lookup from a device_command to an item, contains a list of items for each device_command</span>
     <span class="n">_add_translation</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -4093,10 +4093,9 @@
             <span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">items</span><span class="p">]</span>
 
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_dict</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">remove_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.add_item"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.add_item">[Doku]</a>    <span class="k">def</span> <span class="nf">add_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">config_data_dict</span><span class="o">=</span><span class="p">{},</span> <span class="n">device_command</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.add_item"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.add_item">[Doku]</a>    <span class="k">def</span> <span class="nf">add_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">config_data_dict</span><span class="o">=</span><span class="p">{},</span> <span class="n">device_command</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">updating</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For items that are used/handled by a plugin, this method stores the configuration information</span>
 <span class="sd">        that is individual for the plugin. The configuration information is/has to be stored in a dictionary</span>
@@ -4109,6 +4108,8 @@
 <span class="sd">        entry, but if multiple items should receive data from the same device (or command), the list can have more than</span>
 <span class="sd">        one entry.</span>
 
+<span class="sd">        This method is called by the item instance itself.</span>
+
 <span class="sd">        :param item: item</span>
 <span class="sd">        :param config_data_dict: Dictionary with the plugin-specific configuration information for the item</span>
 <span class="sd">        :param device_command: String identifing the origin (source/kind) of received data</span>
@@ -4119,14 +4120,13 @@
 <span class="sd">        :return: True, if the information has been added</span>
 <span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_dict</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trying to add an existing item: </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()]</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span>
-<span class="c1"># TODO: besseren Namen für &#39;has_trigger_method&#39;? zB &#39;is_updating&#39; oder so...</span>
-            <span class="s1">&#39;has_trigger_method&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s1">&#39;is_updating&#39;</span><span class="p">:</span> <span class="n">updating</span><span class="p">,</span>
             <span class="s1">&#39;device_command&#39;</span><span class="p">:</span> <span class="n">device_command</span><span class="p">,</span>
             <span class="s1">&#39;config_data&#39;</span><span class="p">:</span> <span class="n">config_data_dict</span>
         <span class="p">}</span>
@@ -4148,6 +4148,11 @@
 <span class="sd">        :return: True, if the information has been removed</span>
 <span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">:</span>
+            <span class="c1"># There is no information stored for that item</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span><span class="si">}</span><span class="s1"> not associated to this plugin, doing nothing&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
         <span class="c1"># check if plugin is running</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alive</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stop_on_item_change</span><span class="p">:</span>
@@ -4156,14 +4161,9 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;not stopping plugin for removal of item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_dict</span><span class="p">:</span>
-            <span class="c1"># There is no information stored for that item</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span><span class="si">}</span><span class="s1"> not associated to this plugin, doing nothing&#39;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">False</span>
-
         <span class="c1"># remove data from item_dict early in case of concurrent actions</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()]</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()]</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()]</span>
 
         <span class="c1"># remove item from self._item_lookup_dict if present</span>
         <span class="n">command</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;device_command&#39;</span><span class="p">)</span>
@@ -4177,17 +4177,21 @@
 
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<span class="c1"># TODO: harmonize name with key name self._item_dict[&#39;has_trigger_method&#39;]</span>
 <div class="viewcode-block" id="SmartPlugin.register_updating"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.register_updating">[Doku]</a>    <span class="k">def</span> <span class="nf">register_updating</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Mark item in self._item_dict as registered in shng for updating</span>
+<span class="sd">        Mark item in self._plg_item_dict as registered in shng for updating</span>
 <span class="sd">        (usually done by returning self.update_item from self.parse_item)</span>
 
-<span class="sd">        This method is called by the item object itself</span>
+<span class="sd">        # NOTE: Items are added to _plg_item_dict by the item class as updating</span>
+<span class="sd">        #       by default. This could only be used if items were added manually</span>
+<span class="sd">        #       as non-updating first. Registering them as updating usually only</span>
+<span class="sd">        #       occurs via parse_item(), which in turn makes the item class</span>
+<span class="sd">        #       add the item as updating.</span>
+<span class="sd">        #       Is this function needed anyway?</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_dict</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()][</span><span class="s1">&#39;has_trigger_method&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()][</span><span class="s1">&#39;is_updating&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="SmartPlugin.get_item_config"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_item_config">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -4199,7 +4203,7 @@
 <span class="sd">        :return: dict with the configuration information for the given item</span>
 <span class="sd">        :rtype: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;config_data&#39;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;config_data&#39;</span><span class="p">)</span></div>
 
 <span class="c1"># TODO: maybe call this get_item_names to be more intuitive?</span>
 <span class="c1">#       get_item_paths would be syntactically correct, but weird</span>
@@ -4207,19 +4211,19 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return list of stored item paths</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SmartPlugin.get_items"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_items">[Doku]</a>    <span class="k">def</span> <span class="nf">get_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return list of stored items</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_dict</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="SmartPlugin.get_trigger_items"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_trigger_items">[Doku]</a>    <span class="k">def</span> <span class="nf">get_trigger_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return list of stored items which were marked by register_updating()</span>
+<span class="sd">        Return list of stored items which were marked as updating</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_dict</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;has_trigger_method&#39;</span><span class="p">]]</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;is_updating&#39;</span><span class="p">]]</span></div>
 
 <div class="viewcode-block" id="SmartPlugin.get_items_for_command"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_items_for_command">[Doku]</a>    <span class="k">def</span> <span class="nf">get_items_for_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_command</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -4238,7 +4242,7 @@
 <span class="sd">        Ensure that changes to &lt;item&gt; are no longer propagated to this plugin</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">item</span><span class="o">.</span><span class="n">_remove_method_trigger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_item</span><span class="p">)</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">remove_method_trigger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_item</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span></div>
