@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Das Webinterface mit Inhalt füllen &mdash; Dokumentation v1.9.3.1 develop v1.9.3.1 develop (Stand 18. November 2022, commit 11d6d37) Dokumentation</title>
+  <title>Das Webinterface mit Inhalt füllen &mdash; Dokumentation v1.9.3.1 develop v1.9.3.1 develop (Stand 18. November 2022, commit bab4800) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4039,10 +4039,17 @@
 
 <span class="sd">    :return: contents of the template after beeing rendered</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># try to get the webif pagelength from the module.yaml configuration</span>
+    <span class="n">global_pagelength</span> <span class="o">=</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;webif_pagelength&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">global_pagelength</span><span class="p">:</span>
+        <span class="n">pagelength</span> <span class="o">=</span> <span class="n">global_pagelength</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Global pagelength </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pagelength</span><span class="p">))</span>
+    <span class="c1"># try to get the webif pagelength from the plugin specific plugin.yaml configuration</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">pagelength</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">webif_pagelength</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Plugin pagelength </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pagelength</span><span class="p">))</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-        <span class="n">pagelength</span> <span class="o">=</span> <span class="mi">100</span>
+        <span class="k">pass</span>
     <span class="n">tmpl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tplenv</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s1">&#39;index.html&#39;</span><span class="p">)</span>
     <span class="c1"># add values to be passed to the Jinja2 template eg: tmpl.render(p=self.plugin, interface=interface, ...)</span>
     <span class="k">return</span> <span class="n">tmpl</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">webif_pagelength</span><span class="o">=</span><span class="n">pagelength</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="p">)</span>
@@ -4068,10 +4075,9 @@ Hierzu ist es notwendig, das <code class="docutils literal notranslate"><span cl
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">webif_pagelength</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_value</span><span class="p">(</span><span class="s1">&#39;webif_pagelength&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Die plugin.yaml sollte hiermit ergänzt werden:</p>
+<p>Die plugin.yaml sollte hiermit ergänzt werden. Es sollte kein default Wert angegeben werden!</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">webif_pagelength</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span><span class="w"></span>
-<span class="w">  </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w"></span>
 <span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">de</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Anzahl</span><span class="nv"> </span><span class="s">an</span><span class="nv"> </span><span class="s">Items,</span><span class="nv"> </span><span class="s">die</span><span class="nv"> </span><span class="s">standardmäßig</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">einer</span><span class="nv"> </span><span class="s">Web</span><span class="nv"> </span><span class="s">Interface</span><span class="nv"> </span><span class="s">Tabelle</span><span class="nv"> </span><span class="s">pro</span><span class="nv"> </span><span class="s">Seite</span><span class="nv"> </span><span class="s">angezeigt</span><span class="nv"> </span><span class="s">werden.</span><span class="w"></span>
 <span class="w">         </span><span class="s">0</span><span class="nv"> </span><span class="s">=</span><span class="nv"> </span><span class="s">automatisch,</span><span class="nv"> </span><span class="s">-1</span><span class="nv"> </span><span class="s">=</span><span class="nv"> </span><span class="s">alle&#39;</span><span class="w"></span>
@@ -4118,6 +4124,7 @@ um die automatische Anpassung der Datentabelle an die Fensterhöhe zu ermöglich
    <span class="p">&lt;</span><span class="nt">table</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;maintable&quot;</span><span class="p">&gt;</span>
        <span class="p">&lt;</span><span class="nt">thead</span><span class="p">&gt;</span>
            <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+               <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
                <span class="p">&lt;</span><span class="nt">th</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;item&quot;</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="kp">_</span><span class="o">(</span><span class="s1">&#39;Item&#39;</span><span class="o">)</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
                <span class="p">&lt;</span><span class="nt">th</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;typ&quot;</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="kp">_</span><span class="o">(</span><span class="s1">&#39;Typ&#39;</span><span class="o">)</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
                <span class="p">&lt;</span><span class="nt">th</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;knx_dpt&quot;</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="kp">_</span><span class="o">(</span><span class="s1">&#39;knx_dpt&#39;</span><span class="o">)</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
@@ -4126,6 +4133,7 @@ um die automatische Anpassung der Datentabelle an die Fensterhöhe zu ermöglich
        <span class="p">&lt;</span><span class="nt">tbody</span><span class="p">&gt;</span>
            <span class="cp">{%</span> <span class="k">for</span> <span class="nv">item</span> <span class="k">in</span> <span class="nv">items</span> <span class="cp">%}</span>
                <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+                   <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
                    <span class="p">&lt;</span><span class="nt">td</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;py-1&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">item._path</span> <span class="cp">}}</span><span class="s">_path&quot;</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="nv">item._path</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
                    <span class="p">&lt;</span><span class="nt">td</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;py-1&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">item._path</span> <span class="cp">}}</span><span class="s">_type&quot;</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="nv">item._type</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
                    <span class="p">&lt;</span><span class="nt">td</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;py-1&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">item._path</span> <span class="cp">}}</span><span class="s">_knx_dpt&quot;</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="nv">item.conf</span><span class="o">[</span><span class="s1">&#39;knx_dpt&#39;</span><span class="o">]</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
@@ -4149,16 +4157,15 @@ weitere relevante Anpassungen zu finden.</p>
 <span class="w">  </span><span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="nx">$</span><span class="p">(</span><span class="nb">window</span><span class="p">).</span><span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;datatables_defaults&#39;</span><span class="p">);</span><span class="w"> </span><span class="c1">// loading default behaviour</span><span class="w"></span>
 <span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="cm">/* get pagelength from plugin. Also see hidden span element in bodytab1 block! */</span><span class="w"></span>
-<span class="w">      </span><span class="nx">webif_pagelength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">parseInt</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;webif_pagelength&#39;</span><span class="p">).</span><span class="nx">innerHTML</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="cp">{%</span> <span class="k">if</span> <span class="nv">webif_pagelength</span> <span class="k">is</span> <span class="nf">defined</span> <span class="cp">%}</span><span class="nx">webif_pagelength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="cp">{{</span> <span class="nv">webif_pagelength</span><span class="o">|</span><span class="nf">int</span> <span class="cp">}}</span><span class="p">;</span><span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span><span class="w"></span>
 <span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">isNaN</span><span class="p">(</span><span class="nb">parseFloat</span><span class="p">(</span><span class="nx">webif_pagelength</span><span class="p">))</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">webif_pagelength</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">        </span><span class="nx">resize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w"></span>
 <span class="w">        </span><span class="nx">webif_pagelength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mf">1</span><span class="p">;</span><span class="w"></span>
-<span class="w">                                </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Activating automatic table resize&#39;</span><span class="p">);</span><span class="w"></span>
 <span class="w">      </span><span class="p">}</span><span class="w"></span>
 <span class="w">      </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">        </span><span class="nx">resize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span><span class="w"></span>
 <span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Using page length from http module/plugin &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">webif_pagelength</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;, pageResize: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">resize</span><span class="p">);</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
 <span class="w">    </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">      </span><span class="nx">webif_pagelength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">100</span><span class="p">;</span><span class="w"></span>
@@ -4177,15 +4184,6 @@ weitere relevante Anpassungen zu finden.</p>
 </pre></div>
 </div>
 </li>
-</ol>
-<blockquote>
-<div><div class="highlight-html+jinja notranslate"><div class="highlight"><pre><span></span><span class="cm">&lt;!-- This code has to be implemented in the index.html file either in the headtable or bodytab --&gt;</span>
-<span class="cp">{%</span> <span class="k">block</span> <span class="nv">headtable</span> <span class="cp">%}</span>
-<span class="p">&lt;</span><span class="nt">span</span> <span class="na">id</span><span class="o">=</span><span class="s">&#39;webif_pagelength&#39;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;display:none&quot;</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="nv">webif_pagelength</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
-</pre></div>
-</div>
-</div></blockquote>
-<ol class="arabic simple" start="6">
 <li><p>Das Logo oben links auf der Seite wird automatisch durch das Logo des konfigurierten Plugin-Typs ersetzt. Wenn das Webinterface ein eigenes Logo mitbringen soll, muss das entsprechende Bild im Verzeichnis <code class="docutils literal notranslate"><span class="pre">webif/static/img</span></code> mit dem Namen <code class="docutils literal notranslate"><span class="pre">plugin_logo</span></code> abgelegt sein. Die zulässigen Dateiformate sind <strong>.png</strong>, <strong>.jpg</strong> oder <strong>.svg</strong>. Dabei sollte die Größe der Bilddatei die Größe des angezeigten Logos (derzeit ca. 180x150 Pixel) nicht überschreiten, um unnötige Datenübertragungen zu vermeiden.</p></li>
 </ol>
 </div></blockquote>

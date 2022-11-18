@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Module http (README) &mdash; Dokumentation v1.9.3.1 develop v1.9.3.1 develop (Stand 18. November 2022, commit 11d6d37) Dokumentation</title>
+  <title>Module http (README) &mdash; Dokumentation v1.9.3.1 develop v1.9.3.1 develop (Stand 18. November 2022, commit bab4800) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4021,7 +4021,7 @@
 <span class="n">sudo</span> <span class="n">pip3</span> <span class="n">install</span> <span class="n">cherrypy</span>
 </pre></div>
 </div>
-<p>And please pay attention that the lib(s) are installed for Python3 and not an older Python 2.7 that is probably installed on your system. Be carefull to use <code class="docutils literal notranslate"><span class="pre">pip3</span></code> and nor <code class="docutils literal notranslate"><span class="pre">pip</span></code>.</p>
+<p>And please pay attention that the lib(s) are installed for Python3 and not an older Python 2.7 that is probably installed on your system. Be careful to use <code class="docutils literal notranslate"><span class="pre">pip3</span></code> and not <code class="docutils literal notranslate"><span class="pre">pip</span></code>.</p>
 <blockquote>
 <div><p>Note: This module needs the module handling in SmartHomeNG to be activated. Make sure, that <code class="docutils literal notranslate"><span class="pre">use_modules</span></code>in <code class="docutils literal notranslate"><span class="pre">etc/smarthome.yaml</span></code> is <strong>not</strong> set to False!</p>
 </div></blockquote>
@@ -4040,6 +4040,7 @@
 <span class="c1">#    starturl: backend</span><span class="w"></span>
 <span class="c1">#    threads: 8</span><span class="w"></span>
 <span class="c1">#    showtraceback: True</span><span class="w"></span>
+<span class="c1">#    webif_pagelength: 0</span><span class="w"></span>
 </pre></div>
 </div>
 <section id="user-optional">
@@ -4098,6 +4099,12 @@
 <h4>showtraceback<a class="headerlink" href="#showtraceback" title="Permalink to this heading"></a></h4>
 <p>If set to **True, error-pages (except for error 404) will show the Python traceback for that error.</p>
 </section>
+<section id="webif-pagelength">
+<h4>webif_pagelength<a class="headerlink" href="#webif-pagelength" title="Permalink to this heading"></a></h4>
+<p>Amount of items being listed in a web interface table per page by default.
+0 adjusts the table height automatically based on the height of the browser windows.
+-1 shows all table entries on one page.</p>
+</section>
 </section>
 </section>
 <section id="api-of-module-http">
@@ -4111,7 +4118,7 @@
     <span class="bp">self</span><span class="o">.</span><span class="n">mod_http</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_module</span><span class="p">(</span><span class="s1">&#39;http&#39;</span><span class="p">)</span>
 <span class="k">except</span><span class="p">:</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">mod_http</span> <span class="o">=</span> <span class="kc">None</span>
-    
+
 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod_http</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># Do what is necessary if you can&#39;t start a web interface</span>
     <span class="c1"># for your plugin. For example:</span>
@@ -4145,9 +4152,9 @@
 <div><p>Note: The <code class="docutils literal notranslate"><span class="pre">tools.auth_basic</span></code>entries in this example are for implementing a basic logon security. If you don`t want/need login security, delete those enties.</p>
 </div></blockquote>
 <p>For registering a web application/interface you have to call the <code class="docutils literal notranslate"><span class="pre">register_app</span></code> of module <code class="docutils literal notranslate"><span class="pre">http</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">register_app</span><span class="p">(</span><span class="n">app_object</span><span class="p">,</span> 
-             <span class="n">appname</span><span class="p">,</span> 
-             <span class="n">app_config</span><span class="p">,</span> 
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">register_app</span><span class="p">(</span><span class="n">app_object</span><span class="p">,</span>
+             <span class="n">appname</span><span class="p">,</span>
+             <span class="n">app_config</span><span class="p">,</span>
              <span class="n">pluginclass</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span>
              <span class="n">description</span><span class="p">)</span>
 </pre></div>
@@ -4157,9 +4164,9 @@
 <span class="n">pluginclass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
 <span class="n">instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_instance_name</span><span class="p">()</span>
 
-<span class="bp">self</span><span class="o">.</span><span class="n">mod_http</span><span class="o">.</span><span class="n">register_app</span><span class="p">(</span><span class="n">Backend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">updates_allowed</span><span class="p">,</span> <span class="n">language</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">developer_mode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pypi_timeout</span><span class="p">),</span> 
-                          <span class="n">appname</span><span class="p">,</span> 
-                          <span class="n">app_config</span><span class="p">,</span> 
+<span class="bp">self</span><span class="o">.</span><span class="n">mod_http</span><span class="o">.</span><span class="n">register_app</span><span class="p">(</span><span class="n">Backend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">updates_allowed</span><span class="p">,</span> <span class="n">language</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">developer_mode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pypi_timeout</span><span class="p">),</span>
+                          <span class="n">appname</span><span class="p">,</span>
+                          <span class="n">app_config</span><span class="p">,</span>
                           <span class="n">pluginclass</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span>
                           <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Administration interface for SmartHomeNG&#39;</span><span class="p">)</span>
 </pre></div>

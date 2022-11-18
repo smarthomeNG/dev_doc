@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Beispielplugin update &mdash; Dokumentation v1.9.3.1 develop v1.9.3.1 develop (Stand 18. November 2022, commit 11d6d37) Dokumentation</title>
+  <title>Beispielplugin update &mdash; Dokumentation v1.9.3.1 develop v1.9.3.1 develop (Stand 18. November 2022, commit bab4800) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4052,7 +4052,6 @@
     <span class="c1"># This parameter should be included if plugin provides a web interface. It lets users configure the standard number of entries per page</span>
     <span class="n">webif_pagelength</span><span class="p">:</span>
         <span class="nb">type</span><span class="p">:</span> <span class="nb">int</span>
-        <span class="n">default</span><span class="p">:</span> <span class="mi">100</span>
         <span class="n">valid_list</span><span class="p">:</span>
           <span class="o">-</span> <span class="o">-</span><span class="mi">1</span>
           <span class="o">-</span> <span class="mi">0</span>
@@ -4337,6 +4336,27 @@
 
 &lt;!-- set update_interval to a value &gt; 0 (in milliseconds) to enable periodic data updates --&gt;
 {% set update_interval = 0 %}
+&lt;!-- for data-heavy plugins it might be useful to set the update interval based on the amount of data
+{% set update_interval = (200 * (log_array | length)) %}
+ --&gt;
+&lt;!-- set dataSet if you need specific data to be updated automatically. Also see init.py in plugin webif!
+{% set dataSet = &#39;devices_info&#39; %}
+--&gt;
+&lt;!-- set update_params if you need to provide additional parameters for the auto-update function
+{% set update_params = item_id %}
+--&gt;
+&lt;!-- if you don&#39;t need any buttons in the header, disable them completely
+{% set buttons = false %}
+--&gt;
+&lt;!-- if you don&#39;t need any auto-refresh elements in the header, disable them
+{% set autorefresh_buttons = false %}
+--&gt;
+&lt;!-- if you don&#39;t need the reload_button in the header, disable it
+{% set reload_button = false %}
+--&gt;
+&lt;!-- if you don&#39;t need the close in the header, disable it
+{% set close_button = false %}
+--&gt;
 
 &lt;!--
     Additional styles go into this block. Examples are for datatables
@@ -4346,6 +4366,7 @@
   table th.value {
     width: 100px;
   }
+  /*
   These are used for highligt effect in web interface when a value changes. If you don&#39;t want to overwrite the
   default color, you can remove the entries here as the classes are already defined in smarthomeng.css
   */
@@ -4394,16 +4415,15 @@
             */
             $(window).trigger(&#39;datatables_defaults&#39;);
       try {
-        /* get pagelength from plugin. Also see hidden span element in headtable block! */
-        webif_pagelength = parseInt(document.getElementById(&#39;webif_pagelength&#39;).innerHTML);
+        {% if webif_pagelength is defined %}webif_pagelength = {{ webif_pagelength|int }};{% endif %}
         if (isNaN(parseFloat(webif_pagelength)) || webif_pagelength == 0) {
           resize = true;
           webif_pagelength = -1;
-                console.log(&#39;Activating automatic table resize&#39;);
         }
         else {
           resize = false;
         }
+        console.log(&quot;Using page length from http module/plugin &quot; + webif_pagelength + &quot;, pageResize: &quot; + resize);
       }
       catch (e) {
         webif_pagelength = 100;
@@ -4417,8 +4437,8 @@
         */
         table = $(&#39;#maintable&#39;).DataTable( {
           /* If you want to define your own columnDefs options (e.g. for hiding a column by default), use the concat function shown here.
-          columnDefs: [{ &quot;targets&quot;: [8], &quot;className&quot;: &quot;none&quot;}].concat($.fn.dataTable.defaults.columnDefs),
           */
+          columnDefs: [{ &quot;targets&quot;: [2], &quot;className&quot;: &quot;value&quot;}].concat($.fn.dataTable.defaults.columnDefs),
           pageLength: webif_pagelength,
           pageResize: resize});
       }
@@ -4442,11 +4462,7 @@ In the example the update is deactivated on the 12th of December 2022 (what migh
 
 
 {% block headtable %}
-&lt;!--
-    This span needs to be put somewhere on the page to read the table pagelength from the plugin / users&#39; plugin.yaml
---&gt;
-&lt;span id=&#39;webif_pagelength&#39; style=&quot;display:none&quot;&gt;{{ webif_pagelength }}&lt;/span&gt;
-
+&lt;!-- add a style=&quot;min-width:..px;&quot; if you want to define a minimum width for responsive behaviour --&gt;
 &lt;table class=&quot;table table-striped table-hover&quot;&gt;
     &lt;tbody&gt;
         &lt;tr&gt;
@@ -4515,6 +4531,8 @@ In the example the update is deactivated on the 12th of December 2022 (what migh
     &lt;table id=&quot;maintable&quot;&gt;
         &lt;thead&gt;
             &lt;tr&gt;
+        &lt;!-- You HAVE to add an empty th here for correct implementation of the responsive plugin --&gt;
+        &lt;th&gt;&lt;/th&gt;
               &lt;th&gt;{{ _(&#39;Item&#39;) }}&lt;/th&gt;
               &lt;th class=&quot;value&quot;&gt;{{ _(&#39;Wert&#39;) }}&lt;/th&gt;
             &lt;/tr&gt;
@@ -4523,6 +4541,8 @@ In the example the update is deactivated on the 12th of December 2022 (what migh
             {% for item in items %}
               {% if p.has_iattr(item.conf, &#39;&lt;plugin_attribute&gt;&#39;) %}
                 &lt;tr&gt;
+          &lt;!-- You HAVE to add an empty td here for correct implementation of the responsive plugin --&gt;
+          &lt;td&gt;&lt;/td&gt;
                   &lt;td class=&quot;py-1&quot; id=&quot;{{ item._path }}&quot;&gt;{{ item._path }}&lt;/td&gt;
                   &lt;td class=&quot;py-1&quot; id=&quot;{{ item._path }}_value&quot;&gt;{{ item() }}&lt;/td&gt;
                 &lt;/tr&gt;
