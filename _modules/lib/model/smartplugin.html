@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.9.3.1 develop v1.9.3.1 develop (Stand 27. November 2022, commit 602bb28) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.9.3.2 v1.9.3.2 develop (Stand 28. November 2022, commit eb7bd2e) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -31,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> Dokumentation v1.9.3.1 develop
+            <a href="../../../index.html" class="icon icon-home"> Dokumentation v1.9.3.2
             <img src="../../../_static/logo_long_inverse3.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
@@ -4011,7 +4011,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">Dokumentation v1.9.3.1 develop</a>
+          <a href="../../../index.html">Dokumentation v1.9.3.2</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -4905,7 +4905,7 @@
 
 <div class="viewcode-block" id="SmartPlugin.translate"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.translate">[Doku]</a>    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">txt</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns translated text</span>
+<span class="sd">        Returns translated text for class SmartPlugin</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">txt</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">block</span><span class="p">:</span>
@@ -4917,7 +4917,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_add_translation</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">translation_fn</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_translation</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">lib_translate</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="nb">vars</span><span class="p">,</span> <span class="n">additional_translations</span><span class="o">=</span><span class="s1">&#39;plugin/&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">())</span>
+            <span class="k">return</span> <span class="n">lib_translate</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="nb">vars</span><span class="p">,</span> <span class="n">plugin_translations</span><span class="o">=</span><span class="s1">&#39;plugin/&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">lib_translate</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="nb">vars</span><span class="p">)</span></div>
 
@@ -4999,7 +4999,8 @@
         <span class="n">tplenv</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="n">FileSystemLoader</span><span class="p">([</span><span class="n">mytemplates</span><span class="p">,</span><span class="n">globaltemplates</span><span class="p">]))</span>
 
         <span class="n">tplenv</span><span class="o">.</span><span class="n">globals</span><span class="p">[</span><span class="s1">&#39;isfile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_staticfile</span>
-        <span class="n">tplenv</span><span class="o">.</span><span class="n">globals</span><span class="p">[</span><span class="s1">&#39;_&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">translate</span>
+        <span class="c1">#tplenv.globals[&#39;_&#39;] = self.plugin.translate</span>
+        <span class="n">tplenv</span><span class="o">.</span><span class="n">globals</span><span class="p">[</span><span class="s1">&#39;_&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate</span>        <span class="c1"># use translate method of webinterface class</span>
         <span class="n">tplenv</span><span class="o">.</span><span class="n">globals</span><span class="p">[</span><span class="s1">&#39;len&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span>
         <span class="k">return</span> <span class="n">tplenv</span>
 
@@ -5028,13 +5029,30 @@
         <span class="k">return</span> <span class="n">result</span>
 
 
-    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">txt</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">txt</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns translated text for class SmartPluginWebIf</span>
+
+<span class="sd">        This method extends the jinja2 template engine _( ... ) -&gt; translate( ... )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#return self.plugin.translate(txt)</span>
+
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns translated text</span>
-
-<span class="sd">        This method extends the jinja2 template engine</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+        <span class="n">txt</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">_add_translation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># test initially, if plugin has additional translations</span>
+            <span class="n">translation_fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">_plugin_dir</span><span class="p">,</span> <span class="s1">&#39;locale.yaml&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">_add_translation</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">translation_fn</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">_add_translation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">lib_translate</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="nb">vars</span><span class="p">,</span> <span class="n">plugin_translations</span><span class="o">=</span><span class="s1">&#39;plugin/&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">(),</span> <span class="n">module_translations</span><span class="o">=</span><span class="s1">&#39;module/http&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">lib_translate</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="nb">vars</span><span class="p">,</span> <span class="n">module_translations</span><span class="o">=</span><span class="s1">&#39;module/http&#39;</span><span class="p">)</span>
+
+
 </pre></div>
 
            </div>

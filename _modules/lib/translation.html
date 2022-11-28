@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.translation &mdash; Dokumentation v1.9.3.1 develop v1.9.3.1 develop (Stand 27. November 2022, commit 602bb28) Dokumentation</title>
+  <title>lib.translation &mdash; Dokumentation v1.9.3.2 v1.9.3.2 develop (Stand 28. November 2022, commit eb7bd2e) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -31,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> Dokumentation v1.9.3.1 develop
+            <a href="../../index.html" class="icon icon-home"> Dokumentation v1.9.3.2
             <img src="../../_static/logo_long_inverse3.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
@@ -4011,7 +4011,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">Dokumentation v1.9.3.1 develop</a>
+          <a href="../../index.html">Dokumentation v1.9.3.2</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -4150,13 +4150,19 @@
     <span class="n">relative_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">from_dir</span><span class="p">,</span> <span class="s1">&#39;locale&#39;</span> <span class="o">+</span> <span class="n">YAML_FILE</span><span class="p">)</span>
     <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_base_dir</span><span class="p">,</span> <span class="n">relative_filename</span><span class="p">)</span>
     <span class="n">trans_dict</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ignore_notfound</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">trans_dict</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;load_translations: translation_type=</span><span class="si">{</span><span class="n">translation_type</span><span class="si">}</span><span class="s2">, translation_id=</span><span class="si">{</span><span class="n">translation_id</span><span class="si">}</span><span class="s2"> &quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">translation_type</span> <span class="o">==</span> <span class="s1">&#39;global&#39;</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">translation_section</span> <span class="ow">in</span> <span class="n">trans_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">translation_section</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;_translations&#39;</span><span class="p">):</span>
                     <span class="n">trans_id</span> <span class="o">=</span> <span class="n">translation_section</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)</span>
                     <span class="n">trans</span> <span class="o">=</span> <span class="n">trans_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">translation_section</span><span class="p">,</span> <span class="p">{})</span>
                     <span class="n">_translations</span><span class="p">[</span><span class="n">trans_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">trans</span>
+                    <span class="c1">#if translation_id == &#39;global&#39;:</span>
+                    <span class="c1">#    _translations[trans_id] = trans</span>
+                    <span class="c1">#else:</span>
+                    <span class="c1">#    _translations[trans_id].update(trans)</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading </span><span class="si">{}</span><span class="s2"> translations (id=</span><span class="si">{}</span><span class="s2">) from </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">translation_type</span><span class="p">,</span> <span class="n">trans_id</span><span class="p">,</span> <span class="n">relative_filename</span><span class="p">))</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot; - translations = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">trans</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
@@ -4178,7 +4184,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reload translations for existing translation_ids - to test new translations without having to restart SmartHomeNG</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;reload_translations&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="s2">&quot;Reloading translations&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">_translation_files</span><span class="p">:</span>
         <span class="n">translation_type</span> <span class="o">=</span> <span class="n">_translation_files</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
         <span class="n">filename</span> <span class="o">=</span> <span class="n">_translation_files</span><span class="p">[</span><span class="nb">id</span><span class="p">][</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span>
@@ -4195,26 +4201,33 @@
                 <span class="n">trans</span> <span class="o">=</span> <span class="n">trans_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">translation_type</span><span class="o">+</span><span class="s1">&#39;_translations&#39;</span><span class="p">,</span> <span class="p">{})</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reloading </span><span class="si">{}</span><span class="s2"> translations (id=</span><span class="si">{}</span><span class="s2">) from </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">translation_type</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
                 <span class="n">_translations</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">trans</span>
-    <span class="k">return</span></div>
+    <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<span class="k">def</span> <span class="nf">_get_translation</span><span class="p">(</span><span class="n">translation_lang</span><span class="p">,</span> <span class="n">txt</span><span class="p">,</span> <span class="n">additional_translations</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_get_translation</span><span class="p">(</span><span class="n">translation_lang</span><span class="p">,</span> <span class="n">txt</span><span class="p">,</span> <span class="n">plugin_translations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">module_translations</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns translated text from for a specified language from additional_translations or global_translations</span>
+<span class="sd">    Returns translated text from for a specified language from plugin_translations or global_translations</span>
 
 <span class="sd">    :param translation_lang: Language to be used for translation</span>
 <span class="sd">    :param txt: Text to be translated</span>
-<span class="sd">    :param additional_translations: Additional translation definitions (e.g. for plugins)</span>
+<span class="sd">    :param plugin_translations: Additional translation definitions</span>
 <span class="sd">    :return: translated text or &#39;&#39; if translation is not found</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">translations</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">if</span> <span class="n">additional_translations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1">#translations = additional_translations.get(txt, {})</span>
-        <span class="k">if</span> <span class="n">additional_translations</span> <span class="ow">in</span> <span class="n">_translations</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">translations</span> <span class="o">=</span> <span class="n">_translations</span><span class="p">[</span><span class="n">additional_translations</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="p">{})</span>
+    <span class="k">if</span> <span class="n">plugin_translations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1">#translations = plugin_translations.get(txt, {})</span>
+        <span class="k">if</span> <span class="n">plugin_translations</span> <span class="ow">in</span> <span class="n">_translations</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">translations</span> <span class="o">=</span> <span class="n">_translations</span><span class="p">[</span><span class="n">plugin_translations</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="p">{})</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Trying to use undefined aditional_translations &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">additional_translations</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Trying to use undefined aditional_translations &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plugin_translations</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">translations</span> <span class="o">==</span> <span class="p">{}</span> <span class="ow">and</span> <span class="n">module_translations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1">#translations = module_translations.get(txt, {})</span>
+        <span class="k">if</span> <span class="n">module_translations</span> <span class="ow">in</span> <span class="n">_translations</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">translations</span> <span class="o">=</span> <span class="n">_translations</span><span class="p">[</span><span class="n">module_translations</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Trying to use undefined aditional_translations &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">plugin_translations</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">translations</span> <span class="o">==</span> <span class="p">{}:</span>
         <span class="k">if</span> <span class="s1">&#39;global&#39;</span> <span class="ow">in</span> <span class="n">_translations</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -4227,25 +4240,26 @@
     <span class="k">return</span> <span class="n">translations</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">translation_lang</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="translate"><a class="viewcode-back" href="../../lib/translation.html#lib.translation.translate">[Doku]</a><span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">additional_translations</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="translate"><a class="viewcode-back" href="../../lib/translation.html#lib.translation.translate">[Doku]</a><span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plugin_translations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">module_translations</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns translated text</span>
 
 <span class="sd">    :param txt: TEXT TO TRANSLATE</span>
 <span class="sd">    :param vars: dict with variables to replace in the translated text</span>
-<span class="sd">    :param additional_translations: ID for additional translations (if None, only global translations are used)</span>
+<span class="sd">    :param plugin_translations: ID for additional translations (if None, only global translations are used)</span>
+<span class="sd">    :param module_translations: ID for additional translations (if None, only global and plugin translations are used)</span>
 
 <span class="sd">    :return: Translated text</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">_fallback_language_order</span>
     <span class="n">txt</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
 
-    <span class="n">translated_txt</span> <span class="o">=</span> <span class="n">_get_translation</span><span class="p">(</span><span class="n">_default_language</span><span class="p">,</span> <span class="n">txt</span><span class="p">,</span> <span class="n">additional_translations</span><span class="o">=</span><span class="n">additional_translations</span><span class="p">)</span>
+    <span class="n">translated_txt</span> <span class="o">=</span> <span class="n">_get_translation</span><span class="p">(</span><span class="n">_default_language</span><span class="p">,</span> <span class="n">txt</span><span class="p">,</span> <span class="n">plugin_translations</span><span class="o">=</span><span class="n">plugin_translations</span><span class="p">,</span> <span class="n">module_translations</span><span class="o">=</span><span class="n">module_translations</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">translated_txt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;translation of &#39;</span><span class="si">{}</span><span class="s2">&#39; to language &#39;</span><span class="si">{}</span><span class="s2">&#39; not found -&gt; using fallback languages&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="n">_default_language</span><span class="p">))</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_fallback_language_order</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">fallback_language</span> <span class="ow">in</span> <span class="n">_fallback_language_order</span><span class="p">:</span>
-                <span class="n">translated_txt</span> <span class="o">=</span> <span class="n">_get_translation</span><span class="p">(</span><span class="n">fallback_language</span><span class="p">,</span> <span class="n">txt</span><span class="p">,</span> <span class="n">additional_translations</span><span class="o">=</span><span class="n">additional_translations</span><span class="p">)</span>
+                <span class="n">translated_txt</span> <span class="o">=</span> <span class="n">_get_translation</span><span class="p">(</span><span class="n">fallback_language</span><span class="p">,</span> <span class="n">txt</span><span class="p">,</span> <span class="n">plugin_translations</span><span class="o">=</span><span class="n">plugin_translations</span><span class="p">,</span> <span class="n">module_translations</span><span class="o">=</span><span class="n">module_translations</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">translated_txt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot; - No translation found for fallback_language &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fallback_language</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -4259,8 +4273,8 @@
         <span class="n">translated_txt</span> <span class="o">=</span> <span class="n">txt</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Translation &#39;</span><span class="si">{}</span><span class="s2">&#39; to &#39;</span><span class="si">{}</span><span class="s2">&#39; -&gt; &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="n">_default_language</span><span class="p">,</span> <span class="n">translated_txt</span><span class="p">))</span>
 
+    <span class="c1"># if variable parameters are given, replace them in the translated text</span>
     <span class="k">if</span> <span class="nb">vars</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># replace parameters in the translated text</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">vars</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;translate: Trying to use parameters </span><span class="si">{}</span><span class="s2"> for string &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">vars</span><span class="p">,</span> <span class="n">translated_txt</span><span class="p">))</span>
             <span class="k">try</span><span class="p">:</span>
