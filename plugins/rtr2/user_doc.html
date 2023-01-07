@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>rtr2 &mdash; Dokumentation v1.9.3.2 v1.9.3.2 develop (Stand 06. January 2023, commit 5c08533) Dokumentation</title>
+  <title>rtr2 &mdash; Dokumentation v1.9.3.2 v1.9.3.2 develop (Stand 07. January 2023, commit 5c08533) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -478,6 +478,7 @@
 <li class="toctree-l5"><a class="reference internal" href="#item-attribute">Item Attribute</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="#abweichende-reglerparameter">Abweichende Reglerparameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#visualisierung">Visualisierung</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#rtr-widget">RTR Widget</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#plot-widget">Plot Widget</a></li>
@@ -2092,6 +2093,7 @@
 <li class="toctree-l5"><a class="reference internal" href="#item-attribute">Item Attribute</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="#abweichende-reglerparameter">Abweichende Reglerparameter</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#visualisierung">Visualisierung</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#rtr-widget">RTR Widget</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#plot-widget">Plot Widget</a></li>
@@ -4263,6 +4265,39 @@ werden.</p>
 <div class="line"><br /></div>
 </div>
 </section>
+</section>
+<section id="abweichende-reglerparameter">
+<h2>Abweichende Reglerparameter<a class="headerlink" href="#abweichende-reglerparameter" title="Permalink to this heading"></a></h2>
+<p>Möchte man dem Regler von den globalen Einstellungen abweichende Werte übergeben, wird dies über <code class="docutils literal notranslate"><span class="pre">rtr_settings</span></code> und
+<code class="docutils literal notranslate"><span class="pre">rtr2_controller_settings</span></code> erledigt. Die Paramter hierfür sind wie folgt anzugeben:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">test_rtr</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">rtr2_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dusche</span>
+<span class="w">    </span><span class="nt">rtr2_settings</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">22.0</span><span class="w"> </span><span class="c1"># Temperatur Komfort Modus</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3.0</span><span class="w">  </span><span class="c1"># Temperaturreduktion Nacht Modus</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span><span class="w">  </span><span class="c1"># Temperaturreduktion Standby Modus</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span><span class="w"> </span><span class="c1"># fixed_reduction</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w">    </span><span class="c1"># HVAC Modus</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7.0</span><span class="w">  </span><span class="c1"># Temperatur Frost Modus</span>
+<span class="w">    </span><span class="nt">rtr2_controller_settings</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.0</span><span class="w"> </span><span class="c1"># Kp</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">120</span><span class="w"> </span><span class="c1"># Ki</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3.0</span><span class="w"> </span><span class="c1"># Kd (wird nicht verwendet, wird nur für den noch nicht implementierten PID Regler benötigt)</span>
+</pre></div>
+</div>
+<p>Zu Beachten ist, dass man die letzten Parameter immer weglassen kann, aber nicht die davor. Die weggelassenen Parameter
+werden dann mit den definierten Standardwerten belegt. Möchte man z.B nur eine neue Temperaturreduktion für den
+Nacht Modus angeben, muss man also auch die Temperatur für den Komfort Modus angeben. Das würde wie folgt aussehen.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">test_rtr</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">rtr2_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dusche</span>
+<span class="w">    </span><span class="nt">rtr2_settings</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">22.0</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2.0</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 </section>
 <section id="visualisierung">
 <h2>Visualisierung<a class="headerlink" href="#visualisierung" title="Permalink to this heading"></a></h2>
