@@ -4075,8 +4075,7 @@
 <h2>Anforderungen<a class="headerlink" href="#anforderungen" title="Permalink to this heading"></a></h2>
 <blockquote>
 <div><ul class="simple">
-<li><p>Minimum SmartHomeNG Version: <strong>1.7.2</strong></p></li>
-<li><p>Minimum Python Version: <strong>3.6</strong></p></li>
+<li><p>Minimum SmartHomeNG Version: <strong>1.9.3</strong></p></li>
 </ul>
 </div></blockquote>
 </section>
@@ -4132,6 +4131,20 @@
 <section id="item-attribute">
 <h1>Item Attribute<a class="headerlink" href="#item-attribute" title="Permalink to this heading"></a></h1>
 <p>Das Plugin unterstützt folgende Item Attribute, die in den Dateien im Verzeichnis  <code class="docutils literal notranslate"><span class="pre">../items</span></code> verwendet werden:</p>
+<section id="tasmota-admin">
+<h2>tasmota_admin<a class="headerlink" href="#tasmota-admin" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p>Datentyp: <strong>str</strong></p></li>
+<li><p>Standardwert: <strong>delete_retained_messages</strong></p></li>
+<li><p>Mögliche Werte:</p>
+<ul>
+<li><p><strong>delete_retained_messages</strong></p></li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+</section>
 <section id="tasmota-attr">
 <h2>tasmota_attr<a class="headerlink" href="#tasmota-attr" title="Permalink to this heading"></a></h2>
 <p>Zu lesendes/schreibendes Attribut des Tasmota Devices. Achtung: Nicht jedes Attribut ist auf allen Device-Typen vorhanden.</p>
@@ -4139,6 +4152,33 @@
 <div><ul class="simple">
 <li><p>Datentyp: <strong>str</strong></p></li>
 <li><p>Standardwert: <strong>relay</strong></p></li>
+<li><p>Mögliche Werte:</p>
+<ul>
+<li><p><strong>relay</strong>   -   Schalten des Relais -&gt; bool, r/w</p></li>
+<li><p><strong>online</strong>   -   Online Status des Tasmota Devices -&gt; bool, r/o</p></li>
+<li><p><strong>voltage</strong>   -   Spannung in Volt bei Tasmota Devices mit ENERGY Sensor -&gt; num, r/o</p></li>
+<li><p><strong>current</strong>   -   Strom in Ampere bei Tasmota Devices mit ENERGY Sensor -&gt; num, r/o</p></li>
+<li><p><strong>power</strong>   -   Leistung in Watt bei Tasmota Devices mit ENERGY Sensor -&gt; num, r/o</p></li>
+<li><p><strong>power_total</strong>   -   Verbrauch (gesamt) in kWh bei Tasmota Devices mit ENERGY Sensor -&gt; num, r/o</p></li>
+<li><p><strong>power_yesterday</strong>   -   Verbrauch (gestern) in kWh bei Tasmota Devices mit ENERGY Sensor -&gt; num, r/o</p></li>
+<li><p><strong>power_today</strong>   -   Verbrauch (heute) in kWh bei Tasmota Devices mit ENERGY Sensor -&gt; num, r/o</p></li>
+<li><p><strong>temp</strong>   -   Temperatur in °C bei Tasmota Devices mit TEMP Sensor (DS18B20, AM2301) -&gt; num, r/o</p></li>
+<li><p><strong>hum</strong>   -   Luftfeuchtigkeit in %rH bei Tasmota Devices mit HUM Sensor (AM2301) -&gt; num, r/o</p></li>
+<li><p><strong>dewpoint</strong>   -   Taupunkt in °C bei Tasmota Devices mit HUM und TEMP Sensor (AM2301) -&gt; num, r/o</p></li>
+<li><p><strong>hsb</strong>   -   Hue, Saturartion, Brightness (HSB) bei RGBW Tasmota Devices (H801) -&gt; list, r/w</p></li>
+<li><p><strong>white</strong>   -   Color Temperature in Kelvin bei RGBW Tasmota Devices (H801) -&gt; num, r/w</p></li>
+<li><p><strong>ct</strong>   -   Color Temperature in Kelvin bei RGBW Tasmota Devices (H801) -&gt; num, r/w</p></li>
+<li><p><strong>dimmer</strong>   -   Dimmwert in % Tasmota Devices -&gt; num, r/w</p></li>
+<li><p><strong>rf_recv</strong>   -   Empfangene RF Daten bei Tasmota Device mit RF Sendemöglichkeit (SONOFF RF Bridge) -&gt; dict, r/o</p></li>
+<li><p><strong>rf_send</strong>   -   Zu sendende RF Daten bei Tasmota Device mit RF Sendemöglichkeit (SONOFF RF Bridge) -&gt; dict {‚RfSync‘: 12220, ‚RfLow‘: 440, ‚RfHigh‘: 1210, ‚RfCode‘:‘#F06104‘}, r/w</p></li>
+<li><p><strong>rf_key_send</strong>   -   Zu sendender RF-Key Tasmota Device mit RF Sendemöglichkeit (SONOFF RF Bridge) -&gt; num [1-16], r/w</p></li>
+<li><p><strong>rf_key_recv</strong>   -   Zu empfangender RF-Key Tasmota Device mit RF Sendemöglichkeit (SONOFF RF Bridge) -&gt; num [1-16], r/w</p></li>
+<li><p><strong>rf_key</strong>   -   RF Key</p></li>
+<li><p><strong>zb_permit_join</strong>   -   Schaltet das Pairing an der ZigBee Bridge ein/aus -&gt; bool, r/w</p></li>
+<li><p><strong>zb_forget</strong>   -   Löscht das Zigbee-Gerät aus dem Item Wert aus der Liste bekannter Geräte in der Zigbee-Bridge -&gt; str, r/w</p></li>
+<li><p><strong>zb_ping</strong>   -   Sendet ein Ping zum Zigbee-Gerät aus dem Item Wert -&gt; str, r/w</p></li>
+</ul>
+</li>
 </ul>
 </div></blockquote>
 </section>
@@ -4147,16 +4187,20 @@
 <p>Nummer des zu schaltenden Relais im Tasmota Device</p>
 <blockquote>
 <div><ul class="simple">
+<li><p>Datentyp: <strong>int</strong></p></li>
+<li><p>Standardwert: <strong>1</strong></p></li>
+<li><p>Minimalwert: <strong>1</strong></p></li>
+<li><p>Maximalwert: <strong>4</strong></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="tasmota-rf-details">
+<h2>tasmota_rf_details<a class="headerlink" href="#tasmota-rf-details" title="Permalink to this heading"></a></h2>
+<p>Nummer des auszulösenden RF Keys im Tasmota Device=Aktion bei Empfang</p>
+<blockquote>
+<div><ul class="simple">
 <li><p>Datentyp: <strong>str</strong></p></li>
 <li><p>Standardwert: <strong>1</strong></p></li>
-<li><p>Mögliche Werte:</p>
-<ul>
-<li><p><strong>1</strong></p></li>
-<li><p><strong>2</strong></p></li>
-<li><p><strong>3</strong></p></li>
-<li><p><strong>4</strong></p></li>
-</ul>
-</li>
 </ul>
 </div></blockquote>
 </section>
@@ -4171,10 +4215,20 @@
 </section>
 <section id="tasmota-zb-attr">
 <h2>tasmota_zb_attr<a class="headerlink" href="#tasmota-zb-attr" title="Permalink to this heading"></a></h2>
-<p>Schlüssel der Json-Dict, der vom Zigbee-Device bereitgestellt wird; Key aus dem sub-dict ‚data‘ des tasmota_zb_device</p>
+<p>Schlüssel der Json-Dict, der vom Zigbee-Device bereitgestellt wird; Key aus dem dict des tasmota_zb_device</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>str</strong></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="tasmota-zb-cluster">
+<h2>tasmota_zb_cluster<a class="headerlink" href="#tasmota-zb-cluster" title="Permalink to this heading"></a></h2>
+<p>Ergänzung des Sendebefehls um entsprechendes Zigbee-Cluster</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Datentyp: <strong>bool</strong></p></li>
+<li><p>Standardwert: <strong>False</strong></p></li>
 </ul>
 </div></blockquote>
 </section>
@@ -4184,6 +4238,15 @@
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>str</strong></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="tasmota-zb-group">
+<h2>tasmota_zb_group<a class="headerlink" href="#tasmota-zb-group" title="Permalink to this heading"></a></h2>
+<p>Zigbee Control Group: Werte werden an diese Gruppe gesendet. Gruppennachrichten werden nicht empfangen. <a class="reference external" href="https://tasmota.github.io/docs/Device-Groups/#zigbee">https://tasmota.github.io/docs/Device-Groups/#zigbee</a></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Datentyp: <strong>num</strong></p></li>
 </ul>
 </div></blockquote>
 </section>
