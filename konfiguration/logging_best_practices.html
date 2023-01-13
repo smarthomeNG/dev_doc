@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Logging - Best Practices &mdash; Dokumentation v1.9.3.2 v1.9.3.2 develop (Stand 12. January 2023, commit 987e9ad) Dokumentation</title>
+  <title>Logging - Best Practices &mdash; Dokumentation v1.9.3.2 v1.9.3.2 develop (Stand 13. January 2023, commit aeb19f7) Dokumentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -4258,8 +4258,9 @@ Logmessage ausgegeben:</p>
 </pre></div>
 </div>
 <p>Folgende Einstellung (wie oben im Beispiel bereits angegeben) schreibt
-statt des Thread Names (der nicht besonders hilfeich ist), den Python
-Modul Namen in das log (also z.B.: lib.plugin, plugins.knx, …):</p>
+statt des Thread Names (der nicht besonders hilfreich ist), den Python
+Modulnamen in das Log (also z.B.: item, metadata, plugin - jeweils OHNE <cite>lib.</cite> -,
+plugins.knx, etc):</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">formatters</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">shng_simple</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">format</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;%(asctime)s</span><span class="nv"> </span><span class="s">%(levelname)-8s</span><span class="nv"> </span><span class="s">%(name)-19s</span><span class="nv"> </span><span class="s">%(message)s&#39;</span>
@@ -4277,7 +4278,13 @@ auch noch erweitern.</p>
 <section id="logging-filter">
 <h3>Logging Filter<a class="headerlink" href="#logging-filter" title="Permalink to this heading"></a></h3>
 <p>Filter können dazu genutzt werden, nur bestimmte Logeinträge anzuzeigen bzw.
-diese eben auch zu verstecken. Hierzu wird zuerst ein Filter angelegt:</p>
+diese eben auch zu verstecken. Hierzu wird zuerst ein Filter angelegt.
+Zu beachten ist, dass alle Einträge außer invert als Regular Expression angegeben
+werden müssen. Im einfachsten Fall sind die Einträge module und name 1:1 identisch
+mit den gewünschten Modulen oder Namen, wodurch keine besonderen Ausdrücke notwendig
+werden. Modulnamen wie item oder metadata müssen ohne voranstehendem <cite>lib.</cite> angegeben
+werden. Bei <cite>msg</cite> muss jedenfalls <cite>(.*)</cite> am Beginn und/oder Ende angegeben sein,
+wenn die abzufangende Nachricht nicht komplett 1:1 identisch ist. Hier ein Beispiel:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">filter</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">meinfilter</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">()</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lib.logutils.Filter</span>
@@ -4311,7 +4318,7 @@ Stateengine Plugin in die Datei stateengine.log geschrieben werden. Auf Grund
 des Filters werden sämtliche Einträge ignoriert, die:</p>
 <ul class="simple">
 <li><p>vom Modul StateEngine (s und e können sowohl groß, als auch klein geschrieben
-werden) stammen</p></li>
+werden) stammen. Andere mögliche Module wären z.B. item, metadata, etc. (ohne lib.)</p></li>
 <li><p>vom Logger mit dem Namen ‚plugins.stateengine.licht.test‘ stammen</p></li>
 <li><p>am Ende der Zeile „Item &lt;beliebiger Eintrag&gt; not found!“ beinhalten</p></li>
 </ul>

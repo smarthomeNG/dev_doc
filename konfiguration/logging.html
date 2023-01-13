@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Logging &mdash; Dokumentation v1.9.3.2 v1.9.3.2 develop (Stand 12. January 2023, commit 987e9ad) Dokumentation</title>
+  <title>Logging &mdash; Dokumentation v1.9.3.2 v1.9.3.2 develop (Stand 13. January 2023, commit aeb19f7) Dokumentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -4449,18 +4449,21 @@ angezeigt bzw. versteckt werden sollen. Der Eintrag (z.B. loggerfilter) kann bei
 mittels <strong>`filters: [&lt;filtername&gt;]`</strong> referenziert werden. Wichtig ist, den Filternamen in eckige
 Klammern zu setzen, auch wenn nur ein Filter zum Einsatz kommen soll.
 Jeder Filter kann durch bis zu drei Parameter definiert werden, wobei diese nach AND Logik
-evaluiert werden:
-- name: Loggername (z.B. lib.item)
-- module: Loggermodul, va. bei Plugins u.U. relevant (z.B. item)
-- timestamp: Uhrzeit/Datum (z.B. „23:00“)
-- msg: Der tatsächliche Logeintrag als RegEx, z.B. „Result = (.*) (for attribute ‚eval‘)“
-Durch die Angabe von invert: True werden NUR die passenden Messages geloggt und sonst nichts.
-Ein Beispiel ist unter <a class="reference internal" href="logging_best_practices.html"><span class="doc">Logging - Best Practices</span></a> zu finden.</p></td>
+evaluiert werden:</p>
+<ul class="simple">
+<li><p>name: Loggername (z.B. lib.item)</p></li>
+<li><p>module: Loggermodul, va. bei Plugins u.U. relevant (z.B. item, metadata, etc. OHNE <cite>lib.</cite>)</p></li>
+<li><p>timestamp: Uhrzeit/Datum (z.B. „23:00“ oder ein regulärer Ausdruck)</p></li>
+<li><p>msg: Der tatsächliche Logeintrag als RegEx, z.B. „Result = (.*) (for attribute ‚eval‘)“</p></li>
+</ul>
+<p>Durch die Angabe von invert: True werden NUR die passenden Messages geloggt und sonst nichts.
+Ein Beispiel ist unter <a class="reference internal" href="logging_best_practices.html"><span class="doc">Logging - Best Practices</span></a> zu finden.</p>
+</td>
 </tr>
 <tr class="row-odd"><td><p><strong>loggers:</strong></p></td>
 <td><p>Hier werden die einzelnen Logger definiert und was mit diesen Einträgen passiert,
 welche Handler und formatter verwendet werden. Das Level konfiguriert dabei die
-Logtiefe für die einzelne Komponente. Bei den loggern ist es nun möglich einzelne
+Logtiefe für die einzelne Komponente. Bei den Loggern ist es nun möglich einzelne
 Plugins oder Libs im Debug protokollieren zu lassen. Dazu sind in der Konfiguration
 bereits einige Beispiele.</p></td>
 </tr>
@@ -4479,9 +4482,6 @@ zusätzlich definierten Log Datei erscheinen, falls der Level des Log Eintrages 
 Eintrag im Handler <strong>file:</strong> erfolgen. Der Eintrag <cite>level: WARNING</cite> führt dazu, dass über den
 Handler <strong>file:</strong> nur Ausgaben für Fehler und Warnungen erfolgen. INFO und DEBUG Ausgaben erfolgen
 dann nur noch über den zusätzlichen Handler.</p>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
 </section>
 </section>
 <section id="logging-handler-und-filter">
@@ -4510,9 +4510,9 @@ können.</p>
 <p>in der <cite>__init__</cite> Methode instanziert werden. Das ist inzwischen nicht mehr notwendig. Die SmartPlugin
 Klasse erzeugt den Logger inzwischen selbst. Ein <strong>import logging</strong> ist nicht mehr notwendig und die
 Initialisierung des Loggers in der <cite>__init__</cite> Methode sollte auch weggelassen werden.</p>
-<p>Der Logger konn/muss in der <code class="docutils literal notranslate"><span class="pre">etc/logging,yaml</span></code> konfiguriert werden. Der Name des Loggers ist <code class="docutils literal notranslate"><span class="pre">plugins.&lt;Name</span> <span class="pre">des</span> <span class="pre">Plugins&gt;</span></code>.</p>
+<p>Der Logger kann/muss in der <code class="docutils literal notranslate"><span class="pre">etc/logging.yaml</span></code> konfiguriert werden. Der Name des Loggers ist <code class="docutils literal notranslate"><span class="pre">plugins.&lt;Name</span> <span class="pre">des</span> <span class="pre">Plugins&gt;</span></code>.</p>
 <p>Für die Entwickler von Logiken:
-Verwendet man zur Instanziierung einen eigenen Namen (nicht empfohlen), wie z.B.</p>
+Verwendet man zur Instanzierung einen eigenen Namen (nicht empfohlen), wie z.B.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;DWD&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -4525,7 +4525,7 @@ Verwendet man zur Instanziierung einen eigenen Namen (nicht empfohlen), wie z.B.
 </pre></div>
 </div>
 </div>
-<p>Standardmäßig haben Logiken bereits einen Logger, der in der <code class="docutils literal notranslate"><span class="pre">etc/logging,yaml</span></code> konfiguriert werden kann/muss.
+<p>Standardmäßig haben Logiken bereits einen Logger, der in der <code class="docutils literal notranslate"><span class="pre">etc/logging.yaml</span></code> konfiguriert werden kann/muss.
 Der Name des Loggers ist <code class="docutils literal notranslate"><span class="pre">logics.&lt;Name</span> <span class="pre">der</span> <span class="pre">Logik&gt;</span></code>, wobei der Name der Logik, der in der Konfiguration festgelegte
 Name ist und nicht der Name des Python Skriptes.</p>
 <section id="logging-der-veranderung-von-items">
