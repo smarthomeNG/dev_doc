@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Class SmartPlugin &mdash; Dokumentation v1.9.3.3 v1.9.3.3 develop (Stand 16. January 2023, commit 0a9b68d) Dokumentation</title>
+  <title>Class SmartPlugin &mdash; Dokumentation v1.9.3.3 v1.9.3.3 develop (Stand 16. January 2023, commit 815799e) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4118,13 +4118,17 @@ This allows a reverse lookup. The method get_itemlist_for_device_command(&lt;dev
 of items for the items that have defined the &lt;device_command&gt;. In most cases, the list will have only one
 entry, but if multiple items should receive data from the same device (or command), the list can have more than
 one entry.</p>
-<p>This method is called by the item instance itself.</p>
+<p>Calling this method for an item already stored in <cite>self._plg_item_dict</cite> can be used to change the „is_updating“
+key to True, if it was False before and the <cite>updating</cite> parameter is True. Otherwise, nothing happens.</p>
+<p>This method should be called from parse_item to register the item. If parse_item returns a reference to <cite>update_item</cite>,
+this method is called again by the Item instance itself to change the <cite>is_updating</cite> key.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameter</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>item</strong> (<a class="reference internal" href="../../lib/item_class_item.html#lib.item.item.Item" title="lib.item.item.Item"><em>Item</em></a>) – item</p></li>
 <li><p><strong>config_data_dict</strong> (<em>dict</em>) – Dictionary with the plugin-specific configuration information for the item</p></li>
 <li><p><strong>device_command</strong> (<em>str</em>) – String identifing the origin (source/kind) of received data (e.g. the address on a bus)</p></li>
+<li><p><strong>updating</strong> (<em>bool</em>) – Show if item updates from shng should be sent to the plugin</p></li>
 </ul>
 </dd>
 <dt class="field-even">Rückgabe</dt>
@@ -4162,8 +4166,7 @@ one entry.</p>
 #       by default. This could only be used if items were added manually
 #       as non-updating first. Registering them as updating usually only
 #       occurs via parse_item(), which in turn makes the item class
-#       add the item as updating.
-#       Is this function needed anyway?</p>
+#       add the item as updating.</p>
 </dd></dl>
 
 <dl class="py method">
