@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.9.3.3 v1.9.3.3 develop (Stand 17. January 2023, commit a0721ea) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.9.3.3 v1.9.3.3 develop (Stand 17. January 2023, commit 5eceedd) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -4155,7 +4155,7 @@
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">remove_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.add_item"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.add_item">[Doku]</a>    <span class="k">def</span> <span class="nf">add_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">config_data_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device_command</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">updating</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.add_item"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.add_item">[Doku]</a>    <span class="k">def</span> <span class="nf">add_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">config_data_dict</span><span class="o">=</span><span class="p">{},</span> <span class="n">device_command</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">updating</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For items that are used/handled by a plugin, this method stores the configuration information</span>
 <span class="sd">        that is individual for the plugin. The configuration information is/has to be stored in a dictionary</span>
@@ -4199,16 +4199,16 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trying to add an existing item: </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="k">if</span> <span class="n">config_data_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">conf_data_dict</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">conf_data_dict</span> <span class="o">=</span> <span class="n">config_data_dict</span><span class="o">.</span><span class="n">copy</span>
+        <span class="c1">#if config_data_dict is None:</span>
+        <span class="c1">#    conf_data_dict = {}</span>
+        <span class="c1">#else:</span>
+        <span class="c1">#    conf_data_dict = config_data_dict.copy</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()]</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span>
             <span class="s1">&#39;is_updating&#39;</span><span class="p">:</span> <span class="n">updating</span><span class="p">,</span>
             <span class="s1">&#39;device_command&#39;</span><span class="p">:</span> <span class="n">device_command</span><span class="p">,</span>
-            <span class="s1">&#39;config_data&#39;</span><span class="p">:</span> <span class="n">conf_data_dict</span>
+            <span class="s1">&#39;config_data&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">config_data_dict</span><span class="p">)</span>
         <span class="p">}</span>
 
         <span class="k">if</span> <span class="n">device_command</span><span class="p">:</span>
@@ -4277,22 +4277,24 @@
 <span class="sd">        Returns the plugin-specific configuration information for the given item</span>
 
 <span class="sd">        :param item: item to get config info for</span>
-<span class="sd">        :type item: class Item</span>
+<span class="sd">        :type item: class Item or str with path of an item</span>
 
 <span class="sd">        :return: dict with the configuration information for the given item</span>
 <span class="sd">        :rtype: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;config_data&#39;</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">item_path</span> <span class="o">=</span> <span class="n">item</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">item_path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;config_data&#39;</span><span class="p">)</span></div>
 
-<span class="c1"># TODO: maybe call this get_item_names to be more intuitive?</span>
-<span class="c1">#       get_item_paths would be syntactically correct, but weird</span>
 <div class="viewcode-block" id="SmartPlugin.get_item_path_list"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_item_path_list">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_path_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return list of stored item paths</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.get_items"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_items">[Doku]</a>    <span class="k">def</span> <span class="nf">get_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_item_list"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_item_list">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return list of stored items</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -4316,9 +4318,21 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_lookup_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">device_command</span><span class="p">,</span> <span class="p">[])</span></div>
 
+<div class="viewcode-block" id="SmartPlugin.get_device_commands"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_device_commands">[Doku]</a>    <span class="k">def</span> <span class="nf">get_device_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list containing all device_commands, which have items associated with it</span>
+
+<span class="sd">        :return: List of device_commands</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_lookup_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
 <div class="viewcode-block" id="SmartPlugin.unparse_item"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.unparse_item">[Doku]</a>    <span class="k">def</span> <span class="nf">unparse_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensure that changes to &lt;item&gt; are no longer propagated to this plugin</span>
+
+<span class="sd">        :param item: item to unparse</span>
+<span class="sd">        :type item: class Item</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">item</span><span class="o">.</span><span class="n">remove_method_trigger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_item</span><span class="p">)</span>
