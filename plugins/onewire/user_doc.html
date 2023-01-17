@@ -826,8 +826,8 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#beispiel">Beispiel</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#web-interface">Web Interface</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="#tab-1">Tab 1</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#tab-2">Tab 2</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#tab-1-items">Tab 1: Items</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#tab-2-1-wire-busse">Tab 2: 1-Wire Busse</a></li>
 </ul>
 </li>
 </ul>
@@ -1959,8 +1959,8 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#beispiel">Beispiel</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#web-interface">Web Interface</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="#tab-1">Tab 1</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#tab-2">Tab 2</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#tab-1-items">Tab 1: Items</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#tab-2-1-wire-busse">Tab 2: 1-Wire Busse</a></li>
 </ul>
 </li>
 </ul>
@@ -4112,6 +4112,9 @@ können (z.B. Flash Speicher, EEPROMS).</p>
 <li><p>DATANAB DS2438 (Temperatur/Feuchtigkeit)</p></li>
 <li><p>D2PC (2-fach I/O DS2406)</p></li>
 </ul>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 </section>
 </section>
 <section id="konfiguration">
@@ -4167,6 +4170,12 @@ Das Attribut <code class="docutils literal notranslate"><span class="pre">ow_sen
 <p>Wenn ein iButton master verwendet wird, fragt das Plugin häufiger ab.
 Die Abfrage mit <code class="docutils literal notranslate"><span class="pre">B</span></code> liefert <code class="docutils literal notranslate"><span class="pre">True</span></code> wenn der iButton erkannt wird, ansonsten <code class="docutils literal notranslate"><span class="pre">False</span></code>
 Wenn I/O Sensoren (2406) verwendet werden, fragt das Plugin diese häufiger ab.</p>
+<div class="admonition note">
+<p class="admonition-title">Bemerkung</p>
+<p>Das Item sollte mit <code class="docutils literal notranslate"><span class="pre">cache:</span> <span class="pre">true</span></code> oder (falls die Daten in die Datenbank geschrieben werden sollen) mit
+<code class="docutils literal notranslate"><span class="pre">database:</span> <span class="pre">init</span></code> konfiguriert werden, da es einige Zeit dauern kann, bis alle 1-Wire Devices discovered
+wurden und sonst der Item Wert solange 0 ist.</p>
+</div>
 </section>
 <section id="logic-yaml">
 <h3>logic.yaml<a class="headerlink" href="#logic-yaml" title="Permalink to this heading"></a></h3>
@@ -4189,6 +4198,9 @@ die ID noch im Zwischenspeicher ist. Der temporäre Speicher wird alle 10 Minute
 <span class="n">sh</span><span class="o">.</span><span class="n">ow</span><span class="o">.</span><span class="n">ibutton_hook</span> <span class="o">=</span> <span class="n">sabotagealarm</span>
 </pre></div>
 </div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 </section>
 </section>
 <section id="beispiel">
@@ -4197,74 +4209,91 @@ die ID noch im Zwischenspeicher ist. Der temporäre Speicher wird alle 10 Minute
 <span class="w">    </span><span class="nt">bm_ibutton</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ibutton busmaster to identify ibutton buses</span>
 <span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
+<span class="w">        </span><span class="nt">cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">        </span><span class="nt">ow_addr</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;81.75172D000000&#39;</span>
 <span class="w">        </span><span class="nt">ow_sensor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BM</span>
 <span class="w">    </span><span class="nt">ib_guest</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ibutton guest</span>
 <span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
+<span class="w">        </span><span class="nt">cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">        </span><span class="nt">ow_addr</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;01.787D58130000&#39;</span>
 <span class="w">        </span><span class="nt">ow_sensor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">B</span>
 <span class="w">    </span><span class="nt">temp_outside</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">temperature outside</span>
 <span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">        </span><span class="nt">cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">        </span><span class="nt">ow_addr</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;28.8DEAAA030000&#39;</span>
 <span class="w">        </span><span class="c1"># could be T, T9, T10, T11, T12</span>
 <span class="w">        </span><span class="nt">ow_sensor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">T</span>
 <span class="w">    </span><span class="nt">lux_outside</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lux / lightintensity outside</span>
 <span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">        </span><span class="nt">cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">        </span><span class="nt">ow_addr</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;26.8DD76B010000&#39;</span>
 <span class="w">        </span><span class="nt">ow_sensor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">L</span>
 <span class="w">    </span><span class="nt">humidity_outside</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">humidity outside</span>
 <span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">        </span><span class="nt">cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">        </span><span class="nt">ow_addr</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;26.8DD76B010000&#39;</span>
 <span class="w">        </span><span class="nt">ow_sensor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">H</span>
 <span class="w">    </span><span class="nt">input_water_leak</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">input water leak detection</span>
 <span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
+<span class="w">        </span><span class="nt">cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">        </span><span class="nt">ow_addr</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3A.C6CC07000000&#39;</span>
 <span class="w">        </span><span class="c1"># could be IA, IB</span>
 <span class="w">        </span><span class="nt">ow_sensor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IA</span>
 <span class="w">    </span><span class="nt">output_led1</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">output led1 keys</span>
 <span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
+<span class="w">        </span><span class="nt">cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">        </span><span class="nt">ow_addr</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3A.C6CC07000000&#39;</span>
 <span class="w">        </span><span class="c1"># could be OA, OB</span>
 <span class="w">        </span><span class="nt">ow_sensor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OB</span>
 <span class="w">    </span><span class="nt">voltage_sensor</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">voltage of the sensor input (0-10V)</span>
 <span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">        </span><span class="nt">cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">        </span><span class="nt">ow_addr</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;26.A9D76B010000&#39;</span>
 <span class="w">        </span><span class="nt">ow_sensor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">V</span>
 </pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
 </div>
 </section>
 <section id="web-interface">
 <h2>Web Interface<a class="headerlink" href="#web-interface" title="Permalink to this heading"></a></h2>
 <p>Das Plugin liefert eine Übersicht über die im Zusammenhang mit diesem Plugin definierten Items und über die erkannten
 1-Wire Busse und die daran vorhandenen Busteilnehmer.</p>
-<section id="tab-1">
-<h3>Tab 1<a class="headerlink" href="#tab-1" title="Permalink to this heading"></a></h3>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<section id="tab-1-items">
+<h3>Tab 1: Items<a class="headerlink" href="#tab-1-items" title="Permalink to this heading"></a></h3>
 <p>Das erste Tab zeigt alle definierten Items zu diesem Plugin an. Zu jedem Item werden folgende Informationen angezeigt:</p>
 <ul class="simple">
 <li><p>Pfad der Items</p></li>
 <li><p>Datentyp des Items</p></li>
 <li><p>1-Wire Adresse des Devices/Sensors</p></li>
 <li><p>Geräteklasse des Devices (sensor, IO, iButton, iButton master)</p></li>
-<li><p>Aktueller Wert des Items. Der Wert wid mit Informationen aus dem 1-Wire Sensor um eine Maßeinheit ergänzt angezeigt</p></li>
+<li><p>Aktueller Wert des Items. Der Wert wird mit Informationen aus dem 1-Wire Sensor um eine Maßeinheit ergänzt angezeigt</p></li>
 <li><p>Zeitpunkt des letzten Updates des Item Wertes</p></li>
-<li><p>Zeitpunkt der letzten nderung des Item Wertes</p></li>
+<li><p>Zeitpunkt der letzten Änderung des Item Wertes</p></li>
 </ul>
 <img alt="../../_images/webif_tab12.jpg" class="screenshot" src="../../_images/webif_tab12.jpg" />
 <p>Falls das entsprechende 1-Wire Device seit dem letzten Start von SmartHomeNG noch nicht erkannt wurde, werden für das
 Item die Werte Sensor, Geräteklasse und Wert in rot angezeigt. In diesem Fall fehlt beim Wert auch die Maßeinheit, da
 die Information zur Maßeinheit aus dem 1-Wire Device stammt. Der angezeigte Wert des Items ist in diesem Fall der
-gechachte Wert aus SmartHomeNG, bzw. der letzte gespeicherte Wert aus der Datenbank (falls das Item mit <code class="docutils literal notranslate"><span class="pre">database:</span> <span class="pre">init</span></code>
+gecachte Wert aus SmartHomeNG, bzw. der letzte gespeicherte Wert aus der Datenbank (falls das Item mit <code class="docutils literal notranslate"><span class="pre">database:</span> <span class="pre">init</span></code>
 konfiguriert wurde)</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 </section>
-<section id="tab-2">
-<h3>Tab 2<a class="headerlink" href="#tab-2" title="Permalink to this heading"></a></h3>
+<section id="tab-2-1-wire-busse">
+<h3>Tab 2: 1-Wire Busse<a class="headerlink" href="#tab-2-1-wire-busse" title="Permalink to this heading"></a></h3>
 <p>Das zweite Tab zeigt alle per Discovery gefundenen 1-Wire Devices an. Zu jedem Device werden folgende Informationen
 angezeigt:</p>
 <ul class="simple">
