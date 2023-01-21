@@ -4075,7 +4075,6 @@
 <a class="reference internal image-reference" href="../../_images/interface.svg" id="index-0"><img alt="plugin type logo" class="align-left" height="150px" id="index-0" src="../../_images/interface.svg" width="150px" /></a>
 <p>Im folgenden sind etwaige Anforderungen und unterstützte Hardware beschrieben. Danach folgt die               Beschreibung, wie das Plugin <strong>trovis557x</strong> konfiguriert wird. Außerdem ist im folgenden               beschrieben, wie das Plugin in den Item Definitionen genutzt werden kann. <a class="footnote-reference brackets" href="#f1" id="id1">1</a></p>
 <p>Es handelt sich bei diesem Plugin um ein <strong>interface Plugin</strong>.</p>
-<p><strong>ACHTUNG</strong>: Dieses Plugin ist als develop gekennzeichnet. Es kann daher sein, dass es                  noch nicht Feature-Complete oder noch fehlerhaft ist.</p>
 <section id="beschreibung">
 <h2>Beschreibung<a class="headerlink" href="#beschreibung" title="Permalink to this heading"></a></h2>
 <p>Plugin zum Auslesen von SAMSON TROVIS 557x Heizungsreglern</p>
@@ -4118,7 +4117,7 @@
 </section>
 <section id="modbus-mode">
 <h2>modbus_mode<a class="headerlink" href="#modbus-mode" title="Permalink to this heading"></a></h2>
-<p>Wie die Modbus-Kommunikation duchgeführt wird (zur Zeit auf rtu belassen)</p>
+<p>Wie die Modbus-Kommunikation duchgeführt wird (rtu oder tcp)</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>str</strong></p></li>
@@ -4128,7 +4127,7 @@
 </section>
 <section id="modbus-port">
 <h2>modbus_port<a class="headerlink" href="#modbus-port" title="Permalink to this heading"></a></h2>
-<p>Modbus-Port, über den die Trovis verbunden ist</p>
+<p>Modbus Verbindung, z.B. /dev/ttyUSB0 (rtu mit socat/mbusd) oder 192.168.178.52:502 (tcp)</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>str</strong></p></li>
@@ -4158,31 +4157,11 @@
 </section>
 <section id="modbus-trovis-address">
 <h2>modbus_trovis_address<a class="headerlink" href="#modbus-trovis-address" title="Permalink to this heading"></a></h2>
-<p>Modbus-Adresse der Trovis (Trovis: PA6 - Modbus, ST.-NR)</p>
+<p>Stationsadresse der Trovis (Trovis: PA6 - Modbus, ST.-NR &lt;=247!)</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>int</strong></p></li>
 <li><p>Standardwert: <strong>247</strong></p></li>
-</ul>
-</div></blockquote>
-</section>
-<section id="model">
-<h2>model<a class="headerlink" href="#model" title="Permalink to this heading"></a></h2>
-<p>Modell des Heizungsreglers (5573, 5576, 5578, 5579)</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>Datentyp: <strong>int</strong></p></li>
-<li><p>Standardwert: <strong>5576</strong></p></li>
-</ul>
-</div></blockquote>
-</section>
-<section id="revision">
-<h2>revision<a class="headerlink" href="#revision" title="Permalink to this heading"></a></h2>
-<p>Baureihe des Heizungsreglers (001, 002, 003 usw)</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>Datentyp: <strong>int</strong></p></li>
-<li><p>Standardwert: <strong>3</strong></p></li>
 </ul>
 </div></blockquote>
 </section>
@@ -4196,6 +4175,15 @@
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>str</strong></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="invalid-to-zero">
+<h2>invalid_to_zero<a class="headerlink" href="#invalid-to-zero" title="Permalink to this heading"></a></h2>
+<p>Setzt 32767 (=NaN, nicht verfügbar) auf 0 fuer ausgeschaltete oder nicht verfuegbare Register</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Datentyp: <strong>bool</strong></p></li>
 </ul>
 </div></blockquote>
 </section>
@@ -4226,12 +4214,12 @@
 </ul>
 </div></blockquote>
 </section>
-<section id="visu-acl">
-<h2>visu_acl<a class="headerlink" href="#visu-acl" title="Permalink to this heading"></a></h2>
-<p>Alle Items sollten für die Visu auf nur lesen gesetzt werden</p>
+<section id="werte">
+<h2>werte<a class="headerlink" href="#werte" title="Permalink to this heading"></a></h2>
+<p>Für Register, die stufenweise mit Werten belegt sind</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>Datentyp: <strong>str</strong></p></li>
+<li><p>Datentyp: <strong>list</strong></p></li>
 </ul>
 </div></blockquote>
 </section>
