@@ -1458,6 +1458,7 @@
 <li class="toctree-l5"><a class="reference internal" href="#telegram-message-chat-id">telegram_message_chat_id</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#telegram-info">telegram_info</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#telegram-text">telegram_text</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#telegram-control">telegram_control</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#funktionen">Funktionen</a><ul>
@@ -2389,6 +2390,7 @@
 <li class="toctree-l5"><a class="reference internal" href="#telegram-message-chat-id">telegram_message_chat_id</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#telegram-info">telegram_info</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#telegram-text">telegram_text</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#telegram-control">telegram_control</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#funktionen">Funktionen</a><ul>
@@ -4265,6 +4267,63 @@ auf <code class="docutils literal notranslate"><span class="pre">&lt;Benutzernam
 Ein John Doe ergäbe also <code class="docutils literal notranslate"><span class="pre">John</span> <span class="pre">Doe:</span> <span class="pre">xxxxxxx:</span> <span class="pre">Hello</span> <span class="pre">world!</span></code></p>
 <p>Mit einer Logik kann basierend darauf ein Menu und entsprechende Abfragen an shNG gestellt werden.
 Siehe dazu ein Beispiel weiter unten.</p>
+</section>
+</section>
+<section id="telegram-control">
+<h3>telegram_control<a class="headerlink" href="#telegram-control" title="Permalink to this heading"></a></h3>
+<p>Für alle Items mit diesem Attribut wird eine Liste mit Kommandos für den Bot erstellt. Der Listeneintrag muss mit <code class="docutils literal notranslate"><span class="pre">name</span></code> spezifiziert werden.
+Wird das Kommando <code class="docutils literal notranslate"><span class="pre">/control</span></code> an den Bot gesendet, so erstellt der Bot ein Tastaturmenü, dass jedes Attribut als Kommando enthält.
+Dabei werden auch alle aktuellen Werte der Items ausgegeben.
+Bei Auswahl eines dieser Kommandos im Telegram Client kann dann ein Item vom Type bool geschalten werden (on/off) oder beim Type ‚num‘ kein eine Zahl zum SH-Item gesendet werden.</p>
+<p><code class="docutils literal notranslate"><span class="pre">name</span></code>    Item wird mit diesem Namen im Bot als Kommando dargestellt
+<code class="docutils literal notranslate"><span class="pre">type</span></code>    Möglichkeiten: on, off, onoff, toggle, num</p>
+<blockquote>
+<div><p>on          * nur Einschalten ist möglich
+off         * nur Ausschalten ist möglich
+onoff       * das Ein- und Ausschalten muss mit einen weiteren Kommando vom Tastaturmenu ausgewählt werden</p>
+<blockquote>
+<div><p>[On] [Off] (nach einem Timeout ohne Antwort wird der Befehl abgebrochen)</p>
+</div></blockquote>
+<p>toggle      * der Wert des Items wird umgeschltet (0 zu 1; 1 zu 0)
+num         * es kann eine Zahl an SH gesendet werden und das entsprechende Item wird damit geschrieben. (nach einem Timeout ohne Antwort wird der Befehl abgebrochen)</p>
+</div></blockquote>
+<dl class="simple">
+<dt><a href="#id5"><span class="problematic" id="id6">``</span></a>question``Sicherheitsabfrage vor dem Schalten des Items (verwendbar bei type:on/off/toggle - nach einem Timeout ohne Antwort wird der Befehl abgebrochen)</dt><dd><p>[Yes] [No]</p>
+</dd>
+</dl>
+<p><code class="docutils literal notranslate"><span class="pre">min</span></code>     Minimalwert (verwendbar bei type:num)
+<code class="docutils literal notranslate"><span class="pre">max</span></code>     Maximalwert (verwendbar bei type:num)
+<code class="docutils literal notranslate"><span class="pre">timeout</span></code> Zeit nach welcher der Befehl mit Antwort(onoff/question/num) abgebrochen wird (default 20Sekunden)</p>
+<section id="id7">
+<h4>Beispiel<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h4>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">BeregnungZone1</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
+<span class="w">    </span><span class="nt">cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="w">    </span><span class="nt">telegram_control</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;name:BeregnungZ1,</span><span class="nv"> </span><span class="s">type:onoff&quot;</span>
+<span class="nt">BeregnungZone2</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
+<span class="w">    </span><span class="nt">cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="w">    </span><span class="nt">telegram_control</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;name:BeregnungZ2,</span><span class="nv"> </span><span class="s">type:toggle,</span><span class="nv"> </span><span class="s">question:Ventil</span><span class="nv"> </span><span class="s">wirklich</span><span class="nv"> </span><span class="s">umschalten?&quot;</span>
+<span class="nt">Gartentor</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
+<span class="w">    </span><span class="nt">cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="w">    </span><span class="nt">telegram_control</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;name:Gartentor,</span><span class="nv"> </span><span class="s">type:on,</span><span class="nv"> </span><span class="s">question:Gartentor</span><span class="nv"> </span><span class="s">wirklich</span><span class="nv"> </span><span class="s">öffnen?&quot;</span>
+<span class="nt">Dachfenster</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">    </span><span class="nt">cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="w">    </span><span class="nt">telegram_control</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;name:Dachfenster,</span><span class="nv"> </span><span class="s">type:num,</span><span class="nv"> </span><span class="s">min:0,</span><span class="nv"> </span><span class="s">max:100,</span><span class="nv"> </span><span class="s">timeout:30&quot;</span>
+<span class="w w-Error"> </span><span class="nt">Kamera</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
+<span class="w">    </span><span class="nt">cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="w">    </span><span class="nt">telegram_control</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;name:Kamera,</span><span class="nv"> </span><span class="s">type:toggle&quot;</span>
+<span class="w">    </span><span class="nt">eval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sh.plugins.return_plugin(&quot;telegram&quot;).photo_broadcast(&quot;http://192.168.0.78/snapshot/view0.jpg&quot;, datetime.datetime.now().strftime(&quot;%H:%M %d.%m.%Y&quot;))</span>
+</pre></div>
+</div>
+<p>Das Kommando <code class="docutils literal notranslate"><span class="pre">/control</span></code> veranlasst den Bot zu antworten mit</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="o">/</span><span class="n">BeregnungZ1</span><span class="p">]</span> <span class="p">[</span><span class="o">/</span><span class="n">BeregnungZ2</span><span class="p">]</span> <span class="p">[</span><span class="o">/</span><span class="n">Gartentor</span><span class="p">]</span>
+<span class="p">[</span><span class="o">/</span><span class="n">Dachfenster</span><span class="p">]</span> <span class="p">[</span><span class="o">/</span><span class="n">Kamera</span><span class="p">]</span>
+</pre></div>
+</div>
 </section>
 </section>
 </section>
