@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Release 1.x.x - tt. mmm 2023 &mdash; Dokumentation v1.9.3.4 v1.9.3.4 develop (Stand 05. February 2023, commit 70ecbb5) Dokumentation</title>
+  <title>Release 1.x.x - tt. mmm 2023 &mdash; Dokumentation v1.9.3.4 v1.9.3.4 develop (Stand 05. February 2023, commit 83c22eb) Dokumentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -4078,10 +4078,10 @@ sowie einige neue Plugins.</p>
 <p>Diese Release Notes sind ein Arbeitsstand.</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>Berücksichtigt sind Commits im smarthome Repository bis incl. 4. Dez 2022
-(…)</p></li>
-<li><p>Berücksichtigt sind Commits im plugins Repository bis incl. 9. Dez 2022
-(…)</p></li>
+<li><p>Berücksichtigt sind Commits im smarthome Repository bis incl. 5. Feb 2023
+(check_plugin.py:)</p></li>
+<li><p>Berücksichtigt sind Commits im plugins Repository bis incl. 5. Feb 2023
+(Merge pull request #666 from ivan73/develop)</p></li>
 </ul>
 </div></blockquote>
 </div>
@@ -4117,28 +4117,55 @@ zu unterstützten Python Versionen)</p>
 </section>
 <section id="updates-in-the-core">
 <h3>Updates in the CORE<a class="headerlink" href="#updates-in-the-core" title="Permalink to this heading"></a></h3>
-<ul>
+<ul class="simple">
 <li><p>Added Python 3.11 to unit tests</p></li>
 <li><p>Configuration:</p>
-<ul class="simple">
+<ul>
 <li><p>logging.yaml.default: Modified LEVEL for plugins: to NOTICE to reflect the ability of plugins to log NOTICEs</p></li>
 </ul>
 </li>
 <li><p>Items:</p>
-<ul class="simple">
+<ul>
 <li><p>…</p></li>
 </ul>
 </li>
 <li><p>Logics:</p>
-<ul class="simple">
+<ul>
 <li><p>…</p></li>
 </ul>
 </li>
 <li><p>Libs:</p>
-<ul class="simple">
+<ul>
+<li><p>lib-daemon:</p>
+<ul>
+<li><p>Fix for issue #498 - Error on restarting if SmartHomeNG is not running</p></li>
+</ul>
+</li>
+<li><p>lib.metadata:</p>
+<ul>
+<li><p>Moved definition of global plugin parameter ‚instance‘ from shngadmin to lib.metadata</p></li>
+<li><p>Implemented global plugin parameter ‚webif_pagelength‘ (takes definition from parameter with same name in module.http)</p></li>
+</ul>
+</li>
 <li><p>lib.model.smartplugin:</p>
 <ul>
 <li><p>Preparing SmartPlugin for editable items</p></li>
+<li><p>Minor fixes</p></li>
+<li><p>Fix to create local _plg_item_dict and _item_lookup_dict for each plugin (that calls super().__init__)</p></li>
+<li><p>Adjusted core version to 1.9.3.3</p></li>
+<li><p>Adjust add_item functionality</p></li>
+<li><p>add_item(): Updating parameter</p></li>
+<li><p>add_item(): Prevent default parameters from being changed in method</p></li>
+<li><p>Added SmartPlugin doc (to temporary location at lib.model)</p></li>
+<li><p>add_item() corrected, get_device_commands() added and get_items() renamed to get_item_list()</p></li>
+<li><p>Changed ‚device_command‘ to ‚mapping‘</p></li>
+<li><p>added get_item_mapping()</p></li>
+<li><p>bumped core version to 1.9.3.4</p></li>
+</ul>
+</li>
+<li><p>lib.network:</p>
+<ul>
+<li><p>Catch (ignore) errors if socket is no longer connected on shutdown</p></li>
 </ul>
 </li>
 <li><p>lib.plugin:</p>
@@ -4149,6 +4176,11 @@ zu unterstützten Python Versionen)</p>
 <li><p>lib.scheduler:</p>
 <ul>
 <li><p>Catch more exceptions outside scheduler to prevent thread end</p></li>
+</ul>
+</li>
+<li><p>lib.shpypi:</p>
+<ul>
+<li><p>Bugfix</p></li>
 </ul>
 </li>
 <li><p>lib.smarthome:</p>
@@ -4165,10 +4197,13 @@ eval syntax-checker (evaluate: sh.reload_translations())</p></li>
 </ul>
 </li>
 <li><p>Modules:</p>
-<ul class="simple">
+<ul>
 <li><p>admin:</p>
 <ul>
 <li><p>Fix for reading of logfiles if folder contains files without extension .log</p></li>
+<li><p>Updated module to reflect new url of documentation and allow access to documentation of defelop branch</p></li>
+<li><p>Updated shngAdmin to v0.6.1</p></li>
+<li><p>Moved definition of global plugin parameter ‚instance‘ from shngadmin to lib.metadata</p></li>
 </ul>
 </li>
 <li><p>http:</p>
@@ -4190,6 +4225,10 @@ datatables (set to „auto fit to page height by default)</p></li>
 <li><p>Add some more date/time formats for correct sorting</p></li>
 <li><p>Fix header min-width calculation</p></li>
 <li><p>Fix and improve responsive header</p></li>
+<li><p>Webinterfaces: Bug fix for reload-button</p></li>
+<li><p>Webinterfaces: Improved datatable implementation (fix responsive issues on tab load/change, include &lt;div&gt; above datatable in resize calculation)</p></li>
+<li><p>Webinterfaces: Fix resize calculation.. consider all divs with class mb-2 for resize</p></li>
+<li><p>Webinterfaces: Instant update table refresh if checkbox for autoupdate is activated</p></li>
 </ul>
 </li>
 <li><p>mqtt:</p>
@@ -4201,13 +4240,38 @@ datatables (set to „auto fit to page height by default)</p></li>
 </li>
 <li><p>Plugins:</p>
 <ul>
+<li><p>avdevice:</p>
+<ul>
+<li><p>Fix web interface to work with newest datatables changes</p></li>
+</ul>
+</li>
+<li><p>avm:</p>
+<ul>
+<li><p>Minor clean-up for user_doc and metadata</p></li>
+</ul>
+</li>
+<li><p>beolink:</p>
+<ul>
+<li><p>Bugfix in webinterface</p></li>
+</ul>
+</li>
+<li><p>casambi:</p>
+<ul>
+<li><p>Fixed switch on/off state readback due to API or firmware change</p></li>
+<li><p>Added handling for networkLog events from backend as debug outputs</p></li>
+<li><p>Separated WebIf into separate file</p></li>
+<li><p>Cleaned-up user_doc</p></li>
+<li><p>Added changelog to user_doc</p></li>
+</ul>
+</li>
 <li><p>cli:</p>
-<ul class="simple">
+<ul>
 <li><p>Adjust web interface</p></li>
+<li><p>Updates to documentation</p></li>
 </ul>
 </li>
 <li><p>database:</p>
-<ul class="simple">
+<ul>
 <li><p>Include webif_pagelength from module.yaml, move column classes to dt init function</p></li>
 <li><p>Minor webif fixes and improvements</p></li>
 <li><p>Bump to v1.6.4</p></li>
@@ -4223,75 +4287,255 @@ datatables (set to „auto fit to page height by default)</p></li>
 <li><p>Code cleanup</p></li>
 <li><p>Updated user dorumentation</p></li>
 <li><p>Bumped version to 1.6.8</p></li>
+<li><p>Implemented separate db connection for maintenance (orphan handling) to fix problems with mysql driver (whiwch allows only one cursor per connection)</p></li>
+<li><p>Fix showing of orphaned items if logcount is disabled.</p></li>
+<li><p>Minor adjustments in metadata and documentation</p></li>
+<li><p>Adjusted a log message</p></li>
+</ul>
+</li>
+<li><p>dlms:</p>
+<ul>
+<li><p>Add logo to user_doc</p></li>
+</ul>
+</li>
+<li><p>enocean:</p>
+<ul>
+<li><p>Separated WebIf from main file</p></li>
+<li><p>New user_doc</p></li>
 </ul>
 </li>
 <li><p>executor:</p>
-<p>Remove eval capability, add script listbox, load, save and delete</p>
+<ul>
+<li><p>Remove eval capability, add script listbox, load, save and delete</p></li>
+<li><p>Enhancement - autocomplete for codemirror</p></li>
+</ul>
+</li>
+<li><p>gpio:</p>
+<ul>
+<li><p>Fix minor typos, add user doc, implement webif_pagelength and correct automatic page length on browser window resize</p></li>
+<li><p>Adjust webif_pagelength handling</p></li>
+</ul>
+</li>
+<li><p>helios:</p>
+<ul>
+<li><p>Changes to Helios Modbus RTU plugin (metadata only)</p></li>
+</ul>
+</li>
+<li><p>helios_tcp:</p>
+<ul>
+<li><p>Fixes to work with newer pymodbus versions</p></li>
+</ul>
+</li>
+<li><p>homeconnect:</p>
+<ul>
+<li><p>Clean-up for code and metadata</p></li>
+</ul>
 </li>
 <li><p>hue2:</p>
-<ul class="simple">
+<ul>
 <li><p>Implemented for lights: read from bridge für items with function ‚dict‘</p></li>
 <li><p>Added Modell ID to web interface</p></li>
 <li><p>bumped version to 2.2.2</p></li>
 <li><p>Added more verbose log messages for deCONZ software bridge</p></li>
 <li><p>Added function ‚modify_scene‘</p></li>
 <li><p>Bumped version to 2.2.3</p></li>
+<li><p>Incorporated fixes/additions from pr #667 for bridge discovery, typo for „hue_refence_light_id“</p></li>
+<li><p>Implementation On-State retrieval for groups through parsing groups „any_on“ state</p></li>
+<li><p>Bump version to 2.2.3</p></li>
+<li><p>Added handling for sensors and a couple of hue2_functions for sensors</p></li>
+<li><p>Bump to v2.3.0</p></li>
+<li><p>Added reading of some config parameters for sensors</p></li>
+<li><p>Removed some logging</p></li>
+</ul>
+</li>
+<li><p>husky2:</p>
+<ul>
+<li><p>Updated refresh of token</p></li>
 </ul>
 </li>
 <li><p>ical:</p>
-<ul class="simple">
+<ul>
 <li><p>Fixed decoding of calendar events that have the same identifiers, e.g. happens if single
 events of a calendar series are rescheduled once.</p></li>
+<li><p>Minor adaptions in user_doc</p></li>
+</ul>
+</li>
+<li><p>influxdb2:</p>
+<ul>
+<li><p>Updates to documentation</p></li>
+</ul>
+</li>
+<li><p>join:</p>
+<ul>
+<li><p>Added say and language parameters, see issue #673</p></li>
 </ul>
 </li>
 <li><p>jsonread:</p>
-<ul class="simple">
+<ul>
 <li><p>Adjusted requirements.txt</p></li>
 </ul>
 </li>
 <li><p>knx:</p>
-<ul class="simple">
+<ul>
 <li><p>Improve structure (introduce globals, put webif in separate init file)</p></li>
 <li><p>Introduce webif_pagelength and improve web interface</p></li>
 <li><p>Improve web interface</p></li>
 <li><p>Fix values being None for plugin with instance defined</p></li>
+<li><p>Adjust webif_pagelength handling, first preparation for automatic data update in webif</p></li>
+</ul>
+</li>
+<li><p>kostalmodbus:</p>
+<ul>
+<li><p>Fixes to work with new version of pymodbus and add registers includes #658 and adds missing registeres for KSEM and Kostal inverters</p></li>
+<li><p>Fixes to work with newer pymodbus versions</p></li>
+</ul>
+</li>
+<li><p>ksemmodbus:</p>
+<ul>
+<li><p>Fixes to work with new version of pymodbus and add registers includes #658 and adds missing registeres for KSEM and Kostal inverters</p></li>
+<li><p>Fixes to work with newer pymodbus versions</p></li>
+</ul>
+</li>
+<li><p>Modbus_tcp:</p>
+<ul>
+<li><p>Fixes to work with newer pymodbus versions</p></li>
 </ul>
 </li>
 <li><p>mqtt:</p>
-<ul class="simple">
+<ul>
 <li><p>Update webif_pagelength implementation, small webif adjustments</p></li>
+<li><p>Adjust webif_pagelength handling, minor fixes in user_doc and webif</p></li>
 </ul>
 </li>
 <li><p>neato:</p>
-<ul class="simple">
+<ul>
 <li><p>Log only one error if robot is not reachable via backend</p></li>
+<li><p>Seperated WebInterface into separate file</p></li>
+<li><p>Cleaned-up user_doc</p></li>
+</ul>
+</li>
+<li><p>network:</p>
+<ul>
+<li><p>Minor adaptations in user_doc</p></li>
+</ul>
+</li>
+<li><p>onewire:</p>
+<ul>
+<li><p>Several enhancements and fixes</p></li>
+<li><p>Vastly extended webinterface</p></li>
+<li><p>Uses functionallity of SmartPlugin from core 1.9.3.3</p></li>
+<li><p>Bumped version to 1.9.0</p></li>
+<li><p>Documentation updates</p></li>
+<li><p>Implemented auto refresh for the webinterface</p></li>
+<li><p>Added plugin parameter ‚warn_after‘</p></li>
+<li><p>Disabled reload button in web interface (the web interface now does a complete auto update for all data)</p></li>
+<li><p>Clean-up for user_doc and metadata</p></li>
+<li><p>Streamlined handling of webif_pagelength</p></li>
+<li><p>Changed to use new SmartPlugin (core v1.9.3.4)</p></li>
+<li><p>Bumped version to 1.9.1</p></li>
+</ul>
+</li>
+<li><p>openweathermap:</p>
+<ul>
+<li><p>Update Error-Handling mechanism and set version to 1.8.6</p></li>
+<li><p>Improve error handling</p></li>
+<li><p>Made API version configurable. Recently registered new users shall use API version 3.0 instead of version 2.5 which will run out</p></li>
+<li><p>Degraded subsequent error messages following login errors to debug level to avoid spamming of the error log file.</p></li>
+<li><p>Partly reverted API version configuration: Make only the OnceCall API configurable to 2.5 or 3.0, all other APIs(pollution, weather etc.) remain at version 2.5</p></li>
+<li><p>Clean-up for user_doc and metadata</p></li>
+</ul>
+</li>
+<li><p>philips_tv:</p>
+<ul>
+<li><p>Separated WebIf</p></li>
+<li><p>Cleaned-up user_doc</p></li>
+<li><p>Mark plugin as ready</p></li>
+<li><p>Fixed translation in locale.yaml</p></li>
+</ul>
+</li>
+<li><p>pluggit:</p>
+<ul>
+<li><p>Fixes to work with newer pymodbus versions</p></li>
+</ul>
+</li>
+<li><p>resol:</p>
+<ul>
+<li><p>Catched socket timeout exception which occurs if ethernet is temporarily not available.</p></li>
+<li><p>Extended user_doc</p></li>
+</ul>
+</li>
+<li><p>rtr2:</p>
+<ul>
+<li><p>rtr2: v2.1.0 fixes the configuration of Kp and Ki for individual rtrs using the rtr2_controller_settings item attribute</p></li>
+<li><p>Added english descriptions vor plugin parameters</p></li>
+<li><p>Added a section to user_doc.rst from PR #648</p></li>
+<li><p>Added ‚cache: True‘ to item stellwert‘ in struct to prevent mis-regulations when restarting SmartHomeNG</p></li>
+<li><p>Implemented autoupdate for webinterface</p></li>
+<li><p>Bumped version to 2.2.0</p></li>
+<li><p>Disabled reload button in web interface (the web interface now does a complete auto update for all data)</p></li>
+<li><p>Added plugin-logo to user_doc.rst</p></li>
+<li><p>Changed default values in metadata</p></li>
+</ul>
+</li>
+<li><p>sma_mb:</p>
+<ul>
+<li><p>Fixes to work with newer pymodbus versions</p></li>
+</ul>
+</li>
+<li><p>smartvisu:</p>
+<ul>
+<li><p>Updates to documentation</p></li>
 </ul>
 </li>
 <li><p>smlx:</p>
-<ul class="simple">
+<ul>
 <li><p>Add files via upload</p></li>
 </ul>
 </li>
 <li><p>solarforecast:</p>
-<ul class="simple">
+<ul>
 <li><p>Catch error, if solarforecast webservice is temporarily not reachable</p></li>
+<li><p>Separated WebIf from main file</p></li>
+<li><p>Cleaned-up user_doc and metadata</p></li>
 </ul>
 </li>
 <li><p>sonos:</p>
-<ul class="simple">
+<ul>
 <li><p>Fix for mute does not work for coupled speakers. -&gt; Fixed by making mute a group command.</p></li>
+<li><p>Updated underlying SoCo framework to version 29.0, which amongst others fixes exception in unsubscribe function.
+Catched pipe error that could occur in play_snippet for local sound files.</p></li>
+<li><p>Added play_sharelink command (to support Spotify sharelinks)</p></li>
+<li><p>Added user_doc</p></li>
+<li><p>Separated WebIf from main file</p></li>
 </ul>
 </li>
 <li><p>stateengine:</p>
-<ul class="simple">
+<ul>
 <li><p>Improve web interface - automatic refresh, show loglevel on item basis, show visu on button click.
 Needs most recent http module update (Nov, 8) to work correctly</p></li>
 <li><p>Implement webif_pagelength from module, slight webif adjustments</p></li>
 <li><p>Bump to v 1.9.3</p></li>
+<li><p>Fix log message for delay</p></li>
+<li><p>Fix error on startup (important)</p></li>
+<li><p>Fix metadata and implement webif in docu</p></li>
+<li><p>Adjust webif_pagelength handling</p></li>
+</ul>
+</li>
+<li><p>tasmota:</p>
+<ul>
+<li><p>Bumped to Version 1.3</p></li>
+<li><p>Implement Cluster und Group Commands for Zigbee</p></li>
+<li><p>Improved parsing of discovery message to detect and identify existing devices</p></li>
+<li><p>Improved start of subscriptions to notice all discovery messages</p></li>
+<li><p>Easy Zigbee data handling (more flat dict structure)</p></li>
+<li><p>Define allowed attribute values for tasmota_zb_attr</p></li>
+<li><p>Added support for SHT3x sensor connected to Tasmota device</p></li>
+<li><p>Updated WebIF to latest http-module</p></li>
+<li><p>Code Cleanup and beautifying for better readability</p></li>
 </ul>
 </li>
 <li><p>tankerkoenig:</p>
-<ul class="simple">
+<ul>
 <li><p>Bumped to Version 2</p></li>
 <li><p>Added support of items (No need for logic anymore) but keep recent public functions identical</p></li>
 <li><p>Add WebIF</p></li>
@@ -4301,17 +4545,38 @@ Needs most recent http module update (Nov, 8) to work correctly</p></li>
 <li><p>Added check for Nonetype results</p></li>
 </ul>
 </li>
+<li><p>telegram:</p>
+<ul>
+<li><p>v1.7.0 - control SH-item in the bot</p></li>
+<li><p>Example in readme.rst.off</p></li>
+<li><p>Bak to control-menu after „on“ or „off“</p></li>
+<li><p>Small optical cosmetics</p></li>
+</ul>
+</li>
+<li><p>trovis557x:</p>
+<ul>
+<li><p>Changes to Samson Trovis 557x plugin (for new pymodbus versions)</p></li>
+</ul>
+</li>
 <li><p>uzsu:</p>
-<ul class="simple">
+<ul>
 <li><p>Get webif_pagelength from module.yaml if possible, adjust webif accordingly</p></li>
 <li><p>Bump to v1.6.4</p></li>
 <li><p>Adjusted requirements.txt for scipy to run unit tests under Python 3.11</p></li>
+<li><p>Adjust webif_pagelength handling to new parameter handling</p></li>
+</ul>
+</li>
+<li><p>xiaomi_vac:</p>
+<ul>
+<li><p>Fix docu, adjust web interface, implement webif_pagelength from http module</p></li>
+<li><p>Adjust webif_pagelength handling</p></li>
+<li><p>Fix docu</p></li>
 </ul>
 </li>
 </ul>
 </li>
 <li><p>tests:</p>
-<ul class="simple">
+<ul>
 <li><p>Updated core mockup for extended log levels for plugins</p></li>
 </ul>
 </li>
@@ -4328,7 +4593,7 @@ Needs most recent http module update (Nov, 8) to work correctly</p></li>
 <p>Für Details zu den neuen Plugins, bitte die Dokumentation des jeweiligen Plugins unter
 <a class="reference external" href="http://www.smarthomeng.de/user/plugins_all.html">http://www.smarthomeng.de/user/plugins_all.html</a> konsultieren.</p>
 <ul class="simple">
-<li><p>&lt;Name&gt;: …</p></li>
+<li><p>piratewthr: ew weather plugin as a replacement for the darksky plugin. It is (almost) a dropin replacement</p></li>
 </ul>
 </section>
 <section id="plugin-updates">
@@ -4410,13 +4675,21 @@ Repositiory aufgenommen.</p>
 <section id="tools">
 <h3>Tools<a class="headerlink" href="#tools" title="Permalink to this heading"></a></h3>
 <ul class="simple">
-<li><p>…</p></li>
+<li><p>check_plugin.py:</p>
+<ul>
+<li><p>Initial development version of check_plugin.py (a formal plugin checker)</p></li>
+<li><p>Option added to check all plugins</p></li>
+</ul>
+</li>
 </ul>
 </section>
 <section id="dokumentation">
 <h3>Dokumentation<a class="headerlink" href="#dokumentation" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>Changed builddevdoc to use Python 3.9</p></li>
+<li><p>Updates to icons and widgets in docu „visu: automatich generation“</p></li>
+<li><p>fix and improve logging (filter) docu</p></li>
+<li><p>Corrected link for Google translation of documentation</p></li>
 <li><p>Sample Plugins:</p>
 <ul>
 <li><p>Adjust mqtt and standard sample plugin to reflect the newest changes (webif_pagelength, additional
