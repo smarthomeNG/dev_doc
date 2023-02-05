@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.9.3.3 v1.9.3.3 develop (Stand 03. February 2023, commit a8ea8f0) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.9.3.4 v1.9.3.4 develop (Stand 05. February 2023, commit 985e78c) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -31,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> Dokumentation v1.9.3.3
+            <a href="../../../index.html" class="icon icon-home"> Dokumentation v1.9.3.4
             <img src="../../../_static/logo_long_inverse3.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
@@ -4047,7 +4047,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">Dokumentation v1.9.3.3</a>
+          <a href="../../../index.html">Dokumentation v1.9.3.4</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -4124,7 +4124,8 @@
     <span class="n">_pluginname_prefix</span> <span class="o">=</span> <span class="s1">&#39;plugins.&#39;</span>
 
     <span class="n">_plg_item_dict</span> <span class="o">=</span> <span class="p">{}</span>     <span class="c1"># dict to hold the items assigned to the plugin and their plugin specific information</span>
-    <span class="n">_item_lookup_dict</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># dict for the reverse lookup from a device_command to an item, contains a list of items for each device_command</span>
+    <span class="n">_item_lookup_dict</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># dict for the reverse lookup from a mapping (device-command or matchstring) to an item,</span>
+                            <span class="c1"># contains a list of items for each mapping</span>
     <span class="n">_add_translation</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="n">_parameters</span> <span class="o">=</span> <span class="p">{}</span>    <span class="c1"># Dict for storing the configuration parameters read from /etc/plugin.yaml</span>
@@ -4157,18 +4158,18 @@
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">remove_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.add_item"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.add_item">[Doku]</a>    <span class="k">def</span> <span class="nf">add_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">config_data_dict</span><span class="o">=</span><span class="p">{},</span> <span class="n">device_command</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">updating</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.add_item"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.add_item">[Doku]</a>    <span class="k">def</span> <span class="nf">add_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">config_data_dict</span><span class="o">=</span><span class="p">{},</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">updating</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For items that are used/handled by a plugin, this method stores the configuration information</span>
 <span class="sd">        that is individual for the plugin. The configuration information is/has to be stored in a dictionary</span>
 
 <span class="sd">        The configuration information can be retrieved later by a call to the method get_item_configdata(&lt;item_path&gt;)</span>
 
-<span class="sd">        If data is beeing received by the plugin, a &#39;device_command&#39; has to be specified as an optional 3rd parameter.</span>
-<span class="sd">        This allows a reverse lookup. The method get_itemlist_for_device_command(&lt;device_command&gt;) returns a list</span>
-<span class="sd">        of items for the items that have defined the &lt;device_command&gt;. In most cases, the list will have only one</span>
-<span class="sd">        entry, but if multiple items should receive data from the same device (or command), the list can have more than</span>
-<span class="sd">        one entry.</span>
+<span class="sd">        If data is beeing received by the plugin, a mapping ( a &#39;device-command&#39; or matchstring) has to be specified</span>
+<span class="sd">        as an optional 3rd parameter. This allows a reverse lookup. The method get_itemlist_for_mapping(&lt;mapping&gt;)</span>
+<span class="sd">        returns a list of items for the items that have defined the &lt;mapping&gt;. In most cases, the list will have</span>
+<span class="sd">        only one entry, but if multiple items should receive data from the same device (or command), the list can</span>
+<span class="sd">        have more than one entry.</span>
 
 <span class="sd">        Calling this method for an item already stored in `self._plg_item_dict` can be used to change the &quot;is_updating&quot;</span>
 <span class="sd">        key to True, if it was False before and the `updating` parameter is True. Otherwise, nothing happens.</span>
@@ -4178,11 +4179,11 @@
 
 <span class="sd">        :param item: item</span>
 <span class="sd">        :param config_data_dict: Dictionary with the plugin-specific configuration information for the item</span>
-<span class="sd">        :param device_command: String identifing the origin (source/kind) of received data (e.g. the address on a bus)</span>
+<span class="sd">        :param mapping: String identifing the origin (source/kind) of received data (e.g. the address on a bus)</span>
 <span class="sd">        :param updating: Show if item updates from shng should be sent to the plugin</span>
 <span class="sd">        :type item: Item</span>
 <span class="sd">        :type config_data_dict: dict</span>
-<span class="sd">        :type device_command: str</span>
+<span class="sd">        :type mapping: str</span>
 <span class="sd">        :type updating: bool</span>
 
 <span class="sd">        :return: True, if the information has been added</span>
@@ -4209,20 +4210,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()]</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span>
             <span class="s1">&#39;is_updating&#39;</span><span class="p">:</span> <span class="n">updating</span><span class="p">,</span>
-            <span class="s1">&#39;device_command&#39;</span><span class="p">:</span> <span class="n">device_command</span><span class="p">,</span>
+            <span class="s1">&#39;mapping&#39;</span><span class="p">:</span> <span class="n">mapping</span><span class="p">,</span>
             <span class="s1">&#39;config_data&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">config_data_dict</span><span class="p">)</span>
         <span class="p">}</span>
 
-        <span class="k">if</span> <span class="n">device_command</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">device_command</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_lookup_dict</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_item_lookup_dict</span><span class="p">[</span><span class="n">device_command</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_item_lookup_dict</span><span class="p">[</span><span class="n">device_command</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mapping</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">mapping</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_lookup_dict</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_item_lookup_dict</span><span class="p">[</span><span class="n">mapping</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_item_lookup_dict</span><span class="p">[</span><span class="n">mapping</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="SmartPlugin.remove_item"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.remove_item">[Doku]</a>    <span class="k">def</span> <span class="nf">remove_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Remove configuration data for an item (and remove the item from the device_command&#39;s list</span>
+<span class="sd">        Remove configuration data for an item (and remove the item from the mapping&#39;s list</span>
 
 <span class="sd">        :param item: item to remove</span>
 <span class="sd">        :type item: Item</span>
@@ -4248,11 +4249,11 @@
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()]</span>
 
         <span class="c1"># remove item from self._item_lookup_dict if present</span>
-        <span class="n">command</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;device_command&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">command</span><span class="p">:</span>
-            <span class="c1"># if a device_command was given for the item, the item is being removed from the list of the device_command</span>
-            <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_lookup_dict</span><span class="p">[</span><span class="n">command</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_item_lookup_dict</span><span class="p">[</span><span class="n">command</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="n">mapping</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mapping&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mapping</span><span class="p">:</span>
+            <span class="c1"># if a mapping was given for the item, the item is being removed from the list of the mapping</span>
+            <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_lookup_dict</span><span class="p">[</span><span class="n">mapping</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_item_lookup_dict</span><span class="p">[</span><span class="n">mapping</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 
         <span class="c1"># unregister item update method</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unparse_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
@@ -4290,6 +4291,22 @@
             <span class="n">item_path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;config_data&#39;</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="SmartPlugin.get_item_mapping"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_item_mapping">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the plugin-specific mapping that was defined by add_item()</span>
+
+<span class="sd">        :param item: item to get config info for</span>
+<span class="sd">        :type item: class Item or str with path of an item</span>
+
+<span class="sd">        :return: mapping string for that item</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">item_path</span> <span class="o">=</span> <span class="n">item</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">item_path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mapping&#39;</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="SmartPlugin.get_item_path_list"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_item_path_list">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_path_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return list of stored item paths</span>
@@ -4308,23 +4325,23 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;is_updating&#39;</span><span class="p">]]</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.get_items_for_command"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_items_for_command">[Doku]</a>    <span class="k">def</span> <span class="nf">get_items_for_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device_command</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_items_for_command"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_items_for_command">[Doku]</a>    <span class="k">def</span> <span class="nf">get_items_for_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns a list of items that should receive data for the given device_command</span>
+<span class="sd">        Returns a list of items that should receive data for the given mapping</span>
 
-<span class="sd">        :param device_command: device_command, for which the receiving items should be returned</span>
-<span class="sd">        :type device_command: str</span>
+<span class="sd">        :param mapping: mapping, for which the receiving items should be returned</span>
+<span class="sd">        :type mapping: str</span>
 
 <span class="sd">        :return: List of items</span>
 <span class="sd">        :rtype: list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_lookup_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">device_command</span><span class="p">,</span> <span class="p">[])</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_lookup_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="p">[])</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.get_device_commands"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_device_commands">[Doku]</a>    <span class="k">def</span> <span class="nf">get_device_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_mappings"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_mappings">[Doku]</a>    <span class="k">def</span> <span class="nf">get_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns a list containing all device_commands, which have items associated with it</span>
+<span class="sd">        Returns a list containing all mappings, which have items associated with it</span>
 
-<span class="sd">        :return: List of device_commands</span>
+<span class="sd">        :return: List of mappings</span>
 <span class="sd">        :rtype: list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_lookup_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
