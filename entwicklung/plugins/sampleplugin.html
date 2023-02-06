@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Beispielplugin update &mdash; Dokumentation v1.9.3.4 v1.9.3.4 develop (Stand 06. February 2023, commit 83c22eb) Dokumentation</title>
+  <title>Beispielplugin update &mdash; Dokumentation v1.9.3.4 v1.9.3.4 develop (Stand 06. February 2023, commit d73e8b7) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4398,27 +4398,27 @@
 
 &lt;!-- set update_interval to a value &gt; 0 (in milliseconds) to enable periodic data updates --&gt;
 {% set update_interval = 0 %}
-&lt;!-- for data-heavy plugins it might be useful to set the update interval based on the amount of data
+&lt;!-- for data-heavy plugins it might be useful to set the update interval based on the amount of data --&gt;
 {% set update_interval = (200 * (log_array | length)) %}
- --&gt;
-&lt;!-- set dataSet if you need specific data to be updated automatically. Also see init.py in plugin webif!
+
+&lt;!-- set dataSet if you need specific data to be updated automatically. Also see init.py in plugin webif!--&gt;
 {% set dataSet = &#39;devices_info&#39; %}
---&gt;
-&lt;!-- set update_params if you need to provide additional parameters for the auto-update function
+
+&lt;!-- set update_params if you need to provide additional parameters for the auto-update function--&gt;
 {% set update_params = item_id %}
---&gt;
-&lt;!-- if you don&#39;t need any buttons in the header, disable them completely
+
+&lt;!-- if you don&#39;t need any buttons in the header, disable them completely--&gt;
 {% set buttons = false %}
---&gt;
-&lt;!-- if you don&#39;t need any auto-refresh elements in the header, disable them
+
+&lt;!-- if you don&#39;t need any auto-refresh elements in the header, disable them--&gt;
 {% set autorefresh_buttons = false %}
---&gt;
-&lt;!-- if you don&#39;t need the reload_button in the header, disable it
+
+&lt;!-- if you don&#39;t need the reload_button in the header, disable it--&gt;
 {% set reload_button = false %}
---&gt;
-&lt;!-- if you don&#39;t need the close in the header, disable it
+
+&lt;!-- if you don&#39;t need the close in the header, disable it--&gt;
 {% set close_button = false %}
---&gt;
+
 
 &lt;!--
     Additional styles go into this block. Examples are for datatables
@@ -4469,44 +4469,37 @@
 --&gt;
 &lt;script&gt;
     $(document).ready( function () {
-            /*
-            loading defaults from /modules/http/webif/gstatic/datatables/datatables.defaults.js
-            You can copy that file, put it in your plugin directory, rename the &quot;bind&quot; function and
-            trigger that function here instead of datatables_defaults if you want to change the behaviour.
-            Of course you can also overwrite defaults by putting the option declarations in {} below.
-            */
-            $(window).trigger(&#39;datatables_defaults&#39;);
-      try {
+        /*
+        loading defaults from /modules/http/webif/gstatic/datatables/datatables.defaults.js
+        You can copy that file, put it in your plugin directory, rename the &quot;bind&quot; function and
+        trigger that function here instead of datatables_defaults if you want to change the behaviour.
+        Of course you can also overwrite defaults by putting the option declarations in {} below.
+        */
+        $(window).trigger(&#39;datatables_defaults&#39;);
         {% if webif_pagelength is defined %}webif_pagelength = {{ webif_pagelength|int }};{% endif %}
         if (isNaN(parseFloat(webif_pagelength)) || webif_pagelength == 0) {
-          resize = true;
-          webif_pagelength = -1;
+            resize = true;
+            webif_pagelength = -1;
+            console.log(&#39;Activating automatic table resize &#39; + webif_pagelength);
         }
         else {
-          resize = false;
+            resize = false;
         }
-        console.log(&quot;Using page length from http module/plugin &quot; + webif_pagelength + &quot;, pageResize: &quot; + resize);
-      }
-      catch (e) {
-        webif_pagelength = 100;
-        resize = false;
-        console.log(&quot;Using default values for page length &quot; + webif_pagelength + &quot;, pageResize: &quot; + resize);
-      }
-      try {
-        /*
-        Copy this part for every datatable on your page. Adjust options if necessary.
-        pageLength and pageResize should be included as they are to adjust it based on the plugin settings
-        */
-        table = $(&#39;#maintable&#39;).DataTable( {
-          /* If you want to define your own columnDefs options (e.g. for hiding a column by default), use the concat function shown here.
-          */
-          columnDefs: [{ &quot;targets&quot;: [2], &quot;className&quot;: &quot;value&quot;}].concat($.fn.dataTable.defaults.columnDefs),
-          pageLength: webif_pagelength,
-          pageResize: resize});
-      }
-      catch (e) {
-        console.warn(&quot;Datatable JS not loaded, showing standard table without reorder option &quot; + e);
-      }
+        try {
+            /*
+            Copy this part for every datatable on your page. Adjust options if necessary.
+            pageLength and pageResize should be included as they are to adjust it based on the plugin settings
+            */
+            table = $(&#39;#maintable&#39;).DataTable( {
+              /* If you want to define your own columnDefs options (e.g. for hiding a column by default), use the concat function shown here.
+              */
+              columnDefs: [{ &quot;targets&quot;: [2], &quot;className&quot;: &quot;value&quot;}].concat($.fn.dataTable.defaults.columnDefs),
+              pageLength: webif_pagelength,
+              pageResize: resize});
+        }
+        catch (e) {
+            console.warn(&quot;Datatable JS not loaded, showing standard table without reorder option &quot; + e);
+        }
     });
 &lt;/script&gt;
 &lt;!--
