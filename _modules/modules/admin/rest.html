@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>modules.admin.rest &mdash; Dokumentation v1.9.3.4 v1.9.3.4 develop (Stand 17. February 2023, commit dade08a) Dokumentation</title>
+  <title>modules.admin.rest &mdash; Dokumentation v1.9.3.4 v1.9.3.4 develop (Stand 17. February 2023, commit db55002) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -4450,6 +4450,7 @@
 <span class="sd">    with the post with the slug &#39;my-first-post&#39; that is owned by bob.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">REST_dispatch_execute_warnlevel</span> <span class="o">=</span> <span class="s1">&#39;WARNING&#39;</span>
 
     <span class="c1"># default method mapping. ie, if a GET request is made for</span>
     <span class="c1"># the resource&#39;s url, it will try to call an index() method (if it exists);</span>
@@ -4569,7 +4570,11 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">m</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;REST_dispatch_execute: </span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">REST_dispatch_execute_warnlevel</span> <span class="o">==</span> <span class="s1">&#39;WARNING&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;REST_dispatch_execute: </span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="s2">&quot;The following exception is thrown, due to the configuration in etc/module.yaml:&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;REST_dispatch_execute: </span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
                 <span class="n">response</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="nb">format</span><span class="p">(</span><span class="n">e</span><span class="p">)}</span>
                 <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
