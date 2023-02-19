@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>modules.websocket &mdash; Dokumentation v1.9.3.4 v1.9.3.4 develop (Stand 18. February 2023, commit db55002) Dokumentation</title>
+  <title>modules.websocket &mdash; Dokumentation v1.9.3.4 v1.9.3.4 develop (Stand 19. February 2023, commit 029ce7a) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4347,7 +4347,7 @@
 
 
 <div class="viewcode-block" id="Websocket"><a class="viewcode-back" href="../../referenz/module/module_websocket.html#modules.websocket.Websocket">[Doku]</a><span class="k">class</span> <span class="nc">Websocket</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
-    <span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;1.0.6&#39;</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;1.0.7&#39;</span>
     <span class="n">longname</span> <span class="o">=</span> <span class="s1">&#39;Websocket module for SmartHomeNG&#39;</span>
     <span class="n">port</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -4377,21 +4377,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tls_cert</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_value</span><span class="p">(</span><span class="s1">&#39;tls_cert&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tls_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_value</span><span class="p">(</span><span class="s1">&#39;tls_key&#39;</span><span class="p">)</span>
 
-        <span class="c1"># parameters and class instance for sync_example protocol</span>
-        <span class="c1"># hand the websocket module instance to protocol object</span>
-        <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">protocol_sync_example</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sync_example_protocol</span> <span class="o">=</span> <span class="n">protocol_sync_example</span><span class="o">.</span><span class="n">Sync_example</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-
-        <span class="c1"># parameters for smartVISU handling are initialized by the smartvisu plugin</span>
-        <span class="c1"># self.sv_enabled = self.get_parameter_value(&#39;sv_enabled&#39;)</span>
-        <span class="c1"># self.sv_acl = self.get_parameter_value(&#39;default_acl&#39;)</span>
-        <span class="c1"># self.sv_querydef = self.get_parameter_value(&#39;sv_querydef&#39;)</span>
-        <span class="c1"># self.sv_ser_upd_cycle = self.get_parameter_value(&#39;sv_ser_upd_cycle&#39;)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sv_enabled</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sv_acl</span> <span class="o">=</span> <span class="s1">&#39;deny&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sv_querydef</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sv_ser_upd_cycle</span> <span class="o">=</span> <span class="mi">0</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">ssl_context</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_tls</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ssl_context</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">SSLContext</span><span class="p">(</span><span class="n">ssl</span><span class="o">.</span><span class="n">PROTOCOL_TLS_SERVER</span><span class="p">)</span>
@@ -4415,17 +4400,16 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Listening on IP .: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ip</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;port / tls_port .: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tls_port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;use_tls .........: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">use_tls</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;certificate / key: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tls_cert</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tls_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;certificate .....: key: ../etc/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tls_cert</span><span class="si">}</span><span class="s2"> / ../etc/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tls_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># try to get API handles</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">items</span> <span class="o">=</span> <span class="n">Items</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logics</span> <span class="o">=</span> <span class="n">Logics</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_payload_protocols</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">loop</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1"># Var to hold the event loop for asyncio</span>
-
-        <span class="c1"># For Release 1.8 only: Enable smartVISU protocol support even if smartvisu plugin is not loaded</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_smartvisu_support</span><span class="p">(</span><span class="n">protocol_enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
+        <span class="k">return</span>
 
 <div class="viewcode-block" id="Websocket.start"><a class="viewcode-back" href="../../referenz/module/module_websocket.html#modules.websocket.Websocket.start">[Doku]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4464,6 +4448,38 @@
         <span class="k">return</span></div>
 
 
+<div class="viewcode-block" id="Websocket.initialize_payload_protocols"><a class="viewcode-back" href="../../referenz/module/module_websocket.html#modules.websocket.Websocket.initialize_payload_protocols">[Doku]</a>    <span class="k">def</span> <span class="nf">initialize_payload_protocols</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the supported payload protocols</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># parameters and class instance for sync_example protocol</span>
+        <span class="c1"># hand the websocket module instance to protocol object</span>
+        <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">protocol_sync_example</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sync_example_protocol</span> <span class="o">=</span> <span class="n">protocol_sync_example</span><span class="o">.</span><span class="n">Sync_example</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Payload protocol &#39;</span><span class="si">{</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">sync_example_protocol</span><span class="o">.</span><span class="n">protocol_name</span><span class="si">}</span><span class="s2">&#39; initialized (</span><span class="si">{</span><span class="s1">&#39;enabled&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">sync_example_protocol</span><span class="o">.</span><span class="n">protocol_enabled</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;disabled&#39;</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+        <span class="c1"># parameters for smartVISU handling are initialized by the smartvisu plugin</span>
+        <span class="c1"># self.sv_protocol_enabled = self.get_parameter_value(&#39;sv_enabled&#39;)</span>
+        <span class="c1"># self.sv_acl = self.get_parameter_value(&#39;default_acl&#39;)</span>
+        <span class="c1"># self.sv_querydef = self.get_parameter_value(&#39;sv_querydef&#39;)</span>
+        <span class="c1"># self.sv_ser_upd_cycle = self.get_parameter_value(&#39;sv_ser_upd_cycle&#39;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sv_protocol_name</span> <span class="o">=</span> <span class="s1">&#39;smartVISU&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sv_protocol_path</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sv_protocol_enabled</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sv_acl</span> <span class="o">=</span> <span class="s1">&#39;deny&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sv_querydef</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sv_ser_upd_cycle</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Payload protocol &#39;</span><span class="si">{</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">sv_protocol_name</span><span class="si">}</span><span class="s2">&#39; initialized (</span><span class="si">{</span><span class="s1">&#39;enabled&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">sv_protocol_enabled</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;disabled&#39;</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+        <span class="c1"># For Release 1.8 only: Enable smartVISU protocol support even if smartvisu plugin is not loaded</span>
+        <span class="c1">#self.set_smartvisu_support(protocol_enabled=True)</span>
+
+        <span class="k">return</span></div>
+
+
 <div class="viewcode-block" id="Websocket.set_smartvisu_support"><a class="viewcode-back" href="../../referenz/module/module_websocket.html#modules.websocket.Websocket.set_smartvisu_support">[Doku]</a>    <span class="k">def</span> <span class="nf">set_smartvisu_support</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol_enabled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default_acl</span><span class="o">=</span><span class="s1">&#39;ro&#39;</span><span class="p">,</span> <span class="n">query_definitions</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">series_updatecycle</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set state of smartvisu support</span>
@@ -4472,12 +4488,14 @@
 <span class="sd">        :param query_definitions:   enable or disable the query of item definitions over websocket protocol</span>
 <span class="sd">        :param series_updatecycle:  update cycle for smartVISU series requests (if 0, timing from database plugin is used)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sv_enabled</span> <span class="o">=</span> <span class="n">protocol_enabled</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sv_acl</span> <span class="o">=</span> <span class="n">default_acl</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sv_querydef</span> <span class="o">=</span> <span class="n">query_definitions</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sv_ser_upd_cycle</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">series_updatecycle</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;set_smartvisu_support: Set to protocol_enabled=</span><span class="si">{</span><span class="n">protocol_enabled</span><span class="si">}</span><span class="s2">, default_acl=</span><span class="si">{</span><span class="n">default_acl</span><span class="si">}</span><span class="s2">, query_definitions=</span><span class="si">{</span><span class="n">query_definitions</span><span class="si">}</span><span class="s2">, series_updatecycle=</span><span class="si">{</span><span class="n">series_updatecycle</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="c1"># self.sv_config = {&#39;enabled&#39;: self.sv_enabled, &#39;acl&#39;: self.sv_acl, &#39;query_def&#39;: self.sv_querydef, &#39;upd_cycle&#39;: self.sv_ser_upd_cycle}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sv_protocol_enabled</span> <span class="o">=</span> <span class="n">protocol_enabled</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sv_protocol_enabled</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Payload protocol &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sv_protocol_name</span><span class="si">}</span><span class="s2">&#39; enabled&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;set_smartvisu_support: Set to default_acl=</span><span class="si">{</span><span class="n">default_acl</span><span class="si">}</span><span class="s2">, query_definitions=</span><span class="si">{</span><span class="n">query_definitions</span><span class="si">}</span><span class="s2">, series_updatecycle=</span><span class="si">{</span><span class="n">series_updatecycle</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># self.sv_config = {&#39;enabled&#39;: self.sv_protocol_enabled, &#39;acl&#39;: self.sv_acl, &#39;query_def&#39;: self.sv_querydef, &#39;upd_cycle&#39;: self.sv_ser_upd_cycle}</span>
         <span class="c1"># self.logger.warning(f&quot;sv_config {self.sv_config}&quot;)</span>
 
         <span class="c1"># self.stop()</span>
@@ -4486,16 +4504,31 @@
 
 
 <div class="viewcode-block" id="Websocket.get_port"><a class="viewcode-back" href="../../referenz/module/module_websocket.html#modules.websocket.Websocket.get_port">[Doku]</a>    <span class="k">def</span> <span class="nf">get_port</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the port used for the ws:// protocol</span>
+
+<span class="sd">        :return: port number</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span></div>
 
 
 <div class="viewcode-block" id="Websocket.get_tls_port"><a class="viewcode-back" href="../../referenz/module/module_websocket.html#modules.websocket.Websocket.get_tls_port">[Doku]</a>    <span class="k">def</span> <span class="nf">get_tls_port</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the port used for the secure wss:// protocol</span>
+
+<span class="sd">        :return: port number</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tls_port</span></div>
 
 
 <div class="viewcode-block" id="Websocket.get_use_tls"><a class="viewcode-back" href="../../referenz/module/module_websocket.html#modules.websocket.Websocket.get_use_tls">[Doku]</a>    <span class="k">def</span> <span class="nf">get_use_tls</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns True, if secure websocket protocol (wss://) is enabled</span>
+
+<span class="sd">        :return: True, if secure websocket protocol is enabled</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_tls</span></div>
 
@@ -4595,14 +4628,14 @@
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
 
-            <span class="k">if</span> <span class="n">path</span> <span class="o">==</span> <span class="s1">&#39;/&#39;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">sv_enabled</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">path</span> <span class="o">==</span> <span class="s1">&#39;/&#39;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">sv_protocol_enabled</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting &#39;smartVISU&#39; payload protocol&quot;</span><span class="p">)</span>
                 <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">smartVISU_protocol_v4</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">path</span> <span class="o">==</span> <span class="s1">&#39;/sync&#39;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting &#39;sync_example_protocol&#39; payload protocol&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">path</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync_example_protocol</span><span class="o">.</span><span class="n">protocol_path</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync_example_protocol</span><span class="o">.</span><span class="n">protocol_enabled</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sync_example_protocol</span><span class="o">.</span><span class="n">protocol_name</span><span class="si">}</span><span class="s2">&#39; payload protocol&quot;</span><span class="p">)</span>
                 <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync_example_protocol</span><span class="o">.</span><span class="n">counter_sync</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported websocket path &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39; - terminating connection&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported websocket path &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39; used by </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">client_address</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span><span class="si">}</span><span class="s2">. Cannot determine payload protocol - terminating connection&quot;</span><span class="p">)</span>
 
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="c1"># connection has been ended or not established in payload protocol</span>
@@ -4625,6 +4658,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># test, if a smartVISU session has to be ended</span>
         <span class="k">if</span> <span class="n">websocket</span><span class="o">.</span><span class="n">path</span> <span class="o">==</span> <span class="s1">&#39;/&#39;</span><span class="p">:</span>
+            <span class="c1"># smartVISU client</span>
             <span class="n">client_addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_address</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sv_cancel_all_abos</span><span class="p">(</span><span class="n">client_addr</span><span class="p">)</span>
 
@@ -4637,9 +4671,9 @@
 <span class="sd">        Print info about connection/disconnection of users</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">websocket</span><span class="o">.</span><span class="n">remote_address</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;USER </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">&#39;with SSL connection&#39;</span><span class="si">}</span><span class="s2"> - local port: </span><span class="si">{</span><span class="n">websocket</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;USER </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">&#39;with SSL connection&#39;</span><span class="si">}</span><span class="s2"> - local port: </span><span class="si">{</span><span class="n">websocket</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2"> - path: </span><span class="si">{</span><span class="n">websocket</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;USER </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">build_client_info</span><span class="p">(</span><span class="n">websocket</span><span class="o">.</span><span class="n">remote_address</span><span class="p">)</span><span class="si">}</span><span class="s2"> - local port: </span><span class="si">{</span><span class="n">websocket</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;USER </span><span class="si">{</span><span class="n">action</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">build_client_info</span><span class="p">(</span><span class="n">websocket</span><span class="o">.</span><span class="n">remote_address</span><span class="p">)</span><span class="si">}</span><span class="s2"> - local port: </span><span class="si">{</span><span class="n">websocket</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2"> - path: </span><span class="si">{</span><span class="n">websocket</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">dbghigh</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connected USERS: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">USERS</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">USERS</span><span class="p">:</span>
@@ -4704,11 +4738,11 @@
 <span class="sd">        :param client_addr:</span>
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;sv_cancel_all_abos - Client-Addr </span><span class="si">{</span><span class="n">client_addr</span><span class="si">}</span><span class="s2"> : &quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- sv_Series-Dict : </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sv_update_series</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- sv_clients-Dict : </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sv_clients</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- sv_monitor_logs-Dict : </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sv_monitor_logs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- sv_monitor_items-Dict : </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sv_monitor_items</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;sv_cancel_all_abos - Client-Addr </span><span class="si">{</span><span class="n">client_addr</span><span class="si">}</span><span class="s2"> : &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- sv_Series-Dict : </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sv_update_series</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- sv_clients-Dict : </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sv_clients</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- sv_monitor_logs-Dict : </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sv_monitor_logs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- sv_monitor_items-Dict : </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sv_monitor_items</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># Remove client from series updates</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">client_addr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sv_update_series</span><span class="p">):</span>
