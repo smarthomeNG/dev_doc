@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 23. February 2023, commit beb9dc3) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 23. February 2023, commit da658a9) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -4409,6 +4409,8 @@
 <span class="sd">        This method should be called from parse_item to register the item. If parse_item returns a reference to `update_item`,</span>
 <span class="sd">        this method is called again by the Item instance itself to change the `is_updating` key.</span>
 
+<span class="sd">        :note: Only available in SmartHomeNG versions v1.9.4 and up.</span>
+
 <span class="sd">        :param item: item</span>
 <span class="sd">        :param config_data_dict: Dictionary with the plugin-specific configuration information for the item</span>
 <span class="sd">        :param mapping: String identifing the origin (source/kind) of received data (e.g. the address on a bus)</span>
@@ -4502,6 +4504,10 @@
 <span class="sd">        #       as non-updating first. Registering them as updating usually only</span>
 <span class="sd">        #       occurs via parse_item(), which in turn makes the item class</span>
 <span class="sd">        #       add the item as updating.</span>
+
+<span class="sd">        :param item: item object</span>
+<span class="sd">        :type item: item</span>
+<span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
@@ -4527,6 +4533,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the plugin-specific mapping that was defined by add_item()</span>
 
+<span class="sd">        :note: Only available in SmartHomeNG versions v1.9.4 and up.</span>
+
 <span class="sd">        :param item: item to get config info for</span>
 <span class="sd">        :type item: class Item or str with path of an item</span>
 
@@ -4542,6 +4550,8 @@
 <div class="viewcode-block" id="SmartPlugin.get_item_path_list"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_item_path_list">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_path_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filter_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return list of stored item paths used by this plugin</span>
+
+<span class="sd">        :note: Only available in SmartHomeNG versions v1.9.4 and up.</span>
 
 <span class="sd">        :param filter_key: key of the configdata dict used to filter</span>
 <span class="sd">        :param filter_value: value for filtering item_path_list</span>
@@ -4561,6 +4571,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return list of stored items used by this plugin</span>
 
+<span class="sd">        :note: Only available in SmartHomeNG versions v1.9.4 and up.</span>
+
 <span class="sd">        :param filter_key: key of the configdata dict used to filter</span>
 <span class="sd">        :param filter_value: value for filtering item_path_list</span>
 <span class="sd">        :type filter_key: str</span>
@@ -4577,12 +4589,16 @@
 <div class="viewcode-block" id="SmartPlugin.get_trigger_items"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_trigger_items">[Doku]</a>    <span class="k">def</span> <span class="nf">get_trigger_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return list of stored items which were marked as updating</span>
+
+<span class="sd">        :note: Only available in SmartHomeNG versions v1.9.4 and up.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;is_updating&#39;</span><span class="p">]]</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.get_items_for_command"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_items_for_command">[Doku]</a>    <span class="k">def</span> <span class="nf">get_items_for_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_items_for_mapping"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_items_for_mapping">[Doku]</a>    <span class="k">def</span> <span class="nf">get_items_for_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of items that should receive data for the given mapping</span>
+
+<span class="sd">        :note: Only available in SmartHomeNG versions v1.9.4 and up.</span>
 
 <span class="sd">        :param mapping: mapping, for which the receiving items should be returned</span>
 <span class="sd">        :type mapping: str</span>
@@ -4595,6 +4611,8 @@
 <div class="viewcode-block" id="SmartPlugin.get_mappings"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_mappings">[Doku]</a>    <span class="k">def</span> <span class="nf">get_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list containing all mappings, which have items associated with it</span>
+
+<span class="sd">        :note: Only available in SmartHomeNG versions v1.9.4 and up.</span>
 
 <span class="sd">        :return: List of mappings</span>
 <span class="sd">        :rtype: list</span>
@@ -4618,8 +4636,6 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        return the name of the plugin instance as defined in plugin.yaml (section name)</span>
 
-<span class="sd">        :note: Only available in SmartHomeNG versions **beyond** v1.4</span>
-
 <span class="sd">        :return: name of the plugin instance as defined in plugin.yaml</span>
 <span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -4632,8 +4648,6 @@
 
 <span class="sd">        :Note: Usually **you don&#39;t need to call this method**, since it is called during loading of the plugin</span>
 
-<span class="sd">        :note: Only available in SmartHomeNG versions **beyond** v1.4</span>
-
 <span class="sd">        :param configname: name of the plugin instance as defined in plugin.yaml</span>
 <span class="sd">        :type configname: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -4643,8 +4657,6 @@
 <div class="viewcode-block" id="SmartPlugin.get_shortname"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_shortname">[Doku]</a>    <span class="k">def</span> <span class="nf">get_shortname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        return the shortname of the plugin (name of it&#39;s directory)</span>
-
-<span class="sd">        :note: Only available in SmartHomeNG versions **beyond** v1.3</span>
 
 <span class="sd">        :return: shortname of the plugin</span>
 <span class="sd">        :rtype: str</span>
@@ -4657,8 +4669,6 @@
 <span class="sd">        ...</span>
 
 <span class="sd">        :Note: Usually **you don&#39;t need to call this method**, since it is called during loading of the plugin</span>
-
-<span class="sd">        :note: Only available in SmartHomeNG versions **beyond** v1.3</span>
 
 <span class="sd">        :param shortname: short name of the plugin (name of it&#39;s directory)</span>
 <span class="sd">        :type shortname: str</span>
@@ -4695,8 +4705,6 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        return the full name of the plugin (shortname &amp; instancename)</span>
 
-<span class="sd">        :note: Only available in SmartHomeNG versions v1.3c and up</span>
-
 <span class="sd">        :return: full name of the plugin</span>
 <span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -4711,8 +4719,6 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        return the classname of the plugin</span>
 
-<span class="sd">        :note: Only available in SmartHomeNG versions **beyond** v1.3</span>
-
 <span class="sd">        :return: classname of the plugin</span>
 <span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -4724,8 +4730,6 @@
 <span class="sd">        ...</span>
 
 <span class="sd">        :Note: Usually **you don&#39;t need to call this method**, since it is called during loading of the plugin</span>
-
-<span class="sd">        :note: Only available in SmartHomeNG versions **beyond** v1.3</span>
 
 <span class="sd">        :param classname: name of the plugin&#39;s class</span>
 <span class="sd">        :type classname: str</span>
@@ -4783,8 +4787,6 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        return the directory where the pluing files are stored in</span>
 
-<span class="sd">        :note: Only available in SmartHomeNG versions **beyond** v1.3</span>
-
 <span class="sd">        :return: name of the directory</span>
 <span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -4797,8 +4799,6 @@
 <span class="sd">        You can reference the main object of SmartHmeNG by using self._plugin_dir.</span>
 
 <span class="sd">        :Note: Usually **you don&#39;t need to call this method**, since it is called during loading of the plugin by PluginWrapper</span>
-
-<span class="sd">        :note: Only available in SmartHomeNG versions **beyond** v1.3</span>
 
 <span class="sd">        :param dir: name of the directory where the plugin resides in</span>
 <span class="sd">        :type dir: str</span>
@@ -5065,8 +5065,6 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the main object of smarthomeNG (usually refered to as **smarthome** or **sh**)</span>
 <span class="sd">        You can reference the main object of SmartHomeNG by using self.get_sh() in your plugin</span>
-
-<span class="sd">        :note: Only available in SmartHomeNG versions **beyond** v1.3</span>
 
 <span class="sd">        :return: the main object of smarthomeNG (usually refered to as **smarthome** or **sh**)</span>
 <span class="sd">        :rtype: object</span>
