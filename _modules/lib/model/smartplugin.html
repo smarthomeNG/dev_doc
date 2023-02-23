@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 22. February 2023, commit 2a25cc9) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 23. February 2023, commit beb9dc3) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -4539,17 +4539,40 @@
             <span class="n">item_path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mapping&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.get_item_path_list"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_item_path_list">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_path_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_item_path_list"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_item_path_list">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_path_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filter_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return list of stored item paths</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span></div>
+<span class="sd">        Return list of stored item paths used by this plugin</span>
 
-<div class="viewcode-block" id="SmartPlugin.get_item_list"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_item_list">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return list of stored items</span>
+<span class="sd">        :param filter_key: key of the configdata dict used to filter</span>
+<span class="sd">        :param filter_value: value for filtering item_path_list</span>
+<span class="sd">        :type filter_key: str</span>
+<span class="sd">        :type filter_value: any</span>
+
+<span class="sd">        :return: List of item pathes</span>
+<span class="sd">        :rtype: list(str)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">]</span></div>
+        <span class="k">if</span> <span class="n">filter_key</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">filter_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">]</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;config_data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">filter_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">filter_value</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="SmartPlugin.get_item_list"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_item_list">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filter_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return list of stored items used by this plugin</span>
+
+<span class="sd">        :param filter_key: key of the configdata dict used to filter</span>
+<span class="sd">        :param filter_value: value for filtering item_path_list</span>
+<span class="sd">        :type filter_key: str</span>
+<span class="sd">        :type filter_value: any</span>
+
+<span class="sd">        :return: List of item objects</span>
+<span class="sd">        :rtype: list(item)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">filter_key</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">filter_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;config_data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">filter_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">filter_value</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="SmartPlugin.get_trigger_items"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_trigger_items">[Doku]</a>    <span class="k">def</span> <span class="nf">get_trigger_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
