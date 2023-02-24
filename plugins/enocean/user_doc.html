@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>enocean &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 23. February 2023, commit f78528f) Dokumentation</title>
+  <title>enocean &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 24. February 2023, commit f78528f) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -754,6 +754,12 @@
 <li class="toctree-l4"><a class="reference internal" href="#anforderungen">Anforderungen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#konfiguration">Konfiguration</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#plugin-yaml">plugin.yaml</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#item-yaml">item.yaml</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#enocean-equipment-profiles">Enocean Equipment Profiles</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#status-eeps">Status EEPs</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#steuer-eeps">Steuer EEPs</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#web-interface">Web Interface</a><ul>
@@ -1842,6 +1848,12 @@
 <li class="toctree-l4"><a class="reference internal" href="#anforderungen">Anforderungen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#konfiguration">Konfiguration</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#plugin-yaml">plugin.yaml</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#item-yaml">item.yaml</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#enocean-equipment-profiles">Enocean Equipment Profiles</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#status-eeps">Status EEPs</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#steuer-eeps">Steuer EEPs</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#web-interface">Web Interface</a><ul>
@@ -4305,7 +4317,7 @@
 <a class="reference internal image-reference" href="../../_images/plugin_logo7.png"><img alt="plugin logo" class="align-left" src="../../_images/plugin_logo7.png" style="width: 150.0px; height: 150.0px;" /></a>
 <section id="allgemein">
 <h2>Allgemein<a class="headerlink" href="#allgemein" title="Permalink to this heading"></a></h2>
-<p>Enocean plugin zur Integration von Enocean Funksensoren und -aktoren, z.B. von Eltako.</p>
+<p>Enocean plugin zur Integration von Enocean Funksensoren und -aktoren, z.B. von Eltako, Gira, Hoppe, Peha.</p>
 </section>
 <section id="anforderungen">
 <h2>Anforderungen<a class="headerlink" href="#anforderungen" title="Permalink to this heading"></a></h2>
@@ -4319,46 +4331,139 @@
 </div></blockquote>
 <div class="admonition important">
 <p class="admonition-title">Wichtig</p>
-<p>Der user <cite>samrthome</cite>, unter dem smarthomeNG ausgeführt wird, muss die nötigen Zugriffsrechte
+<p>Der user <cite>smarthome</cite>, unter dem smarthomeNG ausgeführt wird, muss die nötigen Zugriffsrechte
 auf die Linux Gruppe <cite>dialout</cite> besitzen, damit die Hardware über Linux devices angesprochen und konfiguriert werden kann.</p>
 </div>
 <p>Hierzu folgendes in der Linux Konsole ausführen:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>gpasswd<span class="w"> </span>--add<span class="w"> </span>smarthome<span class="w"> </span>dialout
+</pre></div>
+</div>
+<p>Aktoren, Schalter oder Stellglieder, die vom Enocean plugin gesteuert werden sollen, müssen vorher einmalig angelert werden. Der Anlernvorgang wird unten im Kaptiel Webinterface beschrieben.
+Für das Auslesen von Statusinfromationen von Enocean Sensoren ist kein Anlernvorgang nötig.</p>
 </section>
 <section id="konfiguration">
 <h2>Konfiguration<a class="headerlink" href="#konfiguration" title="Permalink to this heading"></a></h2>
 <p>Die Informationen zur Konfiguration des Plugins sind unter <a class="reference internal" href="../../plugins_doc/config/enocean.html"><span class="doc">Plugin ‚enocean‘ Konfiguration</span></a> beschrieben.</p>
 <section id="plugin-yaml">
 <h3>plugin.yaml<a class="headerlink" href="#plugin-yaml" title="Permalink to this heading"></a></h3>
-<p><em>serialport</em></p>
+<p><strong>serialport</strong></p>
 <p>Hier wird der <cite>serialport</cite> zum Enocean Hardwareadapter angegeben werden.
 Unter Linux wird empfohlen, das entsprechende Linux Uart device über eine Udev-Regel auf einen Link zu mappen und diesen Link dann als <cite>serialport</cite> anzugeben.</p>
-<p><em>tx_id</em>
-Die tx_id ist die Transmitter ID der Enocean Hardware und als achtstelliger Hexadezimalwert definiert. Die Angabe ist erstmal optional und muss nur zwingend angegeben werden,
+<p><strong>tx_id</strong></p>
+<p>Die tx_id ist die Transmitter ID der Enocean Hardware und als achtstelliger Hexadezimalwert definiert. Die Angabe ist erstmal optional und muss nur zwingend angegeben werden,
 falls Enocean Aktoren geschaltet werden sollen, d.h. der Hardware Kontroller auch Senebefehle absetzen muss.</p>
 <p>Werden mehrere Aktuatoren betrieben, sollte die Base-ID (<strong>not Unique-ID or Chip-ID</strong>) der Enocean Hardware als Transmitter ID angegeben werden.
-Weitere Information zum Unterschied zwischen Base-ID und Chip-ID finden sich unter:
-<code class="docutils literal notranslate"><span class="pre">https://www.enocean.com/en/knowledge-base-doku/enoceansystemspecification%3Aissue%3Awhat_is_a_base_id/</span></code></p>
+Weitere Information zum Unterschied zwischen Base-ID und Chip-ID finden sich unter:</p>
+<p><a class="reference external" href="https://www.enocean.com/en/knowledge-base-doku/enoceansystemspecification%3Aissue%3Awhat_is_a_base_id/">https://www.enocean.com/en/knowledge-base-doku/enoceansystemspecification%3Aissue%3Awhat_is_a_base_id/</a></p>
 <p>Über die Angabe der Base-ID können für die Kommunikation mit den Aktuatoren 128 verschiedene Sende-IDs im Wertebereich von (Base-ID und Base-ID + 127) vergeben werden.</p>
-<p><em>Wie bekommt man die Base-ID des Enocean Adapters?</em>
-Es gibt zwei verschiedene Wege, um die Base ID der Enocean Hardware auszulesen:</p>
+<p><strong>Wie bekommt man die Base-ID des Enocean Adapters?</strong></p>
+<p>Es gibt zwei verschiedene Wege, um die Base ID der Enocean Hardware auszulesen:</p>
 <blockquote>
 <div><ol class="loweralpha simple">
 <li><p>Über das Enocean Plugin Webinterface</p></li>
 <li><p>Über die smarthomeNG Logdateien, die durch das Enocean plugin erzeugt werden.</p></li>
 </ol>
 </div></blockquote>
-<p>Zu a)
-1. Konfiguriere das Enocean plugin in der plugin.yaml mit leerer tx_id (oder tx_id = 0).
-2. Starte SmarthomeNG neu.
-3. Öffne das Enocean webinterface des Plugins unter: <a class="reference external" href="http://localip:8383/enocean/">http://localip:8383/enocean/</a>
-4. Ablesen der Transceiver’s BaseID, welches auf der oberen recten Seite angezeigt wird.
-5. Übernahme der im Webinterface angezeigten Base-ID in die plugin.yaml als Parameter <cite>tx_id</cite>.</p>
-<p>Zu b)
-1. Konfiguriere das Enocean plugin in der plugin.yaml mit leerer tx_id (oder tx_id = 0).
-2. Konfiguriere das Loglevel INFO in logger.yaml für das Enocean Plugin. Alternativ über das Admin Interface unter Logger
-3. Starte SmarthomeNG neu.
-4. Nach dem Neustart das Logfile öffnen und nach dem Eintrag <code class="docutils literal notranslate"><span class="pre">enocean:</span> <span class="pre">Base</span> <span class="pre">ID</span> <span class="pre">=</span> <span class="pre">0xYYYYZZZZ</span></code> suchen.
-6. Übernahme dieser im Log angezeigten Base-ID in die plugin.yaml als Parameter <cite>tx_id</cite>.</p>
+<p>Zu a)</p>
+<ol class="arabic simple">
+<li><p>Konfiguriere das Enocean plugin in der plugin.yaml mit leerer tx_id (oder tx_id = 0).</p></li>
+<li><p>Starte SmarthomeNG neu.</p></li>
+<li><p>Öffne das Enocean webinterface des Plugins unter: <a class="reference external" href="http://smarthome.local:8383/enocean">http://smarthome.local:8383/enocean</a></p></li>
+<li><p>Ablesen der Transceiver’s BaseID, welches auf der oberen recten Seite angezeigt wird.</p></li>
+<li><p>Übernahme der im Webinterface angezeigten Base-ID in die plugin.yaml als Parameter <cite>tx_id</cite>.</p></li>
+</ol>
+<p>Zu b)</p>
+<ol class="arabic simple">
+<li><p>Konfiguriere das Enocean plugin in der plugin.yaml mit leerer tx_id (oder tx_id = 0).</p></li>
+<li><p>Konfiguriere das Loglevel INFO in logger.yaml für das Enocean Plugin. Alternativ über das Admin Interface unter Logger</p></li>
+<li><p>Starte SmarthomeNG neu.</p></li>
+<li><p>Nach dem Neustart das Logfile öffnen und nach dem Eintrag <code class="docutils literal notranslate"><span class="pre">enocean:</span> <span class="pre">Base</span> <span class="pre">ID</span> <span class="pre">=</span> <span class="pre">0xYYYYZZZZ</span></code> suchen.</p></li>
+</ol>
+<ol class="arabic simple" start="6">
+<li><p>Übernahme dieser im Log angezeigten Base-ID in die plugin.yaml als Parameter <cite>tx_id</cite>.</p></li>
+</ol>
+</section>
+<section id="item-yaml">
+<h3>item.yaml<a class="headerlink" href="#item-yaml" title="Permalink to this heading"></a></h3>
+<p>#### enocean_rx_id, enocean_rx_eep and enocean_tx_id_offset
+Ein EnOcean Item (Sensor oder Aktor) muss mindestens ein <code class="docutils literal notranslate"><span class="pre">enocean_rx_id</span></code> und ein <code class="docutils literal notranslate"><span class="pre">enocean_rx_eep</span></code> Attribut definieren.
+Der Attribut <a href="#id1"><span class="problematic" id="id2">``</span></a>enocean_rx_id‘‘ gibt dabei die eindeutige ID (EnOcean Identification Number) als hexadezimaler String an. Dieser ist auf dem Gerät vermerkt.
+Alternativ kann über das Webinterface unbekannte IDs von sendeden Enocean Geräten in der Nähe angezeigt werden.</p>
+<p>Die Enocean EEP gibt das EnOcean Equipment Profile an. Das Datenblatt des Enocean Geräts verrät, welche EEPs unterstützt werden.
+In einer Nachricht einer bestimmten Nachricht können sich verschiedene Signale wie z.B. Batteriestatus, Schaltstatus (an/aus) etc. befinden. Um diese Signale den einzelnen smarthomeNG
+Items zuzuordnen, werden abgekürzte <cite>Keys</cite> verwendet und als Attribut <a href="#id3"><span class="problematic" id="id4">``</span></a>enocean_rx_key angegeben.</p>
+<p>Im Beispiel sind die verschiedenen <cite>Keys</cite> ersichtlich. Folgende <cite>Keys</cite> werden vom Plugin unterstützt:</p>
+<blockquote>
+<div><p><strong>Schalter mit zwei Tastern</strong>, (EEP F6_02_01 oder F6_02_02)</p>
+<blockquote>
+<div><p>AI = left rocker down
+A0 = left rocker up
+BI = right rocker down
+B0 = right rocker up</p>
+</div></blockquote>
+<p><a href="#id5"><span class="problematic" id="id6">**</span></a>Schalter mit zwei Tastern), (EEP F6_02_03)</p>
+<blockquote>
+<div><p>AI = left rocker down
+A0 = left rocker up
+BI = right rocker down
+B0 = right rocker up
+A = last state of left rocker
+B = last state of right rocker</p>
+</div></blockquote>
+<p><strong>Fenstergriff</strong>, (EEP F6_10_0)</p>
+<blockquote>
+<div><p>STATUS = handle_status</p>
+</div></blockquote>
+</div></blockquote>
+<p>Sendende Items, z.B. um Schaltaktoren zu schalten, benötigen weiterhin eine Transmitting ID. Diese wird im Attribut <code class="docutils literal notranslate"><span class="pre">enocean_tx_id_offset</span></code> definiert.</p>
+</section>
+</section>
+<section id="enocean-equipment-profiles">
+<h2>Enocean Equipment Profiles<a class="headerlink" href="#enocean-equipment-profiles" title="Permalink to this heading"></a></h2>
+<p>Das Encoean Protokoll basiert auf sogenannten EnOcean Equipment Profilen (EEPs). Sie definieren den Nachrichtentyp der vm EnOcean Gerät gesendet wird.
+EEPs sind standardisiert. Informationen dazu können unter <a class="reference external" href="http://www.enocean-alliance.org/eep/">http://www.enocean-alliance.org/eep/</a> gefunden werden.</p>
+<section id="status-eeps">
+<h3>Status EEPs<a class="headerlink" href="#status-eeps" title="Permalink to this heading"></a></h3>
+<p>Die folgenden Status EEPs werden vom Plugin aktuell unterstützt:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>A5_02_01 - A5_02_0B  Temperature Sensors (40Â°C overall range, various starting offsets, 1/6Â°C resolution)</p></li>
+<li><p>A5_02_10 - A5_02_1B  Temperature Sensors (80Â°C overall range, various starting offsets, 1/3Â°C resolution)</p></li>
+<li><p>A5_02_20             High Precision Temperature Sensor (ranges -10*C to +41.2Â°C, 1/20Â°C resolution)</p></li>
+<li><p>A5_02_30             High Precision Temperature Sensor (ranges -40*C to +62.3Â°C, 1/10Â°C resolution)</p></li>
+<li><p>A5_04_02             Energy (optional), humidity and temperature sensor</p></li>
+<li><p>A5_07_03             Occupancy sensor, e.g. NodOn PIR-2-1-0x</p></li>
+<li><p>A5_08_01             Brightness and movement sensor</p></li>
+<li><p>A5_11_04             Dimmer status feedback</p></li>
+<li><p>A5_12_01             Power Measurement, e.g. Eltako FSVA-230V</p></li>
+<li><p>A5_0G_03             shutter feedback in s if actor is stopped before reaching his position (for calculation of new position)</p></li>
+<li><p>A5_30_01             Alarm sensor, e.g. Eltako FSM60B water leak sensor</p></li>
+<li><p>A5_30_03             Alarm sensor, e.g. Eltako FSM60B water leak sensor</p></li>
+<li><p>D2_01_07             Simple electronic switch</p></li>
+<li><p>D2_01_12             Simple electronic switch with 2 channels, like NodOn In-Wall module</p></li>
+<li><p>D5_00_01             Door/Window Contact, e.g. Eltako FTK, FTKB</p></li>
+<li><p>F6_02_01             2-Button-Rocker</p></li>
+<li><p>F6_02_02             2-Button-Rocker</p></li>
+<li><p>F6_02_03             2-Button-Rocker, Status feedback from manual buttons on different actors, e.g. Eltako FT55, FSUD-230, FSVA-230V, FSB61NP-230V or Gira switches.</p></li>
+<li><p>F6_10_00             Mechanical Handle (value: 0(closed), 1(open), 2(tilted)</p></li>
+<li><p>F6_0G_03             Feedback of shutter actor (Eltako FSB14, FSB61, FSB71 - actor for Shutter) if reaching the endposition and if motor is active</p></li>
+</ul>
+</div></blockquote>
+<p>Eine vollständige Liste aller EEPs mit detallierten Informationen findet sich unter [EnOcean Alliance](<a class="reference external" href="http://www.enocean-alliance.org/eep/">http://www.enocean-alliance.org/eep/</a>)</p>
+</section>
+<section id="steuer-eeps">
+<h3>Steuer EEPs<a class="headerlink" href="#steuer-eeps" title="Permalink to this heading"></a></h3>
+<p>Die folgenden Sende EEPs werden vom Plugin aktuell unterstützt:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>A5_38_08_01          Regular switch actor command (on/off)</p></li>
+<li><p>A5_38_08_02          Dimmer command with fix on off command (on: 100, off:0)</p></li>
+<li><p>A5_38_08_03          Dimmer command with specified dim level (0-100)</p></li>
+<li><p>A5_3F_7F             Universal actuator command, e.g. blind control</p></li>
+<li><p>D2_01_07             Simple electronic switch</p></li>
+<li><p>D2_01_12             Simple electronic switch with 2 channels</p></li>
+</ul>
+</div></blockquote>
 </section>
 </section>
 <section id="web-interface">
@@ -4368,7 +4473,35 @@ Es gibt zwei verschiedene Wege, um die Base ID der Enocean Hardware auszulesen:<
 <h3>Aufruf des Webinterfaces<a class="headerlink" href="#aufruf-des-webinterfaces" title="Permalink to this heading"></a></h3>
 <p>Das Plugin kann aus dem Admin Interface aufgerufen werden. Dazu auf der Seite Plugins in der entsprechenden
 Zeile das Icon in der Spalte <strong>Web Interface</strong> anklicken.</p>
-<p>Außerdem kann das Webinterface direkt über <code class="docutils literal notranslate"><span class="pre">http://smarthome.local:8383/enocean</span></code> aufgerufen werden.</p>
+<p>Außerdem kann das Webinterface direkt über <a class="reference external" href="http://smarthome.local:8383/enocean">http://smarthome.local:8383/enocean</a> aufgerufen werden.</p>
+<p>Das Webinterface zeigt oben rechts allgemeine Informationen, wie</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>die BaseID der verwendeten Hardware</p></li>
+<li><p>ob der Sendemodus aktiviert ist</p></li>
+<li><p>ob empfangene Enocean Nachrichten von unbekannten (nicht konfigurierten) Geräten in die Konsole geloggt werden sollen</p></li>
+<li><p>ob der UTE Anlernmodus aktiviert ist.</p></li>
+</ul>
+</div></blockquote>
+<p>Weiterhin können über Schaltflächen</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>der Sendemodus aktiviert und deaktiviert werden</p></li>
+<li><p>der UTE Anlernmodus aktiviert und deaktiviert werden</p></li>
+<li><p>das Logging von empfangenen Nachrichten unbekannten Enocean Geräte aktiviert und deaktiviert werden.</p></li>
+</ul>
+</div></blockquote>
+<p>Unter dem TAB <cite>Übersicht</cite> werden alle konfigurierten Enocean items angezeigt.</p>
+<p>Unter dem TAB ‚Neu anlerenen‘ können neue Enocean Aktuatoren angelernt werden. Hierzu wird</p>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>Der entsprechende Aktor/Stellglied in den Anlernmodus gebracht (siehe jeweilige Bedienungsanleitung)</p></li>
+<li><p>Eine Transmit ID ausgewählt (TX ID). Enocean unterstützt bis zu 127 verschiedene IDs.</p></li>
+</ol>
+<p>c) Als Hinweis bzw. Vorschlag wird die erste freie ID auf der linken Seite angezeigt.
+c) Der Aktortyp ausgwählt. Im Plugin wird anhand des Typs das Lerntelegram ausgewählt.
+d) Auf die Schaltfläche <code class="docutils literal notranslate"><span class="pre">Anlernen</span></code> klicken. Das Anlerntelegram wird gesendet und der Aktor sollte den Anlernvorgang quittieren (siehe jeweilige Bedienungsanleitung).</p>
+</div></blockquote>
 </section>
 </section>
 <section id="beispiele">
