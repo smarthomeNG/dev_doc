@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plugins &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 28. February 2023, commit 5465a6b) Dokumentation</title>
+  <title>Plugins &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 28. February 2023, commit 909c548) Dokumentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -3714,7 +3714,7 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../referenz/metadata/item_structs.html">item_structs</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../referenz/metadata/item_structs.html#geschachtelte-strukturen">Geschachtelte Strukturen</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../referenz/metadata/item_structs.html#definitions-for-multi-instance-plugins">Definitions for multi-instance plugins</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../referenz/metadata/item_structs.html#definitionen-fur-multi-instance-plugins">Definitionen für multi-instance Plugins</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../referenz/metadata/item_structs.html#plugins-ohne-item-structs">Plugins ohne item-structs</a></li>
 </ul>
 </li>
@@ -3753,7 +3753,7 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../referenz/metadata/item_structs.html">item_structs</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../referenz/metadata/item_structs.html#geschachtelte-strukturen">Geschachtelte Strukturen</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../referenz/metadata/item_structs.html#definitions-for-multi-instance-plugins">Definitions for multi-instance plugins</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../referenz/metadata/item_structs.html#definitionen-fur-multi-instance-plugins">Definitionen für multi-instance Plugins</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../referenz/metadata/item_structs.html#plugins-ohne-item-structs">Plugins ohne item-structs</a></li>
 </ul>
 </li>
@@ -4316,7 +4316,7 @@
 <p>Das Grundsystem von SmartHomeNG kann durch den Einsatz von Plugins erweitert werden. Ein Plugin
 ist ein Zusatzmodul in einem Unterverzeichnis unterhalb des Verzeichnisses <strong>../plugins</strong>.
 Um ein Plugin in SmartHomeNG zu verwenden (eine Instanz des Plugins zu laden) muss eine Sektion
-für das gewünschte Plugin in der Datei <strong>etc/plugin.conf</strong> erstellt werden.</p>
+für das gewünschte Plugin in der Datei <strong>etc/plugin.yaml</strong> erstellt werden.</p>
 <p>Für das oft benutzte KNX-Plugin sieht das z.B. so aus:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># etc/plugin.yaml</span>
 <span class="nt">knx</span><span class="p">:</span>
@@ -4324,6 +4324,7 @@ für das gewünschte Plugin in der Datei <strong>etc/plugin.conf</strong> erstel
 <span class="c1">#    instance: knx_1</span>
 <span class="c1">#    host: 127.0.0.1</span>
 <span class="c1">#    port: 6720</span>
+<span class="c1">#    webif_pagelength: 0</span>
 <span class="w">    </span><span class="nt">send_time</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">600</span><span class="w">    </span><span class="c1"># update date/time every 600 seconds, default none</span>
 <span class="w">    </span><span class="nt">time_ga</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8/0/0</span>
 <span class="w">    </span><span class="nt">date_ga</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8/0/1</span>
@@ -4336,6 +4337,7 @@ für das gewünschte Plugin in der Datei <strong>etc/plugin.conf</strong> erstel
 <span class="c1">#   instance = knx_1</span>
 <span class="c1">#   host = 127.0.0.1</span>
 <span class="c1">#   port = 6720</span>
+<span class="c1">#   webif_pagelength = 0</span>
    <span class="n">send_time</span> <span class="o">=</span> <span class="mi">600</span> <span class="c1"># update date/time every 600 seconds, default none</span>
    <span class="n">time_ga</span> <span class="o">=</span> <span class="mi">8</span><span class="o">/</span><span class="mi">0</span><span class="o">/</span><span class="mi">0</span>
    <span class="n">date_ga</span> <span class="o">=</span> <span class="mi">8</span><span class="o">/</span><span class="mi">0</span><span class="o">/</span><span class="mi">1</span>
@@ -4345,53 +4347,10 @@ für das gewünschte Plugin in der Datei <strong>etc/plugin.conf</strong> erstel
 nur darauf geachtet werden, dass er eindeutig ist, also nur einmal vorkommt. Der Name der Instanz
 sollte auch so gewählt werden, dass es zu keiner Namensgleichheit mit Top-Level Items kommt.</p>
 <p>Es gibt folgende allgemeine Parameter im Abschnitt eines Plugins:</p>
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>Parameter</p></th>
-<th class="head"><p>Bedeutung</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>plugin_name</p></td>
-<td><p>Der Kurzname des Plugins, das eingebunden werden soll (Name des Verzeichnisses
-im <strong>../plugins</strong> Verzeichnis). Statt des Parameters <strong>plugin_name</strong> konnten bisher
-auch die Parameter <strong>class_name</strong> und <strong>class_path</strong> angegeben werden.</p></td>
-</tr>
-<tr class="row-odd"><td><p>plugin_enabled</p></td>
-<td><p>Wenn dieser Parameter auf <strong>False</strong> gesetzt wird, wird das Plugin nicht geladen, die
-Konfiguration bleibt jedoch erhalten und die Verwendung von Item-Attributen dieses
-Plugins in den Item Konfigurationen erzeugt keine Warnungen im Log.</p></td>
-</tr>
-<tr class="row-even"><td><p>class_name</p></td>
-<td><p><strong>DEPRECATED</strong>: Name der Klasse in der Plugin Datei. Was hier einzutragen ist,
-steht in der Dokumentation zum jeweiligen Plugin. Stattdessen ist die
-Konfiguration über den Parameter <strong>plugin_name</strong> vorzunehmen.</p></td>
-</tr>
-<tr class="row-odd"><td><p>class_path</p></td>
-<td><p><strong>DEPRECATED</strong>: Pfad zur Plugin Datei. Was hier einzutragen ist, steht in der
-Dokumentation zum jeweiligen Plugin. Stattdessen ist die Konfiguration  über den
-Parameter <strong>plugin_name</strong> vorzunehmen.</p></td>
-</tr>
-<tr class="row-even"><td><p>instance</p></td>
-<td><p>Optional: Dieser Parameter muss nur verwendet werden, wenn mehrere Instanzen des
-selben Plugins geladen werden sollen. Das Plugin selbst muss dazu <strong>Multiinstance</strong>
-fähig sein. Damit die Items der richtigen Plugin-Instanz zugeordnet werden, muss
-in der jeweiligen Item Definition der Name des Plugin-spezifische Attributes um
-die Angabe der Instanz ergänzt werden. Also z.B.: Statt <strong>avm_data_type: uptime</strong>
-muss <strong>avm_data_type&#64;&lt;instance&gt;: uptime</strong> geschrieben werden.</p></td>
-</tr>
-<tr class="row-odd"><td><p>plugin_version</p></td>
-<td><p>Wenn im Plugin Repository mehrere Versionen eines Plugins zur Verfügung stehen,
-kann über diesen Parameter eine andere als die neueste Version des Plugins geladen
-werden. Dazu muss die Versionsnummer des Plugins angegeben werden.
-(z.B.  <strong>plugin_version: 1.4.9</strong>)</p></td>
-</tr>
-</tbody>
-</table>
 <p>Die weiteren Einträge sind Plugin spezifisch. Welche Parameter ein Plugin kennt ist auch der
-README.md des Plugins zu entnehmen. Je nach Plugin können sie verpflichtend oder optional sein.
-Im obigen Beispiel sind sie alle optional. Diese Parameter werden  beim Start von SmartHomeNG an
-das Plugin übergeben.</p>
+plugin.yaml Datei bzw. Doku des Plugins zu entnehmen. Je nach Plugin können sie verpflichtend oder
+optional sein. Im obigen Beispiel sind sie alle (außer plugin_name) optional. Diese Parameter werden
+beim Start von SmartHomeNG an das Plugin übergeben.</p>
 <p>Ein <strong>#</strong> wirkt wie auch bei den Konfigurationsdateien der Items als Beginn eines Kommentars.</p>
 <section id="multi-instance-fahigkeit">
 <h2>Multi-Instance Fähigkeit<a class="headerlink" href="#multi-instance-fahigkeit" title="Permalink to this heading"></a></h2>
