@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Release 1.9.x - tt. mmm 2023 &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 28. February 2023, commit f78528f) Dokumentation</title>
+  <title>Release 1.9.x - tt. März 2023 &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 28. February 2023, commit 5465a6b) Dokumentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -4008,7 +4008,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../faq.html">FAQ - Häufig gestellte Fragen</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="release.html">Release Notes</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Release 1.9.x - tt. mmm 2023</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Release 1.9.x - tt. März 2023</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#uberblick">Überblick</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#minimum-python-version">Minimum Python Version</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#unterstutzte-python-versionen">Unterstützte Python Versionen</a></li>
@@ -4302,7 +4302,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="release.html">Release Notes</a></li>
-      <li class="breadcrumb-item active">Release 1.9.x - tt. mmm 2023</li>
+      <li class="breadcrumb-item active">Release 1.9.x - tt. März 2023</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -4311,8 +4311,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="release-1-9-x-tt-mmm-2023">
-<h1>Release 1.9.x - tt. mmm 2023<a class="headerlink" href="#release-1-9-x-tt-mmm-2023" title="Permalink to this heading"></a></h1>
+  <section id="release-1-9-x-tt-marz-2023">
+<h1>Release 1.9.x - tt. März 2023<a class="headerlink" href="#release-1-9-x-tt-marz-2023" title="Permalink to this heading"></a></h1>
 <p>Dieses Release ist ein Wartungs-Release. Außer Bugfixes gibt es einige neue Features im Core von SmartHomeNG,
 sowie einige neue Plugins.</p>
 <div class="admonition note">
@@ -4320,10 +4320,10 @@ sowie einige neue Plugins.</p>
 <p>Diese Release Notes sind ein Arbeitsstand.</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>Berücksichtigt sind Commits im smarthome Repository bis incl. 11. Feb 2023
+<li><p>Berücksichtigt sind Commits im smarthome Repository bis incl. 23. Feb 2023
 (…)</p></li>
-<li><p>Berücksichtigt sind Commits im plugins Repository bis incl. 12. Feb 2023
-(knx: Updated description of knx_init)</p></li>
+<li><p>Berücksichtigt sind Commits im plugins Repository bis incl. 28. Feb 2023
+(onewire: …)</p></li>
 </ul>
 </div></blockquote>
 </div>
@@ -4378,15 +4378,28 @@ zu unterstützten Python Versionen)</p>
 </li>
 <li><p>Libs:</p>
 <ul>
+<li><p>lib.config:</p>
+<ul>
+<li><p>Adjusting log levels for missing module/plugin config</p></li>
+<li><p>Fix startup error on empty plugins/modules config</p></li>
+</ul>
+</li>
 <li><p>lib-daemon:</p>
 <ul>
 <li><p>Fix for issue #498 - Error on restarting if SmartHomeNG is not running</p></li>
+</ul>
+</li>
+<li><p>lib.item:</p>
+<ul>
+<li><p>Fix startup error on empty plugins/modules config</p></li>
+<li><p>Delete invalid cahe files (size=0 bytes), so a new cache file is created</p></li>
 </ul>
 </li>
 <li><p>lib.metadata:</p>
 <ul>
 <li><p>Moved definition of global plugin parameter ‚instance‘ from shngadmin to lib.metadata</p></li>
 <li><p>Implemented global plugin parameter ‚webif_pagelength‘ (takes definition from parameter with same name in module.http)</p></li>
+<li><p>Added plugin parameter ‚startorder‘</p></li>
 </ul>
 </li>
 <li><p>lib.model.smartplugin:</p>
@@ -4403,6 +4416,9 @@ zu unterstützten Python Versionen)</p>
 <li><p>Changed ‚device_command‘ to ‚mapping‘</p></li>
 <li><p>added get_item_mapping()</p></li>
 <li><p>bumped core version to 1.9.3.4</p></li>
+<li><p>Added filter_key and filter_value as arguments for get_item_list() and get_item_path_list()</p></li>
+<li><p>Renamed get_items_for_command() to get_items_for_mapping()</p></li>
+<li><p>Updated inline documentation</p></li>
 </ul>
 </li>
 <li><p>lib.network:</p>
@@ -4413,6 +4429,8 @@ zu unterstützten Python Versionen)</p>
 <li><p>lib.plugin:</p>
 <ul>
 <li><p>Implemented extended logging levels (NOTICE, DBGHIGH, DBGMED, DBGLOW) for plugins too</p></li>
+<li><p>Added plugin parameter ‚startorder‘</p></li>
+<li><p>Reversed stop order of plugins. Now they are stopped in the oposite order they were started</p></li>
 </ul>
 </li>
 <li><p>lib.scheduler:</p>
@@ -4424,6 +4442,11 @@ zu unterstützten Python Versionen)</p>
 <li><p>lib.shpypi:</p>
 <ul>
 <li><p>Bugfix</p></li>
+</ul>
+</li>
+<li><p>lib.shtime:</p>
+<ul>
+<li><p>current_monthname() implemented</p></li>
 </ul>
 </li>
 <li><p>lib.smarthome:</p>
@@ -4485,6 +4508,24 @@ datatables (set to „auto fit to page height by default)</p></li>
 <li><p>Fixed a runtime error „dictionary changed size during iteration“</p></li>
 </ul>
 </li>
+<li><p>websocket:</p>
+<ul>
+<li><p>Added canceling of all smartVISU abos when websocket connection is dropped</p></li>
+<li><p>Adjusted log levels for lost connections</p></li>
+<li><p>Added cancel_log to sv payload protocol</p></li>
+<li><p>Bumped sv payload protocol version to 4.1</p></li>
+<li><p>Bumped module version to 1.0.6</p></li>
+<li><p>Fixed bug trying do cancel a log, when no logs are monitored for that client</p></li>
+<li><p>Seperated example protocol ‚sync example‘ to it’s own class</p></li>
+<li><p>Improved handling in cancel_log, if log subscription is not found</p></li>
+<li><p>Some code streamlining</p></li>
+<li><p>Bumped to v1.0.7</p></li>
+<li><p>Completed isolation of payload protocols</p></li>
+<li><p>Bumped to v1.0.9</p></li>
+<li><p>Bumped core version to 1.9.3.5</p></li>
+<li><p>Improved handling in cancel_log, if log subscription is not found</p></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><p>Plugins:</p>
@@ -4497,6 +4538,15 @@ datatables (set to „auto fit to page height by default)</p></li>
 <li><p>avm:</p>
 <ul>
 <li><p>Minor clean-up for user_doc and metadata</p></li>
+<li><p>Complete re-writing of plugin, putting TR064, AHA und CallMonitor in separate Classes for better readability
+and maintenance</p></li>
+<li><p>Available services and actions will be read at startup from device itself and are in general available within
+the plugin all known item attributes and functions are available</p></li>
+<li><p>Deprecated warning for some item attributes will be put to logger</p></li>
+<li><p>Please change to new attributes (e.g. ain –&gt; avm_ain)</p></li>
+<li><p>Items with avm_attribute causing errors (e.g. read of deflection of not set) will be blacklisted
+after error occurred 3 times, Reset of blacklist is available during runtime via WebIF</p></li>
+<li><p>Some new functions implemented</p></li>
 </ul>
 </li>
 <li><p>beolink:</p>
@@ -4538,6 +4588,7 @@ datatables (set to „auto fit to page height by default)</p></li>
 <li><p>Bumped version to 1.6.9</p></li>
 <li><p>Minor adjustments in metadata and documentation</p></li>
 <li><p>Adjusted a log message</p></li>
+<li><p>Set startorder to ‚early‘</p></li>
 </ul>
 </li>
 <li><p>dlms:</p>
@@ -4550,6 +4601,7 @@ datatables (set to „auto fit to page height by default)</p></li>
 <li><p>Separated WebIf from main file</p></li>
 <li><p>New user_doc</p></li>
 <li><p>Fixed EEP F6_10_00, further work on user_doc</p></li>
+<li><p>Improved user_doc</p></li>
 </ul>
 </li>
 <li><p>executor:</p>
@@ -4562,6 +4614,13 @@ datatables (set to „auto fit to page height by default)</p></li>
 <ul>
 <li><p>Fix minor typos, add user doc, implement webif_pagelength and correct automatic page length on browser window resize</p></li>
 <li><p>Adjust webif_pagelength handling</p></li>
+</ul>
+</li>
+<li><p>harmony:</p>
+<ul>
+<li><p>Added item attribute to metadata</p></li>
+<li><p>Bumped version to 1.4.2</p></li>
+<li><p>Fixed bug ‚PowerOff handling not correct‘ from issue #674</p></li>
 </ul>
 </li>
 <li><p>helios:</p>
@@ -4606,9 +4665,20 @@ events of a calendar series are rescheduled once.</p></li>
 <li><p>Minor adaptions in user_doc</p></li>
 </ul>
 </li>
+<li><p>influxdata:</p>
+<ul>
+<li><p>Set startorder to ‚early‘</p></li>
+</ul>
+</li>
+<li><p>influxdb:</p>
+<ul>
+<li><p>Set startorder to ‚early‘</p></li>
+</ul>
+</li>
 <li><p>influxdb2:</p>
 <ul>
 <li><p>Updates to documentation</p></li>
+<li><p>Set startorder to ‚early‘</p></li>
 </ul>
 </li>
 <li><p>join:</p>
@@ -4682,6 +4752,7 @@ events of a calendar series are rescheduled once.</p></li>
 <li><p>Streamlined handling of webif_pagelength</p></li>
 <li><p>Changed to use new SmartPlugin (core v1.9.3.4)</p></li>
 <li><p>Bumped version to 1.9.1</p></li>
+<li><p>Update for changed SmartPlugin method name get_items_for_mapping()</p></li>
 </ul>
 </li>
 <li><p>openweathermap:</p>
@@ -4734,6 +4805,13 @@ events of a calendar series are rescheduled once.</p></li>
 <li><p>smartvisu:</p>
 <ul>
 <li><p>Updates to documentation</p></li>
+<li><p>Implemented auto refresh for clients tab in web interface;</p></li>
+<li><p>Bumped version to 1.8.7</p></li>
+<li><p>Extended protocol documentation (log_cancel)</p></li>
+<li><p>Modified to work with websocket module 1.0.9</p></li>
+<li><p>Set sh_minversion to 1.9.3.5</p></li>
+<li><p>Bumped version to 1.8.8</p></li>
+<li><p>Fixed bug ‚error reading deprecated.yaml‘ from issue #670</p></li>
 </ul>
 </li>
 <li><p>smlx:</p>
@@ -4758,6 +4836,13 @@ Catched pipe error that could occur in play_snippet for local sound files.</p></
 <li><p>Separated WebIf from main file</p></li>
 <li><p>Massive rework of user_doc</p></li>
 <li><p>Several changes (description in commit 6761e43)</p></li>
+<li><p>Added methods to class speaker</p></li>
+<li><p>Added handling of play_favorite_title, play_favorite_number, play_favorite_radio_number,
+play_favorite_radio_title, _play_sonos_radio to class Sonos</p></li>
+<li><p>Added attribute ‚send_attributes‘ to metadata</p></li>
+<li><p>Documentation update</p></li>
+<li><p>Bumped version to 1.8.0</p></li>
+<li><p>minor fix for play_favorite_number function, catching exception that occurs if index position 0 is passed as argument</p></li>
 </ul>
 </li>
 <li><p>stateengine:</p>
@@ -4926,10 +5011,20 @@ Repositiory aufgenommen.</p>
 <section id="tools">
 <h3>Tools<a class="headerlink" href="#tools" title="Permalink to this heading"></a></h3>
 <ul class="simple">
+<li><p>backup_restore.py:</p>
+<ul>
+<li><p>Proposed fix for tarfile extractall</p></li>
+</ul>
+</li>
 <li><p>check_plugin.py:</p>
 <ul>
 <li><p>Initial development version of check_plugin.py (a formal plugin checker)</p></li>
 <li><p>Option added to check all plugins</p></li>
+</ul>
+</li>
+<li><p>setpermissions:</p>
+<ul>
+<li><p>New tool to set permissions after checkout from github</p></li>
 </ul>
 </li>
 </ul>
