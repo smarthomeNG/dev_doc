@@ -1027,6 +1027,7 @@
 <li class="toctree-l5"><a class="reference internal" href="#tasmota-details">Tasmota Details</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#tasmota-zigbee-devices">Tasmota Zigbee Devices</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#broker-information">Broker Information</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#tasmota-maintenance">Tasmota Maintenance</a></li>
 </ul>
 </li>
 </ul>
@@ -2616,6 +2617,7 @@
 <li class="toctree-l5"><a class="reference internal" href="#tasmota-details">Tasmota Details</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#tasmota-zigbee-devices">Tasmota Zigbee Devices</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#broker-information">Broker Information</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#tasmota-maintenance">Tasmota Maintenance</a></li>
 </ul>
 </li>
 </ul>
@@ -4316,14 +4318,21 @@
 <span id="index-2"></span><h1>tasmota<a class="headerlink" href="#tasmota" title="Permalink to this heading"></a></h1>
 <p>Das Plugin dienst zur Steuerung von Tasmota Devices über MQTT. Zur Aktivierung von MQTT für die Tasmota Devices
 bitte die Dokumentation des jeweiligen Devices zu Rate ziehen.</p>
-<p>Unterstützte Funktionen sind:
-* Relays eines Tasmota Devices (bis zu 4)
-* DS18B20 Temperatursensoren
-* AM2301 Sensoren für Temperatur und Luftfeuchte
-* SHT3X Sensoren für Temperatur und Luftfeuchte
-* RGBW Dimmer (H801) mit Senden und Empfangen von HSB
-* RF-Daten Senden und Empfangen mit Sonoff Bridge RF
-* Zigbee Daten Empfangen mit Sonoff Zigbee Bridge</p>
+<dl class="simple">
+<dt>Unterstützte Funktionen sind:</dt><dd><ul class="simple">
+<li><p>Relays eines Tasmota Devices (bis zu 4)</p></li>
+<li><p>DS18B20 Temperatursensoren</p></li>
+<li><p>AM2301 Sensoren für Temperatur und Luftfeuchte</p></li>
+<li><p>SHT3X Sensoren für Temperatur und Luftfeuchte</p></li>
+<li><p>ADC-Eingang eines ESPs</p></li>
+<li><p>interner Temperatursensor eines ESP32</p></li>
+<li><p>RGBW Dimmer (H801) mit Senden und Empfangen von HSB</p></li>
+<li><p>RF-Daten Senden und Empfangen mit Sonoff Bridge RF</p></li>
+<li><p>Zigbee Daten Empfangen mit Sonoff Zigbee Bridge</p></li>
+<li><p>Tasmota SML</p></li>
+</ul>
+</dd>
+</dl>
 <div class="admonition attention">
 <p class="admonition-title">Achtung</p>
 <p>Das Plugin kommuniziert über MQTT und benötigt das mqtt neues Modul, welches die Kommunikation mit dem MQTT Broker
@@ -4354,9 +4363,50 @@ folgenden Beispiel gezeigt:</p>
 <span class="w">    </span><span class="nt">tasmota_zb_attr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Temperature</span>
 </pre></div>
 </div>
-<p>Dabei ist zu beachten, dass bei Verwendung des Kurznamen (bspw. 0x9CB) zur Identifikation des Zigbee-Gerätes
-diese Kurzname in Hochkommata (also ‚0x9CB‘) zu setzen ist, um ein korrektes Verarbeiten sicherzustellen. Im Abschnitt
-Web Interface gibt es weitere Hinweise zur Konfiguration.</p>
+<p>Für die Nutzung von SML Devices über ein Tasmota-Gerät müssen in dem entsprechenden Item die drei Attribute
+<code class="docutils literal notranslate"><span class="pre">tasmota_topic</span></code>, <code class="docutils literal notranslate"><span class="pre">tasmota_sml_device</span></code> und <code class="docutils literal notranslate"><span class="pre">tasmota_sml_attr</span></code> konfiguriert werden, wie im
+folgenden Beispiel gezeigt:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">smartmeter_1</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
+<span class="w">    </span><span class="nt">tasmota_topic</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tasmota_sml2mqtt</span>
+<span class="w">    </span><span class="nt">tasmota_sml_device</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MT631</span>
+<span class="w">    </span><span class="nt">tasmota_attr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">online</span>
+
+<span class="w">    </span><span class="nt">volt_p1</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">        </span><span class="nt">tasmota_topic</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">..:.</span>
+<span class="w">        </span><span class="nt">tasmota_sml_device</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">..:.</span>
+<span class="w">        </span><span class="nt">tasmota_sml_attr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">volt_p1</span>
+
+<span class="w">    </span><span class="nt">total_in</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">        </span><span class="nt">tasmota_topic</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">..:.</span>
+<span class="w">        </span><span class="nt">tasmota_sml_device</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">..:.</span>
+<span class="w">        </span><span class="nt">tasmota_sml_attr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">total_in</span>
+</pre></div>
+</div>
+<p>Dabei definiert</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tasmota_topic</span></code> die Tasmota-Topic des Gerätes, an dem der SML-Lesekopf angeschlossen ist.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tasmota_sml_device</span></code> den Namen des SML-Lesekopfes (Sensorname)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tasmota_sml_attr</span></code> den Namen des Keys aus dem Werte-Dictionary, dass dem Item zugewiesen werden soll.</p></li>
+</ul>
+</div></blockquote>
+<p>Die/Eine MQTT Message zum Beispiel oben.
+.. code-block:: text</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">tele/tasmota_sml2mqtt/SENSOR</span> <span class="pre">=</span> <span class="pre">{&quot;Time&quot;:&quot;2023-01-27T17:20:45&quot;,&quot;MT631&quot;:{&quot;Total_in&quot;:0001.000}}</span></code></p>
+</div></blockquote>
+<p>Den Namen des SML-Devices (hier MT631), die Keys für das gelieferte Dictionary (Zuweisung des Werte) etc. wird direkt im
+Tasmota-Script zum Konfiguration des SML-Devices definiert.</p>
+<blockquote>
+<div></div></blockquote>
+<p>Der Sendezykus der Werte über ebenfalls in der Konfiguration des Scripts mit &lt;precision&gt; definiert.
+„number of decimal places. Add 16 to transmit the data immediately. Otherwise it is transmitted on TelePeriod only.“
+Siehe hierzu: <a class="reference external" href="https://tasmota.github.io/docs/Smart-Meter-Interface/#meter-metrics">https://tasmota.github.io/docs/Smart-Meter-Interface/#meter-metrics</a></p>
+<blockquote>
+<div></div></blockquote>
 <p>Vollständige Informationen zur Konfiguration und die vollständige Beschreibung der Item-Attribute sind
 unter <strong>plugin.yaml</strong> zu finden.</p>
 </section>
@@ -4392,6 +4442,10 @@ muss die ‚Device ID‘ als Wert für das Attribut ‚tasmota_zb_device‘ und 
 <h3>Broker Information<a class="headerlink" href="#broker-information" title="Permalink to this heading"></a></h3>
 <p>Das Webinterface zeigt Informationen zum genutzten MQTT Broker an.</p>
 <img alt="../../_images/webif_tab52.jpg" class="screenshot" src="../../_images/webif_tab52.jpg" />
+</section>
+<section id="tasmota-maintenance">
+<h3>Tasmota Maintenance<a class="headerlink" href="#tasmota-maintenance" title="Permalink to this heading"></a></h3>
+<p>Wenn der LogLevel des Plugin „DEVELOP“ ist, erscheint ein weiterer Tab mit weiteren Informationen zum Plugin.</p>
 </section>
 </section>
 </section>
