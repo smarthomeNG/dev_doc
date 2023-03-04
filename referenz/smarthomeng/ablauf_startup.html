@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ablauf des Starts von SmartHomeNG &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 04. March 2023, commit 0085a8b) Dokumentation</title>
+  <title>Ablauf des Starts von SmartHomeNG &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 04. March 2023, commit 7d8d4d6) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -3438,6 +3438,7 @@
 <li class="toctree-l5"><a class="reference internal" href="#angehalten">33 - Angehalten</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="#das-shng-status-dict">Das shng_status dict</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="feiertage.html">Feiertage</a></li>
@@ -4334,10 +4335,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <p>d bleibt wehalten, bis SmartHomeNG beendet wi
-.. index:: Ablauf des Startups</p>
-<section id="ablauf-des-starts-von-smarthomeng">
-<h1>Ablauf des Starts von SmartHomeNG<a class="headerlink" href="#ablauf-des-starts-von-smarthomeng" title="Permalink to this heading"></a></h1>
+  <section id="ablauf-des-starts-von-smarthomeng">
+<span id="index-0"></span><h1>Ablauf des Starts von SmartHomeNG<a class="headerlink" href="#ablauf-des-starts-von-smarthomeng" title="Permalink to this heading"></a></h1>
 <p>Im folgenden ist der Ablauf der einzelnen Schritte beschrieben, die beim Start von SmartHomeNG abgearbeitet werden.</p>
 <section id="erste-schritte-der-initialisierung">
 <h2>Erste Schritte der Initialisierung<a class="headerlink" href="#erste-schritte-der-initialisierung" title="Permalink to this heading"></a></h2>
@@ -4349,7 +4348,7 @@ Danach wird das smarthome Objekt erzeugt und wie im Folgenden beschrieben initia
 </section>
 <section id="initialisierung-des-smarthome-objektes">
 <h2>Initialisierung des smarthome Objektes<a class="headerlink" href="#initialisierung-des-smarthome-objektes" title="Permalink to this heading"></a></h2>
-<p>Die Schritte der Objekt Initialisierung sind in Gruppen zusammengefasst. Der Aktuelle Stand (welche Gruppe gerade
+<p id="index-1">Die Schritte der Objekt Initialisierung sind in Gruppen zusammengefasst. Der Aktuelle Stand (welche Gruppe gerade
 abgearbeitet wird bzw. abgearbeitet wurde) wird in der AdminGUI auf der Seite <strong>Dienste</strong> angezeigt.</p>
 <p>Die einzelnen Stati haben zur Identifizierung innerhalb von SmartHomeNG jeweils eine eindeutige Nummer, die im
 folgenden mit angegeben ist. Nummern kleiner als 10 identifizieren Schritte innerhalb der Objekt Initialisierung.
@@ -4458,6 +4457,18 @@ Collection durchführt.</p>
 <h3>33 - Angehalten<a class="headerlink" href="#angehalten" title="Permalink to this heading"></a></h3>
 <p>SmartHomeNG wurde beendet.</p>
 </section>
+</section>
+<section id="das-shng-status-dict">
+<h2>Das shng_status dict<a class="headerlink" href="#das-shng-status-dict" title="Permalink to this heading"></a></h2>
+<span class="target" id="index-2"></span><p id="index-3">Die oben beschriebenen Stati können über das <code class="docutils literal notranslate"><span class="pre">`hng_status`</span></code> dict des smarthome Objektes abgerufen werden.
+Das Dict enthält zwei Einträge (<code class="docutils literal notranslate"><span class="pre">code</span></code> und <code class="docutils literal notranslate"><span class="pre">text</span></code>). Über den Key <code class="docutils literal notranslate"><span class="pre">code</span></code> kann auf den numerischen Wert des
+Status von SmartHomeNG zugegriffen werden. Unter dem Key <code class="docutils literal notranslate"><span class="pre">text</span></code> ist der Status im Klartext hinterlegt. Diese
+Texte werden in der Admin GUI unter Dienste angezeigt.</p>
+<p>Um sicher zu stellen, dass bestimmter Code nur ausgeführt wird, wenn SmartHomeNG vollständig initialisiert ist und
+nicht im Begriff ist sich zu beenden, kann abgefragt werden, ob der Status-Code 20 ist:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">shng_status</span><span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">20</span><span class="p">:</span>
+</pre></div>
+</div>
 </section>
 </section>
 
