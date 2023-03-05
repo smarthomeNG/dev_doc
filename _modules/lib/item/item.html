@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.item.item &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 04. March 2023, commit 07cbee4) Dokumentation</title>
+  <title>lib.item.item &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 05. March 2023, commit 339f6c4) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -4932,7 +4932,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_eval_unexpanded</span> <span class="o">=</span> <span class="n">value</span>
             <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stringwithabsolutepathes</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;sh.&#39;</span><span class="p">,</span> <span class="s1">&#39;(&#39;</span><span class="p">,</span> <span class="n">KEY_EVAL</span><span class="p">)</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stringwithabsolutepathes</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;sh.&#39;</span><span class="p">,</span> <span class="s1">&#39;.property&#39;</span><span class="p">,</span> <span class="n">KEY_EVAL</span><span class="p">)</span>
+            <span class="c1">#value = self.get_stringwithabsolutepathes(value, &#39;sh.&#39;, &#39;.property&#39;, KEY_EVAL)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span> <span class="o">=</span> <span class="n">value</span>
 
 
@@ -4964,7 +4964,7 @@
             <span class="c1">#                        val = &#39;sh.&#39;+dest_item+&#39;( &#39;+ self.get_stringwithabsolutepathes(val, &#39;sh.&#39;, &#39;(&#39;, KEY_ON_CHANGE) +&#39; )&#39;</span>
             <span class="n">val_list_unexpanded</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
             <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stringwithabsolutepathes</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="s1">&#39;sh.&#39;</span><span class="p">,</span> <span class="s1">&#39;(&#39;</span><span class="p">,</span> <span class="n">KEY_ON_CHANGE</span><span class="p">)</span>
-            <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stringwithabsolutepathes</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="s1">&#39;sh.&#39;</span><span class="p">,</span> <span class="s1">&#39;.property&#39;</span><span class="p">,</span> <span class="n">KEY_ON_CHANGE</span><span class="p">)</span>
+            <span class="c1">#val = self.get_stringwithabsolutepathes(val, &#39;sh.&#39;, &#39;.property&#39;, KEY_ON_CHANGE)</span>
             <span class="c1">#                        logger.warning(&quot;Item __init__: {}: for attr &#39;{}&#39;, dest_item &#39;{}&#39;, val &#39;{}&#39;&quot;.format(self._path, attr, dest_item, val))</span>
             <span class="n">val_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
             <span class="n">dest_var_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dest_item</span><span class="p">)</span>
@@ -5336,6 +5336,7 @@
 <span class="sd">        :return: string with the statement containing absolute item paths</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">def</span> <span class="nf">__checkfortags</span><span class="p">(</span><span class="n">evalstr</span><span class="p">,</span> <span class="n">begintag</span><span class="p">,</span> <span class="n">endtag</span><span class="p">):</span>
+
             <span class="n">pref</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
             <span class="n">rest</span> <span class="o">=</span> <span class="n">evalstr</span>
             <span class="k">while</span> <span class="p">(</span><span class="n">rest</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">begintag</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
@@ -5348,11 +5349,15 @@
                     <span class="n">rel</span> <span class="o">=</span> <span class="n">rest</span><span class="p">[:</span><span class="n">rest</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">endtag</span><span class="p">)]</span>
                 <span class="n">rest</span> <span class="o">=</span> <span class="n">rest</span><span class="p">[</span><span class="n">rest</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">endtag</span><span class="p">):]</span>
                 <span class="n">pref</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_absolutepath</span><span class="p">(</span><span class="n">rel</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+                <span class="c1"># Re-combine string for next loop</span>
+                <span class="n">rest</span> <span class="o">=</span> <span class="n">pref</span><span class="o">+</span><span class="n">rest</span>
+                <span class="n">pref</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
             <span class="n">pref</span> <span class="o">+=</span> <span class="n">rest</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.get_stringwithabsolutepathes(&#39;</span><span class="si">{}</span><span class="s2">&#39;) with begintag = &#39;</span><span class="si">{}</span><span class="s2">&#39;, endtag = &#39;</span><span class="si">{}</span><span class="s2">&#39;: result = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="n">evalstr</span><span class="p">,</span> <span class="n">begintag</span><span class="p">,</span> <span class="n">endtag</span><span class="p">,</span> <span class="n">pref</span><span class="p">))</span>
-            <span class="k">return</span> <span class="n">pref</span>
+            <span class="k">return</span> <span class="n">pref</span> <span class="c1"># end of __checkfortags(...)</span>
+
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">evalstr</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">evalstr</span>
@@ -5446,7 +5451,7 @@
 
                         <span class="c1"># expand relative item paths</span>
                         <span class="n">wrk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stringwithabsolutepathes</span><span class="p">(</span><span class="n">wrk</span><span class="p">,</span> <span class="s1">&#39;sh.&#39;</span><span class="p">,</span> <span class="s1">&#39;(&#39;</span><span class="p">,</span> <span class="n">KEY_CONDITION</span><span class="p">)</span>
-                        <span class="n">wrk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stringwithabsolutepathes</span><span class="p">(</span><span class="n">wrk</span><span class="p">,</span> <span class="s1">&#39;sh.&#39;</span><span class="p">,</span> <span class="s1">&#39;.property&#39;</span><span class="p">,</span> <span class="n">KEY_CONDITION</span><span class="p">)</span>
+                        <span class="c1">#wrk = self.get_stringwithabsolutepathes(wrk, &#39;sh.&#39;, &#39;.property&#39;, KEY_CONDITION)</span>
 
                         <span class="n">and_cond</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wrk</span><span class="p">)</span>
 
