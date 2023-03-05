@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.item.item &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 05. March 2023, commit 30e5dda) Dokumentation</title>
+  <title>lib.item.item &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 05. March 2023, commit 57594c8) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -4462,8 +4462,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_trigger_condition</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_on_update</span> <span class="o">=</span> <span class="kc">None</span>				<span class="c1"># -&gt; KEY_ON_UPDATE eval expression</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_on_change</span> <span class="o">=</span> <span class="kc">None</span>				<span class="c1"># -&gt; KEY_ON_CHANGE eval expression</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_on_update_dest_var</span> <span class="o">=</span> <span class="kc">None</span>		<span class="c1"># -&gt; KEY_ON_UPDATE destination var</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_on_change_dest_var</span> <span class="o">=</span> <span class="kc">None</span>		<span class="c1"># -&gt; KEY_ON_CHANGE destination var</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_on_update_dest_var</span> <span class="o">=</span> <span class="kc">None</span>		<span class="c1"># -&gt; KEY_ON_UPDATE destination var (list: only filled if &#39;=&#39; syntax is used)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_on_change_dest_var</span> <span class="o">=</span> <span class="kc">None</span>		<span class="c1"># -&gt; KEY_ON_CHANGE destination var (list: only filled if &#39;=&#39; syntax is used)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_on_update_unexpanded</span> <span class="o">=</span> <span class="p">[]</span> 	<span class="c1"># -&gt; KEY_ON_UPDATE eval expression (with unexpanded item references)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_on_change_unexpanded</span> <span class="o">=</span> <span class="p">[]</span> 	<span class="c1"># -&gt; KEY_ON_CHANGE eval expression (with unexpanded item references)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_on_update_dest_var_unexp</span> <span class="o">=</span> <span class="p">[]</span>	<span class="c1"># -&gt; KEY_ON_UPDATE destination var (with unexpanded item reference)</span>
@@ -4958,9 +4958,12 @@
         <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
             <span class="c1"># separate destination item (if it exists)</span>
             <span class="n">dest_item</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_destitem_from_value</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
-            <span class="n">dest_var_list_unexp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dest_item</span><span class="p">)</span>
+            <span class="n">dest_item</span> <span class="o">=</span> <span class="n">dest_item</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">dest_item</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;sh.&#39;</span><span class="p">):</span>
+                <span class="n">dest_item</span> <span class="o">=</span> <span class="n">dest_item</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
+            <span class="n">dest_var_list_unexp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dest_item</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
             <span class="c1"># expand relative item paths</span>
-            <span class="n">dest_item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_absolutepath</span><span class="p">(</span><span class="n">dest_item</span><span class="p">,</span> <span class="n">KEY_ON_CHANGE</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">dest_item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_absolutepath</span><span class="p">(</span><span class="n">dest_item</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
             <span class="c1">#                        val = &#39;sh.&#39;+dest_item+&#39;( &#39;+ self.get_stringwithabsolutepathes(val, &#39;sh.&#39;, &#39;(&#39;, KEY_ON_CHANGE) +&#39; )&#39;</span>
             <span class="n">val_list_unexpanded</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
             <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_stringwithabsolutepathes</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="s1">&#39;sh.&#39;</span><span class="p">,</span> <span class="s1">&#39;(&#39;</span><span class="p">,</span> <span class="n">KEY_ON_CHANGE</span><span class="p">)</span>
@@ -4973,7 +4976,7 @@
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">attr</span> <span class="o">+</span> <span class="s1">&#39;_dest_var&#39;</span><span class="p">,</span> <span class="n">dest_var_list</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">attr</span> <span class="o">+</span> <span class="s1">&#39;_dest_var_unexp&#39;</span><span class="p">,</span> <span class="n">dest_var_list_unexp</span><span class="p">)</span>
         <span class="k">return</span>
-
+<span class="c1">#### ms</span>
 
     <span class="k">def</span> <span class="nf">_get_last_change</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__last_change</span>
