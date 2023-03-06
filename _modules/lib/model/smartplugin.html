@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 06. March 2023, commit abd8cad) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 06. March 2023, commit eda226a) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -4446,8 +4446,6 @@
 <span class="c1">#  along with SmartHomeNG  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 <span class="c1">#########################################################################</span>
 
-<span class="c1">#import lib.scheduler</span>
-
 <span class="kn">from</span> <span class="nn">lib.model.smartobject</span> <span class="kn">import</span> <span class="n">SmartObject</span>
 
 <span class="kn">from</span> <span class="nn">lib.shtime</span> <span class="kn">import</span> <span class="n">Shtime</span>
@@ -4457,6 +4455,7 @@
 <span class="kn">from</span> <span class="nn">lib.translation</span> <span class="kn">import</span> <span class="n">translate</span> <span class="k">as</span> <span class="n">lib_translate</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
+
 
 <div class="viewcode-block" id="SmartPlugin"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin">[Doku]</a><span class="k">class</span> <span class="nc">SmartPlugin</span><span class="p">(</span><span class="n">SmartObject</span><span class="p">,</span> <span class="n">Utils</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4562,11 +4561,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trying to add an existing item: </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="c1">#if config_data_dict is None:</span>
-        <span class="c1">#    conf_data_dict = {}</span>
-        <span class="c1">#else:</span>
-        <span class="c1">#    conf_data_dict = config_data_dict.copy</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()]</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span>
             <span class="s1">&#39;is_updating&#39;</span><span class="p">:</span> <span class="n">updating</span><span class="p">,</span>
@@ -4618,7 +4612,40 @@
         <span class="c1"># unregister item update method</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unparse_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 
+        <span class="c1"># call custom remove_item methods</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove_item_addon</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="SmartPlugin.remove_item_addon"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.remove_item_addon">[Doku]</a>    <span class="k">def</span> <span class="nf">remove_item_addon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Addon method to remove custom item bindings/entries from plugin on</span>
+<span class="sd">        item removal. This method is called by remove_item and only serves</span>
+<span class="sd">        as a drop-in method to prevent remove_item from needing to be overwritten.</span>
+
+<span class="sd">        Overwrite this method if you store item references in custom dicts.</span>
+
+<span class="sd">        :param item: item object</span>
+<span class="sd">        :rype item: item</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="SmartPlugin.update_item"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.update_item">[Doku]</a>    <span class="k">def</span> <span class="nf">update_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Item has been updated</span>
+
+<span class="sd">        This method is called, if the value of an item has been updated by</span>
+<span class="sd">        SmartHomeNG. It should write the changed value out to the device</span>
+<span class="sd">        (hardware/interface) that is managed by this plugin.</span>
+
+<span class="sd">        Method must be overwritten to be functional.</span>
+
+<span class="sd">        :param item: item to be updated towards the plugin</span>
+<span class="sd">        :param caller: if given it represents the callers name</span>
+<span class="sd">        :param source: if given it represents the source</span>
+<span class="sd">        :param dest: if given it represents the dest</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="SmartPlugin.register_updating"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.register_updating">[Doku]</a>    <span class="k">def</span> <span class="nf">register_updating</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4690,7 +4717,6 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="p">[</span><span class="n">item_path</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;config_data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">filter_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">filter_value</span><span class="p">]</span></div>
-
 
 <div class="viewcode-block" id="SmartPlugin.get_item_list"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_item_list">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filter_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
