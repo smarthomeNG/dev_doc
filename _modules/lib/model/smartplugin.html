@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 07. March 2023, commit 4728e41) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 09. March 2023, commit e4a6631) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -4495,6 +4495,7 @@
 <span class="sd">    In addition the methods implemented in lib.utils.Utils are inherited.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">PLUGIN_VERSION</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="n">ALLOW_MULTIINSTANCE</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="n">__instance</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>       <span class="c1">#: Name of this instance of the plugin</span>
@@ -4515,7 +4516,8 @@
                             <span class="c1"># contains a list of items for each mapping</span>
     <span class="n">_add_translation</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="n">_parameters</span> <span class="o">=</span> <span class="p">{}</span>    <span class="c1"># Dict for storing the configuration parameters read from /etc/plugin.yaml</span>
+    <span class="n">_parameters</span> <span class="o">=</span> <span class="p">{}</span>        <span class="c1"># Dict for storing the configuration parameters read from /etc/plugin.yaml</span>
+    <span class="n">_hide_parameters</span> <span class="o">=</span> <span class="p">{}</span>   <span class="c1"># Dict for storing parameters to hide from AdminUI</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -4642,23 +4644,7 @@
         <span class="c1"># unregister item update method</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unparse_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 
-        <span class="c1"># call custom remove_item methods</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">remove_item_addon</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-
         <span class="k">return</span> <span class="kc">True</span></div>
-
-<div class="viewcode-block" id="SmartPlugin.remove_item_addon"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.remove_item_addon">[Doku]</a>    <span class="k">def</span> <span class="nf">remove_item_addon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Addon method to remove custom item bindings/entries from plugin on</span>
-<span class="sd">        item removal. This method is called by remove_item and only serves</span>
-<span class="sd">        as a drop-in method to prevent remove_item from needing to be overwritten.</span>
-
-<span class="sd">        Overwrite this method if you store item references in custom dicts.</span>
-
-<span class="sd">        :param item: item object</span>
-<span class="sd">        :rype item: item</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="SmartPlugin.update_item"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.update_item">[Doku]</a>    <span class="k">def</span> <span class="nf">update_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4879,7 +4865,7 @@
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;ALLOW_MULTIINSTANCE&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ALLOW_MULTIINSTANCE</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__instance</span> <span class="o">=</span> <span class="n">instance</span>
         <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;ALLOW_MULTIINSTANCE&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ALLOW_MULTIINSTANCE</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Plugin &#39;</span><span class="si">{}</span><span class="s2">&#39;: Only multi-instance capable plugins allow setting a name for an instance&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">()))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plugin &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;: Only multi-instance capable plugins allow setting a name for an instance&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="SmartPlugin.get_fullname"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_fullname">[Doku]</a>    <span class="k">def</span> <span class="nf">get_fullname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -4892,8 +4878,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_instance_name</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-<span class="c1">#            return self.get_instance_name() + &#39;@&#39; + self.get_shortname()</span>
-            <span class="k">return</span>  <span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_instance_name</span><span class="p">()</span></div>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_instance_name</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="SmartPlugin.get_classname"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_classname">[Doku]</a>    <span class="k">def</span> <span class="nf">get_classname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -4944,7 +4929,7 @@
 <span class="sd">        :return: True, if success or ALLOW_MULTIINSTANCE == mi</span>
 <span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;ALLOW_MULTIINSTANCE&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ALLOW_MULTIINSTANCE</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;ALLOW_MULTIINSTANCE&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ALLOW_MULTIINSTANCE</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ALLOW_MULTIINSTANCE</span> <span class="o">==</span> <span class="n">mi</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ALLOW_MULTIINSTANCE</span> <span class="o">=</span> <span class="n">mi</span>
@@ -4994,7 +4979,7 @@
 <span class="sd">        :return: plugin Info</span>
 <span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;Plugin: &#39;</span><span class="si">{0}</span><span class="s2">.</span><span class="si">{1}</span><span class="s2">&#39;, Version: &#39;</span><span class="si">{2}</span><span class="s2">&#39;, Instance: &#39;</span><span class="si">{3}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>  <span class="bp">self</span><span class="o">.</span><span class="n">get_version</span><span class="p">(),</span><span class="bp">self</span><span class="o">.</span><span class="n">get_instance_name</span><span class="p">())</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Plugin: &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">()</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;, Version: &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;, Instance: &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_instance_name</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&quot;</span></div>
 
 
 <div class="viewcode-block" id="SmartPlugin.get_parameter_value"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_parameter_value">[Doku]</a>    <span class="k">def</span> <span class="nf">get_parameter_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter_name</span><span class="p">):</span>
@@ -5056,15 +5041,15 @@
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">param_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;update_config_section: Beginning to update section &#39;</span><span class="si">{}</span><span class="s2">&#39; of ../etc/plugin.yaml&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_configname</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;update_config_section: valid parameter names to update = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">param_names</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;update_config_section: Config file = &#39;</span><span class="si">{}</span><span class="s2">&#39;, update data = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_configfilename</span><span class="p">,</span> <span class="n">param_dict</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;update_config_section: Beginning to update section &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_configname</span><span class="si">}</span><span class="s2">&#39; of ../etc/plugin.yaml&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;update_config_section: valid parameter names to update = </span><span class="si">{</span><span class="n">param_names</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;update_config_section: Config file = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_configfilename</span><span class="si">}</span><span class="s2">&#39;, update data = </span><span class="si">{</span><span class="n">param_dict</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># read plugin.yaml</span>
         <span class="n">plugin_conf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_configfilename</span><span class="p">)</span>
         <span class="n">sect</span> <span class="o">=</span> <span class="n">plugin_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_configname</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">sect</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;update_config_section: Config section &#39;</span><span class="si">{}</span><span class="s2">&#39; not found in ../etc/plugin.yaml&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_configname</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;update_config_section: Config section &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_configname</span><span class="si">}</span><span class="s2">&#39; not found in ../etc/plugin.yaml&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="n">parameters_changed</span> <span class="o">=</span> <span class="kc">False</span>
@@ -5081,13 +5066,11 @@
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">try</span><span class="p">:</span>
                             <span class="n">this_param</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">param_dict</span><span class="p">[</span><span class="n">param</span><span class="p">]))</span>
-                            <span class="c1">#this_param = int(param_dict[param])</span>
-                        <span class="k">except</span><span class="p">:</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;update_config_section: Parameter </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2"> -&gt; Cannot convert &#39;</span><span class="si">{</span><span class="n">param_dict</span><span class="p">[</span><span class="n">param</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; to type &#39;int&#39;&quot;</span> <span class="p">)</span>
-                            <span class="c1">#self.logger.warning(&quot;update_config_section: Changing Parameter &#39;{}&#39; -&gt; type = &#39;{}&#39; from &#39;{}&#39; to &#39;{}&#39;&quot;.format(param, self.metadata.parameters[param][&#39;type&#39;], sect.get(param, None), this_param))</span>
+                        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;update_config_section: Parameter </span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2"> -&gt; Cannot convert &#39;</span><span class="si">{</span><span class="n">param_dict</span><span class="p">[</span><span class="n">param</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; to type &#39;int&#39;&quot;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">this_param</span> <span class="o">=</span> <span class="n">param_dict</span><span class="p">[</span><span class="n">param</span><span class="p">]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;update_config_section: Changing Parameter &#39;</span><span class="si">{}</span><span class="s2">&#39; -&gt; type = &#39;</span><span class="si">{}</span><span class="s2">&#39; from &#39;</span><span class="si">{}</span><span class="s2">&#39; to &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">param</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">],</span> <span class="n">sect</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">this_param</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;update_config_section: Changing Parameter &#39;</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">&#39; -&gt; type = &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">param</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; from &#39;</span><span class="si">{</span><span class="n">sect</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param</span><span class="p">,</span><span class="w"> </span><span class="kc">None</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39; to &#39;</span><span class="si">{</span><span class="n">this_param</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">param_dict</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span> <span class="n">param_dict</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">==</span> <span class="p">{}</span> <span class="ow">or</span> <span class="n">param_dict</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">==</span> <span class="p">[]:</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="k">del</span> <span class="n">sect</span><span class="p">[</span><span class="n">param</span><span class="p">]</span>
@@ -5097,31 +5080,14 @@
                     <span class="n">sect</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">this_param</span>
                 <span class="n">parameters_changed</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;update_config_section: Invalid parameter &#39;</span><span class="si">{}</span><span class="s2">&#39; specified for update&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">param_dict</span><span class="p">[</span><span class="n">param</span><span class="p">]))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;update_config_section: Invalid parameter &#39;</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">&#39; specified for update&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;update_config_section: Config section content = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sect</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;update_config_section: Config section content = &#39;</span><span class="si">{</span><span class="n">sect</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
         <span class="c1"># write plugin.yaml</span>
         <span class="k">if</span> <span class="n">parameters_changed</span><span class="p">:</span>
             <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_save_roundtrip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_configfilename</span><span class="p">,</span> <span class="n">plugin_conf</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;update_config_section: Finished updating section &#39;</span><span class="si">{}</span><span class="s2">&#39; of ../etc/plugin.yaml&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_configname</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;update_config_section: Finished updating section &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_configname</span><span class="si">}</span><span class="s2">&#39; of ../etc/plugin.yaml&quot;</span><span class="p">)</span>
         <span class="k">return</span></div>
-
-<span class="c1">#---</span>
-<span class="c1">#plugin_conf = shyaml.yaml_load_roundtrip(config_filename)</span>
-<span class="c1">#sect = plugin_conf.get(id)</span>
-<span class="c1">#if sect is None:</span>
-<span class="c1">#    response = {&#39;result&#39;: &#39;error&#39;, &#39;description&#39;: &quot;Configuration section &#39;{}&#39; does not exist&quot;.format(id)}</span>
-<span class="c1">#else:</span>
-<span class="c1">#    self.logger.debug(&quot;update: params = {}&quot;.format(params))</span>
-<span class="c1">#    if params.get(&#39;config&#39;, {}).get(&#39;plugin_enabled&#39;, None) == True:</span>
-<span class="c1">#        del params[&#39;config&#39;][&#39;plugin_enabled&#39;]</span>
-<span class="c1">#    plugin_conf[id] = params.get(&#39;config&#39;, {})</span>
-<span class="c1">#    shyaml.yaml_save_roundtrip(config_filename, plugin_conf, False)</span>
-<span class="c1">#    response = {&#39;result&#39;: &#39;ok&#39;}</span>
-
-
-<span class="c1">#---</span>
-
 
 <div class="viewcode-block" id="SmartPlugin.get_loginstance"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_loginstance">[Doku]</a>    <span class="k">def</span> <span class="nf">get_loginstance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5142,7 +5108,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__instance</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="k">return</span> <span class="s1">&#39;&#39;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__instance</span><span class="o">+</span><span class="s1">&#39;@: &#39;</span></div>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__instance</span> <span class="o">+</span> <span class="s1">&#39;@: &#39;</span></div>
 
 
     <span class="k">def</span> <span class="nf">__get_iattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
@@ -5159,7 +5125,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__instance</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">attr</span>
         <span class="k">else</span><span class="p">:</span>
-           <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">@</span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__instance</span><span class="p">)</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__instance</span><span class="si">}</span><span class="s2">&quot;</span>
 
 
     <span class="k">def</span> <span class="nf">__get_iattr_conf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
@@ -5178,8 +5144,8 @@
         <span class="n">__attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_iattr</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">__attr</span> <span class="ow">in</span> <span class="n">conf</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">__attr</span>
-        <span class="k">elif</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">@*&quot;</span><span class="o">%</span><span class="n">attr</span> <span class="ow">in</span> <span class="n">conf</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">@*&quot;</span><span class="o">%</span><span class="n">attr</span>
+        <span class="k">elif</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">s@*&quot;</span> <span class="ow">in</span> <span class="n">conf</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">@*&quot;</span>
         <span class="k">return</span> <span class="kc">None</span>
 
 
@@ -5237,9 +5203,9 @@
 
 <span class="sd">        It tests, if PLUGIN_VERSION is defined.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span><span class="s1">&#39;PLUGIN_VERSION&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">&#39;PLUGIN_VERSION&#39;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;&#39;Plugin&#39; subclasses should have a &#39;PLUGIN_VERSION&#39; attribute&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">SmartObject</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">SmartObject</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="SmartPlugin.get_sh"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.get_sh">[Doku]</a>    <span class="k">def</span> <span class="nf">get_sh</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -5275,12 +5241,12 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">mymod</span> <span class="o">=</span> <span class="n">Modules</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span><span class="o">.</span><span class="n">get_module</span><span class="p">(</span><span class="n">modulename</span><span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
-             <span class="n">mymod</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">mymod</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Module &#39;</span><span class="si">{}</span><span class="s2">&#39; not loaded&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">modulename</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">mymod</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">mymod</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Module &#39;</span><span class="si">{</span><span class="n">modulename</span><span class="si">}</span><span class="s2">&#39; not loaded&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using module &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span> <span class="n">mymod</span><span class="o">.</span><span class="n">_shortname</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using module &#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">mymod</span><span class="o">.</span><span class="n">_shortname</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">mymod</span></div>
 
 
@@ -5288,7 +5254,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Join an existing path and a directory</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">path</span><span class="p">,</span> <span class="nb">dir</span> <span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">dir</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SmartPlugin.parse_logic"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.parse_logic">[Doku]</a>    <span class="k">def</span> <span class="nf">parse_logic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logic</span><span class="p">):</span>
@@ -5321,7 +5287,7 @@
         <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">name</span>
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pluginname_prefix</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">()</span> <span class="o">+</span> <span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;scheduler_return_next: name = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;scheduler_return_next: name = </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">return_next</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">from_smartplugin</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SmartPlugin.scheduler_trigger"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.scheduler_trigger">[Doku]</a>    <span class="k">def</span> <span class="nf">scheduler_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prio</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -5336,10 +5302,10 @@
             <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">name</span>
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pluginname_prefix</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">()</span> <span class="o">+</span> <span class="n">name</span>
         <span class="k">if</span> <span class="n">by</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">by</span> <span class="o">=</span> <span class="s1">&#39;Plugin </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-        <span class="n">parameters</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">=</span><span class="si">{!r}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-                                <span class="k">if</span> <span class="n">v</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;self&#39;</span><span class="p">,</span> <span class="s1">&#39;obj&#39;</span><span class="p">]])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;scheduler_trigger: name = </span><span class="si">{}</span><span class="s2">, parameters: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">parameters</span><span class="p">))</span>
+            <span class="n">by</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Plugin </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">=</span><span class="si">{</span><span class="n">v</span><span class="si">!r}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                                <span class="k">if</span> <span class="n">v</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;self&#39;</span><span class="p">,</span> <span class="s1">&#39;obj&#39;</span><span class="p">]])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;scheduler_trigger: name = </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">, parameters: </span><span class="si">{</span><span class="n">parameters</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">by</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">prio</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">from_smartplugin</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SmartPlugin.scheduler_add"><a class="viewcode-back" href="../../../entwicklung/plugins/smartplugin.html#lib.model.smartplugin.SmartPlugin.scheduler_add">[Doku]</a>    <span class="k">def</span> <span class="nf">scheduler_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">prio</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">cron</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">next</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -5351,11 +5317,11 @@
 <span class="sd">        The parameters are identical to the scheduler.add method from lib.scheduler</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="n">name</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pluginname_prefix</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">()</span><span class="o">+</span><span class="n">name</span>
-        <span class="n">parameters</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">=</span><span class="si">{!r}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-                                <span class="k">if</span> <span class="n">v</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;self&#39;</span><span class="p">,</span> <span class="s1">&#39;obj&#39;</span><span class="p">]])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;scheduler_add: name = </span><span class="si">{}</span><span class="s2">, parameters: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">parameters</span><span class="p">))</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">name</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pluginname_prefix</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">()</span> <span class="o">+</span> <span class="n">name</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">=</span><span class="si">{</span><span class="n">v</span><span class="si">!r}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                                <span class="k">if</span> <span class="n">v</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;self&#39;</span><span class="p">,</span> <span class="s1">&#39;obj&#39;</span><span class="p">]])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;scheduler_add: name = </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">, parameters: </span><span class="si">{</span><span class="n">parameters</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">prio</span><span class="p">,</span> <span class="n">cron</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="nb">next</span><span class="p">,</span> <span class="n">from_smartplugin</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
@@ -5368,11 +5334,11 @@
 <span class="sd">        The parameters are identical to the scheduler.change method from lib.scheduler</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="n">name</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pluginname_prefix</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">()</span><span class="o">+</span><span class="n">name</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;from_smartplugin&#39;</span><span class="p">]</span><span class="o">=</span><span class="kc">True</span>
-        <span class="n">parameters</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">=</span><span class="si">{!r}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;scheduler_change: name = </span><span class="si">{}</span><span class="s2">, parameters: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">parameters</span><span class="p">))</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">name</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pluginname_prefix</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">()</span> <span class="o">+</span> <span class="n">name</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;from_smartplugin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">=</span><span class="si">{</span><span class="n">v</span><span class="si">!r}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;scheduler_change: name = </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">, parameters: </span><span class="si">{</span><span class="n">parameters</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">change</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
@@ -5385,9 +5351,9 @@
 <span class="sd">        The parameters are identical to the scheduler.remove method from lib.scheduler</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="n">name</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pluginname_prefix</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">()</span><span class="o">+</span><span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;scheduler_remove: name = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">name</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pluginname_prefix</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">()</span> <span class="o">+</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;scheduler_remove: name = </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">from_smartplugin</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
@@ -5402,7 +5368,7 @@
         <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">name</span>
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pluginname_prefix</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">()</span> <span class="o">+</span> <span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;scheduler_get: name = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;scheduler_get: name = </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">from_smartplugin</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
@@ -5430,7 +5396,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">txt</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">block</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;unsuported 3. parameter &#39;</span><span class="si">{}</span><span class="s2">&#39; used in translation function _( ... )&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">block</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unsuported 3. parameter &#39;</span><span class="si">{</span><span class="n">block</span><span class="si">}</span><span class="s2">&#39; used in translation function _( ... )&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_translation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># test initially, if plugin has additional translations</span>
@@ -5457,7 +5423,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">mod_http</span> <span class="o">=</span> <span class="n">Modules</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span><span class="o">.</span><span class="n">get_module</span><span class="p">(</span><span class="s1">&#39;http&#39;</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mod_http</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod_http</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod_http</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Module &#39;http&#39; not loaded. Not initializing the web interface for the plugin&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
@@ -5515,12 +5481,11 @@
 <span class="sd">        :return: Jinja2 template engine environment</span>
 <span class="sd">        :rtype: object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">mytemplates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">path_join</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">webif_dir</span><span class="p">,</span> <span class="s1">&#39;templates&#39;</span> <span class="p">)</span>
+        <span class="n">mytemplates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">path_join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">webif_dir</span><span class="p">,</span> <span class="s1">&#39;templates&#39;</span><span class="p">)</span>
         <span class="n">globaltemplates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">mod_http</span><span class="o">.</span><span class="n">gtemplates_dir</span>
-        <span class="n">tplenv</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="n">FileSystemLoader</span><span class="p">([</span><span class="n">mytemplates</span><span class="p">,</span><span class="n">globaltemplates</span><span class="p">]))</span>
+        <span class="n">tplenv</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="n">FileSystemLoader</span><span class="p">([</span><span class="n">mytemplates</span><span class="p">,</span> <span class="n">globaltemplates</span><span class="p">]))</span>
 
         <span class="n">tplenv</span><span class="o">.</span><span class="n">globals</span><span class="p">[</span><span class="s1">&#39;isfile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_staticfile</span>
-        <span class="c1">#tplenv.globals[&#39;_&#39;] = self.plugin.translate</span>
         <span class="n">tplenv</span><span class="o">.</span><span class="n">globals</span><span class="p">[</span><span class="s1">&#39;_&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate</span>        <span class="c1"># use translate method of webinterface class</span>
         <span class="n">tplenv</span><span class="o">.</span><span class="n">globals</span><span class="p">[</span><span class="s1">&#39;len&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span>
         <span class="k">return</span> <span class="n">tplenv</span>
@@ -5540,14 +5505,11 @@
 <span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;/gstatic/&#39;</span><span class="p">):</span>
-<span class="c1">#            complete_path = self.plugin.path_join(Modules.get_instance().get_module(&#39;http&#39;)._gstatic_dir, path[len(&#39;/gstatic/&#39;):])</span>
             <span class="n">complete_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">path_join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">mod_http</span><span class="o">.</span><span class="n">gstatic_dir</span><span class="p">,</span> <span class="n">path</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;/gstatic/&#39;</span><span class="p">):])</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">complete_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">path_join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">webif_dir</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
         <span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">isfile</span> <span class="k">as</span> <span class="n">isfile</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">isfile</span><span class="p">(</span><span class="n">complete_path</span><span class="p">)</span>
-        <span class="c1"># self.logger.debug(&quot;is_staticfile: path={}, complete_path={}, result={}&quot;.format(path, complete_path, result))</span>
-        <span class="k">return</span> <span class="n">result</span>
+        <span class="k">return</span> <span class="n">isfile</span><span class="p">(</span><span class="n">complete_path</span><span class="p">)</span>
 
 
     <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">txt</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -5555,11 +5517,6 @@
 <span class="sd">        Returns translated text for class SmartPluginWebIf</span>
 
 <span class="sd">        This method extends the jinja2 template engine _( ... ) -&gt; translate( ... )</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1">#return self.plugin.translate(txt)</span>
-
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns translated text</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">txt</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
 
@@ -5569,7 +5526,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">_add_translation</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">translation_fn</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">_add_translation</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">lib_translate</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="nb">vars</span><span class="p">,</span> <span class="n">plugin_translations</span><span class="o">=</span><span class="s1">&#39;plugin/&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">(),</span> <span class="n">module_translations</span><span class="o">=</span><span class="s1">&#39;module/http&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">lib_translate</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="nb">vars</span><span class="p">,</span> <span class="n">plugin_translations</span><span class="o">=</span><span class="s1">&#39;plugin/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">(),</span> <span class="n">module_translations</span><span class="o">=</span><span class="s1">&#39;module/http&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">lib_translate</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="nb">vars</span><span class="p">,</span> <span class="n">module_translations</span><span class="o">=</span><span class="s1">&#39;module/http&#39;</span><span class="p">)</span>
 
