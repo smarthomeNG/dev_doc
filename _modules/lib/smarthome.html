@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.smarthome &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 09. March 2023, commit 9ee2047) Dokumentation</title>
+  <title>lib.smarthome &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 10. March 2023, commit 4253ccb) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -3520,7 +3520,8 @@
 <li class="toctree-l4"><a class="reference internal" href="../../referenz/smarthomeng/ablauf_startup.html#initialisierung-des-smarthome-objektes">Initialisierung des smarthome Objektes</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../referenz/smarthomeng/ablauf_startup.html#initialisierung">0 - Initialisierung</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../referenz/smarthomeng/ablauf_startup.html#initialisierung-logging-initialisiert">1 - Initialisierung: Logging initialisiert</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../referenz/smarthomeng/ablauf_startup.html#initialisierung-voraussetzungen-uberpruft">2 - Initialisierung: Voraussetzungen überprüft</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../referenz/smarthomeng/ablauf_startup.html#initialisierung-prufung-der-prozessor-geschwindigkeit">2 - Initialisierung: Prüfung der Prozessor-Geschwindigkeit</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../referenz/smarthomeng/ablauf_startup.html#initialisierung-voraussetzungen-uberpruft">3 - Initialisierung: Voraussetzungen überprüft</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../referenz/smarthomeng/ablauf_startup.html#startet">10 - Startet</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../referenz/smarthomeng/ablauf_startup.html#startet-initialisiert-und-startet-ladbare-module">11 - Startet: Initialisiert und startet ladbare Module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../referenz/smarthomeng/ablauf_startup.html#startet-initialisiert-plugins">12 - Startet: Initialisiert Plugins</a></li>
@@ -4540,6 +4541,7 @@
 <span class="kn">from</span> <span class="nn">lib.triggertimes</span> <span class="kn">import</span> <span class="n">TriggerTimes</span>
 <span class="kn">from</span> <span class="nn">lib.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">YAML_FILE</span><span class="p">,</span> <span class="n">CONF_FILE</span><span class="p">,</span> <span class="n">DEFAULT_FILE</span><span class="p">)</span>
 <span class="kn">import</span> <span class="nn">lib.userfunctions</span> <span class="k">as</span> <span class="nn">uf</span>
+<span class="kn">from</span> <span class="nn">lib.systeminfo</span> <span class="kn">import</span> <span class="n">Systeminfo</span>
 
 <span class="c1">#import bin.shngversion</span>
 <span class="c1">#MODE = &#39;default&#39;</span>
@@ -4648,14 +4650,13 @@
         <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_dir</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">PYTHON_VERSION</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_python_version</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;nt&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">python_bin</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">python_bin</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">executable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">python_bin</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">executable</span>
 
         <span class="k">if</span> <span class="n">extern_conf_dir</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_extern_conf_dir</span> <span class="o">=</span> <span class="n">extern_conf_dir</span>
+
+        <span class="c1"># get systeminfo closs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">systeminfo</span> <span class="o">=</span> <span class="n">Systeminfo</span>
 
         <span class="c1"># set default timezone to UTC</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span> <span class="o">=</span> <span class="n">Shtime</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -4663,10 +4664,10 @@
         <span class="n">threading</span><span class="o">.</span><span class="n">current_thread</span><span class="p">()</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Main&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alive</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="kn">import</span> <span class="nn">bin.shngversion</span>
-        <span class="n">VERSION</span> <span class="o">=</span> <span class="nb">bin</span><span class="o">.</span><span class="n">shngversion</span><span class="o">.</span><span class="n">get_shng_version</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">branch</span> <span class="o">=</span> <span class="nb">bin</span><span class="o">.</span><span class="n">shngversion</span><span class="o">.</span><span class="n">get_shng_branch</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">VERSION</span>
+        <span class="c1"># import bin.shngversion as shngversion</span>
+        <span class="c1"># VERSION = shngversion.get_shng_version()</span>
+        <span class="c1"># self.branch = shngversion.get_shng_branch()</span>
+        <span class="c1"># self.version = shngversion.get_shng_version()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connections</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_etc_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_extern_conf_dir</span><span class="p">,</span> <span class="s1">&#39;etc&#39;</span><span class="p">)</span>
@@ -4731,6 +4732,16 @@
         <span class="c1"># setup logging</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_logging</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_conf_basename</span><span class="p">,</span> <span class="n">MODE</span><span class="p">)</span>
 
+
+        <span class="c1">#############################################################</span>
+        <span class="c1"># get shng version information</span>
+        <span class="c1"># shngversion.get_plugins_version() may only be called after logging is initialized</span>
+        <span class="kn">import</span> <span class="nn">bin.shngversion</span> <span class="k">as</span> <span class="nn">shngversion</span>
+        <span class="c1">#VERSION = shngversion.get_shng_version()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">branch</span> <span class="o">=</span> <span class="n">shngversion</span><span class="o">.</span><span class="n">get_shng_branch</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">shngversion</span><span class="o">.</span><span class="n">get_shng_version</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plugins_version</span> <span class="o">=</span> <span class="n">shngversion</span><span class="o">.</span><span class="n">get_plugins_version</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">shng_status</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;Initalizing: Logging initalized&#39;</span><span class="p">}</span>
 
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_tz&#39;</span><span class="p">):</span>
@@ -4755,7 +4766,12 @@
             <span class="n">virtual_text</span> <span class="o">=</span> <span class="s1">&#39; in virtual environment&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger_main</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="s2">&quot;--------------------   Init SmartHomeNG </span><span class="si">{}</span><span class="s2">   --------------------&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger_main</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running in Python interpreter &#39;v</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">PYTHON_VERSION</span><span class="si">}</span><span class="s2">&#39;</span><span class="si">{</span><span class="n">virtual_text</span><span class="si">}</span><span class="s2">, from directory </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger_main</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; - on </span><span class="si">{</span><span class="n">platform</span><span class="o">.</span><span class="n">platform</span><span class="p">()</span><span class="si">}</span><span class="s2"> (pid=</span><span class="si">{</span><span class="n">pid</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="c1">#self._logger_main.notice(f&quot; - on {platform.platform()} (pid={pid})&quot;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger_main</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; - operating system &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">systeminfo</span><span class="o">.</span><span class="n">get_osname</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39; (pid=</span><span class="si">{</span><span class="n">pid</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">systeminfo</span><span class="o">.</span><span class="n">get_rasppi_info</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger_main</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; - on &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">systeminfo</span><span class="o">.</span><span class="n">get_cpubrand</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger_main</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; - on &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">systeminfo</span><span class="o">.</span><span class="n">get_rasppi_info</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="s1">&#39;NOTICE&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">31</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger_main</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; - Loglevel NOTICE is set to value </span><span class="si">{</span><span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="s1">&#39;NOTICE&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> because handler of root logger is set to level WARNING or higher  -  Set level of handler &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">root_handler_name</span><span class="si">}</span><span class="s2">&#39; to &#39;NOTICE&#39;!&quot;</span><span class="p">)</span>
 
@@ -4784,6 +4800,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;No plugins found in folder &#39;</span><span class="si">{}</span><span class="s2">&#39;. Please install plugins.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plugins_dir</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Aborting&quot;</span><span class="p">)</span>
             <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+        <span class="c1">#############################################################</span>
+        <span class="c1"># check processor speed (if not done before)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">systeminfo</span><span class="o">.</span><span class="n">get_cpu_speed</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shng_status</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;Checking processor speed&#39;</span><span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">systeminfo</span><span class="o">.</span><span class="n">check_cpu_speed</span><span class="p">()</span>
+
 
         <span class="c1">#############################################################</span>
         <span class="c1"># test if needed Python packages for configured plugins</span>
@@ -4815,7 +4839,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Aborting&quot;</span><span class="p">)</span>
             <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">shng_status</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;Initalizing: Requirements checked&#39;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shng_status</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;Initalizing: Requirements checked&#39;</span><span class="p">}</span>
 
 
         <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span><span class="o">.</span><span class="n">_initialize_holidays</span><span class="p">()</span>
@@ -5279,7 +5303,7 @@
 
     <span class="k">def</span> <span class="nf">_excepthook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span><span class="p">):</span>
         <span class="n">mytb</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_tb</span><span class="p">(</span><span class="n">tb</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Unhandled exception: </span><span class="si">{1}</span><span class="se">\n</span><span class="si">{0}</span><span class="se">\n</span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">mytb</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unhandled exception: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">typ</span><span class="si">}</span><span class="se">\n</span><span class="s2">running SmartHomeNG </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="se">\n</span><span class="s2">Exception: </span><span class="si">{</span><span class="n">mytb</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_garbage_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">c</span> <span class="o">=</span> <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
