@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vorüberlegungen &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 12. March 2023, commit 76dee8f) Dokumentation</title>
+  <title>Vorüberlegungen &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 12. March 2023, commit 90210fc) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -3178,7 +3178,14 @@
 <li class="toctree-l2 current"><a class="reference internal" href="plugins.html">Plugins <span class="bluesup">under construction</span></a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Vorüberlegungen</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#fragestellungen">Fragestellungen</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#typ-des-plugins">Typ des Plugins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#typ-des-plugins">Typ des Plugins</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#system-plugin">System Plugin</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#interface-plugin">Interface Plugin</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#gateway-plugin">Gateway Plugin</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#protokoll-plugin">Protokoll Plugin</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#web-cloud-plugin">Web/Cloud Plugin</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="#nutzung-von-python-packages">Nutzung von Python Packages</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#python-version">Python Version</a></li>
 </ul>
@@ -3201,7 +3208,8 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="plugins.html#kurzanleitung">Kurzanleitung</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="plugin_checker.html">Plugin-Checker <span class="redsup">new</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="kurzanleitung.html">Kurzanleitung</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="plugin_in5minutes.html">In 5 Minuten zum eigenen Plugin…</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="plugin_in5minutes.html#beschreibung-des-plugins">Beschreibung des Plugins</a></li>
 <li class="toctree-l5"><a class="reference internal" href="plugin_in5minutes.html#vordefinierte-funktionen-des-plugins">Vordefinierte Funktionen des Plugins</a></li>
@@ -3209,7 +3217,6 @@
 <li class="toctree-l5"><a class="reference internal" href="plugin_in5minutes.html#zusammenfassung">Zusammenfassung</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="plugin_checker.html">Plugin-Checker <span class="redsup">new</span></a></li>
 <li class="toctree-l4"><a class="reference internal" href="smartplugin.html">Class SmartPlugin</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="smartplugin.html#lib.model.smartplugin.SmartPlugin"><code class="docutils literal notranslate"><span class="pre">SmartPlugin</span></code></a></li>
 </ul>
@@ -4115,14 +4122,13 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../faq.html">FAQ - Häufig gestellte Fragen</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../release/release.html">Release Notes</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../release/1_9_4.html">Release 1.9.x - tt. März 2023</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../release/1_9_4.html">Release 1.9.4 - tt. März 2023</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../release/1_9_4.html#uberblick">Überblick</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../release/1_9_4.html#minimum-python-version">Minimum Python Version</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../release/1_9_4.html#unterstutzte-python-versionen">Unterstützte Python Versionen</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../release/1_9_4.html#anderungen-am-core">Änderungen am Core</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../release/1_9_4.html#bugfixes-in-the-core">Bugfixes in the CORE</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../release/1_9_4.html#updates-in-the-core">Updates in the CORE</a></li>
 </ul>
 </li>
@@ -4431,7 +4437,43 @@
 </section>
 <section id="typ-des-plugins">
 <h2>Typ des Plugins<a class="headerlink" href="#typ-des-plugins" title="Permalink to this heading"></a></h2>
-<p>…</p>
+<p>In SmartHomeNG gibt es folgende Plugin Typen:</p>
+<section id="system-plugin">
+<h3>System Plugin<a class="headerlink" href="#system-plugin" title="Permalink to this heading"></a></h3>
+<p>System Plugins steuern keine externen Devices an, sondern erweitern die Funktionalität von SmartHomeNG.</p>
+<p>Beispiele für System Plugins sind: <strong>cli</strong>, <strong>database</strong> oder <strong>stateengine</strong></p>
+</section>
+<section id="interface-plugin">
+<h3>Interface Plugin<a class="headerlink" href="#interface-plugin" title="Permalink to this heading"></a></h3>
+<p>Ein Interface Plugin verbindet SmartHomeNG mit genau einem externen Device. Beispiele sind Plugins, die über eine
+serielle Schnittstelle kommunizieren.</p>
+<p>Es können aber auch Devices sein, die das Netzwer oder ein Bus System kommunizieren, wenn das Plugin nur genau <strong>ein</strong>
+Device ansteuern kann. Ein Interface Plugin kann als Multi-Instance Plugin ausgelegt werden. Dann kann je Instanz ein
+Device angeseteuert werden.</p>
+<p>Beispiele für Interface Plugins sind: <strong>avdevice</strong> oder <strong>viessmann</strong></p>
+</section>
+<section id="gateway-plugin">
+<h3>Gateway Plugin<a class="headerlink" href="#gateway-plugin" title="Permalink to this heading"></a></h3>
+<p>Ein Gateway Plugin verbindet SmartHomeNG mit mit einer Reihe von externen Devices, die über die selbe Art kommunizieren.
+Diese Plugins sprechen ein Gateway an, welches dann über ein Bussystem die eigentlichen Devices anspricht (z.B. KNX,
+Philips Hue oder Homematic).</p>
+<p>Bei Gateway Plugins wird über ein Item Attribut gesteuert, welches Device angesprochen werden soll.</p>
+<p>Beispiele für Gateway Plugins sind: <strong>knx</strong>, <strong>hue2</strong>, <strong>onewire</strong> oder <strong>tasmota</strong></p>
+</section>
+<section id="protokoll-plugin">
+<h3>Protokoll Plugin<a class="headerlink" href="#protokoll-plugin" title="Permalink to this heading"></a></h3>
+<p>Protokoll Plugins steuern keine Devices direkt an, sondern ermöglichen die Kommunikation über ein Protokoll.</p>
+<p>Beispiele für Protokoll Plugins sind: <strong>mqtt</strong>, <strong>network</strong>, <strong>snmp</strong> oder <strong>wol</strong></p>
+</section>
+<section id="web-cloud-plugin">
+<h3>Web/Cloud Plugin<a class="headerlink" href="#web-cloud-plugin" title="Permalink to this heading"></a></h3>
+<p>Web/Cloud Plugins kommunizieren mit Web- bzw. Cloud Diensten, um Informationen in SmartHomeNG einzulesen bzw.
+Informationen aus SmartHomeNG auszugeben.</p>
+<p>Beispiele für Web/Cloud Plugins sind: <strong>alexa4p3</strong>, <strong>ical</strong>, <strong>jsonread</strong> oder <strong>piratewthr</strong></p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
 </section>
 <section id="nutzung-von-python-packages">
 <h2>Nutzung von Python Packages<a class="headerlink" href="#nutzung-von-python-packages" title="Permalink to this heading"></a></h2>
