@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Beispielplugin update &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 12. March 2023, commit 31bbd88) Dokumentation</title>
+  <title>Beispielplugin update &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 13. March 2023, commit fb11615) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4742,6 +4742,12 @@
 &lt;!-- if you don&#39;t need the close in the header, disable it--&gt;
 {% set close_button = false %}
 
+&lt;!-- for some situations it might be useful to know the number of datatable rows shown on the current page.
+Activate that function if needed, otherwise just remove the line to increase performance --&gt;
+{% set row_count = true %}
+
+&lt;!-- if new values should be retrieved using automatic page update right in the beginning and on page changes --&gt;
+{% set initial_update = true %}
 
 &lt;!--
     Additional styles go into this block. Examples are for datatables
@@ -4783,6 +4789,8 @@
                 shngInsertText (item+&#39;_value&#39;, objResponse[item][&#39;value&#39;], &#39;maintable&#39;, 5);
                 */
             }
+      // Redraw datatable after cell updates
+      // $(&#39;#maintable&#39;).DataTable().draw(false);
         }
     }
 &lt;/script&gt;
@@ -4813,7 +4821,7 @@
             Copy this part for every datatable on your page. Adjust options if necessary.
             pageLength and pageResize should be included as they are to adjust it based on the plugin settings
             */
-            table = $(&#39;#maintable&#39;).DataTable( {
+            maintable = $(&#39;#maintable&#39;).DataTable( {
               /* If you want to define your own columnDefs options (e.g. for hiding a column by default), use the concat function shown here.
               */
               columnDefs: [{ &quot;targets&quot;: [2], &quot;className&quot;: &quot;value&quot;}].concat($.fn.dataTable.defaults.columnDefs),
@@ -4909,7 +4917,7 @@ In the example the update is deactivated on the 12th of December 2022 (what migh
   &lt;/div&gt;
 
     &lt;!-- set id accordingly --&gt;
-    &lt;table id=&quot;maintable&quot;&gt;
+    &lt;table id=&quot;maintable&quot; class=&quot;dataTableAdditional&quot;&gt;
         &lt;thead&gt;
             &lt;tr&gt;
         &lt;!-- You HAVE to add an empty th here for correct implementation of the responsive plugin --&gt;

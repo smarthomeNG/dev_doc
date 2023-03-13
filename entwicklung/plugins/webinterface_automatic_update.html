@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Automatische Updates der Daten im Webinterface new &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 12. March 2023, commit 31bbd88) Dokumentation</title>
+  <title>Automatische Updates der Daten im Webinterface new &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 13. March 2023, commit fb11615) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4633,9 +4633,11 @@ Die Parameter der shngInsertText-Funktion sind dabei wie folgt:</p>
 
 <span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="nx">item</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nx">objResponse</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">                </span><span class="nx">shngInsertText</span><span class="p">(</span><span class="nx">item</span><span class="o">+</span><span class="s1">&#39;_value&#39;</span><span class="p">,</span><span class="w"> </span><span class="nx">objResponse</span><span class="p">[</span><span class="s1">&#39;item&#39;</span><span class="p">][</span><span class="nx">item</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">],</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="mf">2</span><span class="p">);</span>
-<span class="w">                </span><span class="c1">// bei Tabellen mit datatables Funktion sollte die Zeile lauten:</span>
+<span class="w">                </span><span class="c1">// bei Tabellen mit datatables Funktion sollte die Zeile lauten (ID ersetzen!):</span>
 <span class="w">                </span><span class="c1">// shngInsertText(item+&#39;_value&#39;, objResponse[&#39;item&#39;][item][&#39;value&#39;], &#39;maintable&#39;, 2);</span>
 <span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="c1">// Bei Datatables sollte nach der Schleife die gesamte Tabelle ein Mal aktualisert werden</span>
+<span class="w">            </span><span class="c1">// $(&#39;#maintable&#39;).DataTable().draw(false); // ID entsprechend ersetzen</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
@@ -4690,7 +4692,7 @@ anzugeben ist (0 wäre die erste Tabellenspalte, 1 die zweite, etc.).</p>
 beispielsweise, wenn die letzten durchgeführten Commandos oder Logeinträge ergänzt werden sollen.
 Hierzu ist es nötig, die Funktion <code class="docutils literal notranslate"><span class="pre">handleUpdatedData</span></code> entsprechend anzupassen.</p>
 <p>In der ersten if-Abfrage wird evaluiert, ob bereits ein Element mit entsprechender ID existiert.
-Falls nicht, wird die Zeile neu angelegt und sanft eingeblendet. Im untenstehenden Code wird zuerst gecheckt,
+Falls nicht, wird die Zeile neu angelegt und sanft eingeblendet. Im unten stehenden Code wird zuerst gecheckt,
 ob es eine Datentabelle mit der ID „maintable“ gibt.
 In der Zeile <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">(</span> <span class="pre">$.fn.dataTable.isDataTable('#maintable')</span> <span class="pre">)</span></code> sowie in der darauf folgenden
 Zeile muss ‚#maintable‘ durch die tatsächliche ID der zu aktualisierenden Tabelle ersetzt werden.
@@ -4703,7 +4705,7 @@ Anschließend wird der zweiten Spalte die relevante ID hinzugefügt, um zukünft
 aktualisieren zu können. Möchte man weiteren Spalten ebenfalls
 eine ID zuweisen, ist die Codezeile zu kopieren und die Zahl beim Eintrag <code class="docutils literal notranslate"><span class="pre">td:eq(1)</span></code> entsprechend
 zu ändern (0 = erste Spalte, 1 = zweite Spalte, etc.). Abschließend wird der leere Wert schließlich
-mittels <code class="docutils literal notranslate"><span class="pre">shngInsertText</span></code> aktualisiert und dank Angabe einer Zahl als 4. Parameter x Sekunden lang farblich markiert.</p>
+mittels <code class="docutils literal notranslate"><span class="pre">shngInsertText</span></code> aktualisiert und dank Angabe einer Zahl als 4. Parameter x Sekunden lang farblich markiert. Nach der for-Schleife sollte die Tabelle neu gezeichnet werden (siehe Beispiel).</p>
 <div class="highlight-html+jinja notranslate"><div class="highlight"><pre><span></span><span class="cp">{%</span> <span class="k">block</span> <span class="nv">pluginscripts</span> <span class="cp">%}</span>
 <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
 <span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">handleUpdatedData</span><span class="p">(</span><span class="nx">response</span><span class="p">,</span><span class="w"> </span><span class="nx">dataSet</span><span class="o">=</span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -4725,6 +4727,7 @@ mittels <code class="docutils literal notranslate"><span class="pre">shngInsertT
 <span class="w">                </span><span class="p">}</span>
 
 <span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#maintable&#39;</span><span class="p">).</span><span class="nx">DataTable</span><span class="p">().</span><span class="nx">draw</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
@@ -4755,8 +4758,8 @@ im Block <code class="docutils literal notranslate"><span class="pre">pluginStyl
 </pre></div>
 </div>
 </section>
-<section id="festlegen-des-aktualisierungsintervalls-datasets-und-weiteren-parametern">
-<h2>Festlegen des Aktualisierungsintervalls, dataSets und weiteren Parametern<a class="headerlink" href="#festlegen-des-aktualisierungsintervalls-datasets-und-weiteren-parametern" title="Permalink to this heading"></a></h2>
+<section id="festlegen-von-aktualisierungsintervall-datasets-und-weiteren-parametern">
+<h2>Festlegen von Aktualisierungsintervall, dataSets und weiteren Parametern<a class="headerlink" href="#festlegen-von-aktualisierungsintervall-datasets-und-weiteren-parametern" title="Permalink to this heading"></a></h2>
 <p>Zu Beginn der Templatedatei <code class="docutils literal notranslate"><span class="pre">webif/templates/index.html</span></code> finden sich die folgenden Zeilen:</p>
 <div class="highlight-css+jinja notranslate"><div class="highlight"><pre><span></span><span class="cp">{%</span> <span class="k">set</span> <span class="nv">update_interval</span> <span class="o">=</span> <span class="m">0</span> <span class="cp">%}</span>
 <span class="cp">{%</span> <span class="k">set</span> <span class="nv">update_active</span> <span class="o">=</span> <span class="kp">false</span> <span class="cp">%}</span>
@@ -4766,6 +4769,8 @@ im Block <code class="docutils literal notranslate"><span class="pre">pluginStyl
 <span class="cp">{%</span> <span class="k">set</span> <span class="nv">autorefresh_buttons</span> <span class="o">=</span> <span class="kp">true</span> <span class="cp">%}</span>
 <span class="cp">{%</span> <span class="k">set</span> <span class="nv">reload_button</span> <span class="o">=</span> <span class="kp">true</span> <span class="cp">%}</span>
 <span class="cp">{%</span> <span class="k">set</span> <span class="nv">close_button</span> <span class="o">=</span> <span class="kp">true</span> <span class="cp">%}</span>
+<span class="cp">{%</span> <span class="k">set</span> <span class="nv">row_count</span> <span class="o">=</span> <span class="kp">false</span> <span class="cp">%}</span>
+<span class="cp">{%</span> <span class="k">set</span> <span class="nv">initial_update</span> <span class="o">=</span> <span class="kp">true</span> <span class="cp">%}</span>
 </pre></div>
 </div>
 <p>Das Intervall wird via <code class="docutils literal notranslate"><span class="pre">update_interval</span></code> auf den gewünschten Wert in Millisekunden gesetzt. Dabei muss sichergestellt sein, dass das gewählte Intervall lang genug ist, dass die Python-Methode <code class="docutils literal notranslate"><span class="pre">get_data_html()</span></code> des Plugins die Daten liefern kann, bevor das Intervall abläuft. Wenn nur Daten zurückgegeben werden, die von anderen Routinen und Threads des Plugins bereits bereitgestellt wurden, kann ein Update-Intervall von ca. 1000 ms gewählt werden. Wenn die Python-Methode <code class="docutils literal notranslate"><span class="pre">get_data_html()</span></code> selbst noch weitere Routinen ausführen muss, sollte das Update-Intervall wahrscheinlich nicht kleiner als 5000 ms sein.</p>
@@ -4782,10 +4787,17 @@ als auch ein Feld für die Adaptierung des Intervalls vorgesehen.</p>
 Außerdem ist es möglich, zusätzliche Parameter zu definieren, die der Methode zur Verfügung gestellt werden soll.
 Dazu sollte die Methode get_data_html in der webif __init__.py entsprechend angepasst werden. Das vereinfachte Beispiel ist dem
 Database Plugin entnommen, das zwei Tabs mit verschiedenen Daten anzeigt, die eben auch unterschiedliche Rückmeldungen aus dem
-Plugin erhalten.
-Die Angaben zu den Buttons sind optional und können
+Plugin erhalten.</p>
+<p>Die Angaben zu den Buttons sind optional und können
 genutzt werden, um die Schalter und Auto-Refresh Funktionen im Header zu verstecken, wenn sie nicht
 gebraucht werden.</p>
+<p>Durch Definieren der <code class="docutils literal notranslate"><span class="pre">row_count</span></code> Variable wird beim Anzeigen einer Tabelle automatisch die Anzahl
+an Datenreihen ermittelt und in die Variable <code class="docutils literal notranslate"><span class="pre">window.row_count</span></code> gespeichert. Auf diesen Wert kann
+in einem eigenen Javascript zugegriffen werden. Wird diese Funktion nicht gebraucht, sollte die entsprechende
+Zeile gelöscht bzw. nicht gesetzt werden.</p>
+<p>Wenn <code class="docutils literal notranslate"><span class="pre">initial_update</span></code> auf „true“ gesetzt ist, werden automatisch beim Laden jeder Seite die Daten mittels
+get_data_html abgefragt. Dies ist insbesondere dann sinnvoll, wenn anfangs die Tabelle mit Dummy-Daten
+oder ohne Inhalt befüllt wurde.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@cherrypy</span><span class="o">.</span><span class="n">expose</span>
 <span class="k">def</span> <span class="nf">get_data_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataSet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4824,8 +4836,8 @@ gebraucht werden.</p>
 </pre></div>
 </div>
 </section>
-<section id="dynamische-anpassung-des-aktualisierungsintervalls-datasets-und-weiteren-parametern">
-<h2>Dynamische Anpassung des Aktualisierungsintervalls, dataSets und weiteren Parametern<a class="headerlink" href="#dynamische-anpassung-des-aktualisierungsintervalls-datasets-und-weiteren-parametern" title="Permalink to this heading"></a></h2>
+<section id="dynamische-anpassung-von-aktualisierungsintervall-datasets-und-weiteren-parametern">
+<h2>Dynamische Anpassung von Aktualisierungsintervall, dataSets und weiteren Parametern<a class="headerlink" href="#dynamische-anpassung-von-aktualisierungsintervall-datasets-und-weiteren-parametern" title="Permalink to this heading"></a></h2>
 <p>Unter Umständen ist es sinnvoll, diverse Parameter der automatischen Aktualisierung durch ein Script (oder einen Button)
 anzupassen. Die Parameter werden dabei durch Aufruf von <code class="docutils literal notranslate"><span class="pre">window.refresh.update({});</span></code> in Form eines Dictionary aktualisiert.
 Die möglichen Schlüsselwörter des Dictionaries sind dabei:</p>

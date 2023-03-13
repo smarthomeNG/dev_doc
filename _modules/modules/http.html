@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>modules.http &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 12. March 2023, commit 31bbd88) Dokumentation</title>
+  <title>modules.http &mdash; Dokumentation v1.9.3.5 v1.9.3.5 develop (Stand 13. March 2023, commit fb11615) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4551,6 +4551,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_showtraceback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;showtraceback&#39;</span><span class="p">]</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_starturl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;starturl&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connectionretries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;connectionretries&#39;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_webif_pagelength</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;webif_pagelength&#39;</span><span class="p">]</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Inconsistent module (invalid metadata definition)&quot;</span><span class="p">)</span>
@@ -4900,12 +4901,13 @@
         <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
         <span class="n">connected</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">while</span> <span class="p">(</span><span class="ow">not</span> <span class="n">connected</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">count</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">):</span>
+        <span class="k">while</span> <span class="p">(</span><span class="ow">not</span> <span class="n">connected</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">count</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connectionretries</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s2">&quot;10.10.10.10&quot;</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
                 <span class="n">connected</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">except</span><span class="p">:</span>
                 <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Network access issue. Retry </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_connectionretries</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">connected</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">getsockname</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
