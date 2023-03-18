@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.network &mdash; Dokumentation v1.9.4.1 develop v1.9.4.1 develop (Stand 18. March 2023, commit 9305c82) Dokumentation</title>
+  <title>lib.network &mdash; Dokumentation v1.9.4.1 develop v1.9.4.1 develop (Stand 18. March 2023, commit 7797b13) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4530,11 +4530,12 @@
 <span class="kn">from</span> <span class="nn">lib.utils</span> <span class="kn">import</span> <span class="n">Utils</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">signature</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">requests</span>
-<span class="kn">from</span> <span class="nn">iowait</span> <span class="kn">import</span> <span class="n">IOWait</span>   <span class="c1"># BMX</span>
+<span class="kn">from</span> <span class="nn">iowait</span> <span class="kn">import</span> <span class="n">IOWait</span>
 <span class="kn">import</span> <span class="nn">socket</span>
 <span class="kn">import</span> <span class="nn">struct</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
@@ -5114,10 +5115,22 @@
 <span class="sd">        :type data_received: function</span>
 <span class="sd">        :type disconnected: function</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_connected_callback</span> <span class="o">=</span> <span class="n">connected</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_callback</span> <span class="o">=</span> <span class="n">receiving</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_disconnected_callback</span> <span class="o">=</span> <span class="n">disconnected</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_data_received_callback</span> <span class="o">=</span> <span class="n">data_received</span></div>
+        <span class="k">if</span> <span class="n">connected</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">signature</span><span class="p">(</span><span class="n">connected</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;connected_callback for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s2"> is </span><span class="si">{</span><span class="n">connected</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2"> and it expects </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s2"> arguments&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connected_callback</span> <span class="o">=</span> <span class="n">connected</span>
+        <span class="k">if</span> <span class="n">receiving</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">signature</span><span class="p">(</span><span class="n">receiving</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;connected_callback for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s2"> is </span><span class="si">{</span><span class="n">receiving</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2"> and it expects </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s2"> arguments&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_receiving_callback</span> <span class="o">=</span> <span class="n">receiving</span>
+        <span class="k">if</span> <span class="n">disconnected</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">signature</span><span class="p">(</span><span class="n">disconnected</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;connected_callback for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s2"> is </span><span class="si">{</span><span class="n">disconnected</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2"> and it expects </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s2"> arguments&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_disconnected_callback</span> <span class="o">=</span> <span class="n">disconnected</span>
+        <span class="k">if</span> <span class="n">data_received</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">signature</span><span class="p">(</span><span class="n">data_received</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;connected_callback for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s2"> is </span><span class="si">{</span><span class="n">data_received</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2"> and it expects </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s2"> arguments&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data_received_callback</span> <span class="o">=</span> <span class="n">data_received</span></div>
 
 <div class="viewcode-block" id="Tcp_client.connect"><a class="viewcode-back" href="../../lib/network.html#lib.network.Tcp_client.connect">[Doku]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5139,8 +5152,11 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__connect_thread</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__connect_thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__connect_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_connect_thread_worker</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;TCP_Connect </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__connect_thread</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;connect() to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="si">}</span><span class="s1">: self.__running=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__running</span><span class="si">}</span><span class="s1">, self.__connect_thread.is_alive()=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__connect_thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__running</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__connect_thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;connect() to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="si">}</span><span class="s1">: calling __connect_thread.start()&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__connect_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;leaving connect() to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="Tcp_client.connected"><a class="viewcode-back" href="../../lib/network.html#lib.network.Tcp_client.connected">[Doku]</a>    <span class="k">def</span> <span class="nf">connected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -5234,8 +5250,11 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">__receive_thread</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">__receive_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
                     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;could not start __receive_thread_worker for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                         <span class="k">raise</span>
                     <span class="k">return</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;self._connect() for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> did not work&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__running</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connect_cycle</span><span class="p">)</span>
 
@@ -5247,6 +5266,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__connect_threadlock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s1"> exception while trying self.__connect_threadlock.release()&#39;</span><span class="p">)</span>
             <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -5366,7 +5386,7 @@
                                 <span class="k">return</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__running</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{self._id}</span><span class="s1"> receive thread shutting down&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s1"> receive thread shutting down&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_is_receiving</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="k">return</span>
             <span class="k">else</span><span class="p">:</span>
