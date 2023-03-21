@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.connection &mdash; Dokumentation v1.9.4.1 develop v1.9.4.1 develop (Stand 21. March 2023, commit d866fb6) Dokumentation</title>
+  <title>lib.connection &mdash; Dokumentation v1.9.4.1 develop v1.9.4.1 develop (Stand 21. March 2023, commit da747a8) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4520,6 +4520,71 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
+<span class="c1"># =====================================================================================</span>
+
+<span class="kn">import</span> <span class="nn">lib.utils</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">dep_id_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1">#####################################################################</span>
+<span class="c1"># Diplay DEPRECATED warning</span>
+<span class="c1">#####################################################################</span>
+<span class="k">def</span> <span class="nf">_deprecated_warning</span><span class="p">(</span><span class="n">n_func</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">o_func</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Display function deprecated warning</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># if hasattr(self, &#39;_deprecated_warnings&#39;):</span>
+    <span class="c1">#     if lib.utils.Utils.to_bool(self._deprecated_warnings) == False:</span>
+    <span class="c1">#         return</span>
+    <span class="c1"># else:</span>
+    <span class="c1">#     return # if parameter is not defined</span>
+
+    <span class="k">if</span> <span class="n">o_func</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="n">d_func</span> <span class="o">=</span> <span class="s1">&#39;lib.connection&#39;</span><span class="o">+</span><span class="s1">&#39; &#39;</span><span class="o">+</span><span class="n">o_func</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">d_func</span> <span class="o">=</span> <span class="s1">&#39;lib.connection&#39;</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;()&#39;</span>
+    <span class="k">if</span> <span class="n">n_func</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="n">n_func</span> <span class="o">=</span> <span class="s1">&#39;- use the &#39;</span><span class="o">+</span><span class="n">n_func</span><span class="o">+</span><span class="s1">&#39; instead&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">d_test</span> <span class="o">=</span> <span class="s1">&#39; (&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">f_locals</span><span class="p">[</span><span class="s1">&#39;self&#39;</span><span class="p">]</span><span class="o">.</span><span class="vm">__module__</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">d_test</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="n">called_by</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">)</span>
+    <span class="n">in_class</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">in_class</span> <span class="o">=</span> <span class="s1">&#39;class &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">f_locals</span><span class="p">[</span><span class="s1">&#39;self&#39;</span><span class="p">]</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span> <span class="o">+</span> <span class="n">d_test</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">in_class</span> <span class="o">=</span> <span class="s1">&#39;a logic?&#39;</span> <span class="o">+</span> <span class="n">d_test</span>
+    <span class="k">if</span> <span class="n">called_by</span> <span class="o">==</span> <span class="s1">&#39;&lt;module&gt;&#39;</span><span class="p">:</span>
+        <span class="n">called_by</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">)</span>
+        <span class="n">level</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">level</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">c_b</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="n">level</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="n">c_b</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="k">if</span> <span class="n">c_b</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">called_by</span> <span class="o">+=</span> <span class="s1">&#39; -&gt; &#39;</span> <span class="o">+</span> <span class="n">c_b</span>
+
+<span class="c1">#            called_by = str(sys._getframe(3).f_code.co_name)</span>
+
+<span class="c1">#    if not hasattr(self, &#39;dep_id_list&#39;):</span>
+<span class="c1">#        self.dep_id_list = []</span>
+    <span class="n">id_str</span> <span class="o">=</span> <span class="n">d_func</span> <span class="o">+</span> <span class="s1">&#39;|&#39;</span> <span class="o">+</span> <span class="n">in_class</span> <span class="o">+</span> <span class="s1">&#39;|&#39;</span> <span class="o">+</span> <span class="n">called_by</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">id_str</span> <span class="ow">in</span> <span class="n">dep_id_list</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">in_class</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;lib.smarthome&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEPRECATED: lib.connection is deprecated and will be removed in SmartHommeNG v1.10&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEPRECATED: Used &#39;</span><span class="si">{</span><span class="n">d_func</span><span class="si">}</span><span class="s2">&#39;, called in &#39;</span><span class="si">{</span><span class="n">in_class</span><span class="si">}</span><span class="s2">&#39; by &#39;</span><span class="si">{</span><span class="n">called_by</span><span class="si">}</span><span class="s2">&#39; </span><span class="si">{</span><span class="n">n_func</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">dep_id_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">id_str</span><span class="p">)</span>
+    <span class="k">return</span>
+
+<span class="c1"># =====================================================================================</span>
+
+
 
 <div class="viewcode-block" id="Base"><a class="viewcode-back" href="../../lib/connection.html#lib.connection.Base">[Doku]</a><span class="k">class</span> <span class="nc">Base</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4539,6 +4604,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="k">if</span> <span class="n">monitor</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_monitor</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
 
     <span class="k">def</span> <span class="nf">_create_socket</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">family</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">proto</span><span class="p">,</span> <span class="n">canonname</span><span class="p">,</span> <span class="n">sockaddr</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">getaddrinfo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="p">,</span> <span class="n">family</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_family</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_proto</span><span class="p">],</span> <span class="nb">type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_type</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_proto</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
@@ -4613,6 +4679,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">Base</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">Base</span><span class="o">.</span><span class="n">_poller</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="n">_deprecated_warning</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;class Connections&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">select</span><span class="p">,</span> <span class="s1">&#39;epoll&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_epoll</span> <span class="o">=</span> <span class="n">select</span><span class="o">.</span><span class="n">epoll</span><span class="p">()</span>
         <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">select</span><span class="p">,</span> <span class="s1">&#39;kqueue&#39;</span><span class="p">):</span>
@@ -4881,7 +4948,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_proto</span> <span class="o">=</span> <span class="n">proto</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connected</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_deprecated_warning</span><span class="p">(</span><span class="s1">&#39;lib.network.Tcp_server() class&#39;</span><span class="p">)</span>
+        <span class="c1">#self._deprecated_warning(&#39;lib.network.Tcp_server() class&#39;)</span>
+        <span class="n">_deprecated_warning</span><span class="p">(</span><span class="s1">&#39;lib.network.Tcp_server() class&#39;</span><span class="p">,</span> <span class="s1">&#39;class Server&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Server.connect"><a class="viewcode-back" href="../../lib/connection.html#lib.connection.Server.connect">[Doku]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
@@ -5109,7 +5177,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_connection_attempts</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connection_errorlog</span> <span class="o">=</span> <span class="mi">60</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connection_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_deprecated_warning</span><span class="p">(</span><span class="s1">&#39;lib.network.Tcp_client() class&#39;</span><span class="p">)</span>
+        <span class="c1">#self._deprecated_warning(&#39;lib.network.Tcp_client() class&#39;)</span>
+        <span class="n">_deprecated_warning</span><span class="p">(</span><span class="s1">&#39;lib.network.Tcp_client() class&#39;</span><span class="p">,</span> <span class="s1">&#39;class Client&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Client.connect"><a class="viewcode-back" href="../../lib/connection.html#lib.connection.Client.connect">[Doku]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connection_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
@@ -5133,6 +5202,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span><span class="p">()</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_connection_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div></div>
+
+
 </pre></div>
 
            </div>
