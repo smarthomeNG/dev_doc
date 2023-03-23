@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>modules.http &mdash; Dokumentation v1.9.4.1 develop v1.9.4.1 develop (Stand 23. March 2023, commit fe1215b) Dokumentation</title>
+  <title>modules.http &mdash; Dokumentation v1.9.4.1 develop v1.9.4.1 develop (Stand 23. March 2023, commit c35554e) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4753,7 +4753,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_hostmaps</span><span class="p">()</span>
 
         <span class="n">globaltemplates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gtemplates_dir</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tplenv</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="n">FileSystemLoader</span><span class="p">([</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">webif_dir</span><span class="p">,</span> <span class="s1">&#39;templates&#39;</span> <span class="p">),</span> <span class="n">globaltemplates</span><span class="p">]</span> <span class="p">))</span>
+        <span class="c1">#self.tplenv = Environment(loader=FileSystemLoader([os.path.join( self.webif_dir, &#39;templates&#39; ), globaltemplates] ))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tplenv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_template_environment</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_gstatic_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">webif_dir</span> <span class="o">+</span> <span class="s1">&#39;/gstatic&#39;</span>
 
@@ -4850,6 +4851,45 @@
 <span class="c1">#                                  pluginclass=&#39;&#39;, instance=&#39;&#39;, description=&#39;&#39;, servicename=&#39;&#39;)</span>
 
         <span class="k">return</span>
+
+
+<div class="viewcode-block" id="Http.init_template_environment"><a class="viewcode-back" href="../../referenz/module/module_http.html#modules.http.Http.init_template_environment">[Doku]</a>    <span class="k">def</span> <span class="nf">init_template_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the Jinja2 template engine environment</span>
+
+<span class="sd">        :return: Jinja2 template engine environment</span>
+<span class="sd">        :rtype: object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mytemplates</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">webif_dir</span><span class="p">,</span> <span class="s1">&#39;templates&#39;</span><span class="p">)</span>
+        <span class="n">globaltemplates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gtemplates_dir</span>
+        <span class="n">tplenv</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="n">FileSystemLoader</span><span class="p">([</span><span class="n">mytemplates</span><span class="p">,</span> <span class="n">globaltemplates</span><span class="p">]))</span>
+
+        <span class="n">tplenv</span><span class="o">.</span><span class="n">globals</span><span class="p">[</span><span class="s1">&#39;isfile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_staticfile</span>
+        <span class="n">tplenv</span><span class="o">.</span><span class="n">globals</span><span class="p">[</span><span class="s1">&#39;_&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate</span>        <span class="c1"># use translate method of webinterface class</span>
+        <span class="n">tplenv</span><span class="o">.</span><span class="n">globals</span><span class="p">[</span><span class="s1">&#39;len&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span>
+        <span class="k">return</span> <span class="n">tplenv</span></div>
+
+
+<div class="viewcode-block" id="Http.is_staticfile"><a class="viewcode-back" href="../../referenz/module/module_http.html#modules.http.Http.is_staticfile">[Doku]</a>    <span class="k">def</span> <span class="nf">is_staticfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method tests, if the given pathname points to an existing file in the webif&#39;s static</span>
+<span class="sd">        directory or the global static directory gstatic in the http module</span>
+
+<span class="sd">        This method extends the jinja2 template engine</span>
+
+<span class="sd">        :param path: path to test</span>
+<span class="sd">        :param type: str</span>
+
+<span class="sd">        :return: True if the file exists</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;/gstatic/&#39;</span><span class="p">):</span>
+            <span class="n">complete_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gstatic_dir</span><span class="p">,</span> <span class="n">path</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;/gstatic/&#39;</span><span class="p">):])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">complete_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">webif_dir</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">isfile</span> <span class="k">as</span> <span class="n">isfile</span>
+        <span class="k">return</span> <span class="n">isfile</span><span class="p">(</span><span class="n">complete_path</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="Http.is_port_in_use"><a class="viewcode-back" href="../../referenz/module/module_http.html#modules.http.Http.is_port_in_use">[Doku]</a>    <span class="k">def</span> <span class="nf">is_port_in_use</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
         <span class="kn">import</span> <span class="nn">socket</span>
@@ -5057,6 +5097,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dom1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_local_ip_address</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dom2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_local_hostname</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dom3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_local_hostname</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;.local&#39;</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">dom4</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_local_ip_address</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_servicesport</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dom5</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_local_hostname</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_servicesport</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dom6</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_local_hostname</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;.local&#39;</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_servicesport</span><span class="p">)</span>
