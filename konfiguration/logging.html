@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Logging &mdash; Dokumentation v1.9.4.1 develop v1.9.4.1 develop (Stand 24. March 2023, commit 4b6f5fd) Dokumentation</title>
+  <title>Logging &mdash; Dokumentation v1.9.4.1 develop v1.9.4.1 develop (Stand 25. March 2023, commit 808f681) Dokumentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -4485,77 +4485,37 @@
 und dient der Dokumentation. Anhand eines Logs kann man Programmfehlern auf die Spur kommen oder bestimmte
 Situationen können im Nachhinein untersucht werden. Je detaillierter ein Log geführt wird, desto einfacher
 ist die Untersuchung bestimmter Sachverhalte.
-Je nachdem, was man untersuchen möchte, kann man mit einem <strong>Logging Level</strong> im Programm vorgeben wie ernst
+Je nachdem, was man untersuchen möchte, kann man mit einem <strong>Logging Level</strong> im Programm vorgeben, wie ernst
 oder wie wichtig ein bestimmter Logeintrag ist.
-Innerhalb des Kerns von SmartHomeNG finden sich zum Beispiel Einträge im Programm mit dem Log Level <strong>NOTICE</strong>
+Innerhalb des Kerns von SmartHomeNG finden sich zum Beispiel Einträge im Programm mit dem Log Level <strong>NOTICE</strong>,
 die in einer Logdatei dann im Ergebnis so aufgezeichnet werden:</p>
 <p><code class="docutils literal notranslate"><span class="pre">2021-04-16</span>&#160; <span class="pre">21:56:31</span> <span class="pre">NOTICE</span>&#160;&#160; <span class="pre">lib.smarthome</span>&#160;&#160;&#160;&#160; <span class="pre">--------------------</span>&#160;&#160; <span class="pre">Init</span> <span class="pre">SmartHomeNG</span> <span class="pre">1.8.2c.4e0938c2.develop</span>&#160;&#160; <span class="pre">--------------------</span></code></p>
-<p>Das ist als Information zu sehen um bei Problemen Hilfe zu erhalten. Es deutet hier nichts auf Fehler oder Probleme hin.
+<p>Das ist als Information zu sehen, um bei Problemen Hilfe zu erhalten. Es deutet hier nichts auf Fehler oder Probleme hin.
 Ein anderer Logging Befehl im Core mit dem Log Level <strong>WARNING</strong> erzeugt hingehen folgendes:</p>
 <p><code class="docutils literal notranslate"><span class="pre">2021-04-16</span>&#160; <span class="pre">21:56:32</span> <span class="pre">WARNING</span>&#160; <span class="pre">lib.module</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Not</span> <span class="pre">loading</span> <span class="pre">module</span> <span class="pre">Mqtt</span> <span class="pre">from</span> <span class="pre">section</span> <span class="pre">'mqtt':</span> <span class="pre">Module</span> <span class="pre">is</span> <span class="pre">disabled</span></code></p>
-<p>Das ist als Warnung gedacht um darauf hinzuweisen, das ein Module nicht geladen wird und in dieser Folge eventuell
+<p>Das ist als Warnung gedacht, um darauf hinzuweisen, dass ein Modul nicht geladen wird und in dieser Folge eventuell
 weitere Fehler oder Probleme auftauchen könnten. Steigerungen von Warnungen sind Log Level <strong>ERROR</strong> oder <strong>CRITICAL</strong>.
-Während ein <strong>ERROR</strong> also ein Fehler durchaus bedeuten kann das SmartHomeNG weiterarbeiten kann, bedeutet ein <strong>CRITICAL</strong>
-also ein kritischer Fehler das das Programm beendet werden muss.
+Während ein <strong>ERROR</strong> also ein Fehler durchaus bedeuten kann, dass SmartHomeNG weiterarbeiten kann, bedeutet ein <strong>CRITICAL</strong>,
+also ein kritischer Fehler, dass das Programm beendet werden muss.
 Fehlt ein für den Kern von SmartHomeNG benötigtes Modul, so stell das einen kritischen Fehler dar.</p>
 <p>Die Log Level in der Übersicht, absteigend in der Bedeutung für den Programmablauf:</p>
-<table class="docutils align-default" id="id1">
-<caption><span class="caption-text">Log Level</span><a class="headerlink" href="#id1" title="Link zu dieser Tabelle"></a></caption>
-<thead>
-<tr class="row-odd"><th class="head"><p>Level</p></th>
-<th class="head"><p>Numerischer Wert</p></th>
-<th class="head"><p>Anmerkung</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>50</p></td>
-<td><p>CRITICAL</p></td>
-<td><p>kritisch, führt zumeist zum Programmabbruch</p></td>
-</tr>
-<tr class="row-odd"><td><p>40</p></td>
-<td><p>ERROR</p></td>
-<td><p>Fehler im Programmablauf, Programm kann zumeist weiterlaufen, Funktionalität möglicherweise eingeschränkt</p></td>
-</tr>
-<tr class="row-even"><td><p>31</p></td>
-<td><p>NOTICE</p></td>
-<td><p>Ein Hinweis der zur grundlegenden Information dient und nicht als Warnung verstanden werden soll.
-Dieser Log Level ist spezifisch für SmartHomeNG und ist im Standard Logging von Python nicht vordefiniert.</p></td>
-</tr>
-<tr class="row-odd"><td><p>30</p></td>
-<td><p>WARNING</p></td>
-<td><p>Warnung das etwas unerwartetes passiert ist aber trotzdem weitergearbeitet werden kann</p></td>
-</tr>
-<tr class="row-even"><td><p>20</p></td>
-<td><p>INFO</p></td>
-<td><p>Eine Ablaufinformation die nicht unbedingt wichtig ist</p></td>
-</tr>
-<tr class="row-odd"><td><p>DEBUG</p></td>
-<td><p>10</p></td>
-<td><p>Informationen für die Fehlersuche die normalerweise nicht benötigt werden</p></td>
-</tr>
-<tr class="row-even"><td><p>NOTSET</p></td>
-<td><p>0</p></td>
-<td><p>Es wird kein Logeintrag erzeugt</p></td>
-</tr>
-</tbody>
-</table>
-<p>Es können prinzipiell auch weitere eigene Log Level definiert werden die dann für besondere Situationen benutzt werden können.
-Ein Beispiel wäre ein Log Level <strong>VERBOSE</strong> mit dem Wert <strong>8</strong> der für die Fehlersuche in einem bestimmten Bereich eines Plugins
+<p>Es können prinzipiell auch weitere eigene Log Level definiert werden, die dann für besondere Situationen benutzt werden können.
+Ein Beispiel wäre ein Log Level <strong>VERBOSE</strong> mit dem Wert <strong>8</strong>, der für die Fehlersuche in einem bestimmten Bereich eines Plugins
 Verwendung finden könnte.
-Für SmartHomeNG ist derzeit nur <strong>NOTICE</strong> vordefiniert um informelle Logging Einträge zu erzeugen, die nicht als Warnung
+Für SmartHomeNG ist derzeit nur <strong>NOTICE</strong> vordefiniert, um informelle Logging Einträge zu erzeugen, die nicht als Warnung
 verstanden werden sollen.</p>
 <section id="konfiguration-des-loggings">
 <h2>Konfiguration des Loggings<a class="headerlink" href="#konfiguration-des-loggings" title="Permalink to this heading"></a></h2>
 <p>Auf der Seite <a class="reference external" href="https://docs.python.org/3.6/library/logging.html#module-logging">Python Logging</a>
 sind die Konfigurationsmöglichkeiten detailliert beschrieben.</p>
 <p>SmartHomeNG lädt beim Start die Konfiguration des Logging aus der Datei <strong>etc/logging.yaml</strong>. Ist diese Datei nicht vorhanden,
-so versucht SmartHomeNG die Datei <strong>etc/logging.yaml.default</strong> zu kopieren nach <strong>etc/logging.yaml</strong> und dann daraus
+so versucht SmartHomeNG, die Datei <strong>etc/logging.yaml.default</strong> nach <strong>etc/logging.yaml</strong> zu kopieren und dann daraus
 die Konfiguration des Loggings zu laden.</p>
 <p>Wenn bei der Konfiguration des Loggings etwas schief geht, kann also jederzeit die Datei <strong>etc/logging.yaml</strong> gelöscht oder
 besser umbenannt werden und wird dann beim nächsten Neustart durch den Inhalt der <strong>etc/logging.yaml.default</strong> frisch bereitgestellt.</p>
 <p>Ein Beispiel für <strong>etc/logging.yaml.default</strong> im Folgenden:</p>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">../etc/logging.yaml</span><a class="headerlink" href="#id2" title="Link zu diesem Quellcode"></a></div>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">../etc/logging.yaml</span><a class="headerlink" href="#id1" title="Link zu diesem Quellcode"></a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">%YAML</span><span class="w"> </span><span class="m">1.1</span>
 <span class="nn">---</span>
 <span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
@@ -4833,20 +4793,20 @@ besser umbenannt werden und wird dann beim nächsten Neustart durch den Inhalt d
 <tbody>
 <tr class="row-even"><td><p><strong>formatters:</strong></p></td>
 <td><p>Definiert das Ausgabeformat der einzelnen Loggingeinträge. Mehrere unterschiedliche
-<strong>formatter</strong> können dazu verwendet werden um unterschiedlich aussehende Logdateien
+<strong>formatter</strong> können dazu verwendet werden, um unterschiedlich aussehende Logdateien
 zu erzeugen. In der Konfigurationsdatei <strong>etc/logging.yaml</strong> sind die Formatter
 <strong>`simple`</strong> und <strong>`detail`</strong> vorkonfiguriert. Weitere Formatter können bei Bedarf
 hinzugefügt werden.</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>handlers:</strong></p></td>
 <td><p>Handler definieren die Log-Behandlungsroutinen/Ausgabekanäle die verwendet werden.
-In Python gibt es bereits mehrere vorimplementierte und mächtige Handler-Typen die in der
+In Python gibt es bereits mehrere vorimplementierte und mächtige Handler-Typen, die in der
 <a class="reference external" href="https://docs.python.org/3.4/library/logging.handlers.html#module-logging.handlers">Python Doku</a>
 beschrieben sind. Als eigentliche Handler sind in der Konfigurationsdatei <strong>etc/logging.yaml</strong>
 die Handler <strong>`console`</strong> und <strong>`file`</strong> vordefiniert. Wenn Log-Einträge z.B. in eine andere
 Datei geschrieben werden sollen, muss ein weiterer Handler definiert werden.
 Sollen Filter angewendet werden, so sind diese im entsprechenden Handler durch
-filters: [<cite>filtername1</cite>, <cite>filtername2</cite>] anzugeben (siehe filters)</p></td>
+filters: [<cite>filtername1</cite>, <cite>filtername2</cite>] anzugeben (siehe filters).</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>filters:</strong></p></td>
 <td><p>Filter bestimmen durch Angabe des Loggernamen, -moduls und -eintrags, welche Zeilen aus dem Log
@@ -4866,16 +4826,16 @@ Ein Beispiel ist unter <a class="reference internal" href="logging_best_practice
 </td>
 </tr>
 <tr class="row-odd"><td><p><strong>loggers:</strong></p></td>
-<td><p>Hier werden die einzelnen Logger definiert und was mit diesen Einträgen passiert,
-welche Handler und formatter verwendet werden. Das Level konfiguriert dabei die
-Logtiefe für die einzelne Komponente. Bei den Loggern ist es nun möglich einzelne
+<td><p>Hier werden die einzelnen Logger definiert, was mit diesen Einträgen passiert,
+und welche Handler und formatter verwendet werden. Das Level konfiguriert dabei die
+Logtiefe für die einzelne Komponente. Bei den Loggern ist es nun möglich, einzelne
 Plugins oder Libs im Debug protokollieren zu lassen. Dazu sind in der Konfiguration
 bereits einige Beispiele.</p></td>
 </tr>
 <tr class="row-even"><td><p><strong>root:</strong></p></td>
-<td><p>Hier ist die Konfiguration des root Loggers der für die ganze Anwendung gilt. Dieser
-root Logger wird für alle Komponenten verwendet, auch die die nicht unter loggers: konfiguriert
-sind. Da der root Logger ALLE Logeinträge empfängt sollte der level: unbedingt auf WARNING stehen.</p></td>
+<td><p>Hier ist die Konfiguration des root Loggers, der für die ganze Anwendung gilt. Dieser
+root Logger wird für alle Komponenten verwendet auch die, die nicht unter loggers: konfiguriert
+sind. Da der root Logger ALLE Logeinträge empfängt, sollte der level: unbedingt auf WARNING stehen.</p></td>
 </tr>
 </tbody>
 </table>
@@ -4922,8 +4882,8 @@ Verwendet man zur Instanzierung einen eigenen Namen (nicht empfohlen), wie z.B.<
 </pre></div>
 </div>
 <p>muss in der config auch dieser Name verwendet werden. Ohne <cite>plugin.</cite> oder <cite>logics.</cite></p>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">../etc/logging.yaml</span><a class="headerlink" href="#id3" title="Link zu diesem Quellcode"></a></div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">../etc/logging.yaml</span><a class="headerlink" href="#id2" title="Link zu diesem Quellcode"></a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">loggers</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">DWD</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">level</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DEBUG</span>
@@ -4931,7 +4891,7 @@ Verwendet man zur Instanzierung einen eigenen Namen (nicht empfohlen), wie z.B.<
 </div>
 </div>
 <p>Standardmäßig haben Logiken bereits einen Logger, der in der <code class="docutils literal notranslate"><span class="pre">etc/logging.yaml</span></code> konfiguriert werden kann/muss.
-Der Name des Loggers ist <code class="docutils literal notranslate"><span class="pre">logics.&lt;Name</span> <span class="pre">der</span> <span class="pre">Logik&gt;</span></code>, wobei der Name der Logik, der in der Konfiguration festgelegte
+Der Name des Loggers ist <code class="docutils literal notranslate"><span class="pre">logics.&lt;Name</span> <span class="pre">der</span> <span class="pre">Logik&gt;</span></code>, wobei der Name der Logik der in der Konfiguration festgelegte
 Name ist und nicht der Name des Python Skriptes.</p>
 <section id="logging-der-veranderung-von-items">
 <h3>Logging der Veränderung von Items<a class="headerlink" href="#logging-der-veranderung-von-items" title="Permalink to this heading"></a></h3>
@@ -4942,7 +4902,7 @@ beschrieben ist.</p>
 </section>
 <section id="best-practices">
 <h2>Best Practices<a class="headerlink" href="#best-practices" title="Permalink to this heading"></a></h2>
-<p>Wer eine brauchbare leicht konfigurierbare Logging Konfiguration oder Beispiele zum Nutzen
+<p>Wer eine brauchbare und leicht konfigurierbare Logging Konfiguration oder Beispiele zum Nutzen
 von RegEx Ausdrücken sucht, der wird hier <a class="reference internal" href="logging_best_practices.html"><span class="doc">Logging - Best Practices</span></a> fündig.</p>
 <div class="toctree-wrapper compound">
 <ul>
