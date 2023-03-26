@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Interaktion des Webinterface mit dem Plugin new &mdash; Dokumentation v1.9.4.1 develop v1.9.4.1 develop (Stand 26. March 2023, commit b3bc87b) Dokumentation</title>
+  <title>Interaktion des Webinterface mit dem Plugin new &mdash; Dokumentation v1.9.4.1 develop v1.9.4.1 develop (Stand 26. March 2023, commit 1dad1fa) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4589,8 +4589,7 @@ Responsive Feature der Datentabellen korrekt anzuzeigen.</p>
 </div>
 <div class="highlight-html+jinja notranslate"><div class="highlight"><pre><span></span><span class="cp">{%</span> <span class="k">block</span> <span class="o">**</span><span class="nv">bodytab1</span><span class="o">**</span> <span class="cp">%}</span>
 
-    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;container-fluid m-2 table-resize&quot;</span><span class="p">&gt;</span>
-        <span class="p">&lt;</span><span class="nt">table</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;maintable&quot;</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">table</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;maintable&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;dataTableAdditional&quot;</span><span class="p">&gt;</span>
             <span class="p">&lt;</span><span class="nt">thead</span><span class="p">&gt;</span>
                 <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
                     <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
@@ -4612,7 +4611,6 @@ Responsive Feature der Datentabellen korrekt anzuzeigen.</p>
                 <span class="o">{%</span> <span class="nv">endfor</span> <span class="o">%}</span>
             <span class="o">&lt;/</span><span class="nv">tbody</span><span class="o">&gt;</span>
         <span class="o">&lt;/</span><span class="nv">table</span><span class="o">&gt;</span>
-    <span class="o">&lt;/</span><span class="nv">div</span><span class="o">&gt;</span>
 <span class="o">{%</span> <span class="nv">endblock</span> <span class="o">**</span><span class="nv">bodytab1</span><span class="o">**</span> <span class="o">%}</span>
 </pre></div>
 </div>
@@ -4636,8 +4634,7 @@ Damit die IDs in den Wertetabellen eindeutig sind, verwenden wir die Variable au
 ...
 
 <span class="cp">{%</span> <span class="k">block</span> <span class="o">**</span><span class="nv">bodytab1</span><span class="o">**</span> <span class="cp">%}</span>
-    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;container-fluid m-2 table-resize&quot;</span><span class="p">&gt;</span>
-        <span class="p">&lt;</span><span class="nt">table</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;maintable&quot;</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">table</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;maintable&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;dataTableAdditional&quot;</span><span class="p">&gt;</span>
             <span class="p">&lt;</span><span class="nt">thead</span><span class="p">&gt;</span>
                 <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
                     <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
@@ -4659,7 +4656,6 @@ Damit die IDs in den Wertetabellen eindeutig sind, verwenden wir die Variable au
                 <span class="o">{%</span> <span class="nv">endfor</span> <span class="o">%}</span>
             <span class="o">&lt;/</span><span class="nv">tbody</span><span class="o">&gt;</span>
         <span class="o">&lt;/</span><span class="nv">table</span><span class="o">&gt;</span>
-    <span class="o">&lt;/</span><span class="nv">div</span><span class="o">&gt;</span>
 <span class="o">{%</span> <span class="nv">endblock</span> <span class="o">**</span><span class="nv">bodytab1</span><span class="o">**</span> <span class="o">%}</span>
 </pre></div>
 </div>
@@ -4681,46 +4677,42 @@ wo standardmäßig schon die Buttons „Aktualisieren“ und „Schließen“ vo
 Wie weiter unten beschrieben, ist für jeden Button, der auf diese Weise implementiert wird,
 eine eigene Handler-Routine erforderlich.</p>
 <p>Wenn mehrere Buttons dieser Art vorgesehen sind, oder z.B. in einer Wertetabelle ein Button
-in jeder Zeile stehen soll, dann bietet es sich an, statt einzelnen Button-Elementen eine Formularkonstruktion zu nutzen:</p>
+in jeder Zeile stehen soll, dann bietet es sich an, statt einzelnen Button-Elementen eine Formularkonstruktion zu nutzen. Um das automatische Skalieren von Tabellen zu gewährleisten,
+sollte das <code class="docutils literal notranslate"><span class="pre">form</span></code> Element NACH der Tabelle deklariert werden.</p>
 <div class="highlight-html+jinja notranslate"><div class="highlight"><pre><span></span><span class="cp">{%</span> <span class="k">block</span> <span class="nv">bodytab1</span> <span class="cp">%}</span>
-  <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;container-fluid m-2 table-resize&quot;</span><span class="p">&gt;</span>
-
-      <span class="p">&lt;</span><span class="nt">form</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;button_pressed&quot;</span> <span class="na">action</span><span class="o">=</span><span class="s">&quot;&quot;</span> <span class="na">method</span><span class="o">=</span><span class="s">&quot;post&quot;</span><span class="p">&gt;</span>
-
-          <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;hidden&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;button&quot;</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;button&quot;</span> <span class="na">value</span><span class="o">=</span><span class="s">&quot;&quot;</span> <span class="p">/&gt;</span>
-          <span class="p">&lt;</span><span class="nt">table</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;maintable&quot;</span><span class="p">&gt;</span>
-              <span class="p">&lt;</span><span class="nt">thead</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">table</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;maintable&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;dataTableAdditional&quot;</span><span class="p">&gt;</span>
+          <span class="p">&lt;</span><span class="nt">thead</span><span class="p">&gt;</span>
+              <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+                  <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+                  <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="kp">_</span><span class="o">(</span><span class="s1">&#39;Attribut 1&#39;</span><span class="o">)</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+                  <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="kp">_</span><span class="o">(</span><span class="s1">&#39;Attribut 2&#39;</span><span class="o">)</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+                  <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="kp">_</span><span class="o">(</span><span class="s1">&#39;aktualisieren&#39;</span><span class="o">)</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+                  <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="kp">_</span><span class="o">(</span><span class="s1">&#39;Wert&#39;</span><span class="o">)</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
+              <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+          <span class="p">&lt;/</span><span class="nt">thead</span><span class="p">&gt;</span>
+          <span class="p">&lt;</span><span class="nt">tbody</span><span class="p">&gt;</span>
+              <span class="cp">{%</span> <span class="k">for</span> <span class="nv">elem</span> <span class="k">in</span> <span class="nv">data</span> <span class="cp">%}</span>
                   <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
-                      <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
-                      <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="kp">_</span><span class="o">(</span><span class="s1">&#39;Attribut 1&#39;</span><span class="o">)</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
-                      <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="kp">_</span><span class="o">(</span><span class="s1">&#39;Attribut 2&#39;</span><span class="o">)</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
-                      <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="kp">_</span><span class="o">(</span><span class="s1">&#39;aktualisieren&#39;</span><span class="o">)</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
-                      <span class="p">&lt;</span><span class="nt">th</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="kp">_</span><span class="o">(</span><span class="s1">&#39;Wert&#39;</span><span class="o">)</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">th</span><span class="p">&gt;</span>
-                  <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
-              <span class="p">&lt;/</span><span class="nt">thead</span><span class="p">&gt;</span>
-              <span class="p">&lt;</span><span class="nt">tbody</span><span class="p">&gt;</span>
-                  <span class="cp">{%</span> <span class="k">for</span> <span class="nv">elem</span> <span class="k">in</span> <span class="nv">data</span> <span class="cp">%}</span>
-                      <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
-                          <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
-                          <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="nv">data</span><span class="o">[</span><span class="nv">elem</span><span class="o">][</span><span class="s1">&#39;attr1&#39;</span><span class="o">]</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
-                          <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="nv">data</span><span class="o">[</span><span class="nv">elem</span><span class="o">][</span><span class="s1">&#39;attr2&#39;</span><span class="o">]</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
-                          <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>
-                              <span class="p">&lt;</span><span class="nt">button</span>
-                                  <span class="na">class</span><span class="o">=</span><span class="s">&quot;btn btn-shng btn-sm&quot;</span>
-                                  <span class="na">type</span><span class="o">=</span><span class="s">&quot;button&quot;</span>
-                                  <span class="na">onclick</span><span class="o">=</span><span class="s">&quot;$(&#39;#button&#39;).val(&#39;</span><span class="cp">{{</span> <span class="nv">elem</span> <span class="cp">}}</span><span class="s">&#39;);$(&#39;#button_pressed&#39;).submit();&quot;</span>
-                              <span class="p">&gt;</span>lesen
-                              <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
-                          <span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
-                          <span class="p">&lt;</span><span class="nt">td</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">elem</span> <span class="cp">}}</span><span class="s">_value&quot;</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="nv">data</span><span class="o">[</span><span class="nv">elem</span><span class="o">][</span><span class="s1">&#39;wert&#39;</span><span class="o">]&lt;/</span><span class="nv">td</span><span class="o">&gt;</span>
-                      <span class="o">&lt;/</span><span class="nv">tr</span><span class="o">&gt;</span>
-                  <span class="o">{%</span> <span class="nv">endfor</span> <span class="o">%}</span>
-              <span class="o">&lt;/</span><span class="nv">tbody</span><span class="o">&gt;</span>
-          <span class="o">&lt;/</span><span class="nv">table</span><span class="o">&gt;</span>
-
+                      <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+                      <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="nv">data</span><span class="o">[</span><span class="nv">elem</span><span class="o">][</span><span class="s1">&#39;attr1&#39;</span><span class="o">]</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+                      <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="nv">data</span><span class="o">[</span><span class="nv">elem</span><span class="o">][</span><span class="s1">&#39;attr2&#39;</span><span class="o">]</span> <span class="cp">}}</span><span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+                      <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>
+                          <span class="p">&lt;</span><span class="nt">button</span>
+                              <span class="na">class</span><span class="o">=</span><span class="s">&quot;btn btn-shng btn-sm&quot;</span>
+                              <span class="na">type</span><span class="o">=</span><span class="s">&quot;button&quot;</span>
+                              <span class="na">onclick</span><span class="o">=</span><span class="s">&quot;$(&#39;#button&#39;).val(&#39;</span><span class="cp">{{</span> <span class="nv">elem</span> <span class="cp">}}</span><span class="s">&#39;);$(&#39;#button_pressed&#39;).submit();&quot;</span>
+                          <span class="p">&gt;</span>lesen
+                          <span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+                      <span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+                      <span class="p">&lt;</span><span class="nt">td</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;</span><span class="cp">{{</span> <span class="nv">elem</span> <span class="cp">}}</span><span class="s">_value&quot;</span><span class="p">&gt;</span><span class="cp">{{</span> <span class="nv">data</span><span class="o">[</span><span class="nv">elem</span><span class="o">][</span><span class="s1">&#39;wert&#39;</span><span class="o">]&lt;/</span><span class="nv">td</span><span class="o">&gt;</span>
+                  <span class="o">&lt;/</span><span class="nv">tr</span><span class="o">&gt;</span>
+              <span class="o">{%</span> <span class="nv">endfor</span> <span class="o">%}</span>
+          <span class="o">&lt;/</span><span class="nv">tbody</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="nv">table</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="nv">form</span> <span class="nv">id</span><span class="o">=</span><span class="s2">&quot;button_pressed&quot;</span> <span class="nv">action</span><span class="o">=</span><span class="s2">&quot;&quot;</span> <span class="nv">method</span><span class="o">=</span><span class="s2">&quot;post&quot;</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="nv">input</span> <span class="nv">type</span><span class="o">=</span><span class="s2">&quot;hidden&quot;</span> <span class="nv">id</span><span class="o">=</span><span class="s2">&quot;button&quot;</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;button&quot;</span> <span class="nv">value</span><span class="o">=</span><span class="s2">&quot;&quot;</span> <span class="o">/&gt;</span>
       <span class="o">&lt;/</span><span class="nv">form</span><span class="o">&gt;</span>
 
-  <span class="o">&lt;/</span><span class="nv">div</span><span class="o">&gt;</span>
 <span class="o">{%</span> <span class="nv">endblock</span> <span class="nv">bodytab1</span> <span class="o">%}</span>
 </pre></div>
 </div>
