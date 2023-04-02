@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.log &mdash; Dokumentation v1.9.5.1 develop v1.9.5.1 develop (Stand 31. März 2023, commit ede0efd) Dokumentation</title>
+  <title>lib.log &mdash; Dokumentation v1.9.5.1 develop v1.9.5.1 develop (Stand 31. März 2023, commit 5b4e479) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4598,6 +4598,7 @@
 <div class="viewcode-block" id="Logs"><a class="viewcode-back" href="../../lib/log.html#lib.log.Logs">[Doku]</a><span class="k">class</span> <span class="nc">Logs</span><span class="p">():</span>
 
     <span class="n">_logs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">logging_levels</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">root_handler_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
     <span class="n">NOTICE_level</span> <span class="o">=</span> <span class="mi">29</span>
@@ -4640,6 +4641,20 @@
         <span class="c1">#  - DBGHIGH      13   Debug high level</span>
         <span class="c1">#  - DBGMED       12   Debug medium level</span>
         <span class="c1">#  - DBGLOW       11   Debug low level</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging_levels</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging_levels</span><span class="p">[</span><span class="mi">50</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;CRITICAL&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging_levels</span><span class="p">[</span><span class="mi">40</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ERROR&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging_levels</span><span class="p">[</span><span class="mi">30</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;WARNING&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging_levels</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;INFO&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging_levels</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;DEBUG&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging_levels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="o">=</span> <span class="s1">&#39;NOTSET&#39;</span>
+
+        <span class="c1"># # self.logging_levels[31] = &#39;NOTICE&#39;</span>
+        <span class="c1"># self.logging_levels[29] = &#39;NOTICE&#39;</span>
+        <span class="c1"># self.logging_levels[13] = &#39;DBGHIGH&#39;</span>
+        <span class="c1"># self.logging_levels[12] = &#39;DBGMED&#39;</span>
+        <span class="c1"># self.logging_levels[11] = &#39;DBGLOW&#39;</span>
 
         <span class="c1"># adjust config dict from logging.yaml:</span>
         <span class="c1"># if logger &#39;lib.smarthome&#39; is not defined or no level is defined for it,</span>
@@ -4714,7 +4729,19 @@
         <span class="nb">setattr</span><span class="p">(</span><span class="n">logging</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">getLoggerClass</span><span class="p">(),</span> <span class="n">description</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">logForLevel</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="n">logging</span><span class="p">,</span> <span class="n">description</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">logToRoot</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logging_levels</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="n">description</span>
         <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="Logs.get_shng_logging_levels"><a class="viewcode-back" href="../../lib/log.html#lib.log.Logs.get_shng_logging_levels">[Doku]</a>    <span class="k">def</span> <span class="nf">get_shng_logging_levels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dict of the logging levels, that are defined in SmartHomeNG (key=numeric log level, value=name od loa level)</span>
+
+<span class="sd">        It is used e.g. by the admin module</span>
+
+<span class="sd">        :return: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">logging_levels</span></div>
 
 
 <div class="viewcode-block" id="Logs.initMemLog"><a class="viewcode-back" href="../../lib/log.html#lib.log.Logs.initMemLog">[Doku]</a>    <span class="k">def</span> <span class="nf">initMemLog</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
