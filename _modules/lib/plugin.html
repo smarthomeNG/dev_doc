@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.plugin &mdash; Dokumentation v1.9.5.1 develop v1.9.5.1 develop (Stand 31. März 2023, commit 5b4e479) Dokumentation</title>
+  <title>lib.plugin &mdash; Dokumentation v1.9.5.1 develop v1.9.5.1 develop (Stand 31. März 2023, commit c964d47) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4924,6 +4924,39 @@
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">plugin</span>
+
+
+<div class="viewcode-block" id="Plugins.get_loaded_plugins"><a class="viewcode-back" href="../../lib/plugin_class_plugins.html#lib.plugin.Plugins.get_loaded_plugins">[Doku]</a>    <span class="k">def</span> <span class="nf">get_loaded_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list with the names of all loaded plugins</span>
+
+<span class="sd">        if multiple instances of a plugin are loaded, the plugin name is returned only once</span>
+
+<span class="sd">        :return: list of plugin names</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">plgs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span><span class="p">:</span>
+            <span class="n">plgname</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">plgname</span> <span class="ow">in</span> <span class="n">plgs</span><span class="p">:</span>
+                <span class="n">plgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plgname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">plgs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Plugins.get_loaded_plugin_instances"><a class="viewcode-back" href="../../lib/plugin_class_plugins.html#lib.plugin.Plugins.get_loaded_plugin_instances">[Doku]</a>    <span class="k">def</span> <span class="nf">get_loaded_plugin_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list of tuples of all loaded plugins with the plugin name and the instance name</span>
+
+<span class="sd">        :return: list of (plugin name, instance name)</span>
+<span class="sd">        :rtype: list of tuples</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">plgs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span><span class="p">:</span>
+            <span class="n">plgname</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">()</span>
+            <span class="n">insname</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_instance_name</span><span class="p">()</span>
+            <span class="n">plgs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">plgname</span><span class="p">,</span> <span class="n">insname</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">plgs</span><span class="p">)</span></div>
+
 
     <span class="c1"># ------------------------------------------------------------------------------------</span>
     <span class="c1">#   Following (static) methods of the class Plugins implement the API for plugins in shNG</span>
