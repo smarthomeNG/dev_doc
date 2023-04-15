@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.smarthome &mdash; Dokumentation v1.9.5.1 develop v1.9.5.1 develop (Stand 31. März 2023, commit da65a24) Dokumentation</title>
+  <title>lib.smarthome &mdash; Dokumentation v1.9.5.1 develop v1.9.5.1 develop (Stand 31. März 2023, commit 6e0df77) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4760,7 +4760,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">shng_status</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;Initializing&#39;</span><span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger_main</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logs</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">Logs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>   <span class="c1"># initialize object for memory logs</span>
 
         <span class="c1"># keep for checking on restart command</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">MODE</span>
@@ -4768,6 +4767,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">initialize_vars</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">initialize_dir_vars</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">create_directories</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logs</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">Logs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>   <span class="c1"># initialize object for memory logs</span>
 
         <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_dir</span><span class="p">)</span>
 
@@ -4792,6 +4793,7 @@
         <span class="c1"># self.version = shngversion.get_shng_version()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connections</span> <span class="o">=</span> <span class="kc">None</span>
 
+        <span class="c1">#reinitialize dir vars with path to extern configuration directory</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_etc_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_extern_conf_dir</span><span class="p">,</span> <span class="s1">&#39;etc&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_items_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_extern_conf_dir</span><span class="p">,</span> <span class="s1">&#39;items&#39;</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_functions_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_extern_conf_dir</span><span class="p">,</span> <span class="s1">&#39;functions&#39;</span><span class="o">+</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
@@ -4902,7 +4904,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Encoding should be UTF8 but is instead </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">default_encoding</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extern_conf_dir</span> <span class="o">!=</span> <span class="n">BASE</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Using config dir </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_extern_conf_dir</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="s2">&quot;Using config dir </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_extern_conf_dir</span><span class="p">))</span>
 
         <span class="c1">#############################################################</span>
         <span class="c1"># Initialize multi-language support</span>
@@ -5114,15 +5116,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">conf_basename</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="n">conf_basename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_conf_basename</span>
-        <span class="n">conf_dict</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load</span><span class="p">(</span><span class="n">conf_basename</span> <span class="o">+</span> <span class="n">YAML_FILE</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="c1">#conf_dict = lib.shyaml.yaml_load(conf_basename + YAML_FILE, True)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">configure_logging</span><span class="p">(</span><span class="n">conf_dict</span><span class="p">):</span>
-            <span class="c1">#conf_basename = self._log_conf_basename + YAML_FILE + &#39;.default&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">configure_logging</span><span class="p">():</span>
+            <span class="n">conf_basename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_conf_basename</span> <span class="o">+</span> <span class="n">YAML_FILE</span> <span class="o">+</span> <span class="s1">&#39;.default&#39;</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;       Trying default logging configuration from:&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;       </span><span class="si">{</span><span class="n">conf_basename</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">YAML_FILE</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;.default&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">()</span>
-            <span class="n">conf_dict</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load</span><span class="p">(</span><span class="n">conf_basename</span> <span class="o">+</span> <span class="n">YAML_FILE</span> <span class="o">+</span> <span class="s1">&#39;.default&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">configure_logging</span><span class="p">(</span><span class="n">conf_dict</span><span class="p">,</span> <span class="s1">&#39;logging.yaml.default&#39;</span><span class="p">):</span>
+            <span class="c1">#conf_dict = lib.shyaml.yaml_load(conf_basename + YAML_FILE + &#39;.default&#39;, True)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">configure_logging</span><span class="p">(</span><span class="s1">&#39;logging.yaml.default&#39;</span><span class="p">):</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ABORTING&quot;</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">()</span>
                 <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>

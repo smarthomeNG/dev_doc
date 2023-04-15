@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.log &mdash; Dokumentation v1.9.5.1 develop v1.9.5.1 develop (Stand 31. März 2023, commit da65a24) Dokumentation</title>
+  <title>lib.log &mdash; Dokumentation v1.9.5.1 develop v1.9.5.1 develop (Stand 31. März 2023, commit 6e0df77) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4591,6 +4591,7 @@
 
 <span class="kn">import</span> <span class="nn">collections</span>
 
+<span class="kn">import</span> <span class="nn">lib.shyaml</span> <span class="k">as</span> <span class="nn">shyaml</span>
 
 <span class="n">logs_instance</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -4606,6 +4607,10 @@
     <span class="n">DBGMED_level</span> <span class="o">=</span> <span class="mi">12</span>
     <span class="n">DBGLOW_level</span> <span class="o">=</span> <span class="mi">11</span>
 
+    <span class="n">_all_handlers_logger_name</span> <span class="o">=</span> <span class="s1">&#39;_shng_all_handlers_logger&#39;</span>
+    <span class="n">_all_handlers</span> <span class="o">=</span> <span class="p">{}</span>
+
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sh</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -4617,15 +4622,19 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Another instance of Logs class already exists: </span><span class="si">{</span><span class="n">logs_instance</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span> <span class="o">=</span> <span class="n">sh</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">etc_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_etcdir</span><span class="p">()</span>
         <span class="k">return</span>
 
 
-<div class="viewcode-block" id="Logs.configure_logging"><a class="viewcode-back" href="../../lib/log.html#lib.log.Logs.configure_logging">[Doku]</a>    <span class="k">def</span> <span class="nf">configure_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_dict</span><span class="p">,</span> <span class="n">config_filename</span><span class="o">=</span><span class="s1">&#39;logging.yaml&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="Logs.configure_logging"><a class="viewcode-back" href="../../lib/log.html#lib.log.Logs.configure_logging">[Doku]</a>    <span class="k">def</span> <span class="nf">configure_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_filename</span><span class="o">=</span><span class="s1">&#39;logging.yaml&#39;</span><span class="p">):</span>
+
+        <span class="n">config_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_logging_config</span><span class="p">(</span><span class="n">config_filename</span><span class="p">,</span> <span class="n">ignore_notfound</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">config_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_all_handlers_logger</span><span class="p">(</span><span class="n">config_dict</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">config_dict</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">()</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: Invalid logging configuration in file &#39;logging.yaml&#39;&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: Invalid logging configuration in file &#39;</span><span class="si">{</span><span class="n">config_filename</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">()</span>
             <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
@@ -4784,7 +4793,86 @@
 <span class="sd">        :return: List of logs</span>
 <span class="sd">        :rtype: list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logs</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logs</span></div>
+
+    <span class="c1"># ---------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Logs.load_logging_config"><a class="viewcode-back" href="../../lib/log.html#lib.log.Logs.load_logging_config">[Doku]</a>    <span class="k">def</span> <span class="nf">load_logging_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;logging&#39;</span><span class="p">,</span> <span class="n">ignore_notfound</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load config from logging.yaml to a dict</span>
+
+<span class="sd">        If logging.yaml does not contain a &#39;shng_version&#39; key, a backup is created</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">conf_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">etc_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">conf_filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.yaml&#39;</span><span class="p">):</span>
+            <span class="n">conf_filename</span> <span class="o">+=</span> <span class="s1">&#39;.yaml&#39;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load</span><span class="p">(</span><span class="n">conf_filename</span><span class="p">,</span> <span class="n">ignore_notfound</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="Logs.save_logging_config"><a class="viewcode-back" href="../../lib/log.html#lib.log.Logs.save_logging_config">[Doku]</a>    <span class="k">def</span> <span class="nf">save_logging_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logging_config</span><span class="p">,</span> <span class="n">create_backup</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save dict to logging.yaml</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">logging_config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logging_config</span><span class="p">[</span><span class="s1">&#39;shng_version&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="n">conf_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">etc_dir</span><span class="p">,</span> <span class="s1">&#39;logging&#39;</span><span class="p">)</span>
+            <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_save_roundtrip</span><span class="p">(</span><span class="n">conf_filename</span><span class="p">,</span> <span class="n">logging_config</span><span class="p">,</span> <span class="n">create_backup</span><span class="o">=</span><span class="n">create_backup</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="Logs.load_logging_config_for_edit"><a class="viewcode-back" href="../../lib/log.html#lib.log.Logs.load_logging_config_for_edit">[Doku]</a>    <span class="k">def</span> <span class="nf">load_logging_config_for_edit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load config from logging.yaml to a dict</span>
+
+<span class="sd">        If logging.yaml does not contain a &#39;shng_version&#39; key, a backup is created</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#self.etc_dir = self._sh.get_etcdir()</span>
+        <span class="n">conf_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">etc_dir</span><span class="p">,</span> <span class="s1">&#39;logging&#39;</span><span class="p">)</span>
+        <span class="n">logging_config</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="n">conf_filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;load_logging_config_for_edit: shng_version=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">logging_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;shng_version&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="n">logging_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;shng_version&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logging_config</span><span class="p">[</span><span class="s1">&#39;shng_version&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_logging_config</span><span class="p">(</span><span class="n">logging_config</span><span class="p">,</span> <span class="n">create_backup</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">logging_config</span></div>
+
+
+<div class="viewcode-block" id="Logs.add_all_handlers_logger"><a class="viewcode-back" href="../../lib/log.html#lib.log.Logs.add_all_handlers_logger">[Doku]</a>    <span class="k">def</span> <span class="nf">add_all_handlers_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logging_config</span><span class="p">):</span>
+
+        <span class="n">lg</span> <span class="o">=</span> <span class="n">logging_config</span><span class="p">[</span><span class="s1">&#39;loggers&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_handlers_logger_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">lg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logging_config</span><span class="p">[</span><span class="s1">&#39;loggers&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_handlers_logger_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">lg</span> <span class="o">=</span> <span class="n">logging_config</span><span class="p">[</span><span class="s1">&#39;loggers&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_handlers_logger_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">hd</span> <span class="o">=</span> <span class="n">logging_config</span><span class="p">[</span><span class="s1">&#39;loggers&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_handlers_logger_name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;handlers&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">hd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logging_config</span><span class="p">[</span><span class="s1">&#39;loggers&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_handlers_logger_name</span><span class="p">][</span><span class="s1">&#39;handlers&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">hd</span> <span class="o">=</span> <span class="n">logging_config</span><span class="p">[</span><span class="s1">&#39;loggers&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_handlers_logger_name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;handlers&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">all_hdlrs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">logging_config</span><span class="p">[</span><span class="s1">&#39;handlers&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">logging_config</span><span class="p">[</span><span class="s1">&#39;loggers&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_handlers_logger_name</span><span class="p">][</span><span class="s1">&#39;handlers&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_hdlrs</span>
+
+        <span class="k">return</span> <span class="n">logging_config</span></div>
+
+
+<div class="viewcode-block" id="Logs.get_all_handlernames"><a class="viewcode-back" href="../../lib/log.html#lib.log.Logs.get_all_handlernames">[Doku]</a>    <span class="k">def</span> <span class="nf">get_all_handlernames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_handlers</span> <span class="o">==</span> <span class="p">{}:</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_handlers_logger_name</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">l</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_all_handlers</span><span class="p">[</span><span class="n">h</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span>
+
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_handlers</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="Logs.get_handler_by_name"><a class="viewcode-back" href="../../lib/log.html#lib.log.Logs.get_handler_by_name">[Doku]</a>    <span class="k">def</span> <span class="nf">get_handler_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">handlername</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_handlers</span> <span class="o">==</span> <span class="p">{}:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_all_handlernames</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_handlers</span><span class="p">[</span><span class="n">handlername</span><span class="p">]</span></div></div>
+
 
 <span class="c1"># -------------------------------------------------------------------------------</span>
 
