@@ -4659,27 +4659,37 @@ ohne Fehler bearbeitet werden.</p>
 <section id="hinweise">
 <h2>Hinweise<a class="headerlink" href="#hinweise" title="Permalink to this heading"></a></h2>
 <blockquote>
+<div><ul>
+<li><p>Das Plugin startet die Berechnungen der Werte nach einer gewissen (konfigurierbaren) Zeit (Attribut <cite>startup_run_delay</cite>)
+nach dem Start von shNG, um den Startvorgang nicht zu beeinflussen.</p></li>
+<li><p>Bei Start werden automatisch nur die Items berechnet, für das das Attribute <cite>db_addon_startup</cite> gesetzt wurde. Alle anderen
+Items werden erst zur konfigurierten Zeit berechnet. Das Attribute <cite>db_addon_startup</cite> kann auch direkt am <cite>Database-Item</cite>
+gesetzt werden. Dabei wird das Attribut auf alle darunter liegenden <cite>db_addon-Items</cite> (bspw. bei Verwendung von structs) vererbt.
+Über das WebIF kann die Berechnung aller definierten Items ausgelöst werden.</p></li>
+<li><p>Für sogenannte <cite>on_change</cite> Items, also Items, deren Berechnung bis zum Jetzt (bspw. verbrauch-heute) gehen, wird die Berechnung
+immer bei eintreffen eines neuen Wertes gestartet. Zu Reduktion der Belastung auf die Datenbank werden die Werte für das Ende der
+letzten Periode gecached.</p></li>
+<li><p>Berechnungen werden nur ausgeführt, wenn für den kompletten abgefragten Zeitraum Werte in der Datenbank vorliegen. Wird bspw.
+der Verbrauch des letzten Monats abgefragt wobei erst Werte ab dem 3. des Monats in der Datenbank sind, wird die Berechnung abgebrochen.</p></li>
+<li><p>Mit dem Attribut <cite>use_oldest_entry</cite> kann dieses Verhalten verändert werden. Ist das Attribut gesetzt, wird, wenn für den
+Beginn der Abfragezeitraums keinen Werte vorliegen, der älteste Eintrag der Datenbank genutzt.</p></li>
+<li><p>Für die Auswertung kann es nützlich sein, bestimmte Werte aus der Datenbank bei der Berechnung auszublenden. Hierfür stehen
+2 Möglichkeiten zur Verfügung:</p>
+<blockquote>
 <div><ul class="simple">
-<li><p>Das Plugin startet die Berechnungen der Werte nach einer gewissen (konfigurierbaren) Zeit (Attribut <cite>startup_run_delay</cite>) nach dem Start von shNG, um den Startvorgang nicht zu beeinflussen.</p></li>
-<li><p>Bei Start werden automatisch nur die Items berechnet, für das das Attribute <cite>db_addon_startup</cite> gesetzt wurde. Alle anderen Items werden erst zu konfigurierten Zeit berechnet. Über das WebIF kann die Berechnung aller definierten Items ausgelöst werden.</p></li>
-<li><p>Für sogenannte <cite>on_change</cite> Items, also Items, deren Berechnung bis zum Jetzt (bspw. verbrauch-heute) gehen, wird die Berechnung immer bei eintreffen eines neuen Wertes gestartet. Zu Reduktion der Belastung auf die Datenbank werden die Werte für das Ende der letzten Periode gecached.</p></li>
-<li><p>Berechnungen werden nur ausgeführt, wenn für den kompletten abgefragten Zeitraum Werte in der Datenbank vorliegen. Wird bspw. der Verbrauch des letzten Monats abgefragt wobei erst Werte ab dem 3. des Monats in der Datenbank sind, wird die Berechnung abgebrochen.
-Mit dem Attribut <cite>use_oldest_entry</cite> kann dieses Verhalten verändert werden. Ist das Attribut gesetzt, wird, wenn für den Beginn der Abfragezeitraums keinen Werte vorliegen, der älteste Eintrag der Datenbank genutzt.</p></li>
-<li><dl class="simple">
-<dt>Für die Auswertung kann es nützlich sein, bestimmte Werte aus der Datenbank bei der Berechnung auszublenden. Hierfür stehen 2 Möglichkeiten zur Verfügung:</dt><dd><ul>
-<li><p>Plugin-Attribut <cite>ignore_0</cite>: (list of strings) Bei Items, bei denen ein String aus der Liste im Pfadnamen vorkommt, werden 0-Werte (val_num = 0) bei Datenbankauswertungen ignoriert. Hat also das Attribut den Wert [‚temp‘] werden bei allen Items mit ‚temp‘ im Pfadnamen die 0-Werte bei der Auswertung ignoriert.</p></li>
-<li><p>Item-Attribut <cite>db_addon_ignore_value</cite>: (num) Dieser Wert wird bei der Abfrage bzw. Auswertung der Datenbank für diese Item ignoriert.</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><p>Das Plugin enthält sehr ausführliche Logginginformation. Bei unerwartetem Verhalten, den LogLevel entsprechend anpassen, um mehr information zu erhalten.</p></li>
-<li><p>Berechnungen des Plugins können im WebIF unterbrochen werden. Auch das gesamte Plugin kann pausiert werden. Dies kann be starker Systembelastung nützlich sein.</p></li>
+<li><p>Plugin-Attribut <cite>ignore_0</cite>: (list of strings) Bei Items, bei denen ein String aus der Liste im Pfadnamen vorkommt,
+werden 0-Werte (val_num = 0) bei Datenbankauswertungen ignoriert. Hat also das Attribut den Wert [‚temp‘] werden bei allen Items mit ‚temp‘ im Pfadnamen die 0-Werte bei der Auswertung ignoriert.</p></li>
+<li><p>Item-Attribut <cite>db_addon_ignore_value</cite>: (num) Dieser Wert wird bei der Abfrage bzw. Auswertung der Datenbank für diese
+Item ignoriert.</p></li>
 </ul>
 </div></blockquote>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
+</li>
+<li><p>Das Plugin enthält sehr ausführliche Logginginformation. Bei unerwartetem Verhalten, den LogLevel entsprechend anpassen,
+um mehr information zu erhalten.</p></li>
+<li><p>Berechnungen des Plugins können im WebIF unterbrochen werden. Auch das gesamte Plugin kann pausiert werden. Dies kann bei
+starker Systembelastung nützlich sein.</p></li>
+</ul>
+</div></blockquote>
 </section>
 <section id="beispiele">
 <h2>Beispiele<a class="headerlink" href="#beispiele" title="Permalink to this heading"></a></h2>
