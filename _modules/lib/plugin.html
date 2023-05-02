@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.plugin &mdash; Dokumentation v1.9.5.1 develop v1.9.5.1 develop (Stand 31. März 2023, commit ddf971b) Dokumentation</title>
+  <title>lib.plugin &mdash; Dokumentation v1.9.5.2 v1.9.5.2 develop (Stand 31. März 2023, commit fe37ff6) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -35,7 +35,7 @@
           
           
           <a href="../../index.html" class="icon icon-home">
-            Dokumentation v1.9.5.1 develop
+            Dokumentation v1.9.5.2
               <img src="../../_static/logo_long_inverse3.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
@@ -4562,7 +4562,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">Dokumentation v1.9.5.1 develop</a>
+          <a href="../../index.html">Dokumentation v1.9.5.2</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -4670,6 +4670,8 @@
     <span class="n">_plugins</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">_threads</span> <span class="o">=</span> <span class="p">[]</span>
 
+    <span class="n">_plugindict</span> <span class="o">=</span> <span class="p">{}</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">smarthome</span><span class="p">,</span> <span class="n">configfile</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span> <span class="o">=</span> <span class="n">smarthome</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_configfile</span> <span class="o">=</span> <span class="n">configfile</span>
@@ -4760,6 +4762,10 @@
                                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plugin </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">classpath</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> error on getting startorder: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                                     <span class="n">startorder</span> <span class="o">=</span> <span class="s1">&#39;normal&#39;</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plugin_thread</span><span class="o">.</span><span class="n">plugin</span><span class="p">)</span>
+                                <span class="c1"># dict to get a handle to the plugin code by plugin name:</span>
+                                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugindict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">classpath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">_plugindict</span><span class="p">[</span><span class="n">classpath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">plugin_thread</span><span class="o">.</span><span class="n">plugin</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_plugindict</span><span class="p">[</span><span class="n">classpath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="n">instance</span><span class="p">]</span> <span class="o">=</span> <span class="n">plugin_thread</span><span class="o">.</span><span class="n">plugin</span>
                                 <span class="k">if</span> <span class="n">startorder</span> <span class="o">==</span> <span class="s1">&#39;early&#39;</span><span class="p">:</span>
                                     <span class="n">threads_early</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plugin_thread</span><span class="p">)</span>
                                 <span class="k">elif</span> <span class="n">startorder</span> <span class="o">==</span> <span class="s1">&#39;late&#39;</span><span class="p">:</span>
@@ -4793,6 +4799,20 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">logic_parameters</span><span class="p">[</span><span class="n">param</span><span class="p">][</span><span class="s1">&#39;plugin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">_shortname</span>
 
         <span class="k">return</span>
+
+
+<div class="viewcode-block" id="Plugins.get"><a class="viewcode-back" href="../../lib/plugin_class_plugins.html#lib.plugin.Plugins.get">[Doku]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_name</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get plugin object by plugin name and instance (optional)</span>
+
+<span class="sd">        :param plugin_name: name of the plugin (not the plugin configuration)</span>
+<span class="sd">        :param instance: name of the instance of the plugin (optional)</span>
+
+<span class="sd">        :return: plugin object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugindict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">plugin_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugindict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">plugin_name</span><span class="o">+</span><span class="s1">&#39;#&#39;</span><span class="o">+</span><span class="n">instance</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Plugins.get_logic_parameters"><a class="viewcode-back" href="../../lib/plugin_class_plugins.html#lib.plugin.Plugins.get_logic_parameters">[Doku]</a>    <span class="k">def</span> <span class="nf">get_logic_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
