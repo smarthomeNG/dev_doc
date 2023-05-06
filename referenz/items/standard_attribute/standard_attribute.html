@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Standard Attribute Update &mdash; Dokumentation v1.9.5.2 v1.9.5.2 develop (Stand 31. März 2023, commit fe37ff6) Dokumentation</title>
+  <title>Standard Attribute Update &mdash; Dokumentation v1.9.5.2 v1.9.5.2 develop (Stand 31. März 2023, commit baa65e2) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -4634,7 +4634,25 @@ unten)</p></td>
 <td><p>Liste von Items, bei deren Veränderung eine Neuberechnung der in eval
 definierten Formel erfolgen soll (siehe Beschreibung unten)</p></td>
 </tr>
-<tr class="row-even"><td><p>initial_value,
+<tr class="row-even"><td><p>hysteresis_input</p></td>
+<td><p>Pfad eines Items, welches als Eingabe Wert für die Hysterese dient. Der Wert dieses
+Items wird gegen die beiden Schwellwerte verglichen. Das hier angegebene Item muss
+als <strong>num</strong> definiert sein. - Das Item, welches die Hysterese Attribute verwendet,
+muss als <strong>bool</strong> definiert sein.</p></td>
+</tr>
+<tr class="row-odd"><td><p>hysteresis_upper_threshold</p></td>
+<td><p>Oberer Schwellwert für die Hysterese. Bei der Überschreitung dieses Wertes im Item
+welches den zu überwachenden Eingabewert darstellt, wird dieses Item auf True gesetzt.
+Optional kann in diesem Attribut eine Dauer angegeben werden, welche die Überscheitung
+andauern muss, damit der Wert des Items auf True gesetzt wird.</p></td>
+</tr>
+<tr class="row-even"><td><p>hysteresis_lower_threshold</p></td>
+<td><p>Unterer Schwellwert für die Hysterese. Bei der Unterschreitung dieses Wertes im Item
+welches den zu überwachenden Eingabewert darstellt, wird dieses Item auf False gesetzt.
+Optional kann in diesem Attribut eine Dauer angegeben werden, welche die Unterscheitung
+andauern muss, damit der Wert des Items auf False gesetzt wird.</p></td>
+</tr>
+<tr class="row-odd"><td><p>initial_value,
 value</p></td>
 <td><p>Ein optionaler Startwert für dieses Item. Es wird empfohlen <strong>initial_value</strong>
 anstelle des bisherigen Attributnamens <strong>value</strong> zu verwenden.</p>
@@ -4645,18 +4663,18 @@ Wert nicht als Datenstruktur interpretiert.
 (Also folgendermaßen: <code class="docutils literal notranslate"><span class="pre">initial_value:</span> <span class="pre">&quot;{'k1':</span> <span class="pre">'v1',</span> <span class="pre">'k2':</span> <span class="pre">'v2'}&quot;</span></code> )</p>
 </td>
 </tr>
-<tr class="row-odd"><td><p>log_change</p></td>
+<tr class="row-even"><td><p>log_change</p></td>
 <td><p>Ermöglicht das Loggen jeder Veränderung des Item-Wertes. <strong>log_change</strong> muss dazu den
 Namen des zu verwendeten Loggers enthalten. In <strong>logging.yaml</strong> muss der Logger als
 <strong>items.&lt;Name&gt;</strong> konfiguriert sein. Wertänderungen des Items werden dann mit dem Level
 <strong>INFO</strong> geloggt. (siehe <a class="reference internal" href="log_change.html"><span class="doc">log_change</span></a>) <strong>Ab SmartHomeNG v1.5</strong></p></td>
 </tr>
-<tr class="row-even"><td><p>log_level</p></td>
+<tr class="row-odd"><td><p>log_level</p></td>
 <td><p>Ermöglicht es einen anderen Loglevel für log_change festzulegen. Der angegebene
 Log_level kann jeder in SmartHomeNG unterstützte Python Loglevel sein. Die Angabe kann
 durch den Namen oder den Integer Wert des Loglevels erfolgen. <strong>Ab SmartHomeNG v1.9</strong></p></td>
 </tr>
-<tr class="row-odd"><td><p>log_text</p></td>
+<tr class="row-even"><td><p>log_text</p></td>
 <td><p>Ermöglicht es einen eigenen Text für den Logeintrag festzulegen. <strong>log_text</strong> kann
 dabei eine Reihe von Variablen und eval-Ausdrücken enthalten. <strong>Ab SmartHomeNG v1.9</strong>
 Unterstützt werden folgende Variablen: value, caller, source, dest, id, name, age,
@@ -4667,41 +4685,41 @@ in Single-Quotes (<code class="docutils literal notranslate"><span class="pre">'
 <code class="docutils literal notranslate"><span class="pre">log_text:</span> <span class="pre">'Alter={age}'</span></code></p>
 </td>
 </tr>
-<tr class="row-even"><td><p>log_mapping</p></td>
+<tr class="row-odd"><td><p>log_mapping</p></td>
 <td><p>Ermöglicht es im Text ein Mapping von <strong>value</strong> auf einen anderen Wert auszugeben
 (siehe <a class="reference internal" href="log_change.html"><span class="doc">log_change</span></a>). <strong>Ab SmartHomeNG v1.9</strong></p></td>
 </tr>
-<tr class="row-odd"><td><p>log_rules</p></td>
+<tr class="row-even"><td><p>log_rules</p></td>
 <td><p>Ermöglicht es Regeln zum log_change zu definieren
 (siehe <a class="reference internal" href="log_change.html"><span class="doc">log_change</span></a>).  <strong>Ab SmartHomeNG v1.9</strong></p></td>
 </tr>
-<tr class="row-even"><td><p>name</p></td>
+<tr class="row-odd"><td><p>name</p></td>
 <td><p>ein optionaler Name für das Item</p></td>
 </tr>
-<tr class="row-odd"><td><p>on_update</p></td>
+<tr class="row-even"><td><p>on_update</p></td>
 <td><p>Ermöglicht das setzen des Wertes anderer Items, wenn das aktuelle Item ein
 Update erhält (auch wenn sich der Wert des aktuellen Items dabei nicht
 ändert).</p></td>
 </tr>
-<tr class="row-even"><td><p>on_change</p></td>
+<tr class="row-odd"><td><p>on_change</p></td>
 <td><p>Ermöglicht das Setzen des Wertes anderer Items, wenn der Wert des aktuellen
 Items verändert wird.</p></td>
 </tr>
-<tr class="row-odd"><td><p>remark</p></td>
+<tr class="row-even"><td><p>remark</p></td>
 <td><p>ein optionaler Kommentar für das Item. Es ist sinnvoll Kommentare zu einem
 Item als <strong>remark</strong> Attribut zu erfassen und nicht als Kommentar ( <strong>#</strong> )
 in die Konfigurationsdatei zu schreiben. Dadurch können Kommentare in einer
 später kommenden graphischen Konfigurationsoberfläche angezeigt und gepflegt
 werden.</p></td>
 </tr>
-<tr class="row-even"><td><p>struct</p></td>
+<tr class="row-odd"><td><p>struct</p></td>
 <td><p>Mit dem Attribut <strong>struct</strong> kann ein Template für eine Itemstruktur statt
 eines einzelnen Items in den Item-Tree eingefügt werden. <strong>struct</strong> kann ein
 String oder eine Liste von Strings sein. Wenn eine Liste angegeben wird,
 werden die Template Strukturen in der Reihenfolge angewendet, in der sie in
 der Liste angegeben wurden. <strong>Ab SmartHomeNG v1.6</strong></p></td>
 </tr>
-<tr class="row-odd"><td><p>threshold</p></td>
+<tr class="row-even"><td><p>threshold</p></td>
 <td><p>legt einen Schwellwert oder einen Schwellwertbereich fest. Wenn der Wert
 diesen Wert über- bzw. unterschreitet oder der Wert Bereich verlässt oder
 wieder betritt, kann durch dieses Item eine Logik oder die Berechnung anderer
@@ -4710,7 +4728,7 @@ Die Angabe des Bereichs erfolgt in Form von zwei numerischen Werten,
 die durch einen Doppelpunkt getrennt werden. (z.B. 21.4:25.0)
 ist. Es kann auch ein einzelner Wert notiert werden.</p></td>
 </tr>
-<tr class="row-even"><td><p>type</p></td>
+<tr class="row-odd"><td><p>type</p></td>
 <td><p>Um Werte zu speichern, muss ein Typ vorgegeben werden. Unterstützte Typen
 sind bool, num, str, list, dict, foo, scene</p></td>
 </tr>
