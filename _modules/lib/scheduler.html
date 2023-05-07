@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.scheduler &mdash; Dokumentation v1.9.5.2 v1.9.5.2 develop (Stand 31. März 2023, commit 826f019) Dokumentation</title>
+  <title>lib.scheduler &mdash; Dokumentation v1.9.5.2 v1.9.5.2 develop (Stand 31. März 2023, commit 7313553) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4984,6 +4984,7 @@
         <span class="k">finally</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
 
+
 <div class="viewcode-block" id="Scheduler.check_caller"><a class="viewcode-back" href="../../lib/scheduler.html#lib.scheduler.Scheduler.check_caller">[Doku]</a>    <span class="k">def</span> <span class="nf">check_caller</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">from_smartplugin</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks the calling stack if the calling function (one of get, change, remove, trigger) itself was called by</span>
@@ -5003,6 +5004,13 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">obj</span> <span class="o">=</span> <span class="n">stack</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">f_locals</span><span class="p">[</span><span class="s2">&quot;self&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">name</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">pass</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;check_caller(&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;) *2: Exception in inspect.stack(): </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">SmartPlugin</span><span class="p">):</span>
                 <span class="n">iname</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_instance_name</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">iname</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
@@ -5012,8 +5020,9 @@
                             <span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_instance_name</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">pass</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;check_caller(&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;) *2: Exception in inspect.stack(): </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;check_caller(&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;) *3: Exception in inspect.stack(): </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">name</span></div>
+
 
 <div class="viewcode-block" id="Scheduler.return_next"><a class="viewcode-back" href="../../lib/scheduler.html#lib.scheduler.Scheduler.return_next">[Doku]</a>    <span class="k">def</span> <span class="nf">return_next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">from_smartplugin</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="c1"># name = self.check_caller(name, from_smartplugin)   # ms</span>
