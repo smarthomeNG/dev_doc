@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SmartDevicePlugin &mdash; Dokumentation v1.9.5.2 v1.9.5.2 develop (Stand 31. März 2023, commit d497402) Dokumentation</title>
+  <title>SmartDevicePlugin &mdash; Dokumentation v1.9.5.2 v1.9.5.2 develop (Stand 31. März 2023, commit 6ee70bf) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -4132,6 +4132,25 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../plugin_user_doc.html">Dokumentation für Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plugin_user_doc.html#sample">sample</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../plugin_user_doc.html#anforderungen">Anforderungen</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../plugin_user_doc.html#notwendige-software">Notwendige Software</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../plugin_user_doc.html#unterstutzte-gerate">Unterstützte Geräte</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../plugin_user_doc.html#konfiguration">Konfiguration</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../plugin_user_doc.html#plugin-yaml">plugin.yaml</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../plugin_user_doc.html#items-yaml">items.yaml</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../plugin_user_doc.html#logic-yaml">logic.yaml</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../plugin_user_doc.html#funktionen">Funktionen</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../plugin_user_doc.html#beispiele">Beispiele</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../plugin_user_doc.html#web-interface">Web Interface</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../plugin_user_doc.html#version-history">Version History</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../userfunctions/userfunctions.html">Userfunctions</a><ul>
@@ -4739,7 +4758,7 @@ Netzwerk- oder seriellen Treibern oder Libraries.</p>
 <p>Dazu besteht sdp aus mehreren modularen Ebenen, die hier zusammen mit den jeweiligen ausgetauschten Daten dargestellt
 werden:</p>
 <ul class="simple">
-<li><p>shng</p></li>
+<li><p>SmartHomeNG</p></li>
 <li><ul>
 <li><p>Items</p></li>
 </ul>
@@ -4781,10 +4800,13 @@ werden:</p>
 </li>
 <li><p>Gerät</p></li>
 </ul>
-<p>Das Plugin besteht aus dem (vererbten) Plugin-Code in <cite>__init__.py</cite>, der commands-Definition in <cite>commands.py</cite>, ggf. pluginspezifischer Protokolldefinition in <cite>protocol.py</cite>, ggf. pluginspezifischen Datentypen in <cite>datatypes.py</cite> und den Standarddateien <cite>plugin.yaml</cite> und ggf. <cite>user_doc.rst</cite>.</p>
+<p>Das Plugin besteht aus dem (vererbten) Plugin-Code in <cite>__init__.py</cite>, der commands-Definition in <cite>commands.py</cite>, ggf.
+pluginspezifischer Protokolldefinition in <cite>protocol.py</cite>, ggf. pluginspezifischen Datentypen in <cite>datatypes.py</cite> und den
+Standarddateien <cite>plugin.yaml</cite> und ggf. <cite>user_doc.rst</cite>.</p>
 <section id="plugin">
 <h2>Plugin<a class="headerlink" href="#plugin" title="Permalink to this heading"></a></h2>
-<p>Der folgende Code stellt ein minimales, uneingeschränkt lauffähiges Plugin dar (hier aus dem Beispielplugin sdp_viessmann entnommen):</p>
+<p>Der folgende Code stellt ein minimales, uneingeschränkt lauffähiges Plugin dar (hier aus dem Beispielplugin
+sdp_viessmann entnommen):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lib.model.smartdeviceplugin</span> <span class="kn">import</span> <span class="n">SmartDevicePlugin</span>
 
 <span class="k">class</span> <span class="nc">sdp_viessmann</span><span class="p">(</span><span class="n">SmartDevicePlugin</span><span class="p">):</span>
@@ -4792,11 +4814,15 @@ werden:</p>
 <span class="n">PLUGIN_VERSION</span> <span class="o">=</span> <span class="s1">&#39;1.0.0&#39;</span>
 </pre></div>
 </div>
-<p>Nun wäre es naiv zu glauben, dass nur eine Codezeile ein beliebiges Plugin darstellen kann. Für ein nicht nur lauffähiges, sondern auf funktionales Plugin bedarf es noch der wesentlichen Konfiguration, die im Zusammenhang mit sdp benötigt wird - den commands in der <cite>commands.py</cite>.</p>
+<p>Nun wäre es naiv zu glauben, dass nur eine Codezeile ein beliebiges Plugin darstellen kann. Für ein nicht nur
+lauffähiges, sondern auf funktionales Plugin bedarf es noch der wesentlichen Konfiguration, die im Zusammenhang mit sdp benötigt wird - den commands in der <cite>commands.py</cite>.</p>
 </section>
 <section id="kommandos">
 <h2>Kommandos<a class="headerlink" href="#kommandos" title="Permalink to this heading"></a></h2>
-<p>Hier wird nach einer vorgegebenen Struktur definiert, welche Befehle wie für das Gerät „übersetzt“ werden müssen. Dabei gibt es eine Reihe von - zunehmend komplexen - Optionen, die in der Referenz im Detail behandelt werden. Im Wesentlichen wird in der <cite>commands.py</cite> das dict <cite>commands</cite> definiert, dessen Inhalte die Intelligenz des Plugins definieren. Der folgende Code ist ein Ausschnitt aus der commands-Definition des sdp_viessmann-Plugins:</p>
+<p>Hier wird nach einer vorgegebenen Struktur definiert, welche Befehle wie für das Gerät „übersetzt“ werden müssen.
+Dabei gibt es eine Reihe von - zunehmend komplexen - Optionen, die in der Referenz im Detail behandelt werden. Im
+Wesentlichen wird in der <cite>commands.py</cite> das dict <cite>commands</cite> definiert, dessen Inhalte die Intelligenz des Plugins
+definieren. Der folgende Code ist ein Ausschnitt aus der commands-Definition des sdp_viessmann-Plugins:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">commands</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;Allgemein&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;item_attrs&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;cycle&#39;</span><span class="p">:</span> <span class="mi">45</span><span class="p">},</span>
         <span class="s1">&#39;Temperatur&#39;</span><span class="p">:</span> <span class="p">{</span>
@@ -4855,7 +4881,7 @@ werden:</p>
 ‚opcode‘: ‚0101‘,               # „Code“, der an das Gerät gesendet wird
 ‚reply_pattern‘: ‚*‘,   # Identifier, um Antwort auf dieses Kommando zu erkennen</p>
 <blockquote>
-<div><p>‚item_type‘: ‚num‘,             # Datentyp, der an shng gesendet wird
+<div><p>‚item_type‘: ‚num‘,             # Datentyp, der an SmartHomeNG gesendet wird
 ‚dev_datatype‘: ‚V‘,    # Datentyp, der zur Kommunikation mit dem Gerät verwendet wird
 ‚params‘: {‚value‘: ‚VAL‘, ‚mult‘: 10, ‚signed‘: True, ‚len‘: 2}}</p>
 <blockquote>
@@ -4869,29 +4895,55 @@ werden:</p>
 </dd>
 </dl>
 </div></blockquote>
-<p>Die einzelnen Attribute der command-Definitionen sind in der Datei <cite>./dev/sample_smartdevice_plugin/commands.py</cite> im Detail erklärt.</p>
+<p>Die einzelnen Attribute der command-Definitionen sind in der Datei <cite>./dev/sample_smartdevice_plugin/commands.py</cite> im
+Detail erklärt.</p>
 </section>
 <section id="protokoll">
 <h2>Protokoll<a class="headerlink" href="#protokoll" title="Permalink to this heading"></a></h2>
-<p>Standardmäßig wird kein Protokoll benötigt und somit nicht konfiguriert. Wenn Protokolle konfiguriert werden, so sind sie sowohl für das Plugin als auch für die konfigurierte Verbindung transparent.</p>
-<p>Zum Lieferumfang gehören die Protokollklassen <cite>SDPProtocol</cite> (keine gesonderte Funktion, Basisklasse, kann zum Testen verwendet werden) sowie <cite>SDPProtocolJsonrpc</cite> (stellt transparente Format- und Datenformatierung nach Json-RPC-Standard zur Verfügung).</p>
-<p>Eigene Protokolle können definiert werden - im Beispiel sdp_viessmann z.B. die binären Protokolltypen P300 und KW2, die einen Verbindungsaufbau mit Handshake benötigen.</p>
+<p>Standardmäßig wird kein Protokoll benötigt und somit nicht konfiguriert. Wenn Protokolle konfiguriert werden, so sind
+sie sowohl für das Plugin als auch für die konfigurierte Verbindung transparent.</p>
+<p>Zum Lieferumfang gehören die Protokollklassen <cite>SDPProtocol</cite> (keine gesonderte Funktion, Basisklasse, kann zum Testen
+verwendet werden) sowie <cite>SDPProtocolJsonrpc</cite> (stellt transparente Format- und Datenformatierung nach Json-RPC-Standard
+zur Verfügung).</p>
+<p>Eigene Protokolle können definiert werden - im Beispiel sdp_viessmann z.B. die binären Protokolltypen P300 und KW2,
+die einen Verbindungsaufbau mit Handshake benötigen.</p>
 </section>
 <section id="verbindung">
 <h2>Verbindung<a class="headerlink" href="#verbindung" title="Permalink to this heading"></a></h2>
-<p>Die <cite>SDPConnection</cite>- sowie die davon abgeleiteten Klassen stellen die Verbindungsschicht zum Gerät dar. Durch die standardisierte Schnittstelle ist das Plugin unabhängig von der konkret gewählten Verbindung. So ist es z.B. kein Problem, wahlweise netzwerkbasierte oder serielle Verbindungen im selben Plugin zu nutzen, indem nur die Konfiguration in der plugin.yaml entsprechend angepasst wird.</p>
-<p>Zum Lieferumfang gehörten die Verbindungsklassen <cite>SDPConnection</cite> (keine Funktion, Basisklasse, kann zum Testen verwendet werde), <cite>SDPConnectionNetTcpRequest</cite> (Netzwerkverbindung mit HTTP-Requests und -Antworten über TCP), <cite>SDPConnectionNetTcpClient</cite> (direkte TCP-Verbindung mit persistenter Sendeverbindung und Listener zum asnychronen Datenempfang), <cite>SDPConnectionNetUdpRequest</cite> (wie SDPConnectionNetTcpRequest, aber mit zusätzlichem UDP-Listener, z.B. für Multicast), <cite>SDPConnectionSerial</cite> (Anfrage-Antwort-Verbindung über serielle Schnittstelle) sowie <cite>SDPConnectionSerialAsync</cite> (serielle Verbindung mit Listener, der eingehende Daten unabhängig von gesendeten Kommandos empfangen kann).</p>
+<p>Die <cite>SDPConnection</cite>- sowie die davon abgeleiteten Klassen stellen die Verbindungsschicht zum Gerät dar. Durch die
+standardisierte Schnittstelle ist das Plugin unabhängig von der konkret gewählten Verbindung. So ist es z.B. kein
+Problem, wahlweise netzwerkbasierte oder serielle Verbindungen im selben Plugin zu nutzen, indem nur die Konfiguration
+in der plugin.yaml entsprechend angepasst wird.</p>
+<p>Zum Lieferumfang gehörten die Verbindungsklassen <cite>SDPConnection</cite> (keine Funktion, Basisklasse, kann zum Testen
+verwendet werde), <cite>SDPConnectionNetTcpRequest</cite> (Netzwerkverbindung mit HTTP-Requests und -Antworten über TCP),
+<cite>SDPConnectionNetTcpClient</cite> (direkte TCP-Verbindung mit persistenter Sendeverbindung und Listener zum
+asnychronen Datenempfang), <cite>SDPConnectionNetUdpRequest</cite> (wie SDPConnectionNetTcpRequest, aber mit zusätzlichem
+UDP-Listener, z.B. für Multicast), <cite>SDPConnectionSerial</cite> (Anfrage-Antwort-Verbindung über serielle Schnittstelle)
+sowie <cite>SDPConnectionSerialAsync</cite> (serielle Verbindung mit Listener, der eingehende Daten unabhängig von gesendeten
+Kommandos empfangen kann).</p>
 </section>
 <section id="datatypes">
 <h2>DataTypes<a class="headerlink" href="#datatypes" title="Permalink to this heading"></a></h2>
-<p>Die Basisklasse <cite>DataType</cite> und die davon abgeleiteten Klassen bieten eine Schnittstelle, Datenformate zwischen shng und Gerät zu konvertieren. Eine Reihe von vorgefertigten Datentypen werden bereits mitgeliefert, eigene Datentypen können zusätzlich definiert werden.</p>
-<p>Zum Lieferumfang gehören neben der Basisklasse <cite>DataType</cite> die abgeleiteten Klassen <cite>DT_none</cite> (Testklasse, keine Datenweitergabe), <cite>DT_raw</cite>, <cite>DT_bool</cite>, <cite>DT_int</cite>, <cite>DT_num</cite>, <cite>DT_str</cite>, <cite>DT_list</cite>, <cite>DT_dict</cite>, <cite>DT_tuple</cite>, <cite>DT_bytes</cite>, <cite>DT_bytearray</cite>, <cite>DT_json</cite> und <cite>DT_webservices</cite>. Die meisten der gelisteten Klassen funktionieren wie ein einfaches typecast, JSON und Webservices sind spezielle Formate für JSON-RPC und das Webservices-Plugin.</p>
+<p>Die Basisklasse <cite>DataType</cite> und die davon abgeleiteten Klassen bieten eine Schnittstelle, Datenformate zwischen
+SmartHomeNG und Gerät zu konvertieren. Eine Reihe von vorgefertigten Datentypen werden bereits mitgeliefert, eigene
+Datentypen können zusätzlich definiert werden.</p>
+<p>Zum Lieferumfang gehören neben der Basisklasse <cite>DataType</cite> die abgeleiteten Klassen <cite>DT_none</cite> (Testklasse, keine
+Datenweitergabe), <cite>DT_raw</cite>, <cite>DT_bool</cite>, <cite>DT_int</cite>, <cite>DT_num</cite>, <cite>DT_str</cite>, <cite>DT_list</cite>, <cite>DT_dict</cite>, <cite>DT_tuple</cite>, <cite>DT_bytes</cite>,
+<cite>DT_bytearray</cite>, <cite>DT_json</cite> und <cite>DT_webservices</cite>. Die meisten der gelisteten Klassen funktionieren wie ein einfaches
+typecast, JSON und Webservices sind spezielle Formate für JSON-RPC und das Webservices-Plugin.</p>
 </section>
 <section id="commands">
 <h2>Commands<a class="headerlink" href="#commands" title="Permalink to this heading"></a></h2>
-<p>Die Klasse <cite>SDPCommands</cite> ist ein „intelligentes“ dict, das die <cite>commands.py</cite> liest und verarbeitet und strukturieren Zugriff auf die konfigurierten Kommandos ermöglicht.</p>
-<p>Die Klasse <cite>SDPCommand</cite> stellt für jedes konfigurierte Kommando eine eigene Instanz dar, die die notwendigen Informationen und Methoden zum Zugriff und zur notwendigen Datentransformation bereitstellt. Die einzelnen Instanzen werden durch die <cite>SDPCommands</cite>-Klasse erstellt und entsprechend den Angaben in <a href="#id1"><span class="problematic" id="id2">`</span></a>commands.py`konfiguriert.</p>
-<p>Auf Plugin-Ebene kann festgelegt werden, ob die Standardklasse <cite>SDPCommand</cite> oder bei Bedarf eine abgeleitete Klasse verwendet werden soll. Die abgeleiteten Klassen umfassen <cite>SDPCommandStr</cite> für Kommandos, die textbasiert arbeiten (z.B. HTTP oder Textprotokolle), <cite>SDPCommandParseStr</cite> mit zusätzlichen Möglichkeiten zur Text- und Datenextraktion, SDPCommandJSON für JSON-RPC-Kommunikation sowie SDPCommandViessmann für die binären Datenformate der Viessmann-Heizungen.</p>
+<p>Die Klasse <cite>SDPCommands</cite> ist ein „intelligentes“ dict, das die <cite>commands.py</cite> liest und verarbeitet und strukturieren
+Zugriff auf die konfigurierten Kommandos ermöglicht.</p>
+<p>Die Klasse <cite>SDPCommand</cite> stellt für jedes konfigurierte Kommando eine eigene Instanz dar, die die notwendigen
+Informationen und Methoden zum Zugriff und zur notwendigen Datentransformation bereitstellt. Die einzelnen Instanzen
+werden durch die <cite>SDPCommands</cite>-Klasse erstellt und entsprechend den Angaben in <a href="#id1"><span class="problematic" id="id2">`</span></a>commands.py`konfiguriert.</p>
+<p>Auf Plugin-Ebene kann festgelegt werden, ob die Standardklasse <cite>SDPCommand</cite> oder bei Bedarf eine abgeleitete Klasse
+verwendet werden soll. Die abgeleiteten Klassen umfassen <cite>SDPCommandStr</cite> für Kommandos, die textbasiert arbeiten
+(z.B. HTTP oder Textprotokolle), <cite>SDPCommandParseStr</cite> mit zusätzlichen Möglichkeiten zur Text- und Datenextraktion,
+SDPCommandJSON für JSON-RPC-Kommunikation sowie SDPCommandViessmann für die binären Datenformate der
+Viessmann-Heizungen.</p>
 </section>
 </section>
 
