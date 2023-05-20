@@ -1,6 +1,6 @@
 var DOCUMENTATION_OPTIONS = {
     URL_ROOT: document.getElementById("documentation_options").getAttribute('data-url_root'),
-    VERSION: 'v1.9.5.2 develop (Stand 31. März 2023, commit 26fdb9a)',
+    VERSION: 'v1.9.5.2 develop (Stand 31. März 2023, commit b6b2744)',
     LANGUAGE: 'de',
     COLLAPSE_INDEX: false,
     BUILDER: 'html',
