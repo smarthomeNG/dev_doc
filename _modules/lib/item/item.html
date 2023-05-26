@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.item.item &mdash; Dokumentation v1.9.5.2 v1.9.5.2 develop (Stand 31. März 2023, commit c43433a) Dokumentation</title>
+  <title>lib.item.item &mdash; Dokumentation v1.9.5.2 v1.9.5.2 develop (Stand 31. März 2023, commit 2509e37) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -4983,7 +4983,7 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">_trigger_condition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_trigger_condition_eval</span><span class="p">(</span><span class="n">cond_list</span><span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_trigger_condition_raw</span> <span class="o">=</span> <span class="n">cond_list</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Item __init__: </span><span class="si">{}</span><span class="s2">: Invalid trigger_condition specified! Must be a list&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">))</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Item __init__: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">: Invalid trigger_condition specified! Must be a list&quot;</span><span class="p">)</span>
 
                 <span class="k">elif</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">[</span><span class="n">KEY_HYSTERESIS_INPUT</span><span class="p">]:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_parse_hysteresis_input_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
@@ -5210,7 +5210,7 @@
         <span class="k">return</span> <span class="n">dest_item</span><span class="p">,</span> <span class="n">value</span>
 
 
-    <span class="k">def</span> <span class="nf">_castvalue_to_itemtype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">compat</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_castvalue_to_itemtype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">compat</span><span class="o">=</span><span class="n">ATTRIB_COMPAT_LATEST</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        casts the value to the type of the item, if backward compatibility</span>
 <span class="sd">        to version 1.2 (ATTRIB_COMPAT_V12) is not enabled</span>
@@ -6071,6 +6071,17 @@
 
 
     <span class="k">def</span> <span class="nf">__run_attribute_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_expression</span><span class="p">,</span> <span class="n">result_type</span><span class="o">=</span><span class="s1">&#39;num&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluates an expression string for item attributes like</span>
+<span class="sd">         - autotimer</span>
+<span class="sd">         - cycle</span>
+<span class="sd">         - hysteresis_upper_threshold</span>
+<span class="sd">         - hysteresis_lower_threshold</span>
+
+<span class="sd">        :param eval_expression: string to evaluate</span>
+<span class="sd">        :param result_type: type for the result (num | str)</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># set up environment for calculating eval-expression</span>
         <span class="n">sh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span>
@@ -6079,14 +6090,15 @@
         <span class="kn">import</span> <span class="nn">math</span>
         <span class="kn">import</span> <span class="nn">lib.userfunctions</span> <span class="k">as</span> <span class="nn">uf</span>
 
+        <span class="n">eval_expression</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">eval_expression</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">eval_expression</span><span class="p">))</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">eval_expression</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;__run_attribute_eval: evel(str(</span><span class="si">{</span><span class="n">eval_expression</span><span class="si">}</span><span class="s2">)) - Exception </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Item </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">: __run_attribute_eval(): Problem evaluating </span><span class="si">{</span><span class="n">eval_expression</span><span class="si">}</span><span class="s2"> - Exception </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="k">if</span> <span class="n">result_type</span> <span class="o">==</span> <span class="s1">&#39;num&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Item &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">&#39;: Attribute expression &#39;</span><span class="si">{</span><span class="n">eval_expression</span><span class="si">}</span><span class="s2">&#39; evaluated to a non-numeric value &#39;</span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&#39;, using 0 instead&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Item &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">&#39;: __run_attribute_eval(): Attribute expression &#39;</span><span class="si">{</span><span class="n">eval_expression</span><span class="si">}</span><span class="s2">&#39; evaluated to a non-numeric value &#39;</span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&#39;, using 0 instead&quot;</span><span class="p">)</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="k">return</span> <span class="n">result</span>
@@ -6156,9 +6168,9 @@
                     <span class="c1"># uf.import_user_modules()  -  Modules were loaded during initialization phase of shng</span>
 
                     <span class="n">cond</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trigger_condition</span><span class="p">)</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Item </span><span class="si">{}</span><span class="s2">: Condition result &#39;</span><span class="si">{}</span><span class="s2">&#39; evaluating trigger condition </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="n">cond</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trigger_condition</span><span class="p">))</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Item </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">: Condition result &#39;</span><span class="si">{</span><span class="n">cond</span><span class="si">}</span><span class="s2">&#39; evaluating trigger condition </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_trigger_condition</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="n">log_msg</span> <span class="o">=</span> <span class="s2">&quot;Item </span><span class="si">{}</span><span class="s2">: Problem evaluating trigger condition &#39;</span><span class="si">{}</span><span class="s2">&#39;: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trigger_condition</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                    <span class="n">log_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Item </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">: Problem evaluating trigger condition &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_trigger_condition</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
                     <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">shng_status</span><span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">20</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">caller</span> <span class="o">!=</span> <span class="s1">&#39;Init&#39;</span><span class="p">):</span>
                         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">log_msg</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
@@ -6185,13 +6197,11 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">__last_trigger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
 
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Item </span><span class="si">{}</span><span class="s2">: Eval triggered by: </span><span class="si">{}</span><span class="s2">. Evaluating item with value </span><span class="si">{}</span><span class="s2">. Eval expression: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__triggered_by</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">))</span>
-                    <span class="c1">#value = eval(self._eval)</span>
 
                     <span class="c1"># ms if contab: init = x is set, x is transfered as a string, for that case re-try eval with x converted to float</span>
                     <span class="k">try</span><span class="p">:</span>
                        <span class="n">value</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">)</span>
                     <span class="k">except</span><span class="p">:</span>
-                        <span class="c1">#value = float(value)</span>
                         <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
                         <span class="n">value</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">)</span>
                     <span class="c1"># ms end</span>
@@ -6257,7 +6267,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">dest_value</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">on_eval</span><span class="p">)</span>       <span class="c1"># calculate to test if expression computes and see if it computes to None</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Item </span><span class="si">{}</span><span class="s2">: &#39;</span><span class="si">{}</span><span class="s2">&#39; item-value=&#39;</span><span class="si">{}</span><span class="s2">&#39; problem evaluating </span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">on_eval</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Item </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">: &#39;</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">&#39; item-value=&#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39; problem evaluating </span><span class="si">{</span><span class="n">on_eval</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">dest_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># expression computes and does not result in None</span>
@@ -6267,7 +6277,7 @@
                         <span class="n">dest_item</span><span class="o">.</span><span class="n">__update</span><span class="p">(</span><span class="n">dest_value</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">attr</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">)</span>
                         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot; - : &#39;</span><span class="si">{}</span><span class="s2">&#39; finally evaluating </span><span class="si">{}</span><span class="s2"> = </span><span class="si">{}</span><span class="s2">, result=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">on_dest</span><span class="p">,</span> <span class="n">on_eval</span><span class="p">,</span> <span class="n">dest_value</span><span class="p">))</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Item </span><span class="si">{}</span><span class="s2">: &#39;</span><span class="si">{}</span><span class="s2">&#39; has not found dest_item &#39;</span><span class="si">{}</span><span class="s2">&#39; = </span><span class="si">{}</span><span class="s2">, result=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">on_dest</span><span class="p">,</span> <span class="n">on_eval</span><span class="p">,</span> <span class="n">dest_value</span><span class="p">))</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Item </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">: &#39;</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">&#39; has not found dest_item &#39;</span><span class="si">{</span><span class="n">on_dest</span><span class="si">}</span><span class="s2">&#39; = </span><span class="si">{</span><span class="n">on_eval</span><span class="si">}</span><span class="s2">, result=</span><span class="si">{</span><span class="n">dest_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">dummy</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">on_eval</span><span class="p">)</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot; - : &#39;</span><span class="si">{}</span><span class="s2">&#39; finally evaluating </span><span class="si">{}</span><span class="s2">, result=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">on_eval</span><span class="p">,</span> <span class="n">dest_value</span><span class="p">))</span>
@@ -6561,18 +6571,16 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_items_to_trigger</span></div>
 
 
-<div class="viewcode-block" id="Item.timer"><a class="viewcode-back" href="../../../lib/item_class_item.html#lib.item.item.Item.timer">[Doku]</a>    <span class="k">def</span> <span class="nf">timer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">auto</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compat</span><span class="o">=</span><span class="n">ATTRIB_COMPAT_DEFAULT</span><span class="p">):</span>
+<div class="viewcode-block" id="Item.timer"><a class="viewcode-back" href="../../../lib/item_class_item.html#lib.item.item.Item.timer">[Doku]</a>    <span class="k">def</span> <span class="nf">timer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">auto</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compat</span><span class="o">=</span><span class="n">ATTRIB_COMPAT_LATEST</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Starts a timer for this item</span>
 
 <span class="sd">        :param time: Duration till the value of the item is set</span>
 <span class="sd">        :param value: Value the item should be set to</span>
-<span class="sd">        :param auto: Optional: If False a single timer is started, else the duration/value information is set as autotimer</span>
+<span class="sd">        :param auto: Optional: If False a single timer is started, else the duration/value information is set as an autotimer</span>
 <span class="sd">        :param caller: Optional: The caller of this function</span>
 <span class="sd">        :param source: Optional: The source of the timer-request</span>
-<span class="sd">        :param compat: Optional: The attribute comatibility (only used if an autotimer is set)</span>
-
-<span class="sd">        :return: None</span>
-
+<span class="sd">        :param compat: Not used anymore, only defined for backward compatibility</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cast_duration</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
         <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_castvalue_to_itemtype</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">compat</span><span class="p">)</span>
@@ -6593,21 +6601,29 @@
 
 <div class="viewcode-block" id="Item.remove_timer"><a class="viewcode-back" href="../../../lib/item_class_item.html#lib.item.item.Item.remove_timer">[Doku]</a>    <span class="k">def</span> <span class="nf">remove_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Remove a running timer</span>
-
-<span class="sd">        :return: None</span>
+<span class="sd">        Remove a running timer for this item from the scheduler</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_itemname_prefix</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;-Timer&#39;</span><span class="p">)</span>
         <span class="k">return</span></div>
 
 
-<div class="viewcode-block" id="Item.autotimer"><a class="viewcode-back" href="../../../lib/item_class_item.html#lib.item.item.Item.autotimer">[Doku]</a>    <span class="k">def</span> <span class="nf">autotimer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compat</span><span class="o">=</span><span class="n">ATTRIB_COMPAT_V12</span><span class="p">):</span>
+<div class="viewcode-block" id="Item.autotimer"><a class="viewcode-back" href="../../../lib/item_class_item.html#lib.item.item.Item.autotimer">[Doku]</a>    <span class="k">def</span> <span class="nf">autotimer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compat</span><span class="o">=</span><span class="n">ATTRIB_COMPAT_LATEST</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Defines or removes an autotimer for the item</span>
+
+<span class="sd">        If time and value are not given (or None), an existing autotimer is removed</span>
+
+<span class="sd">        :param time: Time until the value is set</span>
+<span class="sd">        :param value: Value to set the item to</span>
+<span class="sd">        :param compat: Not used anymore, only defined for backward compatibility</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cast_duration</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_autotimer_time</span> <span class="o">=</span> <span class="n">time</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_autotimer_value</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_autotimer_time</span> <span class="o">=</span> <span class="kc">None</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_autotimer_time</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_autotimer_value</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="Item.fade"><a class="viewcode-back" href="../../../lib/item_class_item.html#lib.item.item.Item.fade">[Doku]</a>    <span class="k">def</span> <span class="nf">fade</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
