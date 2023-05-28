@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.logic &mdash; Dokumentation v1.9.5.2 v1.9.5.2 develop (Stand 31. März 2023, commit 2509e37) Dokumentation</title>
+  <title>lib.logic &mdash; Dokumentation v1.9.5.2 v1.9.5.2 develop (Stand 31. März 2023, commit d269c12) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4800,6 +4800,7 @@
     <span class="n">_config_type</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_logicname_prefix</span> <span class="o">=</span> <span class="s1">&#39;logics.&#39;</span>     <span class="c1"># prefix for scheduler names</span>
 
+    <span class="n">_groups</span> <span class="o">=</span> <span class="p">{}</span>
 
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">smarthome</span><span class="p">,</span> <span class="n">userlogicconf</span><span class="p">,</span> <span class="n">envlogicconf</span><span class="p">):</span>
@@ -4838,7 +4839,10 @@
         <span class="n">_config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_userlogics</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">_config</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_load_logic</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">_config</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;_groups&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span> <span class="o">=</span> <span class="n">_config</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_load_logic</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">_config</span><span class="p">)</span>
 
 
     <span class="k">def</span> <span class="nf">_read_logics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">directory</span><span class="p">):</span>
@@ -5676,6 +5680,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sh</span> <span class="o">=</span> <span class="n">smarthome</span>               <span class="c1"># initialize to use &#39;logic.sh&#39; in logics</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>              <span class="c1"># initialize to use &#39;logic.logger&#39; in logics</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logic_groupnames</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span> <span class="o">=</span> <span class="n">logics</span><span class="o">.</span><span class="n">shtime</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logics</span> <span class="o">=</span> <span class="n">logics</span>             <span class="c1"># access to the logics api</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_enabled</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="s1">&#39;enabled&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">attributes</span> <span class="k">else</span> <span class="n">Utils</span><span class="o">.</span><span class="n">to_bool</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;enabled&#39;</span><span class="p">])</span>
@@ -5693,6 +5698,11 @@
         <span class="k">if</span> <span class="n">attributes</span> <span class="o">!=</span> <span class="s1">&#39;None&#39;</span><span class="p">:</span>
             <span class="c1"># Fills crontab, cycle and other parameters</span>
             <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="n">attributes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">attribute</span> <span class="o">==</span> <span class="s1">&#39;logic_groupname&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="n">attribute</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+                        <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)[</span><span class="s1">&#39;_logic_groupnames&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)[</span><span class="s1">&#39;_logic_groupnames&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">attributes</span><span class="p">[</span><span class="n">attribute</span><span class="p">]]</span>
                 <span class="k">if</span> <span class="n">attribute</span> <span class="o">==</span> <span class="s1">&#39;pathname&#39;</span><span class="p">:</span>
                     <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)[</span><span class="s1">&#39;_pathname&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="n">attribute</span><span class="p">]</span>
                 <span class="k">elif</span> <span class="n">attribute</span> <span class="o">==</span> <span class="s1">&#39;filename&#39;</span><span class="p">:</span>
@@ -5732,7 +5742,7 @@
 <span class="sd">        :param value: name of the logic</span>
 <span class="sd">        :type value: str</span>
 
-<span class="sd">        :return: name of the item</span>
+<span class="sd">        :return: name of the logic</span>
 <span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
@@ -5748,6 +5758,29 @@
         <span class="c1">#    self._item._name = self._item._path</span>
         <span class="c1">#else:</span>
         <span class="c1">#    self._item._name = value</span>
+        <span class="k">return</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">groupnames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Property: groupname</span>
+
+<span class="sd">        :param value: groupname of the logic</span>
+<span class="sd">        :type value: str</span>
+
+<span class="sd">        :return: groupname of the logic</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logic_groupnames</span>
+
+    <span class="nd">@groupnames</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">groupnames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+
+        <span class="c1"># self.logger.warning(f&quot;&#39;logic.groupnames&#39; is a readonly property and the value &#39;{value}&#39; can not be assigned to it&quot;)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;logic.groupnames&#39;: Only a string or a list can be assigned to  - &#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39; can not be assigned to it&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logic_groupnames</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">return</span>
 
 <div class="viewcode-block" id="Logic.log_readonly_warning"><a class="viewcode-back" href="../../lib/logic.html#lib.logic.Logic.log_readonly_warning">[Doku]</a>    <span class="k">def</span> <span class="nf">log_readonly_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
