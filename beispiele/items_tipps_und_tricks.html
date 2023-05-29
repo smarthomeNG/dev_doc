@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Items: Tipps und Tricks &mdash; Dokumentation v1.9.5.2 v1.9.5.2 develop (Stand 31. März 2023, commit d269c12) Dokumentation</title>
+  <title>Items: Tipps und Tricks Update &mdash; Dokumentation v1.9.5.2 v1.9.5.2 develop (Stand 31. März 2023, commit c82911c) Dokumentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -3323,7 +3323,13 @@
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="beispiele.html">Beispiele, Tipps &amp; Tricks</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="eval.html">Items: eval und eval_trigger</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Items: Tipps und Tricks</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Items: Tipps und Tricks <span class="bluesup">Update</span></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#erstellen-eines-zeitgieds">Erstellen eines Zeitgieds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#invertieren-eines-item-wertes">Invertieren eines Item Wertes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#item-strukturen-bequem-kopieren">Item Strukturen bequem kopieren</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#erstellung-von-tag-nacht-items-fur-knx">Erstellung von Tag-/Nacht-Items für KNX</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="logiken/logiken.html">Logiken</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="logiken/logiken.html#einfache-beispiele">Einfache Beispiele</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="logiken/beispiel_beaufort.html">Berechnung der Windstärke</a><ul>
@@ -4707,7 +4713,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="beispiele.html">Beispiele, Tipps &amp; Tricks</a></li>
-      <li class="breadcrumb-item active">Items: Tipps und Tricks</li>
+      <li class="breadcrumb-item active">Items: Tipps und Tricks <span class="bluesup">Update</span></li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -4716,20 +4722,43 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <span class="target" id="index-0"></span><section id="items-tipps-und-tricks">
-<span id="index-1"></span><h1>Items: Tipps und Tricks<a class="headerlink" href="#items-tipps-und-tricks" title="Permalink to this heading"></a></h1>
+  <span class="target" id="index-0"></span><section id="items-tipps-und-tricks-update">
+<span id="index-1"></span><h1>Items: Tipps und Tricks <span class="bluesup">Update</span><a class="headerlink" href="#items-tipps-und-tricks-update" title="Permalink to this heading"></a></h1>
+<section id="erstellen-eines-zeitgieds">
+<span id="index-2"></span><h2>Erstellen eines Zeitgieds<a class="headerlink" href="#erstellen-eines-zeitgieds" title="Permalink to this heading"></a></h2>
+<p>Wenn man ein Item benötigt, welches seinen Wert erst nach einer zeitlichen Verzögerung ändert, kann man das mit
+Hilfe eines zweiten Items realisieren. Das erste Item (Eingang) wird dabei durch ein Ereignis (Plugins, eval, …)
+verändert. Das zweite Item (Ausgang) nimmt den neuen Wert des ersten Items erst nach einer definierten zeitlichen
+Verzögerung an.</p>
+<section id="beispiel">
+<h3>Beispiel<a class="headerlink" href="#beispiel" title="Permalink to this heading"></a></h3>
+<p>In diesem Beispiel ist ein Zeitglied für ein numerischs Item dargestellt, welches eine Verzögerung von 15 Sekunden
+implementiert.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">Zeitglied</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">Eingang</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">        </span><span class="nt">on_change</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sh...Ausgang.timer(15, value)</span>
+
+<span class="w">    </span><span class="nt">Ausgang</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+</section>
 <section id="invertieren-eines-item-wertes">
 <h2>Invertieren eines Item Wertes<a class="headerlink" href="#invertieren-eines-item-wertes" title="Permalink to this heading"></a></h2>
 <section id="beispiel-1">
 <h3>Beispiel 1<a class="headerlink" href="#beispiel-1" title="Permalink to this heading"></a></h3>
-<p>Es geht um einen Reed-Kontakt am Fenster, der über einen 1-Wire
-Multi-I/O-Sensor per 1-Wire-Plugin abgefragt und auf den KNX-Bus
-gesendet wird.</p>
-<p>Leider sind die Werte vertauscht, 0 soll 1 sein und umgekehrt, ein
-geschlossenes Fenster wird geöffnet angezeigt und umgekehrt.</p>
-<p>Ein <code class="docutils literal notranslate"><span class="pre">eval:</span></code> Attribut zum Item hinzufügen. <code class="docutils literal notranslate"><span class="pre">eval:</span> <span class="pre">not</span> <span class="pre">value</span></code> Value
-ist der Wert, der vom KNX Bus gelesen wird, der eval Ausdruck verändert
-diesen Wert, bevor er in das Item geschrieben wird. Damit wird dann der
+<p>Es geht um einen Reed-Kontakt am Fenster, der über einen 1-Wire Multi-I/O-Sensor per 1-Wire-Plugin abgefragt
+und auf den KNX-Bus gesendet wird.</p>
+<p>Leider sind die Werte vertauscht, 0 soll 1 sein und umgekehrt, ein geschlossenes Fenster wird geöffnet angezeigt
+und umgekehrt.</p>
+<p>Ein <code class="docutils literal notranslate"><span class="pre">eval:</span></code> Attribut zum Item hinzufügen. <code class="docutils literal notranslate"><span class="pre">eval:</span> <span class="pre">not</span> <span class="pre">value</span></code> Value ist der Wert, der vom KNX Bus gelesen wird,
+der eval Ausdruck verändert diesen Wert, bevor er in das Item geschrieben wird. Damit wird dann der
 invertierte Wert auf den KNX Bus geschrieben.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">OW</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">Fenster</span><span class="p">:</span>
@@ -4747,9 +4776,8 @@ invertierte Wert auf den KNX Bus geschrieben.</p>
 </section>
 <section id="beispiel-2">
 <h3>Beispiel 2<a class="headerlink" href="#beispiel-2" title="Permalink to this heading"></a></h3>
-<p>Es geht um einen Lautsprecher, der über einen GPIO Kontakt des Raspberry
-geschaltet werden soll. Der Wert kommt von einem Item das per knx bedient
-wird und dessen Item Wert nicht verfälscht werden soll.</p>
+<p>Es geht um einen Lautsprecher, der über einen GPIO Kontakt des Raspberry geschaltet werden soll. Der Wert kommt
+von einem Item das per knx bedient wird und dessen Item Wert nicht verfälscht werden soll.</p>
 <p>Leider sind auch hier die Werte vertauscht, 0 soll 1 sein und umgekehrt.</p>
 <p>Ein Hilfsitem hinzufügen und diesem mit relativer Adressierung auf das Elternelement
 ein <code class="docutils literal notranslate"><span class="pre">eval_trigger</span></code> und ein <code class="docutils literal notranslate"><span class="pre">eval</span></code> zufügen.</p>
@@ -4765,17 +4793,20 @@ ein <code class="docutils literal notranslate"><span class="pre">eval_trigger</s
 <span class="w">        </span><span class="nt">eval_trigger</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">..</span>
 </pre></div>
 </div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 </section>
 </section>
-<section id="item-strukturen-bequem-kopieren-mit-hilfe-relativer-item-adressierung">
-<h2>Item Strukturen bequem kopieren mit Hilfe relativer Item Adressierung<a class="headerlink" href="#item-strukturen-bequem-kopieren-mit-hilfe-relativer-item-adressierung" title="Permalink to this heading"></a></h2>
-<p>Es sollen Fensterkontakte ausgewertet werden (zwei Kontakte je Fenster
-oder z.B. Hoppe Fenstergriffe). Hierbei ergeben zwei Kontakte drei
-sinnvolle Stati (verschlossen, gekippt, offen). Die Auswertung setzt die
+<section id="item-strukturen-bequem-kopieren">
+<h2>Item Strukturen bequem kopieren<a class="headerlink" href="#item-strukturen-bequem-kopieren" title="Permalink to this heading"></a></h2>
+<p>Bei Verwendung von relativer Item Adressierung können Teile des Item-Baumes einfach kopiert werden, um sie an
+anderer Stelle im Item-Baum zu verwenden.</p>
+<p>Es sollen Fensterkontakte ausgewertet werden (zwei Kontakte je Fenster oder z.B. Hoppe Fenstergriffe). Hierbei
+ergeben zwei Kontakte drei sinnvolle Stati (verschlossen, gekippt, offen). Die Auswertung setzt die
 Informationen der zwei Kontakte auf eigene Items für die drei Stati um.</p>
-<p>Diese Lösung soll mit möglichst wenig Aufwand für alle Fenster des
-Objekts kopiert werden. Mit normaler (absoluter) Item Adressierung kann
-das folgendermaßen gelöst werden:</p>
+<p>Diese Lösung soll mit möglichst wenig Aufwand für alle Fenster des Objekts kopiert werden. Mit normaler
+(absoluter) Item Adressierung kann das folgendermaßen gelöst werden:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">Test</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">Buero</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">Reed1</span><span class="p">:</span>
@@ -4815,13 +4846,11 @@ das folgendermaßen gelöst werden:</p>
 <span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Test.Buero.Reed2</span>
 </pre></div>
 </div>
-<p>Wenn dieser Block für weitere Fenster kopiert wird, muss jedoch außer
-der Anpassung der Adressen für <code class="docutils literal notranslate"><span class="pre">Reed1</span></code> und <code class="docutils literal notranslate"><span class="pre">Reed2</span></code> auch noch
-<code class="docutils literal notranslate"><span class="pre">Buero</span></code> an diversen Stellen ersetzt werden, was einen gewissen Aufwand
+<p>Wenn dieser Block für weitere Fenster kopiert wird, muss jedoch außer der Anpassung der Adressen für
+<code class="docutils literal notranslate"><span class="pre">Reed1</span></code> und <code class="docutils literal notranslate"><span class="pre">Reed2</span></code> auch noch <code class="docutils literal notranslate"><span class="pre">Buero</span></code> an diversen Stellen ersetzt werden, was einen gewissen Aufwand
 erfordert und auch noch fehlerträchtig ist.</p>
-<p>Mit relativer Item Adressierung kann das einfacher gelöst werden. Dann
-müssen nach dem Kopieren des Blocks nur noch die Adressen für <code class="docutils literal notranslate"><span class="pre">Reed1</span></code>
-und <code class="docutils literal notranslate"><span class="pre">Reed2</span></code> angepasst werden:</p>
+<p>Mit relativer Item Adressierung kann das einfacher gelöst werden. Dann müssen nach dem Kopieren des Blocks nur
+noch die Adressen für <code class="docutils literal notranslate"><span class="pre">Reed1</span></code> und <code class="docutils literal notranslate"><span class="pre">Reed2</span></code> angepasst werden:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">Test</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">Buero</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">Reed1</span><span class="p">:</span>
@@ -4861,33 +4890,31 @@ und <code class="docutils literal notranslate"><span class="pre">Reed2</span></c
 <span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">..Reed2</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">..&lt;item&gt;</span></code> referenziert hierbei ein Geschwister-Item. Es ist darauf zu
-achten, dass dort wo Items über <code class="docutils literal notranslate"><span class="pre">sh.&lt;item&gt;()</span></code> angesprochen werden (wie
-im <code class="docutils literal notranslate"><span class="pre">eval</span></code> Attribut) dann drei statt der erwarteten zwei Punkte stehen.</p>
+<p><code class="docutils literal notranslate"><span class="pre">..&lt;item&gt;</span></code> referenziert hierbei ein Geschwister-Item. Es ist darauf zu achten, dass dort wo Items über
+<code class="docutils literal notranslate"><span class="pre">sh.&lt;item&gt;()</span></code> angesprochen werden (wie im <code class="docutils literal notranslate"><span class="pre">eval</span></code> Attribut) dann drei statt der erwarteten zwei Punkte stehen.</p>
 <p>Ausführliche Informationen zur relativen Item Adressierung sind unter
 <a class="reference internal" href="../referenz/items/attributes_relative_referenzen.html"><span class="doc">relative Itemreferenzen</span></a> zu finden.</p>
-<p>Das Beispiel ließe sich noch weiter vereinfachen, indem die Einträge durch <strong>structs</strong> referenziert werden. Detaillierte
-Informationen hierzu gibt es auf <a class="reference internal" href="../konfiguration/item_structs.html"><span class="doc">structs (Item Strukturen)</span></a></p>
+<p>Das Beispiel ließe sich noch weiter vereinfachen, indem die Einträge durch <strong>structs</strong> referenziert werden.
+Detaillierte Informationen hierzu gibt es auf <a class="reference internal" href="../konfiguration/item_structs.html"><span class="doc">structs (Item Strukturen)</span></a></p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 </section>
-<section id="nutzung-der-tag-nacht-items-in-knx">
-<h2>Nutzung der Tag-/Nacht-Items in KNX<a class="headerlink" href="#nutzung-der-tag-nacht-items-in-knx" title="Permalink to this heading"></a></h2>
-<p>Ein Tag- oder Nachtobjekt kann zur Ansteuerung von Status-LEDs,
-Präsenzmeldern oder ähnlichem genutzt werden.</p>
-<p><strong>Tag-Item:</strong> Ist “true” (also 1) von der bürgerlichen Dämmerung am Morgen bis
-zur Dämmerung am Abend, danach ist es “false” (also 0)</p>
-<p><strong>Nacht-Item:</strong> Ist “true” (also 1) von der bürgerlichen Dämmerung am Abend bis
-zur Dämmerung am Morgen, danach ist es “false” (also 0)</p>
-<p>Bürgerliche Dämmerung bedeutet, dass sich die Sonne noch/schon unterhalb des
-Horizonts befindet, der Himmel aber dennoch leicht erhellt wird.</p>
-<p>Welches der beiden Items man nutzen will, bleibt jedem selbst
-überlassen. Schließlich ist der Status des jeweiligen Items bereits
-eindeutig. Wichtig dafür ist natürlich, dass die richtigen
-Geo-Koordinaten und die Zeitzone in der Datei <strong>../etc/smarthome.yaml</strong>
-hinterlegt sind sowie die aktuelle Uhrzeit auf dem Rechner eingestellt
-ist.</p>
-<p>Um Tag/Nacht-Items zu erstellen, bringt SmarthomeNG bereits alles mit.
-Man kann einfach auf die SmarthomeNG internen Items <code class="docutils literal notranslate"><span class="pre">env.location.day</span></code>
-und <code class="docutils literal notranslate"><span class="pre">env.location.night</span></code> zugreifen.</p>
+<section id="erstellung-von-tag-nacht-items-fur-knx">
+<h2>Erstellung von Tag-/Nacht-Items für KNX<a class="headerlink" href="#erstellung-von-tag-nacht-items-fur-knx" title="Permalink to this heading"></a></h2>
+<p>Ein Tag- oder Nachtobjekt kann zur Ansteuerung von Status-LEDs, Präsenzmeldern oder ähnlichem genutzt werden.</p>
+<p><strong>Tag-Item:</strong> Ist “true” (also 1) von der bürgerlichen Dämmerung am Morgen bis zur Dämmerung am Abend, danach
+ist es “false” (also 0)</p>
+<p><strong>Nacht-Item:</strong> Ist “true” (also 1) von der bürgerlichen Dämmerung am Abend bis zur Dämmerung am Morgen, danach
+ist es “false” (also 0)</p>
+<p>Bürgerliche Dämmerung bedeutet, dass sich die Sonne noch/schon unterhalb des Horizonts befindet, der Himmel aber
+dennoch leicht erhellt wird.</p>
+<p>Welches der beiden Items man nutzen will, bleibt jedem selbst überlassen. Schließlich ist der Status des
+jeweiligen Items bereits eindeutig. Wichtig dafür ist natürlich, dass die richtigen Geo-Koordinaten und die
+Zeitzone in der Datei <strong>../etc/smarthome.yaml</strong> hinterlegt sind sowie die aktuelle Uhrzeit auf dem Rechner
+eingestellt ist.</p>
+<p>Um Tag/Nacht-Items zu erstellen, bringt SmarthomeNG bereits alles mit. Man kann einfach auf die SmarthomeNG
+internen Items <code class="docutils literal notranslate"><span class="pre">env.location.day</span></code> und <code class="docutils literal notranslate"><span class="pre">env.location.night</span></code> zugreifen.</p>
 <section id="beispiele">
 <h3>Beispiele<a class="headerlink" href="#beispiele" title="Permalink to this heading"></a></h3>
 <section id="nutzung-mit-neuen-zusatzlichen-items">
@@ -4912,8 +4939,7 @@ und <code class="docutils literal notranslate"><span class="pre">env.location.ni
 </section>
 <section id="nutzung-der-smarthomeng-internen-items">
 <h4>Nutzung der SmarthomeNG internen Items<a class="headerlink" href="#nutzung-der-smarthomeng-internen-items" title="Permalink to this heading"></a></h4>
-<p>Dazu müssen die entsprechenden Items um die KNX Attribute erweitert
-werden:</p>
+<p>Dazu müssen die entsprechenden Items um die KNX Attribute erweitert werden:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">env</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">location</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">day</span><span class="p">:</span>
@@ -4928,19 +4954,15 @@ werden:</p>
 <span class="w">            </span><span class="nt">knx_reply</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0/0/104</span>
 </pre></div>
 </div>
-<p>Da sich die internen Items von Release zu Release ändern könnten, ist
-der Weg der zusätzlichen Items zu bevorzugen.</p>
+<p>Da sich die internen Items von Release zu Release ändern könnten, ist der Weg der zusätzlichen Items zu bevorzugen.</p>
 </section>
 </section>
 <section id="berechnung-von-tag-und-nacht">
 <h3>Berechnung von Tag und Nacht<a class="headerlink" href="#berechnung-von-tag-und-nacht" title="Permalink to this heading"></a></h3>
-<p>Die Berechnung der Items <em>Tag</em> und <em>Nacht</em> erfolgt SmarthomeNG-intern
-über <em>sh.sun.rise(-6).day</em> (bürgerliche Dämmerung).</p>
-<p>Für eine Beleuchtungssteuerung (z.B. mit KNX) wäre es sinnvoll, die
-Berechnung von Tag/Nacht anders vorzunehmen, weil z.B. für
-Flurlichtsteuerung o.ä. vielleicht schon 1h vor Sonnenuntergang die
-“Nacht” beginnen soll. Das kann durch die Definition neuer Items
-erreicht werden. Im folgenden Beispiel wird die Tag/Nacht Grenze bei
+<p>Die Berechnung der Items <em>Tag</em> und <em>Nacht</em> erfolgt SmarthomeNG-intern über <em>sh.sun.rise(-6).day</em> (bürgerliche Dämmerung).</p>
+<p>Für eine Beleuchtungssteuerung (z.B. mit KNX) wäre es sinnvoll, die Berechnung von Tag/Nacht anders vorzunehmen,
+weil z.B. für Flurlichtsteuerung o.ä. vielleicht schon 1h vor Sonnenuntergang die “Nacht” beginnen soll.
+Das kann durch die Definition neuer Items erreicht werden. Im folgenden Beispiel wird die Tag/Nacht Grenze bei
 einem Sonnenstand von 4° unter dem Horizont festgelegt:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">berechnung</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
@@ -4957,9 +4979,8 @@ einem Sonnenstand von 4° unter dem Horizont festgelegt:</p>
 <span class="w">    </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
 </div>
-<p>Die Triggerung dieser Berechnung wird im <em>berechnung</em> - Item durch das
-Attribut <em>crontab</em> gesteuert. In diesem Beispiel erfolgt die Berechnung
-4° vor Sonnenaufgang, 4° nach Sonnenuntergang, sowie beim Systemstart.</p>
+<p>Die Triggerung dieser Berechnung wird im <em>berechnung</em> - Item durch das Attribut <em>crontab</em> gesteuert. In diesem
+Beispiel erfolgt die Berechnung 4° vor Sonnenaufgang, 4° nach Sonnenuntergang, sowie beim Systemstart.</p>
 </section>
 </section>
 </section>
