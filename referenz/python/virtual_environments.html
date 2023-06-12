@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Virtuelle Python Environments Update &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit bdf9cea) Dokumentation</title>
+  <title>Virtuelle Python Environments Update &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit 1afdbcd) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4159,8 +4159,9 @@
 </ul>
 </li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Virtuelle Python Environments <span class="bluesup">Update</span></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#installation-von-virtualenv">Installation von virtualenv</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#installation-von-venv-bzw-virtualenv">Installation von venv bzw. virtualenv</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#erstellung-von-virtuellen-environments">Erstellung von virtuellen Environments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#vereinfachtes-aktivieren-der-environments">Vereinfachtes Aktivieren der Environments</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#virtuelle-environements-als-dienst">Virtuelle Environements als Dienst</a></li>
 </ul>
 </li>
@@ -4773,20 +4774,18 @@ den PATH aufgenommen werden.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<section id="installation-von-virtualenv">
-<h2>Installation von virtualenv<a class="headerlink" href="#installation-von-virtualenv" title="Permalink to this heading"></a></h2>
+<section id="installation-von-venv-bzw-virtualenv">
+<h2>Installation von venv bzw. virtualenv<a class="headerlink" href="#installation-von-venv-bzw-virtualenv" title="Permalink to this heading"></a></h2>
 <p>Im folgenden wird davon ausgegangen, dass die Environments im Unterverzeichnis <strong>environments</strong> des Users <strong>smarthome</strong>
 erstellt/gespeichert werden.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>smarthome:~$<span class="w"> </span>mkdir<span class="w"> </span>environments
-
-smarthome:~$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>environments
-
-smarthome:~/environments$
+<p><strong>venv</strong> bzw. <strong>virtualenv</strong> wird am besten unter der Python Version installiert, für die später virtuelle
+Environments erstellt werden sollen. (<strong>venv</strong> ist bei aktuellen Distributionen bereits auf dem System installiert)
+Um zum Beispiel ein virtual Environment für Python 3.10 zu erstellen, ist der folgende Befehl auszuführen:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip3.10<span class="w"> </span>install<span class="w"> </span>venv
 </pre></div>
 </div>
-<p><strong>virtualenv</strong> wird am besten unter der Python Version installiert, für die später virtuelle Environments erstellt
-werden sollen. Um zum Beispiel ein virtual Environment für Python 3.9 zu erstellen, ist der folgende Befehl auszuführen:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>smarthome:~/environments$<span class="w"> </span>pip3.9<span class="w"> </span>install<span class="w"> </span>virtualenv
+<p>bzw.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip3.10<span class="w"> </span>install<span class="w"> </span>virtualenv
 </pre></div>
 </div>
 <div class="line-block">
@@ -4795,66 +4794,67 @@ werden sollen. Um zum Beispiel ein virtual Environment für Python 3.9 zu erstel
 </section>
 <section id="erstellung-von-virtuellen-environments">
 <h2>Erstellung von virtuellen Environments<a class="headerlink" href="#erstellung-von-virtuellen-environments" title="Permalink to this heading"></a></h2>
-<p>Jetzt kann mit dem folgenden Befehl ein virtual Environment erstellt werden, welches den Namen <strong>py_39</strong> trägt:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>smarthome:~/environments$<span class="w"> </span>python3.9<span class="w"> </span>-m<span class="w"> </span>virtualenv<span class="w"> </span>py_39
-</pre></div>
-</div>
-<p>Jetzt sollte noch ein Shell Skript angelegt werden, mit dem das Environment aktiviert werden kann. Für das Environment
-<strong>py_39</strong> sollte es <strong>act_39</strong> heissen und kann mit:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>smarthome:~/environments$<span class="w"> </span>nano<span class="w"> </span>act_39
-</pre></div>
-</div>
-<p>angelegt werden und der folgende Text kann dort eingefügt werden:</p>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">act_39</span><a class="headerlink" href="#id3" title="Link zu diesem Quellcode"></a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
-<span class="c1">#</span>
-<span class="c1"># Environment erzeugt mit:</span>
-<span class="c1">#   $ pip3.9 install virtualenv</span>
-<span class="c1">#   $ python3.9 -m virtualenv py_39</span>
-<span class="c1">#</span>
-<span class="c1"># Aktivieren mit:</span>
-<span class="c1">#  $ source act_39</span>
-<span class="c1">#</span>
-<span class="c1"># Deaktivieren mit:</span>
-<span class="c1">#   $ deactivate</span>
-<span class="c1">#</span>
-</pre></div>
-</div>
-</div>
-<p>Anschließend nicht vergessen, das Skript ausführbar zu machen.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>smarthome:~/environments$<span class="w"> </span>chmod<span class="w"> </span>+x<span class="w"> </span>act_39
-</pre></div>
-</div>
-<p>Nun kann mit dem Aufruf von</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>smarthome:~/environments$<span class="w"> </span><span class="nb">source</span><span class="w"> </span>act_39
-<span class="o">(</span>py_39<span class="o">)</span><span class="w"> </span>smarthome:~/environments$
-</pre></div>
-</div>
-<p>das Environment aktiviert werden. Das <strong>source</strong> ist wichtig, weil das Environment sonst bei Beendigung der
-Skriptes <strong>act_39</strong> wieder beendet wird. Der geänderte Prompt zeigt an, dass das Virtual Environment <strong>py_39</strong>
-aktiv ist. Bitte daran denken, den Pfad mit anzugeben, falls das aktuelle Verzeichnis nicht <a href="#id1"><span class="problematic" id="id2">**</span></a>environments ist (oder
-alternativ das Verzeichnis mit in den Pfad aufzunehmen):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>smarthome:/usr/local/smarthome$<span class="w"> </span><span class="nb">source</span><span class="w"> </span>/home/smarthome/environments/act_39
+<p>Jetzt kann mit dem folgenden Befehl ein virtual Environment erstellt werden, welches den Namen <strong>py_310</strong> trägt:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>~/environments
+$<span class="w"> </span>python3.10<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>py_310
 </pre></div>
 </div>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<p>In dem Environment sind nun nur die Packages <strong>pip</strong>, <strong>setuptools</strong> und <strong>wheel</strong> installiert. Weitere benötigte
+<p>In dem Environment sind nun nur die Packages <strong>pip</strong>, <strong>setuptools</strong> und evtl. <strong>wheel</strong> installiert. Weitere benötigte
 Packages können ganz normal mit <strong>pip3</strong> nachinstalliert werden. (SmartHomeNG installiert wie bei einer kompletten
 Neuinstallation die benötigten Packages).</p>
 <p>Der Aufruf von</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>py_39<span class="o">)</span><span class="w"> </span>smarthome:~$<span class="w"> </span>python3
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>py_310<span class="o">)</span><span class="w"> </span>smarthome:~$<span class="w"> </span>python3
 </pre></div>
 </div>
-<p>führt nun dazu, dass Python 3.9 gestartet wird.</p>
+<p>führt nun dazu, dass Python 3.10 gestartet wird.</p>
 <p>Um das virtuelle Environment zu deaktivieren, muss nur</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>py_39<span class="o">)</span><span class="w"> </span>smarthome:~$<span class="w"> </span>deactivate
-smarthome:~$
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>deactivate
 </pre></div>
 </div>
 <p>eingegeben werden.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="vereinfachtes-aktivieren-der-environments">
+<h2>Vereinfachtes Aktivieren der Environments<a class="headerlink" href="#vereinfachtes-aktivieren-der-environments" title="Permalink to this heading"></a></h2>
+<p>Die Aktivierung der eingerichteten virtuellen Environments kann vereinfacht werden, wenn ein Skript mit dem Namen
+<strong>act</strong> und dem folgenden Inhalt im Verzeichnis <strong>environments</strong> angelegt wird.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+
+<span class="c1"># test if script is called with &#39;source&#39;</span>
+<span class="o">(</span><span class="k">return</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="o">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nv">sourced</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nv">sourced</span><span class="o">=</span><span class="m">0</span>
+
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$sourced</span><span class="s2">&quot;</span><span class="w"> </span>-eq<span class="w"> </span><span class="s2">&quot;0&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">    </span><span class="nb">echo</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>ERROR:<span class="w"> </span>The<span class="w"> </span>script<span class="w"> </span>MUST<span class="w"> </span>be<span class="w"> </span>called<span class="w"> </span>with<span class="w"> </span><span class="s1">&#39;source&#39;</span>,<span class="w"> </span>like:<span class="w"> </span><span class="nb">source</span><span class="w"> </span>act<span class="w"> </span><span class="nv">$1</span>
+<span class="w">    </span><span class="nb">echo</span>
+<span class="w">    </span><span class="nb">exit</span>
+<span class="k">fi</span>
+
+<span class="k">if</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;/home/smarthome/environments/py_</span><span class="nv">$1</span><span class="s2">/bin/activate&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">    </span><span class="nb">echo</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Activating virtual environment py_</span><span class="nv">$1</span><span class="s2">&quot;</span>
+<span class="w">    </span><span class="nb">source</span><span class="w"> </span>/home/smarthome/environments/py_<span class="nv">$1</span>/bin/activate
+<span class="w">    </span>python3<span class="w"> </span>-V
+<span class="w">    </span><span class="nb">echo</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>To<span class="w"> </span>deactivate<span class="w"> </span>the<span class="w"> </span>virtual<span class="w"> </span>environment<span class="w"> </span>simply<span class="w"> </span><span class="nb">type</span><span class="w"> </span>the<span class="w"> </span><span class="nb">command</span><span class="w"> </span><span class="se">\&#39;</span>deactivate<span class="se">\&#39;</span>
+<span class="k">else</span>
+<span class="w">    </span><span class="nb">echo</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;ERROR: Virtual environment py_</span><span class="nv">$1</span><span class="s2"> does not exist&quot;</span>
+<span class="k">fi</span>
+<span class="nb">echo</span>
+</pre></div>
+</div>
+<p>Anschließend nicht vergessen das Skript mit <code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">775</span> <span class="pre">act</span></code> ausführbar zu machen.</p>
+<p>Nun kann ein existierendes Environment (z.B, py_39) einfach mit dem Befehl <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">act</span> <span class="pre">39</span></code> aktiviert werden.
+Das Verzeichnis <code class="docutils literal notranslate"><span class="pre">/home/smarthome/environments</span></code> sollte in den Pfad aufgenommen werden, damit <code class="docutils literal notranslate"><span class="pre">act</span></code> aus jedem
+Verzeichnis heraus aufgerufen werden kann, ohne den vollständigen Pfad angeben zu müssen.</p>
+<p>Das <code class="docutils literal notranslate"><span class="pre">source</span></code> im Aufruf ist wichtig, weil das Environment sonst bei Beendigung der Skriptes <code class="docutils literal notranslate"><span class="pre">act</span></code> wieder beendet wird.</p>
+<p>Der geänderte Prompt zeigt an, dass das Virtual Environment <strong>py_39</strong> aktiv ist.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -4877,7 +4877,7 @@ Environment angegeben werden.</p>
 
 <span class="o">[</span>Service<span class="o">]</span>
 <span class="nv">Type</span><span class="o">=</span>forking
-<span class="nv">ExecStart</span><span class="o">=</span>/home/smarthome/environments/py_39/bin/python3<span class="w"> </span>/usr/local/shng_dev/bin/smarthome.py
+<span class="nv">ExecStart</span><span class="o">=</span>/home/smarthome/environments/py_310/bin/python3<span class="w"> </span>/usr/local/smarthome/bin/smarthome.py
 <span class="nv">WorkingDirectory</span><span class="o">=</span>/usr/local/smarthome
 <span class="nv">User</span><span class="o">=</span>smarthome
 <span class="nv">PIDFile</span><span class="o">=</span>/usr/local/smarthome/var/run/smarthome.pid
