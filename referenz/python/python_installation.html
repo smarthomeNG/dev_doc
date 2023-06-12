@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Virtuelle Python Environments Neu &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit c75587f) Dokumentation</title>
+  <title>Python Version Installieren Neu &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit bdf9cea) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -24,8 +24,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Stichwortverzeichnis" href="../../genindex.html" />
     <link rel="search" title="Suche" href="../../search.html" />
-    <link rel="next" title="Libraries für Plugins und Logiken" href="../libraries_plugins_logics.html" />
-    <link rel="prev" title="Userfunctions" href="../userfunctions/userfunctions.html" /> 
+    <link rel="next" title="Virtuelle Python Environments Update" href="virtual_environments.html" />
+    <link rel="prev" title="Python Update" href="python.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -4149,10 +4149,21 @@
 <li class="toctree-l3"><a class="reference internal" href="../userfunctions/userfunctions.html#reload-von-userfunctions">Reload von Userfunctions</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Virtuelle Python Environments <span class="redsup">Neu</span></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#installation-von-virtualenv">Installation von virtualenv</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#erstellung-von-virtuellen-environments">Erstellung von virtuellen Environments</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#virtuelle-environements-als-dienst">Virtuelle Environements als Dienst</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="python.html">Python <span class="bluesup">Update</span></a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Python Version Installieren <span class="redsup">Neu</span></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#installation-von-benotigten-paketen">Installation von benötigten Paketen</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#download-des-source-codes">Download des Source Codes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#das-archiv-auspacken">Das Archiv auspacken</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#source-code-konfigurieren">Source Code konfigurieren</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#den-build-prozess-starten">Den Build-Prozess starten</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="virtual_environments.html">Virtuelle Python Environments <span class="bluesup">Update</span></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="virtual_environments.html#installation-von-virtualenv">Installation von virtualenv</a></li>
+<li class="toctree-l4"><a class="reference internal" href="virtual_environments.html#erstellung-von-virtuellen-environments">Erstellung von virtuellen Environments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="virtual_environments.html#virtuelle-environements-als-dienst">Virtuelle Environements als Dienst</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../libraries_plugins_logics.html">Libraries für Plugins und Logiken</a><ul>
@@ -4718,7 +4729,8 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../referenz.html">Referenz <span class="greensup">Update</span></a></li>
-      <li class="breadcrumb-item active">Virtuelle Python Environments <span class="redsup">Neu</span></li>
+          <li class="breadcrumb-item"><a href="python.html">Python <span class="bluesup">Update</span></a></li>
+      <li class="breadcrumb-item active">Python Version Installieren <span class="redsup">Neu</span></li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -4727,141 +4739,76 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <span class="target" id="index-0"></span><section id="virtuelle-python-environments-neu">
-<span id="index-1"></span><h1>Virtuelle Python Environments <span class="redsup">Neu</span><a class="headerlink" href="#virtuelle-python-environments-neu" title="Permalink to this heading"></a></h1>
-<p>Virtual Environments sind isolierte und unabhängige Umgebungen, die den Code und die Abhängigkeiten eines Projekts
-enthalten. Mit virtuellen Environments kann man parallel Umgebungen schaffen, in denen zum Beispiel Python Packages in
-unterschiedlichen Versionen installiert sind.</p>
-<p>Falls auf dem Computer mehrere Python Versionen installiert sind, ist es auch möglich parallel Umgebungen zu
-schaffen, die unter unterschiedlichen Python Versionen laufen. Dieses ist besonders hilfreich, wenn man bei der
-Entwicklung von SmartHomeNG oder von Plugins testen möchte, wie sich SmartHomeNG (bzw. das Plugin) unter verschiedenen
-Python Versionen verhält.</p>
-<p>Es gibt eine Reihe von Tools, um virtuelle Environments zu erstellen. Die verbreitetesten Tools sind <strong>virtualenv</strong>
-und <strong>venv</strong>.</p>
-<p><strong>venv</strong> gibt es seit Python 3.3. Es ist Bestandteil der Python Installation. Allerdings ist es in
-einigen Umgebungen (z.B. Debian) nicht in der Standard Python Installation enthalten und muss dann separat installiert
-werden.</p>
-<p><strong>virtualenv</strong> bietet eine größere Funktionalität als <strong>venv</strong>. Die Funktionalität von <strong>venv</strong> ist eine Untermenge
-der Funktionalität von <strong>virtualenv</strong>. <strong>virtualenv</strong> ist Vergleich zu <strong>venv</strong> schneller und es ist erweiterbar.</p>
+  <section id="python-version-installieren-neu">
+<span id="index-0"></span><h1>Python Version Installieren <span class="redsup">Neu</span><a class="headerlink" href="#python-version-installieren-neu" title="Permalink to this heading"></a></h1>
+<p>Im folgenden wird beschrieben, wie weitere Python Versionen unter Linux installiert werden. Das wird am Beispiel der
+Python Version 3.10.12 beschrieben,</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<section id="installation-von-virtualenv">
-<h2>Installation von virtualenv<a class="headerlink" href="#installation-von-virtualenv" title="Permalink to this heading"></a></h2>
-<p>Im folgenden wird davon ausgegangen, dass die Environments im Unterverzeichnis <strong>environments</strong> des Users <strong>smarthome</strong>
-erstellt/gespeichert werden.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>smarthome:~$<span class="w"> </span>mkdir<span class="w"> </span>environments
-
-smarthome:~$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>environments
-
-smarthome:~/environments$
-</pre></div>
-</div>
-<p><strong>virtualenv</strong> wird am besten unter der Python Version installiert, für die später virtuelle Environments erstellt
-werden sollen. Um zum Beispiel ein virtual Environment für Python 3.9 zu erstellen, ist der folgende Befehl auszuführen:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>smarthome:~/environments$<span class="w"> </span>pip3.9<span class="w"> </span>install<span class="w"> </span>virtualenv
+<section id="installation-von-benotigten-paketen">
+<h2>Installation von benötigten Paketen<a class="headerlink" href="#installation-von-benotigten-paketen" title="Permalink to this heading"></a></h2>
+<p>Für das Compilieren von Python müssen einige Linux Pakete installiert werden. Es muss sichergestellt sein, dass
+weitere Software installiert ist. Das ist z.B. der <code class="docutils literal notranslate"><span class="pre">gcc</span></code> Compiler und <code class="docutils literal notranslate"><span class="pre">make</span></code>. Der Compiler und make werden
+durch Installation von <code class="docutils literal notranslate"><span class="pre">build-essential</span></code> installiert. Bei Debian 12 (Bookworm) ist <code class="docutils literal notranslate"><span class="pre">build-essential</span></code> bereits
+vorinstalliert.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>build-essential
+sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>libssl-dev
 </pre></div>
 </div>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
 </section>
-<section id="erstellung-von-virtuellen-environments">
-<h2>Erstellung von virtuellen Environments<a class="headerlink" href="#erstellung-von-virtuellen-environments" title="Permalink to this heading"></a></h2>
-<p>Jetzt kann mit dem folgenden Befehl ein virtual Environment erstellt werden, welches den Namen <strong>py_39</strong> trägt:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>smarthome:~/environments$<span class="w"> </span>python3.9<span class="w"> </span>-m<span class="w"> </span>virtualenv<span class="w"> </span>py_39
-</pre></div>
-</div>
-<p>Jetzt sollte noch ein Shell Skript angelegt werden, mit dem das Environment aktiviert werden kann. Für das Environment
-<strong>py_39</strong> sollte es <strong>act_39</strong> heissen und kann mit:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>smarthome:~/environments$<span class="w"> </span>nano<span class="w"> </span>act_39
-</pre></div>
-</div>
-<p>angelegt werden und der folgende Text kann dort eingefügt werden:</p>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">act_39</span><a class="headerlink" href="#id3" title="Link zu diesem Quellcode"></a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
-<span class="c1">#</span>
-<span class="c1"># Environment erzeugt mit:</span>
-<span class="c1">#   $ pip3.9 install virtualenv</span>
-<span class="c1">#   $ python3.9 -m virtualenv py_39</span>
-<span class="c1">#</span>
-<span class="c1"># Aktivieren mit:</span>
-<span class="c1">#  $ source act_39</span>
-<span class="c1">#</span>
-<span class="c1"># Deaktivieren mit:</span>
-<span class="c1">#   $ deactivate</span>
-<span class="c1">#</span>
-</pre></div>
-</div>
-</div>
-<p>Anschließend nicht vergessen, das Skript ausführbar zu machen.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>smarthome:~/environments$<span class="w"> </span>chmod<span class="w"> </span>+x<span class="w"> </span>act_39
-</pre></div>
-</div>
-<p>Nun kann mit dem Aufruf von</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>smarthome:~/environments$<span class="w"> </span><span class="nb">source</span><span class="w"> </span>act_39
-<span class="o">(</span>py_39<span class="o">)</span><span class="w"> </span>smarthome:~/environments$
-</pre></div>
-</div>
-<p>das Environment aktiviert werden. Das <strong>source</strong> ist wichtig, weil das Environment sonst bei Beendigung der
-Skriptes <strong>act_39</strong> wieder beendet wird. Der geänderte Prompt zeigt an, dass das Virtual Environment <strong>py_39</strong>
-aktiv ist. Bitte daran denken, den Pfad mit anzugeben, falls das aktuelle Verzeichnis nicht <a href="#id1"><span class="problematic" id="id2">**</span></a>environments ist (oder
-alternativ das Verzeichnis mit in den Pfad aufzunehmen):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>smarthome:/usr/local/smarthome$<span class="w"> </span><span class="nb">source</span><span class="w"> </span>/home/smarthome/environments/act_39
-</pre></div>
-</div>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
-<p>In dem Environment sind nun nur die Packages <strong>pip</strong>, <strong>setuptools</strong> und <strong>wheel</strong> installiert. Weitere benötigte
-Packages können ganz normal mit <strong>pip3</strong> nachinstalliert werden. (SmartHomeNG installiert wie bei einer kompletten
-Neuinstallation die benötigten Packages).</p>
-<p>Der Aufruf von</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>py_39<span class="o">)</span><span class="w"> </span>smarthome:~$<span class="w"> </span>python3
-</pre></div>
-</div>
-<p>führt nun dazu, dass Python 3.9 gestartet wird.</p>
-<p>Um das virtuelle Environment zu deaktivieren, muss nur</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>py_39<span class="o">)</span><span class="w"> </span>smarthome:~$<span class="w"> </span>deactivate
-smarthome:~$
-</pre></div>
-</div>
-<p>eingegeben werden.</p>
+<section id="download-des-source-codes">
+<h2>Download des Source Codes<a class="headerlink" href="#download-des-source-codes" title="Permalink to this heading"></a></h2>
+<p>Auf der website <strong>python.org</strong> unter <strong>Downloads/Source Code</strong> die gewünschte Version suchen und die das entsprechende
+Archiv (XZ compressed source tarball) herunter laden. Die Datei träget den Namen <strong>Python-3.10.12.tar.xz</strong>.
+Anschließend diese Datei auf dem SmartHomeNG-System in das Verzeichnis <strong>/usr/local/src</strong> kopieren. (Aufgrund der
+Verzeichnisrechte muss das evtl. mit sudo geschehen)</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
 </section>
-<section id="virtuelle-environements-als-dienst">
-<span id="index-2"></span><h2>Virtuelle Environements als Dienst<a class="headerlink" href="#virtuelle-environements-als-dienst" title="Permalink to this heading"></a></h2>
-<p>Wenn SmartHomeNG als Dienst eingerichtet werden und in einem virtuellen Environment laufen soll, muss die xxx-Datei
-im Vergleich zur Beschreibung in der Komplettanleitung abgeändert werden. Es muss der Pfad zu Python in dem entsprechenden
-Environment angegeben werden.</p>
-<p>Zum Einrichten den Texteditor starten mit</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/systemd/system/smarthome.service
+<section id="das-archiv-auspacken">
+<h2>Das Archiv auspacken<a class="headerlink" href="#das-archiv-auspacken" title="Permalink to this heading"></a></h2>
+<p>Zum auspacken des Archivs in das Verzeichnis <strong>/usr/local/src</strong> wechseln und anschließend mit <strong>tar</strong> das Archiv
+auspacken.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>/usr/local/src
+sudo<span class="w"> </span>tar<span class="w"> </span>-xf<span class="w"> </span>Python-3.10.12.tar.xz
 </pre></div>
 </div>
-<p>und folgenden Text hineinkopieren:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>Unit<span class="o">]</span>
-<span class="nv">Description</span><span class="o">=</span>SmartHomeNG<span class="w"> </span>daemon
-<span class="nv">After</span><span class="o">=</span>network.target
-<span class="nv">After</span><span class="o">=</span>knxd.service
-<span class="nv">After</span><span class="o">=</span>knxd.socket
-
-<span class="o">[</span>Service<span class="o">]</span>
-<span class="nv">Type</span><span class="o">=</span>forking
-<span class="nv">ExecStart</span><span class="o">=</span>/home/smarthome/environments/py_39/bin/python3<span class="w"> </span>/usr/local/shng_dev/bin/smarthome.py
-<span class="nv">WorkingDirectory</span><span class="o">=</span>/usr/local/smarthome
-<span class="nv">User</span><span class="o">=</span>smarthome
-<span class="nv">PIDFile</span><span class="o">=</span>/usr/local/smarthome/var/run/smarthome.pid
-<span class="nv">Restart</span><span class="o">=</span>on-failure
-<span class="nv">TimeoutStartSec</span><span class="o">=</span><span class="m">900</span>
-<span class="nv">RestartForceExitStatus</span><span class="o">=</span><span class="m">5</span>
-
-<span class="o">[</span>Install<span class="o">]</span>
-<span class="nv">WantedBy</span><span class="o">=</span>default.target
+<p>Dabei wird das Verzeichnis <strong>Python-3.10.12</strong> angelegt und das Archiv wird in dieses Verzeichnis entpackt.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="source-code-konfigurieren">
+<h2>Source Code konfigurieren<a class="headerlink" href="#source-code-konfigurieren" title="Permalink to this heading"></a></h2>
+<p>Sobald der Python-Source-Code extrahiert wurde, zum Konfigurationsskript navigieren und es ausführen:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>Python-3.10.12
+./configure
 </pre></div>
 </div>
+<p>Die Konfiguration kann einige Zeit dauern. Bitte warten, bis der Vorgang erfolgreich abgeschlossen wurde und
+erst dann fortfahren.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="den-build-prozess-starten">
+<h2>Den Build-Prozess starten<a class="headerlink" href="#den-build-prozess-starten" title="Permalink to this heading"></a></h2>
+<p>Der Build-Prozess wird mit</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>make<span class="w"> </span>altinstall
+</pre></div>
+</div>
+<p>gestartet.</p>
+<p>Wenn der Build Prozess erfolgreich war, wird die Python Version in das Verzeichnis <strong>/usr/local/bin</strong> installiert.</p>
+<p>Dieses kann mit</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3.10<span class="w"> </span>--version
+</pre></div>
+</div>
+<p>überprüft werden. Als Ausgabe sollte <strong>Python 3.10.12</strong> angezeicgt werden.</p>
 </section>
 </section>
 
@@ -4869,8 +4816,8 @@ Environment angegeben werden.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../userfunctions/userfunctions.html" class="btn btn-neutral float-left" title="Userfunctions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Zurück</a>
-        <a href="../libraries_plugins_logics.html" class="btn btn-neutral float-right" title="Libraries für Plugins und Logiken" accesskey="n" rel="next">Weiter <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="python.html" class="btn btn-neutral float-left" title="Python Update" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Zurück</a>
+        <a href="virtual_environments.html" class="btn btn-neutral float-right" title="Virtuelle Python Environments Update" accesskey="n" rel="next">Weiter <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
