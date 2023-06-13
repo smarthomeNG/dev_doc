@@ -1199,6 +1199,7 @@
 <li class="toctree-l5"><a class="reference internal" href="#get-device-log-from-tr064">get_device_log_from_tr064</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#get-host-details">get_host_details</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#get-hosts">get_hosts</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#get-hosts-list">get_hosts_list</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#get-phone-name">get_phone_name</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#get-phone-numbers-by-name-name">get_phone_numbers_by_name(name)</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#is-host-active">is_host_active</a></li>
@@ -1898,6 +1899,7 @@
 <li class="toctree-l5"><a class="reference internal" href="#get-device-log-from-tr064">get_device_log_from_tr064</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#get-host-details">get_host_details</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#get-hosts">get_hosts</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#get-hosts-list">get_hosts_list</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#get-phone-name">get_phone_name</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#get-phone-numbers-by-name-name">get_phone_numbers_by_name(name)</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#is-host-active">is_host_active</a></li>
@@ -4948,6 +4950,54 @@ dict keys: name, interface_type, ip_address, mac_address, is_active, lease_time_
 
 <span class="n">string</span> <span class="o">+=</span> <span class="s1">&#39;&lt;/ul&gt;&#39;</span>
 <span class="n">sh</span><span class="o">.</span><span class="n">avm</span><span class="o">.</span><span class="n">devices</span><span class="o">.</span><span class="n">device_list</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="get-hosts-list">
+<h3>get_hosts_list<a class="headerlink" href="#get-hosts-list" title="Permalink to this heading"></a></h3>
+<p>Ermittelt ein Array mit (gefilterten) Informationen der verbundenen Hosts. Dabei wird die die Abfrage der „Host List Contents“ verwendet.
+Der Vorteil gegenüber „get_hosts“ liegt in der deutlich schnelleren Abfrage.</p>
+<p>In Abfrage der Hosts liefert folgenden Werte:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>‚Index‘</p></li>
+<li><p>‚IPAddress‘</p></li>
+<li><p>‚MACAddress‘</p></li>
+<li><p>‚Active‘</p></li>
+<li><p>‚HostName‘</p></li>
+<li><p>‚InterfaceType‘</p></li>
+<li><p>‚Port‘</p></li>
+<li><p>‚Speed‘</p></li>
+<li><p>‚UpdateAvailable‘</p></li>
+<li><p>‚UpdateSuccessful‘</p></li>
+<li><p>‚InfoURL‘</p></li>
+<li><p>‚MACAddressList‘</p></li>
+<li><p>‚Model‘</p></li>
+<li><p>‚URL‘</p></li>
+<li><p>‚Guest‘</p></li>
+<li><p>‚RequestClient‘</p></li>
+<li><p>‚VPN‘</p></li>
+<li><p>‚WANAccess‘</p></li>
+<li><p>‚Disallow‘</p></li>
+<li><p>‚IsMeshable‘</p></li>
+<li><p>‚Priority‘</p></li>
+<li><p>‚FriendlyName‘</p></li>
+<li><p>‚FriendlyNameIsWriteable‘</p></li>
+</ul>
+</div></blockquote>
+<p>Auf all diese Werte kann mit dem Parameter „filter_dict“ gefiltert werden. Dabei können auch mehrere Filter gesetzt werden.</p>
+<p>Das folgende Beispiel liefert alle Informationen zu den aktiven Hosts zurück:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">hosts</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">fritzbox_7490</span><span class="o">.</span><span class="n">get_hosts_list</span><span class="p">(</span><span class="n">filter_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Active&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Das folgende Beispiel liefer alle Informationen zu den aktiven Hosts zurück, bei den ein Update vorliegt:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">hosts</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">fritzbox_7490</span><span class="o">.</span><span class="n">get_hosts_list</span><span class="p">(</span><span class="n">filter_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Active&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;UpdateAvailable&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Des Weiteren können über den Parameter „identifier_list“ die Identifier des Hosts festgelegt werden, die zurückgegeben werden sollen.
+Möglich sind: ‚index‘, ‚ipaddress‘, ‚macaddress‘, ‚hostname‘, ‚friendlyname‘</p>
+<p>Das folgende Beispiel liefer ‚IPAddress‘ und ‚MACAddress‘ zu den aktiven Hosts zurück, bei den ein Update vorliegt:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">hosts</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">fritzbox_7490</span><span class="o">.</span><span class="n">get_hosts_list</span><span class="p">(</span><span class="n">identifier_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;ipaddress&#39;</span><span class="p">,</span> <span class="s1">&#39;macaddress&#39;</span><span class="p">],</span> <span class="n">filter_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Active&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;UpdateAvailable&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
 </pre></div>
 </div>
 </section>
