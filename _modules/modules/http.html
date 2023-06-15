@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>modules.http &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit 8e4678e) Dokumentation</title>
+  <title>modules.http &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit 7a5e751) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4813,13 +4813,20 @@
     <span class="n">_port</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_servicesport</span> <span class="o">=</span> <span class="kc">None</span>
 
+    <span class="n">_visu_plugin</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_visuport</span> <span class="o">=</span> <span class="kc">None</span>
+
     <span class="n">_hostmap</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">_hostmap_webifs</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">_hostmap_services</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">_hostmap_visu</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="n">_gstatic_dir</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="n">gtemplates_dir</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="n">gstatic_dir</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="n">_server1</span> <span class="o">=</span> <span class="kc">None</span>     <span class="c1"># cherrypy server object for web interfaces of plugins</span>
+    <span class="n">_server2</span> <span class="o">=</span> <span class="kc">None</span>     <span class="c1"># cherrypy server object for services of plugins</span>
 
     <span class="n">webif_mount_prefix</span> <span class="o">=</span> <span class="s1">&#39;/plugin&#39;</span>  <span class="c1"># changes &lt;ip&gt;:&lt;port&gt;/&lt;plugin_name&gt; to &lt;ip&gt;:&lt;port&gt;/plugin/&lt;plugin_name&gt;</span>
 
@@ -4861,6 +4868,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_service_hashed_password</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;service_hashed_password&#39;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_service_realm</span> <span class="o">=</span> <span class="s1">&#39;shng_http_service&#39;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_servicesport</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;servicesport&#39;</span><span class="p">]</span>
+
+            <span class="c1">#self._visuport = self._parameters[&#39;visuport&#39;]</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">threads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;threads&#39;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_showpluginlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;showpluginlist&#39;</span><span class="p">]</span>
@@ -5354,10 +5363,6 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build hostmaps for working with two different ports for web interfaces and services</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_webifs</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_services</span> <span class="o">=</span> <span class="p">{}</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">dom1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_local_ip_address</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dom2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_local_hostname</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dom3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_local_hostname</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;.local&#39;</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="p">)</span>
@@ -5367,28 +5372,31 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dom6</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_local_hostname</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;.local&#39;</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_servicesport</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dom1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/plugins&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dom2</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/plugins&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dom3</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/plugins&#39;</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_port</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_servicesport</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dom1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/plugins&#39;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dom2</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/plugins&#39;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dom3</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/plugins&#39;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dom4</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/services&#39;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dom5</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/services&#39;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dom6</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/services&#39;</span>
+
 <span class="c1">#        self.logger.info(&quot;_hostmap = {}&quot;.format(self._hostmap))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_webifs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_webifs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dom1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/msg&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_webifs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dom2</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/msg&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_webifs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dom3</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/msg&#39;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_services</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_port</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_servicesport</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_webifs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dom1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/msg&#39;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_webifs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dom2</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/msg&#39;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_webifs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dom3</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/msg&#39;</span>
-
             <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_services</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dom4</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/msg&#39;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_services</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dom5</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/msg&#39;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_services</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dom6</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/msg&#39;</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;_hostmap_webifs = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_webifs</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;_hostmap_services = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_services</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;_hostmap = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_hostmap</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;_hostmap_webifs = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_webifs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;_hostmap_services = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_services</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="Http.get_webifs_for_plugin"><a class="viewcode-back" href="../../referenz/module/module_http.html#modules.http.Http.get_webifs_for_plugin">[Doku]</a>    <span class="k">def</span> <span class="nf">get_webifs_for_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pluginname</span><span class="p">):</span>
@@ -5398,13 +5406,13 @@
 <span class="sd">        The information is returned as a list of dicts. One listentry for each registered webinterface.</span>
 <span class="sd">        The dict for each registered webinterface has the following structure:</span>
 
-<span class="sd">        webif_dict = {&#39;mount&#39;: mount,</span>
-<span class="sd">                      &#39;pluginclass&#39;: pluginclass,</span>
-<span class="sd">                      &#39;webifname&#39;: webifname,</span>
-<span class="sd">                      &#39;pluginname&#39;: pluginname,</span>
-<span class="sd">                      &#39;instance&#39;: instance,</span>
-<span class="sd">                      &#39;conf&#39;: conf,</span>
-<span class="sd">                      &#39;description&#39;: description}</span>
+<span class="sd">        webif_dict = {&#39;Mount&#39;: mount,</span>
+<span class="sd">                      &#39;Pluginclass&#39;: pluginclass,</span>
+<span class="sd">                      &#39;Webifname&#39;: webifname,</span>
+<span class="sd">                      &#39;Pluginname&#39;: pluginname,</span>
+<span class="sd">                      &#39;Instance&#39;: instance,</span>
+<span class="sd">                      &#39;Conf&#39;: conf,</span>
+<span class="sd">                      &#39;Description&#39;: description}</span>
 
 
 <span class="sd">        :param pluginname: Shortname of the plugin</span>
@@ -5509,8 +5517,10 @@
         <span class="n">conf</span><span class="p">[</span><span class="s1">&#39;/gstatic&#39;</span><span class="p">][</span><span class="s1">&#39;tools.staticdir.on&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">conf</span><span class="p">[</span><span class="s1">&#39;/gstatic&#39;</span><span class="p">][</span><span class="s1">&#39;tools.staticdir.dir&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gstatic_dir</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Module http: Registering webinterface &#39;</span><span class="si">{}</span><span class="s2">&#39; of plugin &#39;</span><span class="si">{}</span><span class="s2">&#39; from pluginclass &#39;</span><span class="si">{}</span><span class="s2">&#39; instance &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">webifname</span><span class="p">,</span> <span class="n">pluginname</span><span class="p">,</span> <span class="n">pluginclass</span><span class="p">,</span> <span class="n">instance</span> <span class="p">)</span> <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; - conf dict: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">conf</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="n">plugin_fullname</span> <span class="o">=</span> <span class="n">pluginname</span>
+        <span class="k">if</span> <span class="n">instance</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">plugin_fullname</span> <span class="o">+=</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Registering webinterface &#39;</span><span class="si">{</span><span class="n">webifname</span><span class="si">}</span><span class="s2">&#39; of plugin &#39;</span><span class="si">{</span><span class="n">plugin_fullname</span><span class="si">}</span><span class="s2">&#39;  -  conf dict: &#39;</span><span class="si">{</span><span class="n">conf</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="p">)</span>
         <span class="k">if</span> <span class="n">pluginclass</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="n">webif_key</span> <span class="o">=</span> <span class="n">webifname</span>
             <span class="c1"># statt:</span>
@@ -5519,9 +5529,9 @@
 <span class="c1">#            else:</span>
 <span class="c1">#                webif_key = instance + &#39;@&#39; + webifname</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_applications</span><span class="p">[</span><span class="n">webif_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Mount&#39;</span><span class="p">:</span> <span class="n">mount</span><span class="p">,</span> <span class="s1">&#39;Pluginclass&#39;</span><span class="p">:</span> <span class="n">pluginclass</span><span class="p">,</span> <span class="s1">&#39;Webifname&#39;</span><span class="p">:</span> <span class="n">webifname</span><span class="p">,</span> <span class="s1">&#39;Pluginname&#39;</span><span class="p">:</span> <span class="n">pluginname</span><span class="p">,</span> <span class="s1">&#39;Instance&#39;</span><span class="p">:</span> <span class="n">instance</span><span class="p">,</span> <span class="s1">&#39;Conf&#39;</span><span class="p">:</span> <span class="n">conf</span><span class="p">,</span> <span class="s1">&#39;Description&#39;</span><span class="p">:</span> <span class="n">description</span><span class="p">}</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;self._applications[&#39;</span><span class="si">{}</span><span class="s2">&#39;] = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">webif_key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_applications</span><span class="p">[</span><span class="n">webif_key</span><span class="p">]))</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_services</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">conf</span><span class="p">[</span><span class="s1">&#39;/&#39;</span><span class="p">][</span><span class="s1">&#39;request.dispatch&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">dispatch</span><span class="o">.</span><span class="n">VirtualHost</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_services</span><span class="p">)</span>
+            <span class="c1">#self.logger.info(&quot;self._applications[&#39;{}&#39;] = {}&quot;.format(webif_key, self._applications[webif_key]))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_webifs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">conf</span><span class="p">[</span><span class="s1">&#39;/&#39;</span><span class="p">][</span><span class="s1">&#39;request.dispatch&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">dispatch</span><span class="o">.</span><span class="n">VirtualHost</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_webifs</span><span class="p">)</span>
 
         <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">mount</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">conf</span><span class="p">)</span>
         <span class="k">return</span></div>
@@ -5571,28 +5581,108 @@
 
         <span class="n">mount</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">servicename</span>
         <span class="k">if</span> <span class="n">description</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-           <span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;Service </span><span class="si">{}</span><span class="s1"> of plugin </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">servicename</span><span class="p">,</span> <span class="n">pluginname</span><span class="p">)</span>
+            <span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;Service </span><span class="si">{}</span><span class="s1"> of plugin </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">servicename</span><span class="p">,</span> <span class="n">pluginname</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">use_global_basic_auth</span><span class="p">:</span>
             <span class="n">conf</span><span class="p">[</span><span class="s1">&#39;/&#39;</span><span class="p">][</span><span class="s1">&#39;tools.auth_basic.on&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_service_basic_auth</span>
             <span class="n">conf</span><span class="p">[</span><span class="s1">&#39;/&#39;</span><span class="p">][</span><span class="s1">&#39;tools.auth_basic.realm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_service_realm</span>
             <span class="n">conf</span><span class="p">[</span><span class="s1">&#39;/&#39;</span><span class="p">][</span><span class="s1">&#39;tools.auth_basic.checkpassword&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate_service_password</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Module http: Registering service &#39;</span><span class="si">{}</span><span class="s2">&#39; of plugin &#39;</span><span class="si">{}</span><span class="s2">&#39; from pluginclass &#39;</span><span class="si">{}</span><span class="s2">&#39; instance &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">servicename</span><span class="p">,</span> <span class="n">pluginname</span><span class="p">,</span> <span class="n">pluginclass</span><span class="p">,</span> <span class="n">instance</span> <span class="p">)</span> <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; - conf dict: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">conf</span> <span class="p">)</span> <span class="p">)</span>
+        <span class="n">plugin_fullname</span> <span class="o">=</span> <span class="n">pluginname</span>
+        <span class="k">if</span> <span class="n">instance</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">plugin_fullname</span> <span class="o">+=</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Registering service &#39;</span><span class="si">{</span><span class="n">servicename</span><span class="si">}</span><span class="s2">&#39; of plugin &#39;</span><span class="si">{</span><span class="n">plugin_fullname</span><span class="si">}</span><span class="s2">&#39;  -  conf dict: &#39;</span><span class="si">{</span><span class="n">conf</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="p">)</span>
         <span class="k">if</span> <span class="n">pluginclass</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="n">service_key</span> <span class="o">=</span> <span class="n">servicename</span>
             <span class="c1"># statt:</span>
-<span class="c1">#            if instance == &#39;&#39;:</span>
-<span class="c1">#                service_key = servicename</span>
-<span class="c1">#            else:</span>
-<span class="c1">#                service_key = instance + &#39;@&#39; + servicename</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="p">[</span><span class="n">servicename</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Mount&#39;</span><span class="p">:</span> <span class="n">mount</span><span class="p">,</span> <span class="s1">&#39;Pluginclass&#39;</span><span class="p">:</span> <span class="n">pluginclass</span><span class="p">,</span> <span class="s1">&#39;Servicename&#39;</span><span class="p">:</span> <span class="n">servicename</span><span class="p">,</span> <span class="s1">&#39;Pluginname&#39;</span><span class="p">:</span> <span class="n">pluginname</span><span class="p">,</span> <span class="s1">&#39;Instance&#39;</span><span class="p">:</span> <span class="n">instance</span><span class="p">,</span> <span class="s1">&#39;Conf&#39;</span><span class="p">:</span> <span class="n">conf</span><span class="p">,</span> <span class="s1">&#39;Description&#39;</span><span class="p">:</span> <span class="n">description</span><span class="p">}</span>
+            <span class="c1">#            if instance == &#39;&#39;:</span>
+            <span class="c1">#                service_key = servicename</span>
+            <span class="c1">#            else:</span>
+            <span class="c1">#                service_key = instance + &#39;@&#39; + servicename</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="p">[</span><span class="n">servicename</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Mount&#39;</span><span class="p">:</span> <span class="n">mount</span><span class="p">,</span> <span class="s1">&#39;Pluginclass&#39;</span><span class="p">:</span> <span class="n">pluginclass</span><span class="p">,</span> <span class="s1">&#39;Servicename&#39;</span><span class="p">:</span> <span class="n">servicename</span><span class="p">,</span>
+                                           <span class="s1">&#39;Pluginname&#39;</span><span class="p">:</span> <span class="n">pluginname</span><span class="p">,</span> <span class="s1">&#39;Instance&#39;</span><span class="p">:</span> <span class="n">instance</span><span class="p">,</span> <span class="s1">&#39;Conf&#39;</span><span class="p">:</span> <span class="n">conf</span><span class="p">,</span>
+                                           <span class="s1">&#39;Description&#39;</span><span class="p">:</span> <span class="n">description</span><span class="p">}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;self._services[&#39;</span><span class="si">{}</span><span class="s2">&#39;] = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">service_key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_services</span><span class="p">[</span><span class="n">service_key</span><span class="p">]))</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_webifs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">conf</span><span class="p">[</span><span class="s1">&#39;/&#39;</span><span class="p">][</span><span class="s1">&#39;request.dispatch&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">dispatch</span><span class="o">.</span><span class="n">VirtualHost</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_webifs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_services</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">conf</span><span class="p">[</span><span class="s1">&#39;/&#39;</span><span class="p">][</span><span class="s1">&#39;request.dispatch&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">dispatch</span><span class="o">.</span><span class="n">VirtualHost</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_services</span><span class="p">)</span>
 
-        <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">mount</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">conf</span><span class="p">)</span>
+        <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">mount</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">conf</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="Http.register_visu"><a class="viewcode-back" href="../../referenz/module/module_http.html#modules.http.Http.register_visu">[Doku]</a>    <span class="k">def</span> <span class="nf">register_visu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pluginname</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="n">visu_port</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_global_basic_auth</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register a service for CherryPy</span>
+
+<span class="sd">        This method is called by a plugin to register a webservice.</span>
+
+<span class="sd">        It should be called like this:</span>
+
+<span class="sd">            self.mod_http.register_service(self.get_shortname(), config, use_global_basic_auth)</span>
+
+
+<span class="sd">        :param pluginname: Mount point for the service</span>
+<span class="sd">        :param conf: Cherrypy application configuration dictionary</span>
+<span class="sd">        :param use_global_basic_auth: if True, global basic_auth settings from the http module are used. If False, registering plugin provides its own basic_auth</span>
+<span class="sd">        :type pluginname: str</span>
+<span class="sd">        :type conf: dict</span>
+<span class="sd">        :type: use_global_basic_auth: bool</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pluginname</span> <span class="o">=</span> <span class="n">pluginname</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visu_plugin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_visu_plugin</span> <span class="o">=</span> <span class="n">pluginname</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot initialize visu for plugin &#39;</span><span class="si">{</span><span class="n">pluginname</span><span class="si">}</span><span class="s2">&#39; - visu is already active for plugin &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_visu_plugin</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">visu_port</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">visu_port</span> <span class="o">&lt;</span> <span class="mi">1024</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Visu port is missing o given port is &lt; 1024&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visu_user</span> <span class="o">=</span> <span class="s1">&#39;visuuser&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visu_password</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visu_hashed_password</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visu_basic_auth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_visu_hashed_password</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visu_realm</span> <span class="o">=</span> <span class="s1">&#39;shng_http_visu&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visuport</span> <span class="o">=</span> <span class="n">visu_port</span>
+
+        <span class="n">mount</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Visu of plugin </span><span class="si">{</span><span class="n">pluginname</span><span class="si">}</span><span class="s1">&#39;</span>
+
+        <span class="k">if</span> <span class="n">use_global_basic_auth</span><span class="p">:</span>
+            <span class="n">conf</span><span class="p">[</span><span class="s1">&#39;/&#39;</span><span class="p">][</span><span class="s1">&#39;tools.auth_basic.on&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visu_basic_auth</span>
+            <span class="n">conf</span><span class="p">[</span><span class="s1">&#39;/&#39;</span><span class="p">][</span><span class="s1">&#39;tools.auth_basic.realm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visu_realm</span>
+            <span class="n">conf</span><span class="p">[</span><span class="s1">&#39;/&#39;</span><span class="p">][</span><span class="s1">&#39;tools.auth_basic.checkpassword&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate_service_password</span>
+
+        <span class="n">plugin_fullname</span> <span class="o">=</span> <span class="n">pluginname</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Registering visu of plugin &#39;</span><span class="si">{</span><span class="n">plugin_fullname</span><span class="si">}</span><span class="s2">&#39;  -  conf dict: &#39;</span><span class="si">{</span><span class="n">conf</span><span class="si">}</span><span class="s2">&#39;&quot;</span> <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_server3</span> <span class="o">=</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">_cpserver</span><span class="o">.</span><span class="n">Server</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_server3</span><span class="o">.</span><span class="n">socket_port</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_visuport</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_server3</span><span class="o">.</span><span class="n">socket_host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ip</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_server3</span><span class="o">.</span><span class="n">thread_pool</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">threads</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_server3</span><span class="o">.</span><span class="n">subscribe</span><span class="p">()</span>
+
+        <span class="c1">#cherrypy.engine.start()</span>
+
+        <span class="c1"># build hostmap for visu</span>
+        <span class="n">dom1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_local_ip_address</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_visuport</span><span class="p">)</span>
+        <span class="n">dom2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_local_hostname</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_visuport</span><span class="p">)</span>
+        <span class="n">dom3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_local_hostname</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;.local&#39;</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_visuport</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_visu</span><span class="p">[</span><span class="n">dom1</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/msg&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_visu</span><span class="p">[</span><span class="n">dom2</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/msg&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_visu</span><span class="p">[</span><span class="n">dom3</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;/msg&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;_hostmap_visu = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_visu</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_visu</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">conf</span><span class="p">[</span><span class="s1">&#39;/&#39;</span><span class="p">][</span><span class="s1">&#39;request.dispatch&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">dispatch</span><span class="o">.</span><span class="n">VirtualHost</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_hostmap_visu</span><span class="p">)</span>
+
+        <span class="n">cherrypy</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="c1">#cherrypy.tree.mount(app, mount, config = conf)</span>
+        <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">_PluginsApp</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">conf</span><span class="p">)</span>
+        <span class="n">cherrypy</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="k">return</span></div>
 
 
@@ -5619,7 +5709,36 @@
         <span class="k">for</span> <span class="n">thread</span> <span class="ow">in</span> <span class="n">threading</span><span class="o">.</span><span class="n">enumerate</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">thread</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;_TimeoutMonitor&#39;</span><span class="p">:</span>
                 <span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">: CherryPy engine exited&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shortname</span><span class="p">))</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">: CherryPy engine exited&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shortname</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Http.log_server_info"><a class="viewcode-back" href="../../referenz/module/module_http.html#modules.http.Http.log_server_info">[Doku]</a>    <span class="k">def</span> <span class="nf">log_server_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server_nr</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Log the information of a cherrypy server object</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">server_nr</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">server</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_server1</span>
+        <span class="k">elif</span> <span class="n">server_nr</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">server</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_server2</span>
+        <span class="k">elif</span> <span class="n">server_nr</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">server</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_server3</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;log_server_info: Invalid server number </span><span class="si">{</span><span class="n">server_nr</span><span class="si">}</span><span class="s2"> specified&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">server</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;log_server_info: Server object for server number </span><span class="si">{</span><span class="n">server_nr</span><span class="si">}</span><span class="s2"> does not exist&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;log_server_info: Information for server number </span><span class="si">{</span><span class="n">server_nr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; - socket </span><span class="si">{</span><span class="n">server</span><span class="o">.</span><span class="n">socket_host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">server</span><span class="o">.</span><span class="n">socket_port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; - httpserver </span><span class="si">{</span><span class="n">server</span><span class="o">.</span><span class="n">httpserver</span><span class="si">}</span><span class="s2">  description </span><span class="si">{</span><span class="n">server</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; - running </span><span class="si">{</span><span class="n">server</span><span class="o">.</span><span class="n">running</span><span class="si">}</span><span class="s2">  description </span><span class="si">{</span><span class="n">server</span><span class="o">.</span><span class="n">wsgi_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; - socketfile </span><span class="si">{</span><span class="n">server</span><span class="o">.</span><span class="n">socket_file</span><span class="si">}</span><span class="s2">  base </span><span class="si">{</span><span class="n">server</span><span class="o">.</span><span class="n">base</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; - bound_addr </span><span class="si">{</span><span class="n">server</span><span class="o">.</span><span class="n">bound_addr</span><span class="si">}</span><span class="s2">  base </span><span class="si">{</span><span class="n">server</span><span class="o">.</span><span class="n">statistics</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span></div></div>
 
 
 <div class="viewcode-block" id="ModuleApp"><a class="viewcode-back" href="../../referenz/module/module_http.html#modules.http.ModuleApp">[Doku]</a><span class="k">class</span> <span class="nc">ModuleApp</span><span class="p">:</span>
@@ -5643,7 +5762,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method is exposed to CherryPy. It implements the page &#39;index.html&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;ModuleApp: local.name &#39;</span><span class="si">{}</span><span class="s2">&#39;, local.port &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cherrypy</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">port</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ModuleApp: local.name &#39;</span><span class="si">{</span><span class="n">cherrypy</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;, local.port &#39;</span><span class="si">{</span><span class="n">cherrypy</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">port</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="o">.</span><span class="n">_port</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">starturl</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="o">.</span><span class="n">_applications</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">starturl</span>
