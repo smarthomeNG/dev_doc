@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>modules.admin.rest &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit 59e8cef) Dokumentation</title>
+  <title>modules.admin.rest &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit c27107c) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -4993,7 +4993,7 @@
 
     <span class="nd">@cherrypy</span><span class="o">.</span><span class="n">expose</span>
     <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">vpath</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
-        <span class="c1"># self.logger.info(&quot;RESTResource.index {}&quot;.format(self.__class__.__name__))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="s2">&quot;RESTResource.index </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="o">*</span><span class="n">vpath</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
 
 
@@ -5131,6 +5131,7 @@
 
     <span class="nd">@cherrypy</span><span class="o">.</span><span class="n">expose</span>
     <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">vpath</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;rest.py: default() *vpath=</span><span class="si">{</span><span class="n">vpath</span><span class="si">}</span><span class="s2">, **params=</span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">vpath</span><span class="p">:</span>
             <span class="n">resource</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="c1"># self.logger.info(&quot;RESTResource.default: vpath = &#39;{}&#39;,  params = &#39;{}&#39;&quot;.format(list(vpath), dict(**params)))</span>
@@ -5161,7 +5162,8 @@
                 <span class="n">c</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">resource</span>
                 <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="o">*</span><span class="n">vpath</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
             <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">method</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="s2">&quot;expose_resource&quot;</span><span class="p">):</span>
+            <span class="c1">#self.logger.notice(f&quot;dir(method): {dir(method)}&quot;)</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="s2">&quot;expose_resource&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">method</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="o">*</span><span class="n">vpath</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># path component was specified but doesn&#39;t</span>
