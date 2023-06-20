@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Virtuelle Python Environments Update &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit f13ed7f) Dokumentation</title>
+  <title>Virtuelle Python Environments Update &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit 94df811) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4163,7 +4163,6 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Virtuelle Python Environments <span class="bluesup">Update</span></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#installation-von-venv-bzw-virtualenv">Installation von venv bzw. virtualenv</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#erstellung-von-virtuellen-environments">Erstellung von virtuellen Environments</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#vereinfachtes-aktivieren-der-environments">Vereinfachtes Aktivieren der Environments</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#loschen-eines-virtuellen-environment">Löschen eines virtuellen Environment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#virtuelle-environements-als-dienst">Virtuelle Environements als Dienst</a></li>
 </ul>
@@ -4758,29 +4757,23 @@ und <strong>venv</strong>.</p>
 einigen Umgebungen (z.B. älteren Debian Distributionen) nicht in der Standard Python Installation enthalten
 und muss dann separat installiert werden.</p>
 <p><strong>virtualenv</strong> bietet eine größere Funktionalität als <strong>venv</strong>. Die Funktionalität von <strong>venv</strong> ist eine Untermenge
-der Funktionalität von <strong>virtualenv</strong>. <strong>virtualenv</strong> ist Vergleich zu <strong>venv</strong> schneller und es ist erweiterbar.</p>
-<p>Da <strong>venv</strong> Teil der Python Distribution ist, wird empfohlen diesem den Vorzug vor <strong>virtualenv</strong> zu geben.</p>
+der Funktionalität von <strong>virtualenv</strong>. <strong>virtualenv</strong> ist Vergleich zu <strong>venv</strong> schneller und es ist erweiterbar.
+Für den Einsatz im Kontext von SmartHomeNG wird diese größere Funktionalität jedoch nicht benötigt.</p>
+<p>Da <strong>venv</strong> Teil der Python Distribution ist, wird empfohlen diesem den Vorzug vor <strong>virtualenv</strong> zu geben. Im
+Folgenden wird auch nur vom Einsatz von <strong>venv</strong> ausgegangen.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<p>Die virtuellen Environments sollten in einem Unterverzeichnis zum Home Verzeichnis des Users <strong>smarthome</strong>
-gespeichert werden. Dieses Verzeichnis sollte zur einfacheren Handhabung der virtuellen Environments in
-den PATH aufgenommen werden.</p>
-<p>Empfohlen  wird das Verzeichnis <strong>environments</strong> zu nennen.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>mkdir<span class="w"> </span>~/environments
-</pre></div>
-</div>
-<p>Zur Anlage eines Environments muss diese Verzeichnis das aktuelle Arbeitsverzeichnis sein.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>~/environments
-</pre></div>
-</div>
+<p>Die virtuellen Environments werden standardmäßig im Unterverzeichnis <code class="docutils literal notranslate"><span class="pre">venvs</span></code> des SmartHomeNG Basisverzeichnises
+gespeichert. Außer den virtuallen Environments enthält das Verzeichnis auch Skripte zur Verwaltung der
+virtuellen Environments.</p>
+<p>Das postinstall Skript der SmartHomeNG Installation nimmt dieses Verzeichnis in den Pfad auf, so dass die Skripte
+ohne Pfadangabe aufgerufen werden können.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
 <section id="installation-von-venv-bzw-virtualenv">
 <h2>Installation von venv bzw. virtualenv<a class="headerlink" href="#installation-von-venv-bzw-virtualenv" title="Permalink to this heading"></a></h2>
-<p>Im folgenden wird davon ausgegangen, dass die Environments im Unterverzeichnis <strong>environments</strong> des Users <strong>smarthome</strong>
-erstellt/gespeichert werden.</p>
 <p><strong>venv</strong> bzw. <strong>virtualenv</strong> wird am besten unter der Python Version installiert, für die später virtuelle
 Environments erstellt werden sollen. (<strong>venv</strong> ist bei aktuellen Distributionen bereits auf dem System installiert)
 Um zum Beispiel ein virtual Environment für Python 3.10 zu erstellen, ist der folgende Befehl auszuführen:</p>
@@ -4798,29 +4791,19 @@ Um zum Beispiel ein virtual Environment für Python 3.10 zu erstellen, ist der f
 <section id="erstellung-von-virtuellen-environments">
 <h2>Erstellung von virtuellen Environments<a class="headerlink" href="#erstellung-von-virtuellen-environments" title="Permalink to this heading"></a></h2>
 <p>Jetzt kann mit dem folgenden Befehl ein virtual Environment erstellt werden, welches den Namen <strong>py_3.10</strong> trägt:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>~/environments
-$<span class="w"> </span>python3.10<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>py_3.10
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>make_env<span class="w"> </span><span class="m">3</span>.10
 </pre></div>
 </div>
-<p>Anschließend muss für ein Environment das Environment aktiviert werden, um einige norwendige Python
-Packages in das Environment zu installieren bzw. aktualisieren.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>~/environments
-$<span class="w"> </span><span class="nb">source</span><span class="w"> </span>py_3.10/bin/activate
-<span class="o">(</span>py_3.10<span class="o">)</span><span class="w"> </span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip
-<span class="o">(</span>py_3.10<span class="o">)</span><span class="w"> </span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>wheel
-<span class="o">(</span>py_3.10<span class="o">)</span><span class="w"> </span>$<span class="w"> </span>deactivate
-$
-</pre></div>
-</div>
+<p>Während der Anlage wird das Environment aktiviert, um einige norwendige Python Packages in das Environment zu
+installieren bzw. zu aktualisieren.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<p>Das Environment wird mit dem Kommande</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">source</span><span class="w"> </span>/home/smarthome/environments/py_3.10/bin/activate
-<span class="o">(</span>py_3.10<span class="o">)</span><span class="w"> </span>$
+<p>Das Environment wird mit dem Kommando</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">source</span><span class="w"> </span>act<span class="w"> </span><span class="m">3</span>.10
 </pre></div>
 </div>
-<p>aktiviert. Eine Vereinfachung des Aufrufes ist weiter unten beschrieben.</p>
+<p>aktiviert.</p>
 <p>In dem Environment sind nun nur die Packages <strong>pip</strong>, <strong>setuptools</strong> und evtl. <strong>wheel</strong> installiert. Weitere benötigte
 Packages können ganz normal mit <strong>pip3</strong> nachinstalliert werden. (SmartHomeNG installiert wie bei einer kompletten
 Neuinstallation die benötigten Packages).</p>
@@ -4839,56 +4822,15 @@ $
 <div class="line"><br /></div>
 </div>
 </section>
-<section id="vereinfachtes-aktivieren-der-environments">
-<h2>Vereinfachtes Aktivieren der Environments<a class="headerlink" href="#vereinfachtes-aktivieren-der-environments" title="Permalink to this heading"></a></h2>
-<p>Die Aktivierung der eingerichteten virtuellen Environments kann vereinfacht werden, wenn ein Skript mit dem Namen
-<strong>act</strong> und dem folgenden Inhalt im Verzeichnis <strong>environments</strong> angelegt wird.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
-
-<span class="c1"># test if script is called with &#39;source&#39;</span>
-<span class="o">(</span><span class="k">return</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="o">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nv">sourced</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nv">sourced</span><span class="o">=</span><span class="m">0</span>
-
-<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$sourced</span><span class="s2">&quot;</span><span class="w"> </span>-eq<span class="w"> </span><span class="s2">&quot;0&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
-<span class="w">    </span><span class="nb">echo</span>
-<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>ERROR:<span class="w"> </span>The<span class="w"> </span>script<span class="w"> </span>MUST<span class="w"> </span>be<span class="w"> </span>called<span class="w"> </span>with<span class="w"> </span><span class="se">\&#39;</span>source<span class="se">\&#39;</span>,<span class="w"> </span>like:<span class="w"> </span><span class="se">\&#39;</span><span class="nb">source</span><span class="w"> </span>act<span class="w"> </span><span class="nv">$1</span><span class="se">\&#39;</span>
-<span class="w">    </span><span class="nb">echo</span>
-<span class="w">    </span><span class="nb">exit</span>
-<span class="k">fi</span>
-
-<span class="k">if</span><span class="w"> </span><span class="nb">test</span><span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;/home/smarthome/environments/py_</span><span class="nv">$1</span><span class="s2">/bin/activate&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
-<span class="w">    </span><span class="nb">echo</span>
-<span class="w">    </span><span class="nb">source</span><span class="w"> </span>/home/smarthome/environments/py_<span class="nv">$1</span>/bin/activate
-<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Activating virtual environment py_</span><span class="nv">$1</span><span class="s2"> (`python3 -V`)&quot;</span>
-<span class="w">    </span><span class="nb">echo</span>
-<span class="w">    </span><span class="nb">echo</span><span class="w"> </span>To<span class="w"> </span>deactivate<span class="w"> </span>the<span class="w"> </span>virtual<span class="w"> </span>environment<span class="w"> </span>simply<span class="w"> </span><span class="nb">type</span><span class="w"> </span>the<span class="w"> </span><span class="nb">command</span><span class="w"> </span><span class="se">\&#39;</span>deactivate<span class="se">\&#39;</span>
-<span class="k">else</span>
-<span class="w">    </span><span class="nb">echo</span>
-<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;ERROR: Virtual environment py_</span><span class="nv">$1</span><span class="s2"> does not exist&quot;</span>
-<span class="k">fi</span>
-<span class="nb">echo</span>
-</pre></div>
-</div>
-<p>Anschließend nicht vergessen das Skript mit <code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">775</span> <span class="pre">act</span></code> ausführbar zu machen.</p>
-<p>Nun kann ein existierendes Environment (z.B, py_3.9) einfach mit dem Befehl <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">act</span> <span class="pre">3.9</span></code> aktiviert werden.
-Das Verzeichnis <code class="docutils literal notranslate"><span class="pre">/home/smarthome/environments</span></code> sollte in den Pfad aufgenommen werden, damit <code class="docutils literal notranslate"><span class="pre">act</span></code> aus jedem
-Verzeichnis heraus aufgerufen werden kann, ohne den vollständigen Pfad angeben zu müssen.</p>
-<p>Das <code class="docutils literal notranslate"><span class="pre">source</span></code> im Aufruf ist wichtig, weil das Environment sonst bei Beendigung der Skriptes <code class="docutils literal notranslate"><span class="pre">act</span></code> wieder beendet wird.</p>
-<p>Der geänderte Prompt zeigt an, dass das Virtual Environment <strong>py_3.9</strong> aktiv ist.</p>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
-</section>
 <section id="loschen-eines-virtuellen-environment">
 <h2>Löschen eines virtuellen Environment<a class="headerlink" href="#loschen-eines-virtuellen-environment" title="Permalink to this heading"></a></h2>
 <p>Wenn ein virtuelles Environment nicht mehr benötigt wird, wird einfach das entsprechende Verzeichnis rekirsiv gelöscht.
 Bitte darauf achten, dass das Environment nicht aktiv ist. Bei Bedarf vor dem Löschen mit dem Befehl <code class="docutils literal notranslate"><span class="pre">deactivate</span></code>
 deaktivieren.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>~/environments
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>/usr/local/smarthome/venvs
 $<span class="w"> </span>rm<span class="w"> </span>-r<span class="w"> </span>py_3.10
 </pre></div>
 </div>
-<p>Wenn ein jungfräuliches virtuelles Environment benötigt wird, so ist es zuerst zu löschen und anschließend neu zu
-erstellen.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -4911,7 +4853,7 @@ Environment angegeben werden.</p>
 
 <span class="o">[</span>Service<span class="o">]</span>
 <span class="nv">Type</span><span class="o">=</span>forking
-<span class="nv">ExecStart</span><span class="o">=</span>/home/smarthome/environments/py_310/bin/python3<span class="w"> </span>/usr/local/smarthome/bin/smarthome.py
+<span class="nv">ExecStart</span><span class="o">=</span>/usr/local/smarthome/venvs/py_310/bin/python3<span class="w"> </span>/usr/local/smarthome/bin/smarthome.py
 <span class="nv">WorkingDirectory</span><span class="o">=</span>/usr/local/smarthome
 <span class="nv">User</span><span class="o">=</span>smarthome
 <span class="nv">PIDFile</span><span class="o">=</span>/usr/local/smarthome/var/run/smarthome.pid
