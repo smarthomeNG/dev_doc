@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Debian Linux installieren &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit 94df811) Dokumentation</title>
+  <title>Debian Linux installieren &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit 48dc710) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -64,7 +64,14 @@
 <li class="toctree-l4"><a class="reference internal" href="#softwareauswahl">Softwareauswahl</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#einloggen-via-ssh-oder-an-der-konsole">Einloggen via SSH oder an der Konsole</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#systemaktualisierung">Systemaktualisierung</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#restarbeiten-am-system">Restarbeiten am System</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#restarbeiten-am-system">Restarbeiten am System</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#sudo-fur-user-smarthome">sudo für User smarthome</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#standby-energiesparmodus-abschalten">Standby/Energiesparmodus abschalten</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#anpassung-fur-die-smartvisu">Anpassung für die smartVISU</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#anpassung-der-userumgebung">Anpassung der Userumgebung</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#system-abschalten">System abschalten</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="02_smarthomeng.html">SmartHomeNG installieren</a><ul>
@@ -4761,7 +4768,15 @@ können.</p>
 <li><p><a class="reference internal" href="#softwareauswahl" id="id1">Softwareauswahl</a></p></li>
 <li><p><a class="reference internal" href="#einloggen-via-ssh-oder-an-der-konsole" id="id2">Einloggen via SSH oder an der Konsole</a></p></li>
 <li><p><a class="reference internal" href="#systemaktualisierung" id="id3">Systemaktualisierung</a></p></li>
-<li><p><a class="reference internal" href="#restarbeiten-am-system" id="id4">Restarbeiten am System</a></p></li>
+<li><p><a class="reference internal" href="#restarbeiten-am-system" id="id4">Restarbeiten am System</a></p>
+<ul>
+<li><p><a class="reference internal" href="#sudo-fur-user-smarthome" id="id5">sudo für User smarthome</a></p></li>
+<li><p><a class="reference internal" href="#standby-energiesparmodus-abschalten" id="id6">Standby/Energiesparmodus abschalten</a></p></li>
+<li><p><a class="reference internal" href="#anpassung-fur-die-smartvisu" id="id7">Anpassung für die smartVISU</a></p></li>
+<li><p><a class="reference internal" href="#anpassung-der-userumgebung" id="id8">Anpassung der Userumgebung</a></p></li>
+<li><p><a class="reference internal" href="#system-abschalten" id="id9">System abschalten</a></p></li>
+</ul>
+</li>
 </ul>
 </nav>
 <div class="admonition note">
@@ -4913,20 +4928,43 @@ Auflösung dynamisch an.</p>
 </section>
 <section id="restarbeiten-am-system">
 <h2><a class="toc-backref" href="#id4" role="doc-backlink">Restarbeiten am System</a><a class="headerlink" href="#restarbeiten-am-system" title="Permalink to this heading"></a></h2>
+<section id="sudo-fur-user-smarthome">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">sudo für User smarthome</a><a class="headerlink" href="#sudo-fur-user-smarthome" title="Permalink to this heading"></a></h3>
 <p>Falls kein Passwort für root vergeben wurde, dann wird der bei der Installation erstellte User (hier: smarthome)
-automatisch in die Gruppe für sudo aufgenommen.</p>
+automatisch in die Gruppe für sudo aufgenommen. Dann ist hier nichts weiter zu tun.</p>
 <p>Falls man einen anderen Benutzernamen bei der Installation gewählt hat, muss man den User smarthome zunächst erstellen:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w">  </span>adduser<span class="w"> </span>smarthome<span class="w"> </span>--disabled-password<span class="w"> </span>--gecos<span class="w"> </span><span class="s2">&quot;First Last,RoomNumber,WorkPhone,HomePhone&quot;</span>
 </pre></div>
 </div>
-<p>Den Benutzer <strong>smarthome</strong> in die <strong>www-data</strong> und <strong>sudo</strong> Gruppe hinzufügen:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>usermod<span class="w"> </span>-aG<span class="w"> </span>www-data,sudo<span class="w"> </span>smarthome
+<p>Den Benutzer <strong>smarthome</strong> in die <strong>sudo</strong> Gruppe hinzufügen:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>usermod<span class="w"> </span>-aG<span class="w"> </span>sudo<span class="w"> </span>smarthome
 </pre></div>
 </div>
-<p>Auch wenn der Benutzer smarthome schon existiert muss er in die Gruppe www-data mit folgendem Befehl eingetragen werden.</p>
+</section>
+<section id="standby-energiesparmodus-abschalten">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Standby/Energiesparmodus abschalten</a><a class="headerlink" href="#standby-energiesparmodus-abschalten" title="Permalink to this heading"></a></h3>
+<p>Standardmäßig gehen Debian Installationen nach einiger Zeit in den Energiesparmodus. Zur Nutzung für SmartHomeNG
+ist das natürlich wenig hilfreich. Durch Editieren der Datei <code class="docutils literal notranslate"><span class="pre">/etc/systemd/sleep.conf</span></code> können der Sleep- und der
+Hybernate Moduls abgeschaltet werden:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Sleep]</span>
+<span class="na">AllowSuspend</span><span class="o">=</span><span class="s">no</span>
+<span class="na">AllowHibernation</span><span class="o">=</span><span class="s">no</span>
+<span class="na">AllowSuspendThenHibernate</span><span class="o">=</span><span class="s">no</span>
+<span class="na">AllowHybridSleep</span><span class="o">=</span><span class="s">no</span>
+</pre></div>
+</div>
+<p>Damit diese Änderung wirksam wird, muss das System neu gestartet werden.</p>
+</section>
+<section id="anpassung-fur-die-smartvisu">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">Anpassung für die smartVISU</a><a class="headerlink" href="#anpassung-fur-die-smartvisu" title="Permalink to this heading"></a></h3>
+<p>Auch wenn der Benutzer smarthome schon existiert muss er für die Nutzung der smartVISU in die Gruppe www-data mit
+folgendem Befehl eingetragen werden.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>usermod<span class="w"> </span>-aG<span class="w"> </span>www-data<span class="w"> </span>smarthome
 </pre></div>
 </div>
+</section>
+<section id="anpassung-der-userumgebung">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">Anpassung der Userumgebung</a><a class="headerlink" href="#anpassung-der-userumgebung" title="Permalink to this heading"></a></h3>
 <p>Vor dem Neustart wird jetzt noch die Datei <code class="docutils literal notranslate"><span class="pre">.bashrc</span></code> bearbeitet um einige Befehle auf der Shell
 (Kommandozeile bzw. Konsole) abzukürzen:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>~
@@ -4939,12 +4977,16 @@ nano<span class="w"> </span>.bashrc
 <span class="nb">alias</span><span class="w"> </span>..<span class="o">=</span><span class="s1">&#39;cd ..&#39;</span>
 </pre></div>
 </div>
+</section>
+<section id="system-abschalten">
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">System abschalten</a><a class="headerlink" href="#system-abschalten" title="Permalink to this heading"></a></h3>
 <p>Der Benutzer <strong>smarthome</strong> muß nun abgemeldet und neu angemeldet werden, damit die Rechte neu eingelesen werden.
 Dies ist eine gute Gelegenheit um einen alternativen Snapshot zu erstellen. Dazu dann wiederum das
 System ausschalten mit:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>poweroff
 </pre></div>
 </div>
+</section>
 </section>
 </section>
 
