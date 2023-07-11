@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Webinterface update &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit 853145a) Dokumentation</title>
+  <title>Webinterface update &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit f990fb0) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -3485,12 +3485,11 @@
 </ul>
 </li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">Webinterface <span class="bluesup">update</span></a><ul>
-<li class="toctree-l5"><a class="reference internal" href="webinterface_extend_plugin.html">Erweitern eines bestehenden Plugins</a></li>
-<li class="toctree-l5"><a class="reference internal" href="webinterface_filling_webinterface.html">Das Webinterface mit Inhalt füllen</a></li>
-<li class="toctree-l5"><a class="reference internal" href="webinterface_multilanguage.html">Unterstützung mehrerer Sprachen <span class="redsup">new</span></a></li>
-<li class="toctree-l5"><a class="reference internal" href="webinterface_automatic_update.html">Automatische Updates der Daten im Webinterface <span class="redsup">new</span></a></li>
-<li class="toctree-l5"><a class="reference internal" href="webinterface_plugin_interaction.html">Interaktion des Webinterface mit dem Plugin <span class="redsup">new</span></a></li>
-<li class="toctree-l5"><a class="reference internal" href="webinterface_3rdparty_components.html">Komponenten von Drittanbietern für Webinterfaces</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#allgemeines">Allgemeines</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#tooltips">Tooltips</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#cookies">Cookies</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#icons">Icons</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#kalenderansicht">Kalenderansicht</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="multilanguage.html">Unterstützung mehrerer Sprachen <span class="bluesup">Update</span></a><ul>
@@ -4764,6 +4763,8 @@
 <dd class="field-odd"><p>Diese Dokumentation bezieht sich auf Versionen nach v1.4.2. Sie gilt nicht für Versionen bis inklusive v1.4.2</p>
 </dd>
 </dl>
+<section id="allgemeines">
+<h2>Allgemeines<a class="headerlink" href="#allgemeines" title="Permalink to this heading"></a></h2>
 <p>Webinterfaces werden durch das http-Modul implementiert. Dieses muss konfiguriert und gestartet sein, um Webinterfaces nutzen zu können.</p>
 <p>Das Webinterface eines Plugins erlaubt es, Plugin-Daten und -Konfiguration im Browser anzuzeigen. Der Link zum Webinterface wird im Admin UI in der Liste der aktiven Plugins angezeigt.</p>
 <p>SmartHomeNG ermöglicht die Implementation eines Webinterfaces auf sehr einfache Weise. Das Beispielplugin hat eine vollständige Implementation eines Webinterfaces. Es muss nur die Anzeige der Plugindatem im Template ergänzt werden. Die Templateengine (Jinja2) erhält die Daten von Python, wenn die Webinterface-Seite zur Laufzeit gerendert wird.</p>
@@ -4778,7 +4779,157 @@
 </div></blockquote>
 <p>Auf den Kopfteil folgt der Rest der Seite mit bis zu 4 Tabs, abhängig von den anzuzeigenden Informationen.</p>
 <p>Ein leeres Webinterface sieht wie folgt aus:</p>
-<img alt="entwicklung/plugins/kurzanleitung/assets/sample_plugin_webIf.jpg" src="entwicklung/plugins/kurzanleitung/assets/sample_plugin_webIf.jpg" />
+<img alt="../../../_images/sample_plugin_webIf.jpg" src="../../../_images/sample_plugin_webIf.jpg" />
+</section>
+<section id="tooltips">
+<h2>Tooltips<a class="headerlink" href="#tooltips" title="Permalink to this heading"></a></h2>
+<p><em>popper.min.js</em> kann genutzt werden, um (aktuell pro Seite maximal zehn) „stabile“
+und ansprechende Tooltips zu integrieren. Ab <em>SmarthomeNG 1.10</em> sind alle nötigen
+Dateien hierbei schon automatisch integriert. Um Buttons mit Tooltips auszustatten,
+muss ihnen die CSS Klasse <code class="docutils literal notranslate"><span class="pre">button-tooltip</span></code> zugewiesen werden. Außerdem sind
+folgende Codezeilen in der index.html Datei notwendig:</p>
+<div class="highlight-HTML notranslate"><div class="highlight"><pre><span></span>{% block pluginscripts %}
+  <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">tooltipList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;Tooltip 1&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Tooltip 2&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Tooltip 3&#39;</span><span class="p">];</span>
+<span class="w">      </span><span class="nx">createTooltips</span><span class="p">(</span><span class="nx">tooltipList</span><span class="p">);</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">  </span><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+{% endblock pluginscripts %}
+{% block content -%}
+  <span class="p">&lt;</span><span class="nt">button</span> <span class="na">onclick</span><span class="o">=</span><span class="s">&quot;&quot;</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;button&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;button-tooltip&quot;</span><span class="p">&gt;</span>Button<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+{%- endblock content %}
+</pre></div>
+</div>
+</section>
+<section id="cookies">
+<h2>Cookies<a class="headerlink" href="#cookies" title="Permalink to this heading"></a></h2>
+<p>Um Einstellungen im Webinterface dauerhaft zu speichern, sollten die entsprechenden
+Werte als Browser-Cookie gespeichert werden. Eine einfache Möglichkeit dazu wird
+seit <em>SmarthomeNG 1.10</em> angeboten. Zum Speichern von Cookies steht die Funktion
+<code class="docutils literal notranslate"><span class="pre">setCookie(&lt;Cookiename&gt;,</span> <span class="pre">&lt;Cookiewert&gt;,</span> <span class="pre">&lt;Dauer</span> <span class="pre">der</span> <span class="pre">Speicherung&gt;,</span> <span class="pre">&lt;Pluginname&gt;)</span></code> bereit, für das Laden <code class="docutils literal notranslate"><span class="pre">getCookie(&lt;Cookiename&gt;)</span></code>. Im Folgenden Beispiel wird beim Laden der Seite das Cookie
+ausgelesen. Ist dieses (noch) nicht gesetzt, wird ein leerer Wert zurückgegeben,
+der im Code entsprechend abgefangen werden muss. Beim Klick auf einen Button wird
+beispielhaft ein Cookie namens „sort_order“ mit dem Wert „alpha-asc“ für ein Jahr (365 Tage) gespeichert.
+Der Pluginname ist in der globalen Variable „window.pluginname“ hinterlegt und sollte
+genau so referenziert werden.</p>
+<div class="highlight-HTML notranslate"><div class="highlight"><pre><span></span>{% block pluginscripts %}
+  <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+<span class="w">      </span><span class="nx">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">getCookie</span><span class="p">(</span><span class="s1">&#39;sort_order&#39;</span><span class="p">);</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">order</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="w">        </span><span class="nx">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;time-desc&#39;</span><span class="p">;</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">button</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">order</span><span class="p">);</span>
+<span class="w">      </span><span class="nx">button</span><span class="p">.</span><span class="nx">click</span><span class="p">();</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">  </span><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+{% endblock pluginscripts %}
+{% block content -%}
+  <span class="p">&lt;</span><span class="nt">button</span> <span class="na">onclick</span><span class="o">=</span><span class="s">&quot;setCookie(&#39;sort_order&#39;, &#39;time-desc&#39;, 365, window.pluginname);&quot;</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;button&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;button-tooltip&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;time-desc&quot;</span><span class="p">&gt;</span>Button<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+{%- endblock content %}
+</pre></div>
+</div>
+</section>
+<section id="icons">
+<h2>Icons<a class="headerlink" href="#icons" title="Permalink to this heading"></a></h2>
+<p>Im Ordner <code class="docutils literal notranslate"><span class="pre">/gstatic/img</span></code> sind diverse globale Icons hinterlegt. Seit <em>SmarthomeNG 1.10</em>
+stehen Icons für Sortierfunktionen zur Verfügung. Diese heißen wie folgt:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>sort-alpha-asc.svg</p></li>
+<li><p>sort-alpha-desc.svg</p></li>
+<li><p>sort-num-asc.svg</p></li>
+<li><p>sort-num-desc.svg</p></li>
+<li><p>sort-time-asc.svg</p></li>
+<li><p>sort-time-desc.svg</p></li>
+<li><p>sort-asc.svg</p></li>
+<li><p>sort-desc.svg</p></li>
+</ul>
+</div></blockquote>
+<p>Diese können wie folgt per CSS entsprechend angepasst werden. Im Beispiel werden
+aktivierte Icons/Buttons durch die Klasse „active“ blau eingefärbt.</p>
+<div class="highlight-HTML notranslate"><div class="highlight"><pre><span></span>{% block pluginstyles %}
+  <span class="p">&lt;</span><span class="nt">style</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="p">.</span><span class="nc">sort</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">width</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="kt">px</span><span class="p">;</span>
+<span class="w">      </span><span class="k">height</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="kt">px</span><span class="p">;</span>
+<span class="w">      </span><span class="k">border</span><span class="p">:</span><span class="w"> </span><span class="kc">none</span><span class="p">;</span>
+<span class="w">      </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">      </span><span class="k">margin-left</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="kt">px</span><span class="p">;</span>
+<span class="w">      </span><span class="k">margin-bottom</span><span class="p">:</span><span class="w"> </span><span class="mi">-5</span><span class="kt">px</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="p">.</span><span class="nc">active</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">border</span><span class="p">:</span><span class="w"> </span><span class="kc">none</span><span class="p">;</span>
+<span class="w">      </span><span class="k">filter</span><span class="p">:</span><span class="w"> </span><span class="nb">invert</span><span class="p">(</span><span class="mi">8</span><span class="kt">%</span><span class="p">)</span><span class="w"> </span><span class="nb">sepia</span><span class="p">(</span><span class="mi">100</span><span class="kt">%</span><span class="p">)</span><span class="w"> </span><span class="nb">saturate</span><span class="p">(</span><span class="mi">6481</span><span class="kt">%</span><span class="p">)</span><span class="w"> </span><span class="nb">hue-rotate</span><span class="p">(</span><span class="mi">246</span><span class="kt">deg</span><span class="p">)</span><span class="w"> </span><span class="nb">brightness</span><span class="p">(</span><span class="mi">102</span><span class="kt">%</span><span class="p">)</span><span class="w"> </span><span class="nb">contrast</span><span class="p">(</span><span class="mi">143</span><span class="kt">%</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">&lt;/</span><span class="nt">style</span><span class="p">&gt;</span>
+{% endblock pluginstyles %}
+{% block pluginscripts %}
+  <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+<span class="w">      </span><span class="c1">// Suchen des Elements mit der id &quot;alpha-asc&quot; und &quot;alpha-desc&quot;</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">alpha_asc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;alpha-asc&#39;</span><span class="p">);</span>
+<span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">alpha_desc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;alpha-desc&#39;</span><span class="p">);</span>
+
+<span class="w">      </span><span class="c1">// Eventlistener, der auf Klick auf das Element reagiert.</span>
+<span class="w">      </span><span class="nx">alpha_asc</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Bei sämtlichen anderen Elementen muss die &quot;active&quot; Klasse entfernt werden.</span>
+<span class="w">        </span><span class="nx">alpha_desc</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="s1">&#39;active&#39;</span><span class="p">);</span>
+<span class="w">        </span><span class="c1">// Beim geklickten Element wird die &quot;active&quot; Klasse hinzugefügt.</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;active&#39;</span><span class="p">);</span>
+<span class="w">      </span><span class="p">});</span>
+<span class="w">      </span><span class="nx">alpha_desc</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Bei sämtlichen anderen Elementen muss die &quot;active&quot; Klasse entfernt werden.</span>
+<span class="w">        </span><span class="nx">alpha_asc</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="s1">&#39;active&#39;</span><span class="p">);</span>
+<span class="w">        </span><span class="c1">// Beim geklickten Element wird die &quot;active&quot; Klasse hinzugefügt.</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;active&#39;</span><span class="p">);</span>
+<span class="w">      </span><span class="p">});</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">  </span><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+{% endblock pluginscripts %}
+{% block content -%}
+  <span class="cm">&lt;!-- Hier werden die zwei Inputelement (Buttons) im content-Block definiert. --&gt;</span>
+  <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span> <span class="s">&quot;image&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;alpha-asc&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;sort button-tooltip&quot;</span> <span class="na">onclick</span><span class="o">=</span><span class="s">&quot;&lt;Function&gt;&quot;</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/gstatic/img/sort-alpha-asc.svg&quot;</span> <span class="p">/&gt;</span>
+  <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span> <span class="s">&quot;image&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;alpha-desc&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;sort button-tooltip&quot;</span> <span class="na">onclick</span><span class="o">=</span><span class="s">&quot;&lt;Function&gt;&quot;</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/gstatic/img/sort-alpha-desc.svg&quot;</span> <span class="p">/&gt;</span>
+{%- endblock content %}
+</pre></div>
+</div>
+</section>
+<section id="kalenderansicht">
+<h2>Kalenderansicht<a class="headerlink" href="#kalenderansicht" title="Permalink to this heading"></a></h2>
+<p><em>bootstrap-datepicker.min.js</em> kann genutzt werden, um über eine Kalenderansicht verschiedene
+Kalendertage auszuwählen. Das Beispiel implementiert eine Kalenderansicht und zeigt beispielhaft,
+wie mit Hilfe der entsprechenden Funktionen die Ansicht aktualisiert und ausgelesen werden kann.</p>
+<div class="highlight-HTML notranslate"><div class="highlight"><pre><span></span>{% block pluginscripts %}
+  <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/gstatic/bootstrap-datepicker/js/bootstrap-datepicker.min.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/gstatic/bootstrap-datepicker/locales/bootstrap-datepicker.de.min.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;/gstatic/bootstrap-datepicker/locales/bootstrap-datepicker.fr.min.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="w">    </span><span class="c1">// Datepicker anhand des Elements mit der ID &quot;datepicker&quot; initialisieren</span>
+<span class="w">      </span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#datepicker&#39;</span><span class="p">).</span><span class="nx">datepicker</span><span class="p">({</span>
+<span class="w">              </span><span class="nx">language</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;{{ language }}&quot;</span><span class="p">,</span>
+<span class="w">              </span><span class="nx">autoclose</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">              </span><span class="nx">todayHighlight</span><span class="o">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">              </span><span class="nx">todayBtn</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;linked&quot;</span><span class="p">,</span>
+<span class="w">              </span><span class="nx">endDate</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;{% if language == &#39;en&#39; %}{{ now.strftime(&#39;%m/%d/%Y&#39;) }}{% else %}{{ now.strftime(&#39;%d.%m.%Y&#39;) }}{% endif %}&quot;</span>
+<span class="w">      </span><span class="p">});</span>
+<span class="w">    </span><span class="c1">// Sobald das Datum geändert wird, wird das eingestellte Datum eruiert.</span>
+<span class="w">      </span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#datepicker&#39;</span><span class="p">).</span><span class="nx">datepicker</span><span class="p">().</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;changeDate&#39;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">              </span><span class="nx">date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#datepicker&#39;</span><span class="p">).</span><span class="nx">datepicker</span><span class="p">(</span><span class="s1">&#39;getDate&#39;</span><span class="p">);</span>
+<span class="w">      </span><span class="nx">day</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">date</span><span class="p">.</span><span class="nx">getDate</span><span class="p">();</span>
+<span class="w">      </span><span class="nx">month</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">date</span><span class="p">.</span><span class="nx">getMonth</span><span class="p">();</span>
+<span class="w">      </span><span class="nx">year</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">date</span><span class="p">.</span><span class="nx">getFullYear</span><span class="p">();</span>
+<span class="w">      </span><span class="c1">// Hier folgen weitere Aktionen, die mit den Informationen was Sinnvolles machen (sollten)...</span>
+<span class="w">    </span><span class="p">});</span>
+<span class="w">    </span><span class="c1">// Datepicker auf aktuellen Tag setzen. Weitere Interaktionen sind z.B. im database Plugin zu finden.</span>
+<span class="w">    </span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#datepicker&#39;</span><span class="p">).</span><span class="nx">datepicker</span><span class="p">(</span><span class="s1">&#39;update&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;{% if language == &quot;en&quot; %}{{ now.strftime(&#39;</span><span class="o">%</span><span class="nx">m</span><span class="o">/%</span><span class="nx">d</span><span class="o">/%</span><span class="nx">Y</span><span class="s1">&#39;) }}{% else %}{{ now.strftime(&#39;</span><span class="o">%</span><span class="nx">d</span><span class="p">.</span><span class="o">%</span><span class="nx">m</span><span class="p">.</span><span class="o">%</span><span class="nx">Y</span><span class="s1">&#39;) }}{% endif %}&#39;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+{% endblock pluginscripts %}
+{% block content -%}
+  <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;datepicker&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+{%- endblock content %}
+</pre></div>
+</div>
 <p>Detaillierte Informationen zur Erstellung von Webinterfaces finden sich auf den folgenden Seiten:</p>
 <div class="toctree-wrapper compound">
 <ul>
@@ -4790,6 +4941,7 @@
 <li class="toctree-l1"><a class="reference internal" href="webinterface_3rdparty_components.html">Komponenten von Drittanbietern für Webinterfaces</a></li>
 </ul>
 </div>
+</section>
 </section>
 
 

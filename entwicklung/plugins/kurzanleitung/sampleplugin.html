@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Beispielplugin update &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit 853145a) Dokumentation</title>
+  <title>Beispielplugin update &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit f990fb0) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -3485,12 +3485,11 @@
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="webinterface.html">Webinterface <span class="bluesup">update</span></a><ul>
-<li class="toctree-l5"><a class="reference internal" href="webinterface_extend_plugin.html">Erweitern eines bestehenden Plugins</a></li>
-<li class="toctree-l5"><a class="reference internal" href="webinterface_filling_webinterface.html">Das Webinterface mit Inhalt füllen</a></li>
-<li class="toctree-l5"><a class="reference internal" href="webinterface_multilanguage.html">Unterstützung mehrerer Sprachen <span class="redsup">new</span></a></li>
-<li class="toctree-l5"><a class="reference internal" href="webinterface_automatic_update.html">Automatische Updates der Daten im Webinterface <span class="redsup">new</span></a></li>
-<li class="toctree-l5"><a class="reference internal" href="webinterface_plugin_interaction.html">Interaktion des Webinterface mit dem Plugin <span class="redsup">new</span></a></li>
-<li class="toctree-l5"><a class="reference internal" href="webinterface_3rdparty_components.html">Komponenten von Drittanbietern für Webinterfaces</a></li>
+<li class="toctree-l5"><a class="reference internal" href="webinterface.html#allgemeines">Allgemeines</a></li>
+<li class="toctree-l5"><a class="reference internal" href="webinterface.html#tooltips">Tooltips</a></li>
+<li class="toctree-l5"><a class="reference internal" href="webinterface.html#cookies">Cookies</a></li>
+<li class="toctree-l5"><a class="reference internal" href="webinterface.html#icons">Icons</a></li>
+<li class="toctree-l5"><a class="reference internal" href="webinterface.html#kalenderansicht">Kalenderansicht</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="multilanguage.html">Unterstützung mehrerer Sprachen <span class="bluesup">Update</span></a><ul>
@@ -5162,6 +5161,19 @@ Activate that function if needed, otherwise just remove the line to increase per
         catch (e) {
             console.warn(&quot;Datatable JS not loaded, showing standard table without reorder option &quot; + e);
         }
+    /*
+    This part creates tooltips for buttons/inputs that have the class &quot;button-tooltip&quot;
+    */
+    const tooltipList = [&#39;Nach Devices suchen&#39;];
+    createTooltips(tooltipList);
+    /*
+    This part reads cookies for the attribute &quot;sort_order&quot; and activates the resepctive button after page load
+    */
+    order = getCookie(&#39;sort_order&#39;);
+    if (order == &#39;&#39;)
+      order = &#39;time-desc&#39;;
+    const button = document.getElementById(order);
+    button.click();
     });
 &lt;/script&gt;
 &lt;!--
@@ -5217,7 +5229,8 @@ In the example the update is deactivated on the 12th of December 2022 (what migh
 {% block buttons %}
 {% if 1==2 %}
     &lt;div&gt;
-        &lt;button id=&quot;btn1&quot; class=&quot;btn btn-shng btn-sm&quot; name=&quot;scan&quot; onclick=&quot;shngPost(&#39;&#39;, {learn: &#39;on&#39;})&quot;&gt;&lt;i class=&quot;fas fa-question&quot;&gt;&lt;/i&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;{{ _(&#39;nach Devices suchen&#39;) }}&amp;nbsp;&lt;/button&gt;
+        &lt;button id=&quot;btn1&quot; class=&quot;btn btn-shng btn-sm&quot; name=&quot;scan&quot; onclick=&quot;shngPost(&#39;&#39;, {learn: &#39;on&#39;})&quot;&gt;&lt;i class=&quot;fas fa-question button-tooltip&quot;&gt;&lt;/i&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;{{ _(&#39;nach Devices suchen&#39;) }}&amp;nbsp;&lt;/button&gt;
+    &lt;button onclick=&quot;setCookie(&#39;sort_order&#39;, &#39;time-desc&#39;, 365, window.pluginname);&quot; type=&quot;button&quot; class=&quot;button-tooltip&quot; id=&quot;time-desc&quot;&gt;Button&lt;/button&gt;
     &lt;/div&gt;
 {% endif %}
 {% endblock %}
