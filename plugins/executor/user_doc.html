@@ -4760,7 +4760,7 @@
 <a class="reference internal image-reference" href="../../_images/plugin_logo2.svg"><img alt="plugin logo" class="align-left" height="150px" src="../../_images/plugin_logo2.svg" width="150px" /></a>
 <section id="einfuhrung">
 <h2>Einführung<a class="headerlink" href="#einfuhrung" title="Permalink to this heading"></a></h2>
-<p>Das executor plugin kann genutzt werden, um <strong>Python Code</strong> (z.B. für <strong>Logiken</strong>) und <strong>eval Ausdrücke</strong> zu testen.</p>
+<p>Das executor Plugin kann genutzt werden, um <strong>Python Code</strong> (z.B. für <strong>Logiken</strong>) zu testen.</p>
 <div class="admonition important">
 <p class="admonition-title">Wichtig</p>
 <p>Seien Sie sich bewusst, dass die Aktivierung dieses Plugins ein Sicherheitsrisiko darstellen könnte.
@@ -4776,28 +4776,31 @@ Damit wird dem Plugin eine relative Pfadangabe unterhalb <em>var</em> angegeben 
 <section id="webinterface">
 <h3>Webinterface<a class="headerlink" href="#webinterface" title="Permalink to this heading"></a></h3>
 <p>Im Webinterface findet sich eine Listbox mit den auf dem Rechner gespeicherten Skripten.
-Um das Skript in den Editor zu laden entweder ein Skript in der Liste einfach anklicken und auf <em>aus Datei laden</em> klicken oder
+Um das Skript in den Editor zu laden, entweder ein Skript in der Liste einfach anklicken und auf <em>aus Datei laden</em> klicken oder
 direkt in der Liste einen Doppelklick auf die gewünschte Datei ausführen.</p>
 <p>Der Dateiname wird entsprechend der gewählten Datei gesetzt. Mit Klick auf <em>aktuellen Code speichern</em> wird der Code im konfigurierten
 Skript Verzeichnis unter dem aktuell in der Eingabebox vorgegebenem Dateinamen abgespeichert.</p>
 <p>Mit einem Klick auf <em>Code ausführen!</em> oder der Kombination Ctrl+Return wird der Code an SmartHomeNG gesendet und ausgeführt.
 Das kann gerade bei Datenbank Abfragen recht lange dauern. Es kann keine Rückmeldung von SmartHomeNG abgefragt werden wie weit der Code derzeit ist.
 Das Ergebnis wird unten angezeigt. Solange kein Ergebnis vorliegt, steht im Ergebniskasten <strong>… processing …</strong></p>
-<p>Mit einem Klick auf Datei löschen wird versucht die unter Dateiname angezeigte Datei ohne Rückfrage zu löschen.
+<p>Mit einem Klick auf <em>Datei löschen</em> wird versucht, die unter Dateiname angezeigte Datei ohne Rückfrage zu löschen.
 Anschliessend wird die Liste der Skripte aktualisiert.</p>
 </section>
 <section id="beispiel-python-code">
 <h3>Beispiel Python Code<a class="headerlink" href="#beispiel-python-code" title="Permalink to this heading"></a></h3>
 <p>Sowohl <code class="docutils literal notranslate"><span class="pre">logger</span></code> als auch <code class="docutils literal notranslate"><span class="pre">print</span></code> funktionieren für die Ausgabe von Ergebnissen.
 Die Idee ist, dass Logiken mehr oder weniger 1:1 kopiert und getestet werden können.</p>
-<p>Loggertest</p>
+<section id="loggertest">
+<h4>Loggertest<a class="headerlink" href="#loggertest" title="Permalink to this heading"></a></h4>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Eine Warnung&quot;</span><span class="p">)</span>
 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Eine Info&quot;</span><span class="p">)</span>
 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Eine Debugmeldung&quot;</span><span class="p">)</span>
 <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Eine Debugmeldung&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Datenserien für ein Item ausgeben</p>
+</section>
+<section id="datenserien-fur-ein-item-ausgeben">
+<h4>Datenserien für ein Item ausgeben<a class="headerlink" href="#datenserien-fur-ein-item-ausgeben" title="Permalink to this heading"></a></h4>
 <p>Abfragen von Daten aus dem database plugin für ein spezifisches Item:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
 
@@ -4837,7 +4840,22 @@ Die Idee ist, dass Logiken mehr oder weniger 1:1 kopiert und getestet werden kö
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Damit die Nutzung</p>
+</section>
+<section id="zahlen-der-datensatze-in-der-datenbank">
+<h4>Zählen der Datensätze in der Datenbank<a class="headerlink" href="#zahlen-der-datensatze-in-der-datenbank" title="Permalink to this heading"></a></h4>
+<p>Das folgende Snippet zeigt alle Datenbank-Items an und zählt die Einträge in der Datenbank. Vorsicht: Dies kann sehr lange dauern, wenn Sie eine große Anzahl von Einträgen mit Datenbankattributen haben.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lib.item</span> <span class="kn">import</span> <span class="n">Items</span>
+<span class="n">items</span> <span class="o">=</span> <span class="n">Items</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>
+<span class="n">myfiller</span> <span class="o">=</span> <span class="s2">&quot;                                                            &quot;</span>
+<span class="n">allItems</span> <span class="o">=</span> <span class="n">items</span><span class="o">.</span><span class="n">return_items</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">myItem</span> <span class="ow">in</span> <span class="n">allItems</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">myItem</span><span class="p">,</span><span class="s1">&#39;db&#39;</span><span class="p">):</span>
+        <span class="k">continue</span>
+    <span class="n">mycount</span> <span class="o">=</span> <span class="n">myItem</span><span class="o">.</span><span class="n">db</span><span class="p">(</span><span class="s1">&#39;countall&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="n">myItem</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="n">myfiller</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">myfiller</span><span class="p">)</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">myItem</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span><span class="o">+</span> <span class="s1">&#39; - Anzahl Datensätze :&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">mycount</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 </section>
