@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.network &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit 400cf3c) Dokumentation</title>
+  <title>lib.network &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit c988e1f) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -5225,26 +5225,32 @@
 <span class="sd">    :param port: Remote host port to connect to</span>
 <span class="sd">    :param name: Name of this connection (mainly for logging purposes). Try to keep the name short.</span>
 <span class="sd">    :param autoreconnect: Should the socket try to reconnect on lost connection (or finished connect cycle)</span>
-<span class="sd">    :param connect_retries: Number of connect retries per cycle</span>
-<span class="sd">    :param connect_cycle: Time between retries inside a connect cycle</span>
-<span class="sd">    :param retry_cycle: Time between cycles if :param:autoreconnect is True</span>
+<span class="sd">    :param autoconnect: automatically connect on send. Copies autoreconnect if None</span>
+<span class="sd">    :param connect_retries: Number of connect retries per connect round</span>
+<span class="sd">    :param connect_cycle: Time between retries inside a connect round</span>
+<span class="sd">    :param retry_cycle: Time between connect rounds if autoreconnect is True</span>
+<span class="sd">    :param retry_abort: abort connecting after this many failed connect rounds and call abort_callback, no action if set to 0 or callback not set</span>
+<span class="sd">    :param abort_callback: callback function to be run on connection abort </span>
 <span class="sd">    :param binary: Switch between binary and text mode. Text will be encoded / decoded using encoding parameter.</span>
 <span class="sd">    :param terminator: Terminator to use to split received data into chunks (split lines &lt;cr&gt; for example). If integer then split into n bytes. Default is None means process chunks as received.</span>
-<span class="sd">    :param autoconnect: automatically connect on send. Copies autoreconnect if None</span>
+<span class="sd">    :param timeout: Timeout to set for connected socket. Don&#39;t change without reason</span>
 
 <span class="sd">    :type host: str</span>
 <span class="sd">    :type port: int</span>
 <span class="sd">    :type name: str</span>
 <span class="sd">    :type autoreconnect: bool</span>
+<span class="sd">    :type autoconnect: bool</span>
 <span class="sd">    :type connect_retries: int</span>
 <span class="sd">    :type connect_cycle: int</span>
 <span class="sd">    :type retry_cycle: int</span>
+<span class="sd">    :type retry_abort: int</span>
+<span class="sd">    :type abort_callback: function</span>
 <span class="sd">    :type binary: bool</span>
 <span class="sd">    :type terminator: int | bytes | str</span>
-<span class="sd">    :type autoconnect: bool</span>
+<span class="sd">    :type timeout: int</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">autoreconnect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">connect_retries</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">connect_cycle</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">retry_cycle</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">terminator</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">autoconnect</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">autoreconnect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">autoconnect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">connect_retries</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">connect_cycle</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">retry_cycle</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">retry_abort</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">abort_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">terminator</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
         <span class="c1"># public properties</span>
@@ -5262,13 +5268,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_receiving</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connect_retries</span> <span class="o">=</span> <span class="n">connect_retries</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connect_cycle</span> <span class="o">=</span> <span class="n">connect_cycle</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_retry_cycle</span> <span class="o">=</span> <span class="n">retry_cycle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_retry_cycle</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">retry_cycle</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_retry_abort</span> <span class="o">=</span> <span class="n">retry_abort</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_abort_callback</span> <span class="o">=</span> <span class="n">abort_callback</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span> <span class="o">=</span> <span class="n">timeout</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_hostip</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_family</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_socket</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connect_counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_retry_round_counter</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_binary</span> <span class="o">=</span> <span class="n">binary</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_connected_callback</span> <span class="o">=</span> <span class="kc">None</span>
@@ -5427,10 +5436,11 @@
             <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s1"> starting connection cycle&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connect_counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_retry_round_counter</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__running</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">__running</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_connected</span><span class="p">:</span>
-            <span class="c1"># Try a full connect cycle</span>
-            <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_connected</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect_counter</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect_retries</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__running</span><span class="p">:</span>
+            <span class="c1"># Try a full connect round</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_connected</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect_counter</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect_retries</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_retry_round_counter</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_retry_abort</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_retry_abort</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__running</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">()</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_connected</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
@@ -5447,10 +5457,15 @@
                     <span class="k">return</span> <span class="kc">True</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;self._connect() for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> did not work&quot;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__running</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__running</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect_counter</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connect_retries</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connect_cycle</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_autoreconnect</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__running</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_retry_round_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_retry_abort</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_retry_round_counter</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_retry_abort</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_abort_callback</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_abort_callback</span><span class="p">()</span>
+                    <span class="k">break</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;waiting </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_retry_cycle</span><span class="si">}</span><span class="s1"> seconds before next connection attempt&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_retry_cycle</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_connect_counter</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">else</span><span class="p">:</span>
@@ -5458,7 +5473,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__connect_threadlock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s1"> exception while trying self.__connect_threadlock.release()&#39;</span><span class="p">)</span>
+            <span class="c1"># self.logger.debug(f&#39;{self._id} exception while trying self.__connect_threadlock.release()&#39;)</span>
             <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -5479,7 +5494,7 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_is_connected</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_connect_counter</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s1"> TCP connection failed </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_connect_counter</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_connect_retries</span><span class="si">}</span><span class="s1"> times, last error was: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s1"> TCP connection failed </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_connect_counter</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connect_retries</span><span class="p">)</span><span class="si">}</span><span class="s1"> times, last error was: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__receive_thread_worker</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5502,9 +5517,12 @@
                         <span class="n">timeout</span> <span class="o">=</span> <span class="kc">False</span>
                         <span class="k">try</span><span class="p">:</span>
                             <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_socket</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
-                        <span class="k">except</span> <span class="ne">TimeoutError</span><span class="p">:</span>
+                        <span class="k">except</span> <span class="p">(</span><span class="ne">TimeoutError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="ow">and</span> <span class="n">e</span><span class="o">.</span><span class="n">errno</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="mi">65</span><span class="p">):</span>
+                                <span class="k">raise</span>
                             <span class="n">msg</span> <span class="o">=</span> <span class="kc">None</span>
                             <span class="n">timeout</span> <span class="o">=</span> <span class="kc">True</span>
+
                         <span class="c1"># Check if incoming message is not empty</span>
                         <span class="k">if</span> <span class="n">msg</span><span class="p">:</span>
                             <span class="c1"># TODO: doing this breaks line separation if multiple lines</span>
@@ -5581,8 +5599,6 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__running</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s1"> receive thread shutting down&#39;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_is_receiving</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">return</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_log_exception</span><span class="p">(</span><span class="n">ex</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;lib.network </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s1"> receive thread died with unexpected error: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s1">. Go tell...&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_receiving</span> <span class="o">=</span> <span class="kc">False</span>
@@ -5634,9 +5650,15 @@
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;socket no longer connected on disconnect, exception is </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__connect_thread</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__connect_thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__connect_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__connect_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__receive_thread</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__receive_thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__receive_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__receive_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__connect_thread</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__receive_thread</span> <span class="o">=</span> <span class="kc">None</span>
