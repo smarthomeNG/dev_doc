@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Release 1.10.x - tt. mmm 2023 &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit 1a356e2) Dokumentation</title>
+  <title>Release 1.10.x - tt. mmm 2023 &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit 42331d0) Dokumentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -4697,10 +4697,10 @@ sowie einige neue Plugins.</p>
 <p>Diese Release Notes sind ein Arbeitsstand.</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>Berücksichtigt sind Commits im smarthome Repository bis incl. 4. Juni 2023
-(…)</p></li>
-<li><p>Berücksichtigt sind Commits im plugins Repository bis incl. 3. Juni 2023
-(…)</p></li>
+<li><p>Berücksichtigt sind Commits im smarthome Repository bis incl. 27. Juli 2023
+(lib.shtime: Changed a loglevel from notice to info…)</p></li>
+<li><p>Berücksichtigt sind Commits im plugins Repository bis incl. 27. Juli 2023
+(Merge pull request #765 from sisamiwe/…)</p></li>
 </ul>
 </div></blockquote>
 </div>
@@ -4737,24 +4737,35 @@ zu unterstützten Python Versionen)</p>
 <li><p>…</p></li>
 </ul>
 </li>
+<li><p>venvs: Scripts for creation and activation of virtual environments</p></li>
 </ul>
 </section>
 <section id="updates-im-core">
 <h3>Updates im CORE<a class="headerlink" href="#updates-im-core" title="Permalink to this heading"></a></h3>
-<ul>
-<li><p>…</p></li>
-<li><p>Items:</p>
 <ul class="simple">
+<li><p>bin.smarthome: Replaced th deprecated function getdefaultlocale()</p></li>
+<li><p>Items:</p>
+<ul>
 <li><p>…</p></li>
 </ul>
 </li>
 <li><p>Logics:</p>
-<ul class="simple">
+<ul>
 <li><p>…</p></li>
 </ul>
 </li>
 <li><p>Libs:</p>
-<ul class="simple">
+<ul>
+<li><p>lib.db:</p>
+<ul>
+<li><p>Suppress an error log message, if database is new and empty</p></li>
+</ul>
+</li>
+<li><p>lib.env:</p>
+<ul>
+<li><p>Added descriptions for system logics</p></li>
+</ul>
+</li>
 <li><p>lib.item:</p>
 <ul>
 <li><p>Implementation of the hysteresis attributes for items</p></li>
@@ -4766,6 +4777,9 @@ zu unterstützten Python Versionen)</p>
 <li><p>Attribute autotimer now supports eval expressions; Attribute autotimer is working without specification of
 a value (again)</p></li>
 <li><p>Attribute cycle now supports eval expressions; Attribute cylce is working without specification of a value (again)</p></li>
+<li><p>Corrected Call order of __run_attribute_eval() and _cast_duration() for autotimer</p></li>
+<li><p>Extended configuration options for autotimer (duration)</p></li>
+<li><p>Corrected Call to __run_attribute_eval() and _cast_duration() for autotimer</p></li>
 </ul>
 </li>
 <li><p>lib.log:</p>
@@ -4780,7 +4794,12 @@ a value (again)</p></li>
 </li>
 <li><p>lib.model:</p>
 <ul>
-<li><p>Added SmartDevicePlugin and documentation</p></li>
+<li><p>Added SmartDevicePlugin (sdp) and documentation</p></li>
+<li><p>sdp:
+* Add standby mode
+* Added do_before_send method
+* Update sdp connections for standby
+* Update standby mode on failed connect and reconnect</p></li>
 </ul>
 </li>
 <li><p>lib.network:</p>
@@ -4799,6 +4818,13 @@ a value (again)</p></li>
 <li><p>Implemented a single logger for tasks (before, each task created it’s own logger, resulting
 in hundreds or thousands of active loggers)</p></li>
 <li><p>Added some error handling</p></li>
+<li><p>Bugfix for giving parameters to a task via scheduler.add()</p></li>
+</ul>
+</li>
+<li><p>lib.shpypi: Small updates for changed messages of pip commend</p></li>
+<li><p>lib.shtime:</p>
+<ul>
+<li><p>Added function to_seconds() which converts a string (e.g. ‚2h5m25s‘) to seconds (integer)</p></li>
 </ul>
 </li>
 </ul>
@@ -4809,24 +4835,66 @@ in hundreds or thousands of active loggers)</p></li>
 <ul>
 <li><p>Bugfix for new loglevels in list of loggers</p></li>
 <li><p>api_loggers: Converting all entries of filters list of loggers to strings to be JSON serializable</p></li>
-<li><p>shngadmin:
-* v0.6.7: Added „Add Logger“ and „Remove Logger“ for plugins to list of loggers page
-* v0.7.0: Added „Add Logger“ and „Remove Logger“ for logics, items and advanced loggers to</p>
-<blockquote>
-<div><p>‚list of loggers‘ page</p>
-</div></blockquote>
-<ul class="simple">
+<li><p>Adjusted log levels</p></li>
+<li><p>shngadmin:</p>
+<ul>
+<li><p>v0.6.7: Added „Add Logger“ and „Remove Logger“ for plugins to list of loggers page</p></li>
+<li><p>v0.7.0: Added „Add Logger“ and „Remove Logger“ for logics, items and advanced loggers to
+‚list of loggers‘ page</p></li>
 <li><p>v0.7.2: Added „Modify Handlers“ to loggers configuration page</p></li>
 <li><p>v0.7.3: Added hysteresis attributes to shngadmin</p></li>
-<li><p>shngadmin 0.7.8: Logic list can now be grouped. Logics can be assigned to one or more groups</p></li>
-<li><p>shngadmin 0.7.12, modules.admin.api_logics, lib.logic: Added description for groups; Small fixes</p></li>
-<li><p>shngadmin v0.8.1.: First version using the adm payload protocol for websocket communication</p></li>
+<li><p>v0.7.8: Logic list can now be grouped. Logics can be assigned to one or more groups</p></li>
+<li><p>v0.7.12, modules.admin.api_logics, lib.logic: Added description for groups; Small fixes</p></li>
+<li><p>v0.8.1.: First version using the adm payload protocol for websocket communication</p></li>
+<li><p>v0.8.5:</p>
+<ul>
+<li><p>Implemented item Monitoring</p></li>
+<li><p>Implemented adm payload protocol for websocket communication (used by resource graphs)</p></li>
+<li><p>Completed logics-list</p></li>
 </ul>
 </li>
+<li><p>v0.8.6 small modifications on services tab and logics listing</p></li>
+<li><p>v0.8.8:</p>
+<ul>
+<li><p>Now keeping grouped list of logics expanded when changing tabs</p></li>
+<li><p>Added item description to details in item-tree view</p></li>
+</ul>
+</li>
+<li><p>v0.8.10:</p>
+<ul>
+<li><p>Keeping groups expanded on logic-list</p></li>
+<li><p>Added description attribute to item details</p></li>
+<li><p>In Logger configuration sub-loggers of a plugin are en-/disabled with the plugin logger</p></li>
+</ul>
+</li>
+<li><p>v0.8.17 Implemented load logics from editor page after it has been unloaded due to error</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>http:</p>
+<ul>
+<li><p>Added initial support for hosting a visu by a plugin</p></li>
+<li><p>Modification of hostmaps for rest interface on newer cherrypy packages</p></li>
+<li><p>Added requirement of cherrypy 18.8.9 for Python 3.11 and allowed newer versions of cheroot</p></li>
+<li><p>Use correct config for services, removed /msgS to make services urls working again</p></li>
+<li><p>for webinterfaces:
+* Remove window.resize on click on responsive „+“ sign
+* Only update page resize and headtable calculation if respective elements are available
+* Introduce sorting icons that can be used by plugins (outside of datatables)
+* Introduce set_cookie and get_cookie functions that can be used in plugins for storing values
+* use cookies to store and read automatic update of datatables
+* Update popper.js and provide easy way to integrate tooltips in web interfaces by using createTooltips function
+* Add popper.css
+* Update jquery to 3.7.0 and jquery-ui to 1.13.2
+* Update datatables incl. modules and datetime-moment
+* Add sorting icons for num values
+* Update documentation.. add info on tooltips, datepicker, cookies, icons
+* Update sample plugin to include cookies and tooltips</p></li>
 </ul>
 </li>
 <li><p>websocket:</p>
-<ul class="simple">
+<ul>
 <li><p>Fix for smartvisu payload protocol</p></li>
 <li><p>Implementation of first version of the adm payload protocol</p></li>
 </ul>
@@ -4834,12 +4902,12 @@ in hundreds or thousands of active loggers)</p></li>
 </ul>
 </li>
 <li><p>Plugins:</p>
-<ul class="simple">
+<ul>
 <li><p>…</p></li>
 </ul>
 </li>
 <li><p>tests:</p>
-<ul class="simple">
+<ul>
 <li><p>…</p></li>
 </ul>
 </li>
@@ -4856,7 +4924,7 @@ in hundreds or thousands of active loggers)</p></li>
 <ul class="simple">
 <li><p>Workflows:</p>
 <ul>
-<li><p>…</p></li>
+<li><p>Fix unittest for forked repos</p></li>
 </ul>
 </li>
 </ul>
@@ -4877,6 +4945,11 @@ in hundreds or thousands of active loggers)</p></li>
 <p>Für Details zu den Änderungen an den einzelnen Plugins, bitte die Dokumentation des jeweiligen Plugins unter
 <a class="reference external" href="http://www.smarthomeng.de/user/plugins_all.html">http://www.smarthomeng.de/user/plugins_all.html</a> konsultieren.</p>
 <ul class="simple">
+<li><p>alexarc4shng:</p>
+<ul>
+<li><p>Small bug-fix in Web-IF</p></li>
+</ul>
+</li>
 <li><p>appletv:</p>
 <ul>
 <li><p>Use separate webif/init for web interface integration</p></li>
@@ -4888,6 +4961,8 @@ in hundreds or thousands of active loggers)</p></li>
 <li><p>Adjust requirements to work with Python 3.10</p></li>
 <li><p>Fix module imports for web interface</p></li>
 <li><p>Added requirement to circumvent problematic requirements of pyatv package under Python 3.11</p></li>
+<li><p>Clean up user_doc</p></li>
+<li><p>Improve error handling and logging</p></li>
 </ul>
 </li>
 <li><p>avm:</p>
@@ -4910,6 +4985,14 @@ value of RGB light when beeing in RGB not white mode)</p></li>
 included in item_attributes_master.py</p></li>
 <li><p>Bugfix of update of valid_list of avm_data_type in plugin.yaml by</p></li>
 <li><p>Create valid_list_description in metadata</p></li>
+<li><p>Bugfix and Extension of get_hosts</p></li>
+<li><p>Make use of standard methods of class SmartPlugin for item handling/storage</p></li>
+<li><p>Improve Fritz_Home</p></li>
+</ul>
+</li>
+<li><p>database:</p>
+<ul>
+<li><p>Changed log message, if no cache value was found</p></li>
 </ul>
 </li>
 <li><p>db_addon:</p>
@@ -4929,11 +5012,42 @@ substring of item_path</p></li>
 <li><p>Allow to define database_item_path to be defined up to 3 level above db_addon_item</p></li>
 <li><p>Allow to define database_item_path to be defined up to 3 level above db_addon_item (bugfix)</p></li>
 <li><p>Add plugin parameter to enable/disable optimizing defined value filters</p></li>
+<li><p>Enable on-change attributes to be run on startup</p></li>
+<li><p>Bugfix in handle_onchange</p></li>
+<li><p>Code rework to enable more flexible attributes</p></li>
+<li><p>Bump to version 1.2.0 due to significant change in code</p></li>
+<li><p>several fixes</p></li>
+<li><p>bump to v1.2.1</p></li>
+<li><p>Code rework to enable more flexible attributes</p></li>
+</ul>
+</li>
+<li><p>drexelundweiss:</p>
+<ul>
+<li><p>Improved error handling</p></li>
+<li><p>Implement plugin logo</p></li>
+<li><p>Clean up init code, bump version to v1.5.4</p></li>
+</ul>
+</li>
+<li><p>enocean:</p>
+<ul>
+<li><p>Robustify plugin reaction to loss of Enocean serial device</p></li>
 </ul>
 </li>
 <li><p>executor:</p>
 <ul>
 <li><p>Extending base_plugin.html instead of extending base.html in webinterface</p></li>
+<li><p>Fix major issue with autocomplete. Now full item paths are available instead of (non existing) item name references</p></li>
+<li><p>Allow sorting of saved files, minor code improvements</p></li>
+<li><p>Re-write autocomplete method using worker and promise functions. Now the plugin can be used immediately
+without having to wait for fetching the autocomplete dict.</p></li>
+<li><p>Fix autocomplete dict. Previously (sub)items called „id“ were fetched wrongly</p></li>
+<li><p>Fix and extend user_doc</p></li>
+<li><p>Bump version to 1.2.0</p></li>
+<li><p>Introduce popper.js tooltips for sorting</p></li>
+<li><p>Add two database example scripts</p></li>
+<li><p>Introduce example scripts that can be loaded in the web interface</p></li>
+<li><p>Change order of file list</p></li>
+<li><p>Improve button enable/disable</p></li>
 </ul>
 </li>
 <li><p>gpio:</p>
@@ -4944,6 +5058,17 @@ substring of item_path</p></li>
 <li><p>hue2:</p>
 <ul>
 <li><p>Adjusted requirements for zeroconf package</p></li>
+</ul>
+</li>
+<li><p>knx:</p>
+<ul>
+<li><p>Prevent send actions to bus while plugin is not running</p></li>
+<li><p>Fix issue with polling knx items on startup. All polls are put in a waiting list and polled on run only.</p></li>
+</ul>
+</li>
+<li><p>modbus_tcp:</p>
+<ul>
+<li><p>Fixed bug</p></li>
 </ul>
 </li>
 <li><p>piratewthr:</p>
@@ -4966,6 +5091,7 @@ substring of item_path</p></li>
 <li><p>smartvisu:</p>
 <ul>
 <li><p>Changed default value for generate_pages to False</p></li>
+<li><p>Corrected log message</p></li>
 </ul>
 </li>
 <li><p>stateengine:</p>
@@ -4975,6 +5101,8 @@ substring of item_path</p></li>
 <li><p>Temporarily set state_name and state_id on init</p></li>
 <li><p>Adjust docu accordingly regarding current.state_name variable</p></li>
 <li><p>Bump version to 1.9.6</p></li>
+<li><p>Update struct and logging</p></li>
+<li><p>(re)introduce separate loggers for each stateengine item. Custom logger stateengine.&lt;item&gt;.rules</p></li>
 </ul>
 </li>
 <li><p>tankerkoenig:</p>
@@ -4995,6 +5123,7 @@ substring of item_path</p></li>
 <li><p>Bugfix update item with relay</p></li>
 <li><p>Improve exception handling</p></li>
 <li><p>Improve clearing retained messages</p></li>
+<li><p>Revert direct use of _plg_item_dict in WebIF</p></li>
 </ul>
 </li>
 <li><p>telegram:</p>
@@ -5006,6 +5135,11 @@ substring of item_path</p></li>
 <li><p>V2.0.0 Additions in locale; evaluate if debugging</p></li>
 <li><p>Retry sending in case of error (with parameters)</p></li>
 <li><p>Attempt to catch the exception in the updater</p></li>
+</ul>
+</li>
+<li><p>Webservices:</p>
+<ul>
+<li><p>Fix for splitting up of autotimer attribute into _value and _time</p></li>
 </ul>
 </li>
 </ul>
@@ -5077,13 +5211,14 @@ Repositiory aufgenommen.</p>
 <section id="tools">
 <h3>Tools<a class="headerlink" href="#tools" title="Permalink to this heading"></a></h3>
 <ul class="simple">
-<li><p>…</p></li>
+<li><p>Added script ‚postinstall‘ which sets file permissions and cre…ates a virtual environment to run SmartHomeNG in</p></li>
 </ul>
+<p>** checkplugins: catch error when a file resides within plugin directory</p>
 </section>
 <section id="dokumentation">
 <h3>Dokumentation<a class="headerlink" href="#dokumentation" title="Permalink to this heading"></a></h3>
 <ul class="simple">
-<li><p>…</p></li>
+<li><p>Increase version required for sphinx tabs</p></li>
 <li><p>…</p></li>
 </ul>
 </section>
