@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.logic &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit 0af0884) Dokumentation</title>
+  <title>lib.logic &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit 109e8ba) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4807,17 +4807,16 @@
         <span class="n">_config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_userlogics</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">_config</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;_groups&#39;</span><span class="p">:</span>
-                <span class="c1">#self._groups = _config[name]</span>
-                <span class="k">pass</span>
-            <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;_groups&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_load_logic</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">_config</span><span class="p">)</span>
 
         <span class="c1"># load /etc/admin.yaml</span>
         <span class="n">admconf_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_etc_dir</span><span class="p">(),</span> <span class="s1">&#39;admin&#39;</span><span class="p">)</span>
         <span class="n">_admin_conf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="n">admconf_filename</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span> <span class="o">=</span> <span class="n">_admin_conf</span><span class="p">[</span><span class="s1">&#39;logics&#39;</span><span class="p">][</span><span class="s1">&#39;groups&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">_admin_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;logics&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span> <span class="o">=</span> <span class="n">_admin_conf</span><span class="p">[</span><span class="s1">&#39;logics&#39;</span><span class="p">][</span><span class="s1">&#39;groups&#39;</span><span class="p">]</span>
 
 
     <span class="k">def</span> <span class="nf">_read_logics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">directory</span><span class="p">):</span>
