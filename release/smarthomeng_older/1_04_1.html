@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Release 1.4.2 - 2. Januar 2018 &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit a35fe20) Dokumentation</title>
+  <title>Release 1.4.1 - 23. Dezember 2017 &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit 8a74490) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4327,6 +4327,12 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../faq.html">FAQ - Häufig gestellte Fragen</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../release.html">Release Notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../smarthome_py/releases.html">Release 1.0 und davor</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="releases.html">Release 1.1 bis 1.5</a><ul class="simple">
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../1_10.html">Release 1.10.x - tt. mmm 2023</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../1_10.html#uberblick">Überblick</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../1_10.html#minimum-python-version">Minimum Python Version</a></li>
@@ -4614,7 +4620,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Release 1.4.2 - 2. Januar 2018</li>
+      <li class="breadcrumb-item active">Release 1.4.1 - 23. Dezember 2017</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -4623,29 +4629,41 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="release-1-4-2-2-januar-2018">
-<h1>Release 1.4.2 - 2. Januar 2018<a class="headerlink" href="#release-1-4-2-2-januar-2018" title="Permalink to this heading"></a></h1>
+  <section id="release-1-4-1-23-dezember-2017">
+<h1>Release 1.4.1 - 23. Dezember 2017<a class="headerlink" href="#release-1-4-1-23-dezember-2017" title="Permalink to this heading"></a></h1>
 <p>Es gibt eine Reihe von Bugfixes und neue Features im Core von SmartHomeNG und den Plugins.</p>
+<section id="unterstutzte-python-versionen">
+<h2>Unterstützte Python Versionen<a class="headerlink" href="#unterstutzte-python-versionen" title="Permalink to this heading"></a></h2>
+<p>Bitte beachten: Ab SmartHomeNG Release 1.4 wollen wir die aktive Unterstützung älterer Python
+Versionen einstellen. Die älteste unterstützte Python Version wird dann Python 3.4 sein.
+(Siehe <em>Hard- u. Software Anforderungen</em> im Abschnitt <em>Installation</em> zu unterstützten Python Versionen)</p>
+<p>Das bedeutet nicht unbedingt, dass SmartHomeNG ab Release 1.4 nicht mehr unter älteren Python
+Versionen läuft. Es bedeutet, dass SmartHomeNG nicht mehr mit älteren Python Versionen getestet
+wird und das gemeldete Fehler mit älteren Python Versionen nicht mehr zu Buxfixen führen.</p>
+</section>
+<section id="absolute-minimum-python-versionen-auf-3-3-angehoben">
+<h2>Absolute minimum Python Versionen auf 3.3 angehoben<a class="headerlink" href="#absolute-minimum-python-versionen-auf-3-3-angehoben" title="Permalink to this heading"></a></h2>
+<p>Die Minimum Python Version in der SmartHomeNG startet wurde in SmartHomeNG v1.4 von 3.2 auf 3.3
+erhöht. Aufgrund der größeren Änderungen zwischen Python 3.2 und 3.3 war es schon bisher
+problematisch SmartHomeNG mit Plugins in eine Python 3.2 zum Laufen zu bringen.</p>
+</section>
 <section id="neue-funktionen">
 <h2>Neue Funktionen<a class="headerlink" href="#neue-funktionen" title="Permalink to this heading"></a></h2>
 <section id="neue-funktionen-im-core">
 <h3>Neue Funktionen im CORE<a class="headerlink" href="#neue-funktionen-im-core" title="Permalink to this heading"></a></h3>
 <ul class="simple">
-<li><p>Spezifische Fehlermeldung hinzugefügt, falls SmartHomeNG keine Konfiguration in ../etc schreiben darf.</p></li>
+<li><p>Zusammensetzung des Versions-Strings aus GIT Informationen korrigiert</p></li>
 <li><p>Items:</p>
 <ul>
-<li><p>Attribut <strong>update_by</strong> hinzugefügt</p></li>
-<li><p>Initialisierung von prev_update und prev_change für Items mit gecachetem Value korrigiert</p></li>
+<li><p>Bugfix: Exception abgefangen, falls <strong>on_update</strong> oder <strong>on_change</strong> zu einem nicht existierenden Item zuweisen wollen</p></li>
+<li><p>Bugfix: Expansion von relativen Item-Pfaden, wenn das Item Attribut kein String sondern eine Liste von Strings ist</p></li>
+<li><p>Casting für <strong>list</strong> s und <strong>dict</strong> s so erweitert, dass Werte vom Type <strong>str</strong> entsprechend gecastet werden (über json.loads)</p></li>
+<li><p>Beim Laden von Item Definitionen wird bei Anwender-Definierten Items der Quell-Dateiname im Item gespeichert (zur Anzeige im Backend und für zukünftige Features)</p></li>
 </ul>
 </li>
-<li><p>Scenes:</p>
+<li><p>Scheduler:</p>
 <ul>
-<li><p>Bugfix: Fehler beim Start von SmartHomeNG abgefangen, wenn noch keine gelernten Werte gespeichert worden waren.</p></li>
-</ul>
-</li>
-<li><p>conf_to_yaml_converter:</p>
-<ul>
-<li><p>Bugfix: Der Konverter unterstützt jetzt Blöcke von Kommentaren die länger als 11 kByte sind. Jetzt sind Kommentarblöcke bis zu 32 kByte erlaubt.</p></li>
+<li><p>Zeiten mit sunrise/sunset in crontab werden jetzt timezone aware wiedergegeben statt mit utc</p></li>
 </ul>
 </li>
 </ul>
@@ -4653,41 +4671,40 @@
 <section id="neue-plugins-und-plugin-erweiterungen">
 <h3>Neue Plugins und Plugin-Erweiterungen<a class="headerlink" href="#neue-plugins-und-plugin-erweiterungen" title="Permalink to this heading"></a></h3>
 <ul class="simple">
+<li><p>AVDevice:</p>
+<ul>
+<li><p>Anpassungen</p></li>
+</ul>
+</li>
 <li><p>Backend:</p>
 <ul>
-<li><p>Anzeige für Attribut <strong>update_by</strong> hinzugefügt</p></li>
+<li><p>Grundsätzliche Editierbarkeit von Items der Typen <strong>list</strong> und <strong>dict</strong></p></li>
+<li><p>Für Anwender-definierte Items: Anzeige des Dateinamens in dem das Item definiert wurde</p></li>
+<li><p>Anzeige der SmartHomeNG Version erweitert</p></li>
+<li><p>Aus der Logging-Liste werden Logger herausgefiltert, die nur einen NullHandler haben.</p></li>
 </ul>
 </li>
 <li><p>CLI:</p>
 <ul>
-<li><p>In der Liste der Logiken wird nun wieder der Zeitpunkt des nächsten Laufs angezeigt</p></li>
+<li><p>Durch das erweiterte Casting für <strong>list</strong> s und <strong>dict</strong> s ist es möglich mit dem CLI Plugin Listen und Dictionaries Werte zuzuweisen</p></li>
 </ul>
 </li>
-<li><p>ComfoAir:</p>
+<li><p>mail:</p>
 <ul>
-<li><p>Prüfung der <strong>comfoair_trigger</strong> Einstellung korrigiert</p></li>
+<li><p>Gmail Support hinzugefügt</p></li>
 </ul>
 </li>
-<li><p>Enigma2:</p>
+<li><p>UZSU:</p>
 <ul>
-<li><p>Methode <strong>set_power_state</strong> hinzugefügt</p></li>
+<li><p>Zeiten mit sunrise/sunset werden jetzt timezone aware wiedergegeben statt mit utc</p></li>
 </ul>
 </li>
-<li><p>LIRC:</p>
-<ul>
-<li><p>Parameter <strong>instance</strong> ist nun optional und kann dann angegeben werden, wenn Mulit-Instance verwendet wird</p></li>
 </ul>
-</li>
-<li><p>RCSwitch-PI:</p>
-<ul>
-<li><p>Fehlender Import im Code, Troubleshooting-Section in der README erweitert</p></li>
-</ul>
-</li>
-<li><p>UZSU</p>
-<ul>
-<li><p>Mehr Debug Ausgaben für das Attribut ‚active‘ hinzugefügt</p></li>
-</ul>
-</li>
+</section>
+<section id="dokumentation">
+<h3>Dokumentation<a class="headerlink" href="#dokumentation" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>Erweiterte Entwickler Anwenderdokumentation (Deutsch) im Web</p></li>
 </ul>
 </section>
 </section>

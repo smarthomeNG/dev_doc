@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Release 1.4.1 - 23. Dezember 2017 &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit a35fe20) Dokumentation</title>
+  <title>Release 1.4 - 17. Dezember 2017 &mdash; Dokumentation v1.9.5.3 v1.9.5.3 develop (Stand 31. März 2023, commit 8a74490) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4327,6 +4327,12 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../faq.html">FAQ - Häufig gestellte Fragen</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../release.html">Release Notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../smarthome_py/releases.html">Release 1.0 und davor</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="releases.html">Release 1.1 bis 1.5</a><ul class="simple">
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../1_10.html">Release 1.10.x - tt. mmm 2023</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../1_10.html#uberblick">Überblick</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../1_10.html#minimum-python-version">Minimum Python Version</a></li>
@@ -4614,7 +4620,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Release 1.4.1 - 23. Dezember 2017</li>
+      <li class="breadcrumb-item active">Release 1.4 - 17. Dezember 2017</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -4623,9 +4629,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="release-1-4-1-23-dezember-2017">
-<h1>Release 1.4.1 - 23. Dezember 2017<a class="headerlink" href="#release-1-4-1-23-dezember-2017" title="Permalink to this heading"></a></h1>
-<p>Es gibt eine Reihe von Bugfixes und neue Features im Core von SmartHomeNG und den Plugins.</p>
+  <section id="release-1-4-17-dezember-2017">
+<h1>Release 1.4 - 17. Dezember 2017<a class="headerlink" href="#release-1-4-17-dezember-2017" title="Permalink to this heading"></a></h1>
+<p>Es gibt eine Menge neuer Features im Core von SmartHomeNG und den Plugins.</p>
 <section id="unterstutzte-python-versionen">
 <h2>Unterstützte Python Versionen<a class="headerlink" href="#unterstutzte-python-versionen" title="Permalink to this heading"></a></h2>
 <p>Bitte beachten: Ab SmartHomeNG Release 1.4 wollen wir die aktive Unterstützung älterer Python
@@ -4637,68 +4643,236 @@ wird und das gemeldete Fehler mit älteren Python Versionen nicht mehr zu Buxfix
 </section>
 <section id="absolute-minimum-python-versionen-auf-3-3-angehoben">
 <h2>Absolute minimum Python Versionen auf 3.3 angehoben<a class="headerlink" href="#absolute-minimum-python-versionen-auf-3-3-angehoben" title="Permalink to this heading"></a></h2>
-<p>Die Minimum Python Version in der SmartHomeNG startet wurde in SmartHomeNG v1.4 von 3.2 auf 3.3
-erhöht. Aufgrund der größeren Änderungen zwischen Python 3.2 und 3.3 war es schon bisher
-problematisch SmartHomeNG mit Plugins in eine Python 3.2 zum Laufen zu bringen.</p>
+<p>Die Minimum Python Version in der SmartHomeNG startet wurde von 3.2 auf 3.3 erhöht. Aufgrund
+der größeren Änderungen zwischen Python 3.2 und 3.3 war es schon bisher problematisch SmartHomeNG
+mit Plugins in eine Python 3.2 zum Laufen zu bringen.</p>
 </section>
 <section id="neue-funktionen">
 <h2>Neue Funktionen<a class="headerlink" href="#neue-funktionen" title="Permalink to this heading"></a></h2>
 <section id="neue-funktionen-im-core">
 <h3>Neue Funktionen im CORE<a class="headerlink" href="#neue-funktionen-im-core" title="Permalink to this heading"></a></h3>
 <ul class="simple">
-<li><p>Zusammensetzung des Versions-Strings aus GIT Informationen korrigiert</p></li>
+<li><p>Ladbare Core Module:</p>
+<ul>
+<li><p>Module-Loader: Ermöglicht ladbare Module zur Erweiterung der Core Funktionalität.</p></li>
+<li><p>Der Module-Loader unterstützt die Prüfung der Parameter gegen Metadaten (analog zu den Plugins).</p></li>
+<li><p>http-Modul: Ermöglicht Plugins selbst über CherryPy Webinterfaces zur Verfügung zu stellen</p></li>
+<li><p>Rudimentäres Module API implementiert</p></li>
+</ul>
+</li>
+<li><p>SmartPlugin Klasse erweitert</p></li>
+<li><p>Warnung, falls LANG Environment Variable nicht sinnvoll gesetzt ist.</p></li>
 <li><p>Items:</p>
 <ul>
-<li><p>Bugfix: Exception abgefangen, falls <strong>on_update</strong> oder <strong>on_change</strong> zu einem nicht existierenden Item zuweisen wollen</p></li>
-<li><p>Bugfix: Expansion von relativen Item-Pfaden, wenn das Item Attribut kein String sondern eine Liste von Strings ist</p></li>
-<li><p>Casting für <strong>list</strong> s und <strong>dict</strong> s so erweitert, dass Werte vom Type <strong>str</strong> entsprechend gecastet werden (über json.loads)</p></li>
-<li><p>Beim Laden von Item Definitionen wird bei Anwender-Definierten Items der Quell-Dateiname im Item gespeichert (zur Anzeige im Backend und für zukünftige Features)</p></li>
+<li><p>Für die Vorbelegung des Wertes von Items in den Konfigurationsdateien kann nun <cite>initial_value:</cite> analog zu <cite>value</cite> verwendet werden.Zur Vermeidung von Verwechslungen zum namensgleichen <cite>value</cite> in Ausdrücken wie bei <cite>eval</cite>.</p></li>
+<li><p>Attribute <cite>on_update</cite> und <cite>on_change</cite> eingeführt. Mit Hilfe dieser Item Attribute können die Werte anderer Items gesetzt werden.</p></li>
+<li><p>Funktionen prev_update_age() und prev_update() hinzugefügt.</p></li>
+</ul>
+</li>
+<li><p>Plugins:</p>
+<ul>
+<li><p>Plugins können ein Webinterface implementieren (durch Nutzung des http-Moduls)</p></li>
+<li><p>Unterstützung mehrerer Versionen eines Plugins. Vorgänger-Versionen von Plugins können mit einem Plugin ausgeliefert werden und durch Angebe der Versionsnummer in /etc/plugin.yaml statt der aktuellen Version geladen werden.</p></li>
+<li><p>Anwender und Entwickler Dokumentation kann dynamisch um Plugin Dokumentation ergänzt werden. (Durch Erstellen der Dateien user_doc.rst bzw. develpoer_doc.rst)</p></li>
 </ul>
 </li>
 <li><p>Scheduler:</p>
 <ul>
-<li><p>Zeiten mit sunrise/sunset in crontab werden jetzt timezone aware wiedergegeben statt mit utc</p></li>
+<li><p>Implementierung eigener Nammensräume für Scheduler von Items, Logiken und Plugins, um mögliche Kollisionen durch Namensgleichheiten zu vermeiden. (ist besonders zu beachten, fall man <cite>sh.scheduler.change()</cite> für Scheduler von Logiken nutzt. Dort muss dem Scheduler Namen ein <cite>logic.</cite> vorangestellt werden)</p></li>
 </ul>
 </li>
+<li><p>Einführung von Plugin Metadaten:</p>
+<ul>
+<li><p>Erweiterung der Plugins um eine Metadaten-Datei.</p></li>
+<li><p>Metadaten zu Plugins werden in einer plugin.yaml im Plugin Verzeichnis abgelegt.</p></li>
+<li><p>Bei existierenden Plugin-Metadaten wird die Versionsverträglichkeit zwischen SmartHomeNG und Plugin geprüft</p></li>
+<li><p>Bei existierenden Parameter Definitionen in den Plugin-Metadaten werden die in /etc/plugin.yaml konfigurierten Werte auf formale Gültigkeit (Datentyp, min/max Werte, Werteliste, etc.) geprüft.</p></li>
+<li><p>Neues Parameter Interface für Plugins: Bei existierenden Parameter Definitionen in den Plugin-Metadaten werden die geprüften Werte im Ziel-Datentyp in einem Dict an das gestartete Plugin übergeben.</p></li>
+<li><p>Angabe des <cite>classname</cite> in den Metadaten ermöglicht einfachere Konfiguration: Nur <cite>plugin_name:</cite> muss in /etc/plugin.yaml angegeben werden, statt <cite>class_path:</cite> und <cite>class_name:</cite> (<cite>classname</cite> ist zu den Metadaten aller Plugins hinzugefügt worden)</p></li>
+<li><p>Klassifizierung der Plugins in den Metadaten zur bessern Übersicht. Die Klassifizierung wird zur Erstellung der Doku herangezogen.</p></li>
 </ul>
+</li>
+<li><p>Szenen:</p>
+<ul>
+<li><p>Unterstützung des YAML Formates für die Konfiguration von Szenen</p></li>
+<li><p>Einführung eines API für Szenen</p></li>
+<li><p>Szenen können statt absolute Werte für Items zu definieren, auch Eval-Ausdrücke definieren. In den Eval-Ausdrücken ist die Referenzierung von Items sowohl absolut, als auch relativ zum Szenen-Item möglich</p></li>
+<li><p>Im YAML Format können Namen für die Stati einer Szene vergeben werden</p></li>
+</ul>
+</li>
+<li><p>Logiken:</p>
+<ul>
+<li><p>Methode last_run() hinzugefügt</p></li>
+<li><p>Logics API:</p>
+<ul>
+<li><p>Implementierung eines APIs für Logiken</p></li>
+<li><p>Das enable/disable von Logiken über das API wird persistiert (bleibt also auch über einen Neustart von SmartHomeNG erhalten)</p></li>
+<li><p>Das API ermöglicht den Plugins Backend, Blockly und CLI ein erweitertes Handling von Logiken (z.B. Update der Logik-Konfiguration) falls das neue Konfigurationsformat (yaml) verwendet wird.</p></li>
+<li><p>Details des API sind der Entwickler Dokumentation zu entnehmen</p></li>
+</ul>
+</li>
+<li><p>Zugriff auf das Logics-API aus Logiken heraus</p></li>
+<li><p>Möglichkeit persistenter Variablen für Logiken dokumentiert</p></li>
+</ul>
+</li>
+<li><p>Neue Kommandozeilen Option um den Ort der Verzeichnisse mit den Konfigurationsdateien (/etc, /items und /logics) ändern zu können.</p></li>
+</ul>
+</section>
+<section id="entfernte-core-bibliotheken">
+<h3>Entfernte CORE Bibliotheken<a class="headerlink" href="#entfernte-core-bibliotheken" title="Permalink to this heading"></a></h3>
+<p>Keine</p>
 </section>
 <section id="neue-plugins-und-plugin-erweiterungen">
 <h3>Neue Plugins und Plugin-Erweiterungen<a class="headerlink" href="#neue-plugins-und-plugin-erweiterungen" title="Permalink to this heading"></a></h3>
 <ul class="simple">
-<li><p>AVDevice:</p>
+<li><p>Allgemein:</p>
 <ul>
-<li><p>Anpassungen</p></li>
+<li><p>sample_plugin basierend auf erweiterter SmartPlugin Klasse (unter /dev/sample_plugin)</p></li>
+<li><p>sample_plugin mit Web-Interface (unter /dev/sample_plugin_webif)</p></li>
+</ul>
+</li>
+<li><p>Blockly: Graphischer Logik Editor mit Integration in das Backend Plugin (noch Expermental)</p></li>
+<li><p>WebServices Plugin, dass das neue Web-Interface nutzt</p></li>
+<li><p>Nokia Health Plugin</p></li>
+<li><p>AV Device:</p>
+<ul>
+<li><p>Änderung der txt Konfigurationsdatei (Achtung! Bestehende Dateien müssen aktualisiert werden!)</p></li>
+<li><p>Unterstützt nun neben Pioneer AV Receivern auch die wichtigsten Funktionen von Denon AV-Geräten</p></li>
+<li><p>Optimierte Konfiguration von zusätzlichen Funktionen und Geräten</p></li>
+<li><p>Unterstützung der Konfigurationsüberprüfung mittels avdevice/plugin.yaml</p></li>
+<li><p>Optimierung vieler Funktionen wie erneutes Senden eines Befehl, wenn die erwartete Antwort nicht empfangen werden kann, Reset auf letzten bekannten Wert, Abfrage der aktuellen Einstellungen für sämtliche Zonen, etc.</p></li>
 </ul>
 </li>
 <li><p>Backend:</p>
 <ul>
-<li><p>Grundsätzliche Editierbarkeit von Items der Typen <strong>list</strong> und <strong>dict</strong></p></li>
-<li><p>Für Anwender-definierte Items: Anzeige des Dateinamens in dem das Item definiert wurde</p></li>
-<li><p>Anzeige der SmartHomeNG Version erweitert</p></li>
-<li><p>Aus der Logging-Liste werden Logger herausgefiltert, die nur einen NullHandler haben.</p></li>
+<li><p>Das Backend Plugin nutzt/benötigt nun das http-Modul</p></li>
+<li><p>Integration des Blockly Plugins um Logiken über Webinterface visuell zu konfigurieren (über Logik-Liste oder Plugin-Liste)</p></li>
+<li><p>Systeminfo:</p>
+<ul>
+<li><p>Aufteilung in zwei Reiter (Systemeigenschaften und PyPI Check)</p></li>
+<li><p>PyPi Check prüft nun gegen die Requirements von SmartHomeNG</p></li>
+</ul>
+</li>
+<li><p>Dienste:</p>
+<ul>
+<li><p>YAML Syntax Checker hinzugefügt</p></li>
+<li><p>Eval Syntax Checker hinzugefügt</p></li>
+<li><p>Syntax Highlighting im CONF-YAML Konverter</p></li>
+</ul>
+</li>
+<li><p>Items:</p>
+<ul>
+<li><p>Anzeige von <strong>update_age</strong> „Alter (Update)“ hinzugefügt</p></li>
+<li><p>Anzeige von <strong>prev_update_age</strong> „vorh. Alter (Update)“ und <strong>prev_update</strong> „vorheriges Update“ hinzugefügt</p></li>
+</ul>
+</li>
+<li><p>Logiken:</p>
+<ul>
+<li><p>Erstellen neuer Logiken</p></li>
+<li><p>Konfiguration der Logiken (etc/logic.yaml) ist zur Laufzeit änderbar</p></li>
+<li><p>Logiken können entladen und geladen werden.</p></li>
+<li><p>Editieren von Logiken</p>
+<ul>
+<li><p>Erweiterungen des CodeMirror Logikeditors (Python Sourcecode)</p>
+<ul>
+<li><p>Full Screen Modus via F11</p></li>
+<li><p>Automatische Anpassung an Browserfenster</p></li>
+<li><p>Autocomplete für Python Befehle und Item-Pfade</p></li>
+<li><p>Optionale Zeilenumbrüche</p></li>
+</ul>
+</li>
+<li><p>Löschen von Logiken</p></li>
+<li><p>Integration für das Blockly Plugin</p></li>
+<li><p>Anzeige des Zeitpunkts des letzten Laufs auf der Logik-Detail Seite</p></li>
+</ul>
+</li>
+<li><p>Scheduler:</p>
+<ul>
+<li><p>Anzeige der Item-Schedules, Logik-Schedules, Plugin-Schedules und sonstiger Schedules erfolgt auf eigenen Reitern</p></li>
+</ul>
+</li>
+<li><p>Plugins:</p>
+<ul>
+<li><p>Erweiterte Anzeige der Pluginliste</p></li>
+<li><p>Anzeige der Konfigurationseinstellungen aus der plugin.yaml/.conf durch Klick auf das jeweilige Plugin in der Liste</p></li>
+<li><p>Verlinkung auf Webinterfaces von Plugins (falls diese implementiert sind)</p></li>
+</ul>
+</li>
+<li><p>Szenen:</p>
+<ul>
+<li><p>Neue Seite zur Anzeige der definierten Szenen hinzugefügt</p></li>
+</ul>
+</li>
+<li><p>Threads:</p>
+<ul>
+<li><p>Verbesserte Anzeige der aktiven Threads</p></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li><p>CLI:</p>
 <ul>
-<li><p>Durch das erweiterte Casting für <strong>list</strong> s und <strong>dict</strong> s ist es möglich mit dem CLI Plugin Listen und Dictionaries Werte zuzuweisen</p></li>
+<li><p>Umstellung auf das Logics-API</p></li>
+<li><p>Erweiterter Hilfe Befehl: mit help [group] kann (statt der vollständigen Hilfe) die Hilfe zu einer Gruppe von Befehlen (item, log, logic, scheduler) angezeigt werden.</p></li>
+<li><p>neuer Befehl zu Anzeige detaillierter Informationen zu einer Logik</p></li>
+<li><p>Überarbeitung der Ausgabe der Threadliste</p></li>
+<li><p>Einführung einer neuen (logischeren) Befehlsbenennung: Beispiel: Alle Befehle für Logiken beginnen mit ‚l‘. Die alten Befehle funktionieren weiterhin (bis auf Namens-Kollisionen).</p></li>
 </ul>
 </li>
-<li><p>mail:</p>
+<li><p>Simulation:</p>
 <ul>
-<li><p>Gmail Support hinzugefügt</p></li>
+<li><p>Unterstützung eines Filters, so dass nur bestimmte caller erlaubt sind (bspw. KNX oder Visu)</p></li>
 </ul>
 </li>
-<li><p>UZSU:</p>
+<li><p>Pushover Plugin zum Versenden von Notifizierungen auf Geräte wie z.B. Smartphones</p></li>
+<li><p>DataLog Plugin enthaelt ein Fix fuer das Feld <cite>stamp</cite></p></li>
+<li><p>Weitere Plugins auf SmartPlugin umgestellt: datalog, memlog, comfoair, artnet, luxtronic2</p></li>
+<li><p>SMA Plugin prueft auf Bluetooth Support in Python um den Nutzer auf fehlende Unterstuetzung hinzuweisen</p></li>
+<li><p>Enocean:</p>
 <ul>
-<li><p>Zeiten mit sunrise/sunset werden jetzt timezone aware wiedergegeben statt mit utc</p></li>
+<li><p>Unterstützung für einfache Schalter (Protokoll D2-01-07), wie z.B. Peha d 451 fu-ebi pf o.t. nr. 00364476</p></li>
+<li><p>Unterstützung für Eltako Heligkeitssensor (FAH60)</p></li>
+<li><p>Lernmethoden restrukturiert und erweitert</p></li>
+</ul>
+</li>
+<li><p>KNX Plugin: Typo Fix in enable_stats() / disable_stats()</p></li>
+<li><p>DLMS Plugin: Pruefsummenbehandlung wieder eingefuehrt/aktiviert</p></li>
+<li><p>LIRCD Plugin: Neues Plugin um via lircd IR Kommandos zu verschicken</p></li>
+<li><p>MPD Plugin: Unterstützung um Playlists zu laden und abzuspielen</p></li>
+<li><p>Database-Plugin mit neuen Aggregatsfunktionen:</p>
+<ul>
+<li><p><cite>sum</cite> - Liefert summierte Werte über den abgefragten Zeitraum zurück</p></li>
+<li><p><cite>count</cite> - Liefert summierte Anzahl über den abgefragen Zeitraum zurück (kann mit einer Bedingung kombiniert werden z.B. <cite>count&gt;10</cite>)</p></li>
+<li><p><cite>diff</cite> - Liefert die jeweiligen Differenzen der Werte über den abgefragten Zeitraum zurück</p></li>
+<li><p><cite>raw</cite> - Liefert alle Werte für den abgefragten Zeitraum zurück ohne eine Aggregation durchzuführen</p></li>
+</ul>
+</li>
+<li><p>XBMC: Neues Kommando <cite>shutdown</cite> wurde implementiert</p></li>
+<li><p>visu_smartvisu:</p>
+<ul>
+<li><p>Verbesserte Anzeige der <strong>Category</strong> Seite auf mobilen Endgeräten</p></li>
+<li><p>Initialer Support für smartVISU v2.9 hinzugefügt</p></li>
+</ul>
+</li>
+<li><p>visu_websocket:</p>
+<ul>
+<li><p>Reagiert nun bei Logiken auf Änderungen an visu_acl ohne Neustart von SmartHomeNG</p></li>
+<li><p>Protokollerweiterung für spätere smartVISU Versionen</p></li>
 </ul>
 </li>
 </ul>
 </section>
+<section id="entfernte-plugins">
+<h3>Entfernte Plugins<a class="headerlink" href="#entfernte-plugins" title="Permalink to this heading"></a></h3>
+<p>Bisher keine</p>
+</section>
 <section id="dokumentation">
 <h3>Dokumentation<a class="headerlink" href="#dokumentation" title="Permalink to this heading"></a></h3>
 <ul class="simple">
-<li><p>Erweiterte Entwickler Anwenderdokumentation (Deutsch) im Web</p></li>
+<li><p>Erweiterte Entwickler Dokumentation (English) im Web</p></li>
+<li><p>Initiale Version der Anwenderdokumentation (Deutsch) im Web</p></li>
 </ul>
 </section>
 </section>
