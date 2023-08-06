@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.9.5.4 v1.9.5.4 develop (Stand 31. März 2023, commit 6adf630) Dokumentation</title>
+  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.9.5.4 v1.9.5.4 develop (Stand 31. März 2023, commit 96e2ecf) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -4842,9 +4842,11 @@
     <span class="n">ITEM_ATTR_CYCLE</span><span class="p">,</span> <span class="n">ITEM_ATTR_GROUP</span><span class="p">,</span> <span class="n">ITEM_ATTR_LOOKUP</span><span class="p">,</span> <span class="n">ITEM_ATTR_READ</span><span class="p">,</span>
     <span class="n">ITEM_ATTR_READ_GRP</span><span class="p">,</span> <span class="n">ITEM_ATTR_READ_INIT</span><span class="p">,</span> <span class="n">ITEM_ATTR_WRITE</span><span class="p">,</span>
     <span class="n">PLUGIN_ATTR_CB_ON_CONNECT</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_CB_ON_DISCONNECT</span><span class="p">,</span>
-    <span class="n">PLUGIN_ATTR_CMD_CLASS</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_CONNECTION</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_STANDBY_ITEM</span><span class="p">,</span>
+    <span class="n">PLUGIN_ATTR_CMD_CLASS</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_CONNECTION</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_SUSPEND_ITEM</span><span class="p">,</span>
     <span class="n">PLUGIN_ATTR_CONN_AUTO_RECONN</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_CONN_AUTO_CONN</span><span class="p">,</span>
-    <span class="n">PLUGIN_ATTR_PROTOCOL</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_RECURSIVE</span><span class="p">,</span> <span class="n">PLUGIN_PATH</span><span class="p">)</span>
+    <span class="n">PLUGIN_ATTR_PROTOCOL</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_RECURSIVE</span><span class="p">,</span> <span class="n">PLUGIN_PATH</span><span class="p">,</span>
+    <span class="n">PLUGIN_ATTR_CB_SUSPEND</span><span class="p">)</span>
+
 <span class="kn">from</span> <span class="nn">lib.model.sdp.commands</span> <span class="kn">import</span> <span class="n">SDPCommands</span>
 <span class="kn">from</span> <span class="nn">lib.model.sdp.command</span> <span class="kn">import</span> <span class="n">SDPCommand</span>
 <span class="kn">from</span> <span class="nn">lib.model.sdp.connection</span> <span class="kn">import</span> <span class="n">SDPConnection</span>
@@ -4929,12 +4931,12 @@
         <span class="c1"># set to True to use on_connect and on_disconnect callbacks</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_use_callbacks</span> <span class="o">=</span> <span class="kc">False</span>
 
+        <span class="c1">#</span>
         <span class="c1"># set class properties</span>
+        <span class="c1">#</span>
 
-        <span class="c1"># &quot;standby&quot; mode properties</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">standby</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_standby_item</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_standby_item_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_value</span><span class="p">(</span><span class="n">PLUGIN_ATTR_STANDBY_ITEM</span><span class="p">)</span>
+        <span class="c1"># suspend mode properties</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_value</span><span class="p">(</span><span class="n">PLUGIN_ATTR_SUSPEND_ITEM</span><span class="p">)</span>
 
         <span class="c1"># connection instance</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span> <span class="o">=</span> <span class="kc">None</span>
@@ -4987,12 +4989,16 @@
         <span class="c1"># call method for possible custom work (overwrite _post_init)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_post_init</span><span class="p">()</span>
 
+        <span class="c1"># self._webif might be set by smartplugin init</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_webif</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">init_webinterface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_webif</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;device initialized from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SmartDevicePlugin.remove_item"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#lib.model.smartdeviceplugin.SmartDevicePlugin.remove_item">[Doku]</a>    <span class="k">def</span> <span class="nf">remove_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        remove item references from plugin</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="p">][</span><span class="s1">&#39;mapping&#39;</span><span class="p">]</span>
@@ -5003,9 +5009,8 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">remove_item</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_standby_item_path</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">standby</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;removed standby item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span><span class="si">}</span><span class="s1">, disabling standby&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item_path</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;removed suspend item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span><span class="si">}</span><span class="s1">, &#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">True</span>
 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; remove item from custom plugin dicts/lists &quot;&quot;&quot;</span>
@@ -5050,9 +5055,8 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
 
-        <span class="c1"># if standby mode is enabled, set callback for tcp client etc.</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_standby_item_path</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;standby_callback&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_standby</span>
+        <span class="c1"># set callback for tcp client etc.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="n">PLUGIN_ATTR_CB_SUSPEND</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_suspend</span>
 
         <span class="c1"># this is only viable for the base class. All derived plugin classes</span>
         <span class="c1"># will probably be created towards a specific command class</span>
@@ -5080,35 +5084,39 @@
 
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="SmartDevicePlugin.set_standby"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#lib.model.smartdeviceplugin.SmartDevicePlugin.set_standby">[Doku]</a>    <span class="k">def</span> <span class="nf">set_standby</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stby_active</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartDevicePlugin.set_suspend"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#lib.model.smartdeviceplugin.SmartDevicePlugin.set_suspend">[Doku]</a>    <span class="k">def</span> <span class="nf">set_suspend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suspend_active</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        enable / disable standby mode: open/close connections, schedulers</span>
+<span class="sd">        enable / disable suspend mode: open/close connections, schedulers</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">stby_active</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_standby_item</span><span class="p">:</span>
-                <span class="n">stby_active</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_standby_item</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">suspend_active</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span><span class="p">:</span>
+                <span class="c1"># if no parameter set, try to use item setting</span>
+                <span class="n">suspend_active</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span><span class="p">())</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">stby_active</span> <span class="o">=</span> <span class="kc">False</span>            
+                <span class="c1"># if not available, default to &quot;resume&quot;</span>
+                <span class="n">suspend_active</span> <span class="o">=</span> <span class="kc">False</span>
 
-        <span class="n">by_msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="c1"># print debug logging</span>
+        <span class="k">if</span> <span class="n">suspend_active</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Suspend mode enabled&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Suspend mode disabled&#39;</span>
         <span class="k">if</span> <span class="n">by</span><span class="p">:</span>
-            <span class="n">by_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39; (set by </span><span class="si">{</span><span class="n">by</span><span class="si">}</span><span class="s1">)&#39;</span>
+            <span class="n">msg</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; (set by </span><span class="si">{</span><span class="n">by</span><span class="si">}</span><span class="s1">)&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Standby mode set to </span><span class="si">{</span><span class="n">stby_active</span><span class="si">}{</span><span class="n">by_msg</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">standby</span> <span class="o">=</span> <span class="n">stby_active</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_standby_item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_standby_item</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">standby</span><span class="p">)</span>
+        <span class="c1"># activate selected mode, use smartplugin methods</span>
+        <span class="k">if</span> <span class="n">suspend_active</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">suspend</span><span class="p">(</span><span class="n">by</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resume</span><span class="p">(</span><span class="n">by</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">stby_active</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">suspend_active</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;_cyclic&#39;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;_cyclic&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;closing connection on standby enabled&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;opening connection after standby disabled&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
-
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="o">.</span><span class="n">connected</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">SDP_standalone</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_create_cyclic_scheduler</span><span class="p">()</span></div>
 
@@ -5123,7 +5131,7 @@
 
         <span class="c1"># start the devices</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alive</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_standby</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;run&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_suspend</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;run()&#39;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="o">.</span><span class="n">connected</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_read_initial_values</span><span class="p">()</span></div>
@@ -5190,9 +5198,9 @@
 
             <span class="k">return</span> <span class="n">find_custom_attr</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
 
-        <span class="c1"># check for standby item</span>
-        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_standby_item_path</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_standby_item</span> <span class="o">=</span> <span class="n">item</span>
+        <span class="c1"># check for suspend item</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item_path</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span> <span class="o">=</span> <span class="n">item</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">updating</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_item</span>
 
@@ -5356,11 +5364,11 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Update_item was called with item &quot;</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">&quot; from caller </span><span class="si">{</span><span class="n">caller</span><span class="si">}</span><span class="s1">, source </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s1"> and dest </span><span class="si">{</span><span class="n">dest</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-            <span class="c1"># check for standby item</span>
-            <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">_standby_item</span><span class="p">:</span>
+            <span class="c1"># check for suspend item</span>
+            <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">caller</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">():</span>                
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Standby item changed to </span><span class="si">{</span><span class="n">item</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">set_standby</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;standby item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Suspend item changed to </span><span class="si">{</span><span class="n">item</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">set_suspend</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;suspend item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
                 <span class="k">return</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">has_iattr</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">conf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ITEM_ATTR_COMMAND&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">))</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_iattr</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">conf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ITEM_ATTR_READ_GRP&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">))):</span>
@@ -5413,8 +5421,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;trying to send command </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1"> with value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">, but plugin is not active.&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">standby</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;trying to send command </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1"> with value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">, but plugin is on standby.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">suspended</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;trying to send command </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1"> with value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">, but plugin is suspended.&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="p">:</span>
@@ -5502,15 +5510,15 @@
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_discard_unknown_command</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;data &quot;</span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s1">&quot; did not identify a known command, ignoring it&#39;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">standby</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">suspended</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;data &quot;</span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s1">&quot; did not identify a known command, forwarding it anyway for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_unknown_command</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_dispatch_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_unknown_command</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">by</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;received data &quot;</span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s1">&quot; not identifying a known command while in standby, aborting.&#39;</span><span class="p">)</span>            
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;received data &quot;</span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s1">&quot; not identifying a known command while suspended, aborting.&#39;</span><span class="p">)</span>            
                 <span class="k">return</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">standby</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;received data &quot;</span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s1">&quot; from </span><span class="si">{</span><span class="n">by</span><span class="si">}</span><span class="s1"> for command </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1"> while on standby, ignoring.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">suspended</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;received data &quot;</span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s1">&quot; from </span><span class="si">{</span><span class="n">by</span><span class="si">}</span><span class="s1"> for command </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1"> while suspended, ignoring.&#39;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">assert</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">commands</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span>
@@ -5547,7 +5555,7 @@
 <span class="sd">        :param by: str</span>
 <span class="sd">        :type command: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alive</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">standby</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alive</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">suspended</span><span class="p">:</span>
 
             <span class="n">item</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -5559,8 +5567,8 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Command </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1"> yielded value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1"> by </span><span class="si">{</span><span class="n">by</span><span class="si">}</span><span class="s1">, not assigned to any item, discarding data&#39;</span><span class="p">)</span>
                 <span class="k">return</span>
 
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">standby</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Trying to update item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span><span class="si">}</span><span class="s1">, but on standby. This should not happen, please report to developer.&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">suspended</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Trying to update item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span><span class="si">}</span><span class="s1">, but suspended. This should not happen, please report to developer.&#39;</span><span class="p">)</span>
                 <span class="k">return</span>
 
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
@@ -5956,14 +5964,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">plugins</span> <span class="o">=</span> <span class="n">Plugins</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>
-        <span class="n">global_mod</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lib.model.sdp.globals&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">globals_mod</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lib.model.sdp.globals&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="k">if</span> <span class="n">plugins</span> <span class="ow">and</span> <span class="n">global_mod</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">plugins</span> <span class="ow">and</span> <span class="n">globals_mod</span><span class="p">:</span>
             <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">itemdefinitions</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
             <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">ATTR_NAMES</span><span class="p">:</span>
-                <span class="n">attr_val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">global_mod</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+                <span class="n">attr_val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">globals_mod</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">attr_val</span><span class="p">):</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span>

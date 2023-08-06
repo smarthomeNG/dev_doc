@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.9.5.4 v1.9.5.4 develop (Stand 31. März 2023, commit 6adf630) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.9.5.4 v1.9.5.4 develop (Stand 31. März 2023, commit 96e2ecf) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -4857,11 +4857,43 @@
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
     <span class="n">alive</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">suspended</span> <span class="o">=</span> <span class="kc">False</span>       <span class="c1"># flag for setting suspended (inactive) state</span>
+    <span class="n">_suspend_item</span> <span class="o">=</span> <span class="kc">None</span>      <span class="c1"># suspend item</span>
+    <span class="n">_suspend_item_path</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># path of suspend item</span>
 
     <span class="c1"># Initialization of SmartPlugin class called by super().__init__() from the plugin&#39;s __init__() method</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span> <span class="o">=</span> <span class="p">{}</span>      <span class="c1"># make sure, that the dict is local to the plugin</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_item_lookup_dict</span> <span class="o">=</span> <span class="p">{}</span>   <span class="c1"># make sure, that the dict is local to the plugin</span>
+
+        <span class="c1"># set parameter value</span>
+        <span class="c1"># TODO: need to check for this item in parse_item and set self._suspend_item</span>
+        <span class="c1">#       for suspend item functionality to work</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_value</span><span class="p">(</span><span class="s1">&#39;suspend_item&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SmartPlugin.suspend"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.suspend">[Doku]</a>    <span class="k">def</span> <span class="nf">suspend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        sets plugin into suspended mode, no network/serial activity and no item changed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alive</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;plugin suspended by </span><span class="si">{</span><span class="n">by</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;unknown&quot;</span><span class="si">}</span><span class="s1">, connections will be closed&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">suspended</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;disconnect&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SmartPlugin.resume"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.resume">[Doku]</a>    <span class="k">def</span> <span class="nf">resume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        disabled suspended mode, network/serial connections are resumed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alive</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;plugin resumed by </span><span class="si">{</span><span class="n">by</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;unknown&quot;</span><span class="si">}</span><span class="s1">, connections will be resumed&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">suspended</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;connect&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SmartPlugin.deinit"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.deinit">[Doku]</a>    <span class="k">def</span> <span class="nf">deinit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="p">[]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4965,6 +4997,11 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;not stopping plugin for removal of item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item_path</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;trying to remove suspend item </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">. Disabling suspend item function&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item_path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        
         <span class="c1"># remove data from item_dict early in case of concurrent actions</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()]</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()]</span>
