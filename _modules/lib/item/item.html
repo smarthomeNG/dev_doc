@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.item.item &mdash; Dokumentation v1.9.5.4 v1.9.5.4 develop (Stand 31. März 2023, commit 06b8ffa) Dokumentation</title>
+  <title>lib.item.item &mdash; Dokumentation v1.9.5.4 v1.9.5.4 develop (Stand 31. März 2023, commit 22c5eb0) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -4935,6 +4935,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_upper_timer_active</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_lower_timer_active</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_items_to_trigger</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_log</span> <span class="o">=</span> <span class="kc">False</span>
+
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_on_update</span> <span class="o">=</span> <span class="kc">None</span>				<span class="c1"># -&gt; KEY_ON_UPDATE eval expression</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_on_change</span> <span class="o">=</span> <span class="kc">None</span>				<span class="c1"># -&gt; KEY_ON_CHANGE eval expression</span>
@@ -5066,6 +5068,8 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_parse_hysteresis_input_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">[</span><span class="n">KEY_HYSTERESIS_UPPER_THRESHOLD</span><span class="p">,</span> <span class="n">KEY_HYSTERESIS_LOWER_THRESHOLD</span><span class="p">]:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_parse_hysteresis_xx_threshold_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">attr</span> <span class="o">==</span> <span class="s1">&#39;_hysteresis_log&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_log</span> <span class="o">=</span> <span class="n">value</span>
 
                 <span class="k">elif</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">[</span><span class="n">KEY_ON_CHANGE</span><span class="p">,</span> <span class="n">KEY_ON_UPDATE</span><span class="p">]:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_parse_on_xx_list_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
@@ -5165,11 +5169,30 @@
                             <span class="c1">#self.conf[attr] = self._get_attr_from_greatgrandparent(fromattr)</span>
                             <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_attr_from_greatgrandparent</span><span class="p">(</span><span class="n">fromattr</span><span class="p">)</span>
 
+
                     <span class="c1"># Test if the plugin-specific attribute contains a valid value</span>
                     <span class="c1"># and set the default value, if needed</span>
-                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="p">,</span> <span class="s1">&#39;meta&#39;</span><span class="p">):</span>
-                        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">check_itemattribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.:&#39;</span><span class="p">):</span>
+                        <span class="c1"># Don&#39;t check metadata if attribute still has reference (.:xxx)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="p">,</span> <span class="s1">&#39;meta&#39;</span><span class="p">):</span>
+                            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">check_itemattribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="c1"># end of &#39;for attr, value in config.items()&#39;</span>
+
+        <span class="c1"># test for attribute copy within the same item to ensure replace in every definition order of attributes</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">attr</span><span class="p">])</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.:&#39;</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
+                <span class="n">fromattr</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">fromattr</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">]:</span>
+                    <span class="n">fromattr</span> <span class="o">=</span> <span class="n">attr</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_attr</span><span class="p">(</span><span class="n">fromattr</span><span class="p">)</span>
+<span class="c1">#                self.conf[attr] = value</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="p">,</span> <span class="s1">&#39;meta&#39;</span><span class="p">):</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">check_itemattribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">init_dynamic_properties</span><span class="p">()</span>
 
@@ -5964,9 +5987,23 @@
         <span class="k">return</span> <span class="n">pref</span></div>
 
 
+    <span class="k">def</span> <span class="nf">_get_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get attribute value from actual item</span>
+
+<span class="sd">        :param attr: Get the value from this attribute of the parent item</span>
+<span class="sd">        :return: value from attribute of parent item</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pitem</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="n">pattr_value</span> <span class="o">=</span> <span class="n">pitem</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="c1">#        logger.warning(&quot;_get_attr_from_parent Item {}: for attr &#39;{}&#39;&quot;.format(self._path, attr))</span>
+        <span class="c1">#        logger.warning(&quot;_get_attr_from_parent Item {}: for parent &#39;{}&#39;, pattr_value &#39;{}&#39;&quot;.format(self._path, pitem._path, pattr_value))</span>
+        <span class="k">return</span> <span class="n">pattr_value</span>
+
+
     <span class="k">def</span> <span class="nf">_get_attr_from_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get value from parent</span>
+<span class="sd">        Get attribute value from parent item</span>
 
 <span class="sd">        :param attr: Get the value from this attribute of the parent item</span>
 <span class="sd">        :return: value from attribute of parent item</span>
@@ -5980,7 +6017,7 @@
 
     <span class="k">def</span> <span class="nf">_get_attr_from_grandparent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get value from grandparent</span>
+<span class="sd">        Get attribute value from grandparent item</span>
 
 <span class="sd">        :param attr: Get the value from this attribute of the grandparent item</span>
 <span class="sd">        :return: value from attribute of grandparent item</span>
@@ -5995,7 +6032,7 @@
 
     <span class="k">def</span> <span class="nf">_get_attr_from_greatgrandparent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get value from grandparent</span>
+<span class="sd">        Get attribute value from grandparent item</span>
 
 <span class="sd">        :param attr: Get the value from this attribute of the grandparent item</span>
 <span class="sd">        :return: value from attribute of grandparent item</span>
@@ -6144,6 +6181,8 @@
             <span class="c1">#    logger.error(f&quot;item &#39;{self._path}&#39;: Hysteresis upper threshod is lower than lower threshod&quot;)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">triggering_item</span> <span class="o">!=</span> <span class="bp">self</span><span class="p">:</span>  <span class="c1"># prevent loop</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_log</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;_init_prerun: Adding to triggering_item </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="n">triggering_item</span><span class="o">.</span><span class="n">_hysteresis_items_to_trigger</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
 
@@ -6240,30 +6279,138 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_upper_timer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__update</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_upper_timer_active</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_upper_timer_active</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span> <span class="c1">###ms value = self._value</span>
                     <span class="n">timer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__run_attribute_eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_upper_timer</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">timer</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Item &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">&#39;: Hysteresis upper-timer evaluated to an value less than zero (</span><span class="si">{</span><span class="n">timer</span><span class="si">}</span><span class="s2">), using 0 instead&quot;</span><span class="p">)</span>
                         <span class="n">timer</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_upper_timer_active</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="nb">next</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">timer</span><span class="p">)</span>
                     <span class="c1">#next = self.shtime.now() + datetime.timedelta(seconds=self._hysteresis_upper_timer)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_log</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;__run_hysteresis </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">: scheduler.add </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">-UpTimer&quot;</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_itemname_prefix</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;-UpTimer&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__call__</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;caller&#39;</span><span class="p">:</span> <span class="s1">&#39;Hysteresis&#39;</span><span class="p">},</span> <span class="nb">next</span><span class="o">=</span><span class="nb">next</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_upper_timer_active</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="n">lower</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_lower_timer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__update</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_lower_timer_active</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_lower_timer_active</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">==</span> <span class="kc">True</span><span class="p">):</span>
                     <span class="n">timer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__run_attribute_eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_lower_timer</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">timer</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Item &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">&#39;: Hysteresis lower-timer evaluated to an value less than zero (</span><span class="si">{</span><span class="n">timer</span><span class="si">}</span><span class="s2">), using 0 instead&quot;</span><span class="p">)</span>
                         <span class="n">timer</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_lower_timer_active</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="nb">next</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">timer</span><span class="p">)</span>
                     <span class="c1">#next = self.shtime.now() + datetime.timedelta(seconds=self._hysteresis_lower_timer)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_log</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;__run_hysteresis </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">: scheduler.add </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">-LoTimer&quot;</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_itemname_prefix</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;-LoTimer&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__call__</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;caller&#39;</span><span class="p">:</span> <span class="s1">&#39;Hysteresis&#39;</span><span class="p">},</span> <span class="nb">next</span><span class="o">=</span><span class="nb">next</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_lower_timer_active</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span>
+
+
+    <span class="k">def</span> <span class="nf">_onoff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;On&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;Off&#39;</span>
+
+    <span class="k">def</span> <span class="nf">_get_hysterisis_state_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lower</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">upper</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">input_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">txt</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper method to return the inner hysteresis-state as a readable string</span>
+
+<span class="sd">        TODO: Return right state, if value is from init:cache</span>
+
+<span class="sd">        :param lower: hysteresis lower threshold</span>
+<span class="sd">        :param upper: hysteresis upper threshold</span>
+<span class="sd">        :param input_value: hysteresis input</span>
+
+<span class="sd">        :return: hysteresis-state as a readable string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">txt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">input_value</span> <span class="o">&gt;</span> <span class="n">upper</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_upper_timer_active</span><span class="p">:</span>
+                <span class="n">state</span> <span class="o">=</span> <span class="s1">&#39;Timer -&gt; &#39;</span>
+            <span class="n">state</span> <span class="o">+=</span> <span class="s1">&#39;On&#39;</span>
+            <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; -&gt; </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">txt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">input_value</span> <span class="o">&lt;</span> <span class="n">lower</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_lower_timer_active</span><span class="p">:</span>
+                <span class="n">state</span> <span class="o">=</span> <span class="s1">&#39;Timer -&gt; &#39;</span>
+            <span class="n">state</span> <span class="o">+=</span> <span class="s1">&#39;Off&#39;</span>
+            <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; -&gt; </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">txt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="s1">&#39;Stay (&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_onoff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
+            <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; -&gt; </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">txt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_upper_timer_active</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_lower_timer_active</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__updated_by</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;init:cache&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">state</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;Stay&#39;</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">state</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_onoff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">):</span>
+                        <span class="n">state</span> <span class="o">=</span> <span class="s1">&#39;Cached (&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_onoff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
+                        <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; -&gt; </span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">txt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">state</span>
+
+
+<div class="viewcode-block" id="Item.hysteresis_state"><a class="viewcode-back" href="../../../lib/item_class_item.html#lib.item.item.Item.hysteresis_state">[Doku]</a>    <span class="k">def</span> <span class="nf">hysteresis_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the inner hysteresis_state</span>
+
+<span class="sd">        Available in SmartHomeNG v1.10 and above</span>
+
+<span class="sd">        TODO: Return right state, if value is from init:cache</span>
+
+<span class="sd">        :return: hysteresis state of the item</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>     <span class="c1"># to prevent execution before xxx_timer_active could be updated</span>
+
+        <span class="n">upper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__run_attribute_eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_upper_threshold</span><span class="p">)</span>
+        <span class="c1">#upper_timer = self.__run_attribute_eval(self._hysteresis_upper_timer)</span>
+        <span class="n">lower</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__run_attribute_eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_lower_threshold</span><span class="p">)</span>
+        <span class="c1">#lower_timer = self.__run_attribute_eval(self._hysteresis_lower_timer)</span>
+        <span class="n">input_value</span> <span class="o">=</span> <span class="n">_items_instance</span><span class="o">.</span><span class="n">return_item</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_input</span><span class="p">)()</span>
+        <span class="c1">#value = self._value</span>
+
+        <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_hysterisis_state_string</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">input_value</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_log</span><span class="p">,</span> <span class="n">txt</span><span class="o">=</span><span class="s1">&#39;hysteresis_state&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_log</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;hysteresis_state (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">): state=</span><span class="si">{</span><span class="n">state</span><span class="si">}</span><span class="s2">, input_value=</span><span class="si">{</span><span class="n">input_value</span><span class="si">}</span><span class="s2">, value=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="si">}</span><span class="s2">, __updated_by=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__updated_by</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">state</span></div>
+
+
+<div class="viewcode-block" id="Item.hysteresis_data"><a class="viewcode-back" href="../../../lib/item_class_item.html#lib.item.item.Item.hysteresis_data">[Doku]</a>    <span class="k">def</span> <span class="nf">hysteresis_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the inner hysteresis_state</span>
+
+<span class="sd">        returns a dict with the current hysteresis data</span>
+<span class="sd">        (lower threshold, upper threshold, input value, output value and internal state)</span>
+
+<span class="sd">        Available in SmartHomeNG v1.10 and above</span>
+
+<span class="sd">        :return: hysteresis state of the item</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>     <span class="c1"># to prevent execution before xxx_timer_active could be updated</span>
+
+        <span class="n">upper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__run_attribute_eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_upper_threshold</span><span class="p">)</span>
+        <span class="n">upper_timer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__run_attribute_eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_upper_timer</span><span class="p">)</span>
+        <span class="n">lower</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__run_attribute_eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_lower_threshold</span><span class="p">)</span>
+        <span class="n">lower_timer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__run_attribute_eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_lower_timer</span><span class="p">)</span>
+        <span class="n">input_value</span> <span class="o">=</span> <span class="n">_items_instance</span><span class="o">.</span><span class="n">return_item</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_input</span><span class="p">)()</span>
+
+        <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_hysterisis_state_string</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span> <span class="n">input_value</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_log</span><span class="p">,</span> <span class="n">txt</span><span class="o">=</span><span class="s1">&#39;hysteresis_data&#39;</span><span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;lower_threshold&#39;</span><span class="p">:</span> <span class="n">lower</span><span class="p">,</span> <span class="s1">&#39;lower_timer&#39;</span><span class="p">:</span> <span class="n">lower_timer</span><span class="p">,</span> <span class="s1">&#39;upper_threshold&#39;</span><span class="p">:</span> <span class="n">upper</span><span class="p">,</span> <span class="s1">&#39;upper_timer&#39;</span><span class="p">:</span> <span class="n">upper_timer</span><span class="p">,</span> <span class="s1">&#39;input&#39;</span><span class="p">:</span> <span class="n">input_value</span><span class="p">,</span> <span class="s1">&#39;output&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">,</span> <span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="n">state</span><span class="p">,</span> <span class="s1">&#39;lower_timer_active&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_lower_timer_active</span><span class="p">,</span> <span class="s1">&#39;upped_timer_active&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_upper_timer_active</span><span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_log</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;hysteresis_data (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">, __updated_by=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__updated_by</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span></div>
 
 
     <span class="k">def</span> <span class="nf">__run_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="s1">&#39;Eval&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -6569,6 +6716,17 @@
 
 
     <span class="k">def</span> <span class="nf">__update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="s1">&#39;Logic&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_input</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_upper_timer_active</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_log</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;__update: upper_timer caller=</span><span class="si">{</span><span class="n">caller</span><span class="si">}</span><span class="s2">, value=</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_upper_timer_active</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_lower_timer_active</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_lower_timer_active</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hysteresis_log</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;__update: lower_timer caller=</span><span class="si">{</span><span class="n">caller</span><span class="si">}</span><span class="s2">, value=</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
         <span class="k">try</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
