@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plugin-spezifische Attribute &mdash; Dokumentation v1.9.5.4 v1.9.5.4 develop (Stand 31. März 2023, commit 29c5996) Dokumentation</title>
+  <title>Plugin-spezifische Attribute &mdash; Dokumentation v1.9.5.4 v1.9.5.4 develop (Stand 31. März 2023, commit 95e2d74) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -4915,7 +4915,7 @@ hal zur Laufzeit also den Namen <strong>my_attribute</strong> und nicht (wie man
 <p>Platzhalter können (wie die Vererbung und die Nutzung anderer Attributwerte) <strong>nur</strong> bei
 plugin-spezifischen Attributen verwendet werden. Die einzige Ausnahme ist das Standard-Attribut <strong>name</strong>. Hier können
 Platzhalter verwendet werden (<code class="code docutils literal notranslate"><span class="pre">name_:</span> <span class="pre">&quot;Text</span> <span class="pre">{..:my_value}&quot;</span></code>).</p>
-<p>Die Nutzung der Platzhalter wird in der struct im folgenden Beispiel verdeutlicht:</p>
+<p>Die Nutzung der Platzhalter wird am Beispiel der folgenden <strong>structs</strong> verdeutlicht:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">../etc/struct_knx.yaml</span><a class="headerlink" href="#id1" title="Link zu diesem Quellcode"></a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">switch</span><span class="p">:</span>
@@ -4941,22 +4941,103 @@ Platzhalter verwendet werden (<code class="code docutils literal notranslate"><s
 <span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
 <span class="w">        </span><span class="nt">knx_dpt</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
 <span class="w">        </span><span class="nt">knx_cache_</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{..:_maingroup}/5/{..:_device}&quot;</span>
-<span class="w">        </span><span class="nt">knx_send_</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{..:_maingroup}1/4/{..:_device}&quot;</span>
+<span class="w">        </span><span class="nt">knx_send_</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{..:_maingroup}/4/{..:_device}&quot;</span>
 </pre></div>
 </div>
 </div>
-<p>testitems:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>switch1:</dt><dd><p>_device: 4
-struct: my.knx.switch</p>
-</dd>
-<dt>dimmer1:</dt><dd><p>_device: 7
-struct: my.knx.dimmer</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>…</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Wenn diese <strong>structs</strong> bei der Definition von Items folgendermaßen verwendet werden:</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">../items/testitems.yaml</span><a class="headerlink" href="#id2" title="Link zu diesem Quellcode"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">testitems</span><span class="p">:</span>
+
+<span class="w">    </span><span class="nt">switch1</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">_device</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
+<span class="w">        </span><span class="nt">struct</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my.knx.switch</span>
+
+<span class="w">    </span><span class="nt">dimmer1</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">_device</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7</span>
+<span class="w">        </span><span class="nt">struct</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my.knx.dimmer</span>
+</pre></div>
+</div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>ergibt zur Laufzeit folgende Item Struktur:</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Item Teilbaum zur Laufzeit</span><a class="headerlink" href="#id3" title="Link zu diesem Quellcode"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">testitems</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">switch1</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
+<span class="w">        </span><span class="nt">knx_dpt</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">        </span><span class="nt">knx_send_</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1/1/4&quot;</span>
+<span class="w">        </span><span class="nt">knx_cache_</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1/2/4&quot;</span>
+
+<span class="w">    </span><span class="nt">dimmer1</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">switch</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
+<span class="w">            </span><span class="nt">knx_dpt</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">knx_send_</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1/1/7&quot;</span>
+<span class="w">            </span><span class="nt">knx_cache_</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1/2/7&quot;</span>
+<span class="w">        </span><span class="nt">relative</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">            </span><span class="nt">knx_dpt</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">            </span><span class="nt">knx_send_</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1/3/7&quot;</span>
+<span class="w">        </span><span class="nt">level</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">            </span><span class="nt">knx_dpt</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">            </span><span class="nt">knx_cache_</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1/5/7&quot;</span>
+<span class="w">            </span><span class="nt">knx_send_</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1/4/7&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>Falls eine abweichende KNX Hauptgruppe verwendet wird, ist zusätzlich das Attribut _maingroup zu setzen. Diese
+Hauptgruppe wird dann statt der in der struct definierten Hauptgruppe verwendet:</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">../items/testitems.yaml</span><a class="headerlink" href="#id4" title="Link zu diesem Quellcode"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">testitems</span><span class="p">:</span>
+
+<span class="w">    </span><span class="nt">dimmer1</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">_maingroup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">        </span><span class="nt">_device</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7</span>
+<span class="w">        </span><span class="nt">struct</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my.knx.dimmer</span>
+</pre></div>
+</div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>ergibt dann zur Laufzeit:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Item Teilbaum zur Laufzeit</span><a class="headerlink" href="#id5" title="Link zu diesem Quellcode"></a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">testitems</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">dimmer1</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">switch</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
+<span class="w">            </span><span class="nt">knx_dpt</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">knx_send_</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3/1/7&quot;</span>
+<span class="w">            </span><span class="nt">knx_cache_</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3/2/7&quot;</span>
+<span class="w">        </span><span class="nt">relative</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">            </span><span class="nt">knx_dpt</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">            </span><span class="nt">knx_send_</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3/3/7&quot;</span>
+<span class="w">        </span><span class="nt">level</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">            </span><span class="nt">knx_dpt</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">            </span><span class="nt">knx_cache_</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3/5/7&quot;</span>
+<span class="w">            </span><span class="nt">knx_send_</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3/4/7&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 </section>
 </section>
 
