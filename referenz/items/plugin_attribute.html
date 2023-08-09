@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plugin-spezifische Attribute &mdash; Dokumentation v1.9.5.4 v1.9.5.4 develop (Stand 31. März 2023, commit 2138286) Dokumentation</title>
+  <title>Plugin-spezifische Attribute &mdash; Dokumentation v1.9.5.4 v1.9.5.4 develop (Stand 31. März 2023, commit 4cece56) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -294,6 +294,8 @@
 </li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Plugin-spezifische Attribute</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#vererbung-von-attributen-update">Vererbung von Attributen <span class="bluesup">update</span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#zugriff-auf-attribute-anderer-items-neu">Zugriff auf Attribute anderer Items <span class="redsup">neu</span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#platzhalter-in-attributwerten-neu">Platzhalter in Attributwerten <span class="redsup">neu</span></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="attributes_relative_referenzen.html">Relative Item Referenzen</a><ul>
@@ -3735,6 +3737,8 @@
 </li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Plugin-spezifische Attribute</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#vererbung-von-attributen-update">Vererbung von Attributen <span class="bluesup">update</span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#zugriff-auf-attribute-anderer-items-neu">Zugriff auf Attribute anderer Items <span class="redsup">neu</span></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#platzhalter-in-attributwerten-neu">Platzhalter in Attributwerten <span class="redsup">neu</span></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="attributes_relative_referenzen.html">Relative Item Referenzen</a><ul>
@@ -4834,8 +4838,8 @@ Unterstrich (‚_‘).</p>
 </tr>
 </tbody>
 </table>
-<section id="vererbung-von-attributen-update">
-<span id="index-2"></span><h2>Vererbung von Attributen <span class="bluesup">update</span><a class="headerlink" href="#vererbung-von-attributen-update" title="Permalink to this heading"></a></h2>
+<span class="target" id="index-2"></span><section id="vererbung-von-attributen-update">
+<span id="index-3"></span><h2>Vererbung von Attributen <span class="bluesup">update</span><a class="headerlink" href="#vererbung-von-attributen-update" title="Permalink to this heading"></a></h2>
 <p>Bei einigen Plugins ist es notwendig, bei jedem Item einen Identifier anzugeben. Beispiele sind das
 homematic Plugin und das hue Plugin. Hier ist es hilfreich, den Identifier (z.B. die <strong>hm_address</strong>
 oder die <strong>hue_lamp_id</strong>) nur an einer Stelle konfigurieren zu müssen.</p>
@@ -4845,17 +4849,19 @@ indem das Plugin immer prüft, ob das Attribut in übergeordneten Items definier
 den Wert aus einem übergeordneten Item zu erben. Dieser Mechanismus funktioniert <strong>nur</strong> bei
 plugin-spezifischen Attributen. Hierbei kann ein Attribut mit dem Wert eines Attributes eines
 übergeordneten Items belegt werden.</p>
-<p>Es kann die übergeordnete Ebene (Eltern / Großeltern) das Attribut der Ebene angegeben werden. Dabei wird
-als Wert eines Attributes folgender Platzhalter eingetragen: <code class="code docutils literal notranslate"><span class="pre">&lt;Ebene&gt;:&lt;Attribut&gt;</span></code></p>
+<p>Es kann der Wert eines Attributes aus einer übergeordneten Ebene (Eltern / Großeltern / Urgroßeltern)
+überommen (geerbt) werden. Dazu wird für das erbende Attribut ein Wert im Format <code class="code docutils literal notranslate"><span class="pre">&lt;Ebene&gt;:&lt;Attribut&gt;</span></code>
+angegeben.</p>
 <div class="admonition attention">
 <p class="admonition-title">Achtung</p>
 <p>Zwischen Ebene und Doppelpunkt, sowie zwischen Doppelpunkt und Attribut dürfen keine Leerzeichen angegeben werden.</p>
 </div>
-<p>Die <code class="code docutils literal notranslate"><span class="pre">&lt;Ebene&gt;</span></code> kann die Werte <code class="code docutils literal notranslate"><span class="pre">..</span></code> und <code class="code docutils literal notranslate"><span class="pre">...</span></code> für Parent- bzw. Grandparent-Item annehmen.
-Für <code class="code docutils literal notranslate"><span class="pre">&lt;Attribut&gt;</span></code> kann der Name des Attributes aus der übergeordneten Ebene angegeben werden oder
-<code class="code docutils literal notranslate"><span class="pre">.</span></code> um aus der übergeordneten Ebene das Attribut mit dem gleichen Namen zu referenzieren.</p>
-<p>Um den Wert eines Attributes (mit gleichem Namen) von dem übergeordnetem Item (Parent-Item) zu erben, muss
-in der Konfiguration das Attribut mit dem Wert <code class="code docutils literal notranslate"><span class="pre">..:.</span></code> konfiguriert werden:</p>
+<p>Die <code class="code docutils literal notranslate"><span class="pre">&lt;Ebene&gt;</span></code> kann die Werte <code class="code docutils literal notranslate"><span class="pre">..</span></code> (für das Parent-Item), <code class="code docutils literal notranslate"><span class="pre">...</span></code> (für das Grandparent-Item) sowie
+<code class="code docutils literal notranslate"><span class="pre">....</span></code> (für das Great-Grandparent-Item) annehmen.</p>
+<p>Für <code class="code docutils literal notranslate"><span class="pre">&lt;Attribut&gt;</span></code> wird ein <code class="code docutils literal notranslate"><span class="pre">.</span></code> angegeben, um aus der übergeordneten Ebene das Attribut mit dem
+gleichen Namen zu referenzieren.</p>
+<p>Um den Wert eines Attributes vom übergeordnetem Item (Parent-Item) zu erben, muss dementsprechend in der
+Konfiguration das Attribut mit dem Wert <code class="code docutils literal notranslate"><span class="pre">..:.</span></code> konfiguriert werden:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">fenstergriff_kueche</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
 <span class="w">    </span><span class="nt">hm_address</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OEQ1234567</span>
@@ -4871,15 +4877,42 @@ in der Konfiguration das Attribut mit dem Wert <code class="code docutils litera
 <span class="w">       </span><span class="nt">hm_function</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LOW_BAT</span>
 </pre></div>
 </div>
-<p>In diesem Beispiel sieht man, dass die HomeMatic Adresse des Devices nur einmal angegeben werden muss.
-Der Vorteil wird besonders sichtbar, wenn man mehrere Fenstergriffe hat. Dann kann man diesen Block
+<p>In diesem Beispiel sieht man, dass die HomeMatic Adresse des Devices (hm_address) nur einmal angegeben werden
+muss. Der Vorteil wird besonders sichtbar, wenn man mehrere Fenstergriffe hat. Dann kann man diesen Block
 einfach kopieren und muss nur dem Item einen neuen Namen geben (z.B. fenstergriff_bad) und die
-<strong>hm_adress</strong> an einer Stelle abzuändern.</p>
+<strong>hm_adress</strong> an einer Stelle abzuändern. Die Vererbung ist auch bei der Erstellung von structs hilfreich, weil
+es die spätere Konfiguration des entstehenden Item-Teilbaums vereinfacht.</p>
 <p>Um direkt den Wert eines Attributes von dem übergeordnetem Item des Parent-Items (Grandparent-Item)
 zu erben, kann in der Konfiguration das Attribut mit dem Wert <code class="code docutils literal notranslate"><span class="pre">...:.</span></code> konfiguriert werden.</p>
 <p>Die Vererbung ist so implementiert, dass der Attribut Wert während der Initialisierung der Items beim
 Start von SmartHomeNG kopiert wird. Im Backend wird in den Item Details des Child-Items also nicht
 <code class="code docutils literal notranslate"><span class="pre">..:.</span></code> oder <code class="code docutils literal notranslate"><span class="pre">...:.</span></code> angezeigt, sondern der kopierte Wert.</p>
+<span class="target" id="index-4"></span></section>
+<section id="zugriff-auf-attribute-anderer-items-neu">
+<span id="index-5"></span><h2>Zugriff auf Attribute anderer Items <span class="redsup">neu</span><a class="headerlink" href="#zugriff-auf-attribute-anderer-items-neu" title="Permalink to this heading"></a></h2>
+<p>Der Zugriff auf Attribute anderer Items ist als Erweiterung der Vererbung von Attributen implementiert.
+Hierzu muss im aktuellen Item ein Attribut definiert werden, welches den Wert aufnimmt. Es ist hierbei
+(wie bei der Vererbung) ist nur ein Zugriff auf Items oberhalb in der Item Hirarchie möglich.</p>
+<p>Der Unterschied liegt darin, dass ein Attributname angegeben werden kann.</p>
+<p>Um den Wert eines Attributes vom übergeordnetem Item (Parent-Item) zu übernehmen, muss dementsprechend in
+der Konfiguration statt dem <code class="code docutils literal notranslate"><span class="pre">.</span></code> (für das aktuelle Attribut), ein Attributname angegeben werden
+(<code class="code docutils literal notranslate"><span class="pre">&lt;Ebene&gt;:&lt;Attribut&gt;</span></code>).</p>
+<p>Es ist auch möglich, auf Attribute des aktuellen Items zuzugreifen. Dazu wird für die <code class="code docutils literal notranslate"><span class="pre">&lt;Ebene&gt;</span></code> nur
+ein <code class="code docutils literal notranslate"><span class="pre">.</span></code> (für das aktuelle Item) angegeben (<code class="code docutils literal notranslate"><span class="pre">.:&lt;Attribut&gt;</span></code>).</p>
+<span class="target" id="index-6"></span></section>
+<section id="platzhalter-in-attributwerten-neu">
+<span id="index-7"></span><h2>Platzhalter in Attributwerten <span class="redsup">neu</span><a class="headerlink" href="#platzhalter-in-attributwerten-neu" title="Permalink to this heading"></a></h2>
+<p>Ab SmartHomeNG v1.10 ist es möglich in Attributwerten Platzhalter zu verwenden. Diese Platzhalter referenzieren
+ein anderes Attribut und werden beim Start von SmartHomeNG durch den entsprechenden Wert ersetzt.</p>
+<p>Die Platzhalter sind Attribut-Referenzen, wie sie in den zwei vorangegangenen Abschnitten beschrieben wurden.
+Diese Attribut-Referenzen werden in geschweifte Klammern eingeschlossen (<code class="code docutils literal notranslate"><span class="pre">{&lt;Ebene&gt;:&lt;Attribut&gt;}</span></code>).</p>
+<p>Damit keine Probleme bei Attributwerten entstehen, die zwar geschweifte Klammern enthalten, aber keine Platzhalter,
+findet standardmäßig keine Prüfung auf (und die Ersetzung von) Platzhalter(n) statt. Um die Ersetzung zu
+aktivieren, muss an den Namen des Attributes ein Unterstrich angefügt werden. Es muss also z.B. statt in
+der Konfigurationsdatei <code class="code docutils literal notranslate"><span class="pre">my_attribute:</span> <span class="pre">&quot;Text&quot;</span></code> zu schreiben, <code class="code docutils literal notranslate"><span class="pre">my_attribute_:</span> <span class="pre">&quot;Text</span> <span class="pre">{..:my_value}&quot;</span></code>
+angegeben werden. Im Zuge des Ladens wird beim Ersetzen der Platzhalter der Unterstrich entfernt. Das Attribut
+hal zur Laufzeit also den Namen <strong>my_attribute</strong> und nicht (wie man denken könnte) <strong>my_attribute_</strong>.</p>
+<p>…</p>
 </section>
 </section>
 
