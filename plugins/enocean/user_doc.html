@@ -783,7 +783,10 @@
 </li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">enocean</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#allgemein">Allgemein</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#anforderungen">Anforderungen</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#anforderungen">Anforderungen</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#verwendung-via-ip">Verwendung via IP</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="#konfiguration">Konfiguration</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#plugin-yaml">plugin.yaml</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#item-yaml">item.yaml</a></li>
@@ -2024,7 +2027,10 @@
 </li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">enocean</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#allgemein">Allgemein</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#anforderungen">Anforderungen</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#anforderungen">Anforderungen</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#verwendung-via-ip">Verwendung via IP</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="#konfiguration">Konfiguration</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#plugin-yaml">plugin.yaml</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#item-yaml">item.yaml</a></li>
@@ -4833,6 +4839,18 @@ auf die Linux Gruppe <cite>dialout</cite> besitzen, damit die Hardware über Lin
 </div>
 <p>Aktoren, Schalter oder Stellglieder, die vom Enocean plugin gesteuert werden sollen, müssen vorher einmalig angelert werden. Der Anlernvorgang wird unten im Kaptiel Webinterface beschrieben.
 Für das Auslesen von Statusinfromationen von Enocean Sensoren ist kein Anlernvorgang nötig.</p>
+<section id="verwendung-via-ip">
+<h3>Verwendung via IP<a class="headerlink" href="#verwendung-via-ip" title="Permalink to this heading"></a></h3>
+<p>Alternativ kann eines der oben erwähnten Serial-Geräte auch über das Netzwerk freigegeben werden und per RFC2217 eingebunden werden. Die Freigabe erfolgt auf dem Host mithilfe von <cite>ser2net &lt;https://linux.die.net/man/8/ser2net&gt;</cite>. Eine beispielhafte Konfiguration (ser2net.yaml) könnte so aussehen:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">connection</span><span class="p">:</span><span class="w"> </span><span class="nl">&amp;tS4telnet</span>
+<span class="w">    </span><span class="nt">accepter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">telnet(rfc2217),tcp,&lt;PORT&gt;</span>
+<span class="w">    </span><span class="nt">connector</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">serialdev,</span>
+<span class="w">               </span><span class="l l-Scalar l-Scalar-Plain">&lt;DEVICE&gt;,</span>
+<span class="w">               </span><span class="l l-Scalar l-Scalar-Plain">57600n81,local</span>
+</pre></div>
+</div>
+<p>Für &lt;PORT&gt; und &lt;DEVICE&gt; sind die entsprechenden Werte einzufügen.</p>
+</section>
 </section>
 <section id="konfiguration">
 <h2>Konfiguration<a class="headerlink" href="#konfiguration" title="Permalink to this heading"></a></h2>
@@ -4842,6 +4860,7 @@ Für das Auslesen von Statusinfromationen von Enocean Sensoren ist kein Anlernvo
 <p><strong>serialport</strong></p>
 <p>Hier wird der <cite>serialport</cite> zum Enocean Hardwareadapter angegeben werden.
 Unter Linux wird empfohlen, das entsprechende Linux Uart device über eine Udev-Regel auf einen Link zu mappen und diesen Link dann als <cite>serialport</cite> anzugeben.</p>
+<p>Soll ein Gerät über das Netzwerk angebunden werden, wird hier anstatt des Unix-Handles eine URL in folgender Form angegeben: <code class="docutils literal notranslate"><span class="pre">rfc2217://&lt;HOST&gt;:&lt;PORT&gt;</span></code>.</p>
 <p><strong>tx_id</strong></p>
 <p>Die tx_id ist die Transmitter ID der Enocean Hardware und als achtstelliger Hexadezimalwert definiert. Die Angabe ist erstmal optional und muss nur zwingend angegeben werden,
 falls Enocean Aktoren geschaltet werden sollen, d.h. der Hardware Kontroller auch Senebefehle absetzen muss.</p>
