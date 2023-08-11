@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Support Skripte für SmartHomeNG &mdash; Dokumentation v1.9.5.4 v1.9.5.4 develop (Stand 31. März 2023, commit 77876f6) Dokumentation</title>
+  <title>Support Skripte für SmartHomeNG &mdash; Dokumentation v1.9.5.4 v1.9.5.4 develop (Stand 31. März 2023, commit 3f381ec) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -135,8 +135,9 @@
 <li class="toctree-l4"><a class="reference internal" href="../../installation/komplettanleitung/07_samba.html#samba-konfigurieren">Samba konfigurieren</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../installation/komplettanleitung/08_shng_daemon.html">SmartHomeNG als Dienst einrichten <span class="bluesup">update</span></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../installation/komplettanleitung/08_shng_daemon.html#nutzung-eines-virtuellen-environments-redsup-neu">Nutzung eines virtuellen Environments:redsup:<cite>neu</cite></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../installation/komplettanleitung/08_shng_daemon.html">SmartHomeNG als Dienst <span class="bluesup">update</span></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../installation/komplettanleitung/08_shng_daemon.html#einrechten-des-dienstes">Einrechten des Dienstes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../installation/komplettanleitung/08_shng_daemon.html#nutzung-eines-virtuellen-environments-redsup-neu">Nutzung eines virtuellen Environments redsup:<cite>neu</cite></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../installation/komplettanleitung/08_shng_daemon.html#starten-des-dienstes">Starten des Dienstes</a></li>
 </ul>
 </li>
@@ -4112,7 +4113,7 @@
 </li>
 <li class="toctree-l2 current"><a class="reference internal" href="python.html">Python Environment <span class="bluesup">Update</span></a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Support Skripte für SmartHomeNG</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#make-env">make_env</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#make-venv">make_venv</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#act">act</a></li>
 </ul>
 </li>
@@ -4813,20 +4814,64 @@
              
   <span class="target" id="index-0"></span><section id="support-skripte-fur-smarthomeng">
 <span id="index-1"></span><h1>Support Skripte für SmartHomeNG<a class="headerlink" href="#support-skripte-fur-smarthomeng" title="Permalink to this heading"></a></h1>
-<p>…</p>
+<p>Für das arbeiten mit virtuellen Python Environments bringt SmartHomeNG zwei Support-Skripte mit. Diese Skripte sind
+im Tools Verzeichnis abgelegt.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-<section id="make-env">
-<h2>make_env<a class="headerlink" href="#make-env" title="Permalink to this heading"></a></h2>
-<p>…</p>
+<section id="make-venv">
+<h2>make_venv<a class="headerlink" href="#make-venv" title="Permalink to this heading"></a></h2>
+<p>Das Skript <strong>make_venv</strong> dient zum Erzeugen von virtuellen Python Umgebungen. Es wird mit einem oder zwei Parametern
+aufgerufen. Der erste (Pflicht-)Parameter ist die Python Version. Der zweite optionale Parameter ist der Name
+des Environments. Wenn dieser Parameter weg gelassen wird, wird die Python Version als Name des Environments
+herangezogen.</p>
+<div class="admonition note">
+<p class="admonition-title">Bemerkung</p>
+<p>Die Python Version, für die ein virtuelles Environment erzeugt werden soll, muss auf dem System bereits installiert
+sein. Details zur Installation von Python sind im Abschnitt
+<a class="reference internal" href="python_installation.html#python-version-installieren"><span class="std std-ref">Python Version Installieren</span></a> beschrieben.</p>
+</div>
+<p>Um zum Beispiel ein Environment für Python 3.8 zu erzeugen, kann einfach der folgende Befehl eingegeben werden:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>make_venv<span class="w"> </span><span class="m">3</span>.8
+
+Python<span class="w"> </span>virtual<span class="w"> </span>environment<span class="w"> </span><span class="s1">&#39;py_3.8&#39;</span><span class="w"> </span><span class="o">(</span>Python<span class="w"> </span><span class="m">3</span>.8.3<span class="o">)</span><span class="w"> </span>created
+<span class="k">in</span><span class="w"> </span>SmartHomeNG<span class="w"> </span>installation<span class="w"> </span><span class="s1">&#39;/usr/local/shng_dev&#39;</span>
+
+Package<span class="w">    </span>Version
+----------<span class="w"> </span>-------
+pip<span class="w">        </span><span class="m">23</span>.2.1
+setuptools<span class="w"> </span><span class="m">41</span>.2.0
+wheel<span class="w">      </span><span class="m">0</span>.41.1
+
+$
+</pre></div>
+</div>
+<p>Um dieses Environment nu nutzen, muss es noch mit Hilfe des Skriptes <strong>act</strong> aktiviert werden.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
 </section>
 <section id="act">
 <h2>act<a class="headerlink" href="#act" title="Permalink to this heading"></a></h2>
-<p>…</p>
+<p>Das Skript <strong>act</strong> dient zum Aktivieren von vorher erzeugten virtuellen Python Umgebungen. Es wird mit einem
+Parameter aufgerufen. Der Parameter ist der Name des Environments. Dem Aufruf des Skriptes muss <code class="docutils literal notranslate"><span class="pre">source</span></code>
+vorangestellt werden, damit die Ergebisse des Skripts auf die aktuelle Shell wirken. Wird <code class="docutils literal notranslate"><span class="pre">source</span></code> vergessen,
+gibt das skript eine Fehlermeldung aus.</p>
+<p>Um zum Beispiel das Environment für Python 3.8 zu aktivieren, kann einfach der folgende Befehl eingegeben werden:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">source</span><span class="w"> </span>act<span class="w"> </span><span class="m">3</span>.8
+
+Activating<span class="w"> </span>virtual<span class="w"> </span>environment<span class="w"> </span>py_3.8<span class="w"> </span><span class="o">(</span>Python<span class="w"> </span><span class="m">3</span>.8.3<span class="o">)</span>
+
+To<span class="w"> </span>deactivate<span class="w"> </span>the<span class="w"> </span>virtual<span class="w"> </span>environment<span class="w"> </span>simply<span class="w"> </span><span class="nb">type</span><span class="w"> </span>the<span class="w"> </span><span class="nb">command</span><span class="w"> </span><span class="s1">&#39;deactivate&#39;</span>
+
+<span class="o">(</span>py_3.8<span class="o">)</span><span class="w"> </span>$
+</pre></div>
+</div>
+<p>Ein aktives virtuelles Environment wird mit dem Befehl <strong>deactivate</strong> verlassen:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>py_3.8<span class="o">)</span><span class="w"> </span>$<span class="w"> </span>deactivate
+$
+</pre></div>
+</div>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
