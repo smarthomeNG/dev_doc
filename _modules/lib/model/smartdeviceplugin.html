@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.9.5.4 v1.9.5.4 develop (Stand 31. März 2023, commit 053892f) Dokumentation</title>
+  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.9.5.4 v1.9.5.4 develop (Stand 31. März 2023, commit 8cdacad) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -6254,20 +6254,21 @@
                 <span class="n">cmd</span> <span class="o">=</span> <span class="n">path</span> <span class="k">if</span> <span class="n">path</span> <span class="k">else</span> <span class="n">node_name</span>
                 <span class="k">if</span> <span class="n">cut_levels</span><span class="p">:</span>
                     <span class="n">cmd</span> <span class="o">=</span> <span class="n">COMMAND_SEP</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">COMMAND_SEP</span><span class="p">)[</span><span class="n">cut_levels</span><span class="p">:])</span>
-                <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_COMMAND</span><span class="p">]</span> <span class="o">=</span> <span class="n">cmd</span>
-                <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_READ</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_ATTR_READ</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-                <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_WRITE</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_ATTR_WRITE</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+                <span class="c1"># add &#39;@instance&#39; to enable multi-instance usage</span>
+                <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_COMMAND</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cmd</span>
+                <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_READ</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_ATTR_READ</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+                <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_WRITE</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_ATTR_WRITE</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">acl</span><span class="p">:</span>
                     <span class="n">item</span><span class="p">[</span><span class="s1">&#39;visu_acl&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;rw&#39;</span> <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_ATTR_WRITE</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;ro&#39;</span>
 
                 <span class="c1"># set sub-node for readability</span>
-                <span class="n">inode</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_ATTR_ITEM_ATTRS</span><span class="p">)</span>
+                <span class="n">ia_node</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_ATTR_ITEM_ATTRS</span><span class="p">)</span>
 
                 <span class="n">rg_level</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">rg_list</span> <span class="o">=</span> <span class="kc">None</span>
-                <span class="k">if</span> <span class="n">inode</span><span class="p">:</span>
-                    <span class="n">rg_level</span> <span class="o">=</span> <span class="n">inode</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_RG_LEVELS</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-                    <span class="n">rg_list</span> <span class="o">=</span> <span class="n">inode</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_READ_GROUPS</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">ia_node</span><span class="p">:</span>
+                    <span class="n">rg_level</span> <span class="o">=</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_RG_LEVELS</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="n">rg_list</span> <span class="o">=</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_READ_GROUPS</span><span class="p">)</span>
 
                 <span class="c1"># rg_level = None: print all read groups (default)</span>
                 <span class="c1"># rg_level = 0: don&#39;t print read groups</span>
@@ -6285,33 +6286,34 @@
                             <span class="n">rg_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">rg_list</span><span class="p">]</span>
                         <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">rg_list</span><span class="p">:</span>
                             <span class="n">grps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">))</span>
-                    <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_GROUP</span><span class="p">]</span> <span class="o">=</span> <span class="n">grps</span>
+                    <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_GROUP</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grps</span>
 
-                <span class="k">if</span> <span class="n">inode</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">inode</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_ENFORCE</span><span class="p">):</span>
+                <span class="c1"># item attributes</span>
+                <span class="k">if</span> <span class="n">ia_node</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_ENFORCE</span><span class="p">):</span>
                         <span class="n">item</span><span class="p">[</span><span class="s1">&#39;enforce_updates&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="k">if</span> <span class="n">inode</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_INITIAL</span><span class="p">):</span>
-                        <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_READ_INIT</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="n">cycle</span> <span class="o">=</span> <span class="n">inode</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_CYCLE</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_INITIAL</span><span class="p">):</span>
+                        <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_READ_INIT</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">cycle</span> <span class="o">=</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_CYCLE</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">cycle</span><span class="p">:</span>
-                        <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_CYCLE</span><span class="p">]</span> <span class="o">=</span> <span class="n">cycle</span>
-                    <span class="n">custom</span> <span class="o">=</span> <span class="n">inode</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_CUSTOM1</span><span class="p">)</span>
+                        <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_CYCLE</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cycle</span>
+                    <span class="n">custom</span> <span class="o">=</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_CUSTOM1</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">custom</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_CUSTOM1</span><span class="p">]</span> <span class="o">=</span> <span class="n">custom</span>
-                    <span class="n">custom</span> <span class="o">=</span> <span class="n">inode</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_CUSTOM2</span><span class="p">)</span>
+                        <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_CUSTOM1</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">custom</span>
+                    <span class="n">custom</span> <span class="o">=</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_CUSTOM2</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">custom</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_CUSTOM1</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">custom</span>
-                    <span class="n">custom</span> <span class="o">=</span> <span class="n">inode</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_CUSTOM3</span><span class="p">)</span>
+                        <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_CUSTOM1</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;2&#39;</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">custom</span>
+                    <span class="n">custom</span> <span class="o">=</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_CUSTOM3</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">custom</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_CUSTOM1</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">custom</span>
+                        <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_CUSTOM1</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;3&#39;</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">custom</span>
 
                     <span class="c1"># custom item attributes: add 1:1</span>
-                    <span class="n">attrs</span> <span class="o">=</span> <span class="n">inode</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_ATTRIBUTES</span><span class="p">)</span>
+                    <span class="n">attrs</span> <span class="o">=</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_ATTRIBUTES</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">attrs</span><span class="p">:</span>
                         <span class="n">update</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">attrs</span><span class="p">)</span>
 
                     <span class="c1"># custom item templates: add 1:!</span>
-                    <span class="n">templates</span> <span class="o">=</span> <span class="n">inode</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_TEMPLATE</span><span class="p">)</span>
+                    <span class="n">templates</span> <span class="o">=</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_TEMPLATE</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">templates</span><span class="p">:</span>
                         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">templates</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                             <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">templates</span><span class="p">]</span>
@@ -6321,27 +6323,27 @@
 
                     <span class="c1"># if item has &#39;xx_lookup&#39; and item_attrs[&#39;lookup_item&#39;] is</span>
                     <span class="c1"># set, create additional item with lookup values</span>
-                    <span class="n">lu_item</span> <span class="o">=</span> <span class="n">inode</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_LOOKUP_ITEM</span><span class="p">)</span>
+                    <span class="n">lu_item</span> <span class="o">=</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_LOOKUP_ITEM</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">lu_item</span> <span class="ow">and</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_ATTR_LOOKUP</span><span class="p">):</span>
-                        <span class="n">ltyp</span> <span class="o">=</span> <span class="n">inode</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_LOOKUP_ITEM</span><span class="p">)</span>
+                        <span class="n">ltyp</span> <span class="o">=</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_LOOKUP_ITEM</span><span class="p">)</span>
                         <span class="k">if</span> <span class="n">ltyp</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
                             <span class="n">ltyp</span> <span class="o">=</span> <span class="s1">&#39;list&#39;</span>
                         <span class="n">item</span><span class="p">[</span><span class="s1">&#39;lookup&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;list&#39;</span> <span class="k">if</span> <span class="n">ltyp</span> <span class="o">==</span> <span class="s1">&#39;list&#39;</span> <span class="k">else</span> <span class="s1">&#39;dict&#39;</span><span class="p">}</span>
-                        <span class="n">item</span><span class="p">[</span><span class="s1">&#39;lookup&#39;</span><span class="p">][</span><span class="n">ITEM_ATTR_LOOKUP</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_ATTR_LOOKUP</span><span class="p">)</span><span class="si">}</span><span class="s1">#</span><span class="si">{</span><span class="n">ltyp</span><span class="si">}</span><span class="s1">&#39;</span>
+                        <span class="n">item</span><span class="p">[</span><span class="s1">&#39;lookup&#39;</span><span class="p">][</span><span class="n">ITEM_ATTR_LOOKUP</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_ATTR_LOOKUP</span><span class="p">)</span><span class="si">}</span><span class="s1">#</span><span class="si">{</span><span class="n">ltyp</span><span class="si">}</span><span class="s1">&#39;</span>
 
             <span class="c1"># &#39;level node&#39; -&gt; print read item</span>
             <span class="k">elif</span> <span class="n">node_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">CMD_ATTR_CMD_SETTINGS</span><span class="p">,</span> <span class="n">CMD_ATTR_PARAMS</span><span class="p">,</span> <span class="n">CMD_ATTR_ITEM_ATTRS</span><span class="p">,</span> <span class="n">CMD_IATTR_ATTRIBUTES</span><span class="p">,</span> <span class="n">CMD_IATTR_READ_GROUPS</span><span class="p">):</span>
 
                 <span class="n">item</span><span class="p">[</span><span class="s1">&#39;read&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span><span class="p">}</span>
                 <span class="n">item</span><span class="p">[</span><span class="s1">&#39;read&#39;</span><span class="p">][</span><span class="s1">&#39;enforce_updates&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="n">item</span><span class="p">[</span><span class="s1">&#39;read&#39;</span><span class="p">][</span><span class="n">ITEM_ATTR_READ_GRP</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span> <span class="k">if</span> <span class="n">path</span> <span class="k">else</span> <span class="n">node_name</span>
+                <span class="n">item</span><span class="p">[</span><span class="s1">&#39;read&#39;</span><span class="p">][</span><span class="n">ITEM_ATTR_READ_GRP</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span> <span class="k">if</span> <span class="n">path</span> <span class="k">else</span> <span class="n">node_name</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="c1"># set sub-node for readability</span>
-                    <span class="n">inode</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_ATTR_ITEM_ATTRS</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="n">inode</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_INITIAL</span><span class="p">):</span>
-                        <span class="n">item</span><span class="p">[</span><span class="s1">&#39;read&#39;</span><span class="p">][</span><span class="n">ITEM_ATTR_READ_INIT</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="k">if</span> <span class="n">inode</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_CYCLE</span><span class="p">):</span>
-                        <span class="n">item</span><span class="p">[</span><span class="s1">&#39;read&#39;</span><span class="p">][</span><span class="n">ITEM_ATTR_CYCLE</span><span class="p">]</span> <span class="o">=</span> <span class="n">inode</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_CYCLE</span><span class="p">)</span>
+                    <span class="n">ia_node</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_ATTR_ITEM_ATTRS</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_INITIAL</span><span class="p">):</span>
+                        <span class="n">item</span><span class="p">[</span><span class="s1">&#39;read&#39;</span><span class="p">][</span><span class="n">ITEM_ATTR_READ_INIT</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">if</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_CYCLE</span><span class="p">):</span>
+                        <span class="n">item</span><span class="p">[</span><span class="s1">&#39;read&#39;</span><span class="p">][</span><span class="n">ITEM_ATTR_CYCLE</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_CYCLE</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
                     <span class="k">pass</span>
 
@@ -6404,8 +6406,8 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">yaml</span><span class="p">[</span><span class="s1">&#39;item_structs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
 
-        <span class="c1"># this means the commands dict has &#39;ALL&#39; and model names at the top</span>
-        <span class="c1"># level otherwise, these be commands or sections</span>
+        <span class="c1"># this means the commands dict has &#39;ALL&#39; and model names at the top level </span>
+        <span class="c1"># otherwise, the top level nodes are commands or sections</span>
         <span class="n">cmds_has_models</span> <span class="o">=</span> <span class="n">INDEX_GENERIC</span> <span class="ow">in</span> <span class="n">top_level_entries</span>
 
         <span class="k">if</span> <span class="n">cmds_has_models</span><span class="p">:</span>
