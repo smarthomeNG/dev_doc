@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.9.5.4 v1.9.5.4 develop (Stand 31. März 2023, commit 1416deb) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.9.5.5 v1.9.5.5 develop (Stand 31. März 2023, commit 5245349) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -35,7 +35,7 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            Dokumentation v1.9.5.4
+            Dokumentation v1.9.5.5
               <img src="../../../_static/logo_long_inverse3.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
@@ -4139,8 +4139,8 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../referenz/python/python.html">Python Environment <span class="bluesup">Update</span></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../referenz/python/support_skripte.html">Support Skripte für SmartHomeNG</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../referenz/python/support_skripte.html#make-venv">make_venv</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../referenz/python/support_skripte.html#act">act</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../referenz/python/support_skripte.html#make-venv-skript">make_venv Skript</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../referenz/python/support_skripte.html#act-skript">act Skript</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../referenz/python/virtual_environments.html">Virtuelle Python Environments <span class="bluesup">Update</span></a><ul>
@@ -4819,7 +4819,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">Dokumentation v1.9.5.4</a>
+          <a href="../../../index.html">Dokumentation v1.9.5.5</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -4869,6 +4869,7 @@
 <span class="kn">from</span> <span class="nn">lib.translation</span> <span class="kn">import</span> <span class="n">translate</span> <span class="k">as</span> <span class="n">lib_translate</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
 
 
 <div class="viewcode-block" id="SmartPlugin"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin">[Doku]</a><span class="k">class</span> <span class="nc">SmartPlugin</span><span class="p">(</span><span class="n">SmartObject</span><span class="p">,</span> <span class="n">Utils</span><span class="p">):</span>
@@ -5050,7 +5051,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;trying to remove suspend item </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">. Disabling suspend item function&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item_path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        
+
         <span class="c1"># remove data from item_dict early in case of concurrent actions</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()]</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()]</span>
@@ -5136,43 +5137,88 @@
             <span class="n">item_path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mapping&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.get_item_path_list"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_item_path_list">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_path_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filter_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_item_mapping_list"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_item_mapping_list">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_mapping_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the plugin-specific mapping that was defined by add_item()</span>
+
+<span class="sd">        This method is implemented to support plugin development</span>
+<span class="sd">        to be used with the eval syntax checker or the executor plugin</span>
+
+<span class="sd">        Only available in SmartHomeNG versions **v1.10.0 and up**.</span>
+
+<span class="sd">        :return: mapping string for that item</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">item_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mapping&#39;</span><span class="p">)])</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+    <span class="k">def</span> <span class="nf">_string_compare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compare strings of different length</span>
+
+<span class="sd">        This method compares strings only up to the length of the shorter string.</span>
+<span class="sd">        - mode &#39;start&#39; compares the shorter string with the beginning of longer string</span>
+<span class="sd">        - mode &#39;end&#39; compares the shorter string with the end of longer string</span>
+
+<span class="sd">        :param s1: First string to compare</span>
+<span class="sd">        :param s2: Second string to compare</span>
+<span class="sd">        :param mode: Compare mode (&#39;start&#39;, &#39;end&#39;) for comparing strings of different length</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">s1</span> <span class="o">==</span> <span class="n">s2</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">s2</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">s1</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">s2</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;start&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">s2</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">s1</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">s2</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SmartPlugin.get_item_path_list"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_item_path_list">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_path_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_key</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filter_value</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return list of stored item paths used by this plugin</span>
 
 <span class="sd">        Only available in SmartHomeNG versions **v1.9.4 and up**.</span>
+<span class="sd">        Parameter &#39;mode&#39; only available in SmartHomeNG versions **v1.10.0 and up**.</span>
 
 <span class="sd">        :param filter_key: key of the configdata dict used to filter</span>
 <span class="sd">        :param filter_value: value for filtering item_path_list</span>
-<span class="sd">        :type filter_key: str</span>
-<span class="sd">        :type filter_value: any</span>
+<span class="sd">        :param mode: Compare mode (&#39;start&#39;, &#39;end&#39;) for comparing strings of different length, None oder ommitting does a standard compare</span>
 
 <span class="sd">        :return: List of item pathes</span>
-<span class="sd">        :rtype: list(str)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">filter_key</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">filter_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="p">[</span><span class="n">item_path</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;config_data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">filter_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">filter_value</span><span class="p">]</span></div>
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">item_path</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;config_data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">filter_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">filter_value</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">item_path</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_string_compare</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;config_data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">filter_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">filter_value</span><span class="p">,</span> <span class="n">mode</span><span class="p">)]</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.get_item_list"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_item_list">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filter_value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_item_list"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_item_list">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_key</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filter_value</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return list of stored items used by this plugin</span>
 
 <span class="sd">        Only available in SmartHomeNG versions **v1.9.4 and up**.</span>
+<span class="sd">        Parameter &#39;mode&#39; only available in SmartHomeNG versions **v1.10.0 and up**.</span>
 
 <span class="sd">        :param filter_key: key of the configdata dict used to filter</span>
 <span class="sd">        :param filter_value: value for filtering item_path_list</span>
-<span class="sd">        :type filter_key: str</span>
-<span class="sd">        :type filter_value: any</span>
+<span class="sd">        :param mode: Compare mode (&#39;start&#39;, &#39;end&#39;) for comparing strings of different length, None oder ommitting does a standard compare</span>
 
 <span class="sd">        :return: List of item objects</span>
-<span class="sd">        :rtype: list(item)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">filter_key</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">filter_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())]</span>
 
-        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;config_data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">filter_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">filter_value</span><span class="p">]</span></div>
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;config_data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">filter_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">filter_value</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_string_compare</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;config_data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">filter_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">filter_value</span><span class="p">,</span> <span class="n">mode</span><span class="p">)]</span></div>
 
 <div class="viewcode-block" id="SmartPlugin.get_trigger_items"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_trigger_items">[Doku]</a>    <span class="k">def</span> <span class="nf">get_trigger_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5570,36 +5616,33 @@
         <span class="k">return</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="SmartPlugin.has_iattr"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.has_iattr">[Doku]</a>    <span class="k">def</span> <span class="nf">has_iattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.has_iattr"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.has_iattr">[Doku]</a>    <span class="k">def</span> <span class="nf">has_iattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        checks item configuration for an attribute</span>
 
 <span class="sd">        :param conf: item configuration</span>
 <span class="sd">        :param attr: attribute name</span>
-<span class="sd">        :type conf: str</span>
-<span class="sd">        :type attr: str</span>
 
 <span class="sd">        :return: True, if attribute is in item configuration</span>
-<span class="sd">        :rtype: Boolean</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">__attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_iattr_conf</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">__attr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="SmartPlugin.get_iattr_value"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_iattr_value">[Doku]</a>    <span class="k">def</span> <span class="nf">get_iattr_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_iattr_value"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_iattr_value">[Doku]</a>    <span class="k">def</span> <span class="nf">get_iattr_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns value for an attribute from item config</span>
 
+<span class="sd">        Parameter default is only available in SmartHomeNG versions **v1.10.0 and up**.</span>
+
 <span class="sd">        :param conf: item configuration</span>
 <span class="sd">        :param attr: attribute name</span>
-<span class="sd">        :type conf: str</span>
-<span class="sd">        :type attr: str</span>
+<span class="sd">        :param default: Return-value, if attribute is not found</span>
 
 <span class="sd">        :return: value of an attribute</span>
-<span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">__attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_iattr_conf</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">__attr</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">conf</span><span class="p">[</span><span class="n">__attr</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="n">default</span> <span class="k">if</span> <span class="n">__attr</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">conf</span><span class="p">[</span><span class="n">__attr</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="SmartPlugin.set_attr_value"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.set_attr_value">[Doku]</a>    <span class="k">def</span> <span class="nf">set_attr_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
