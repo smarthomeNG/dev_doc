@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>eval und eval_trigger &mdash; Dokumentation v1.9.5.6 v1.9.5.6 develop (Stand 31. März 2023, commit 419b225) Dokumentation</title>
+  <title>eval und eval_trigger &mdash; Dokumentation v1.9.5.6 v1.9.5.6 develop (Stand 31. März 2023, commit cfac05e) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -270,6 +270,7 @@
 <li class="toctree-l4 current"><a class="current reference internal" href="#"><em>eval</em> und <em>eval_trigger</em></a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#attribut-eval">Attribut <em>eval</em></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#attribut-eval-trigger">Attribut <em>eval_trigger</em></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#attribut-eval-on-trigger-only">Attribut <em>eval_on_trigger_only</em></a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="hysteresis.html">Hysterese</a><ul>
@@ -3823,6 +3824,7 @@
 <li class="toctree-l4 current"><a class="current reference internal" href="#"><em>eval</em> und <em>eval_trigger</em></a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#attribut-eval">Attribut <em>eval</em></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#attribut-eval-trigger">Attribut <em>eval_trigger</em></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#attribut-eval-on-trigger-only">Attribut <em>eval_on_trigger_only</em></a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="hysteresis.html">Hysterese</a><ul>
@@ -4941,6 +4943,10 @@ Das Item soll aber die Temperatur in °Celsius speichern.</p>
 </ul>
 </dd>
 </dl>
+<p>Wenn das Attribut <strong>eval_on_trigger_only</strong> gesetzt ist, wird der <strong>eval</strong> Ausdruck
+nur ausgewertet, wenn ein <strong>eval_trigger</strong> der Auslöser war; in allen anderen
+Fällen (Zuweisung durch Plugin, Logik, Konsole, AdminUI o.ä.) wird der Wert
+gesetzt wie bei einem normalen Item ohne <strong>eval</strong> Ausdruck.</p>
 <p>Das Eval Attribut kann auch bis zu einem gewissen Grad Logiken
 beinhalten. Wichtig ist, dass bei der Angabe eines <strong>if</strong> auch ein <strong>else</strong>
 implementiert sein muss. Außerdem ist dem Item ein <strong>sh.</strong> voran zu
@@ -5115,6 +5121,44 @@ ohne folgende <strong>()</strong>).</p>
 <li><p>eval: sh.my.item</p></li>
 <li><p>eval_trigger: <strong>sh.</strong> my.item | <strong>sh.</strong> my.other.item</p></li>
 </ul>
+</div>
+</section>
+<section id="attribut-eval-on-trigger-only">
+<h2>Attribut <em>eval_on_trigger_only</em><a class="headerlink" href="#attribut-eval-on-trigger-only" title="Permalink to this heading"></a></h2>
+<p>Mit dem Attribut <strong>eval_on_trigger_only</strong> wird die Auswertung des <strong>eval</strong> Ausdrucks
+übersprungen, wenn dessen Auswertung nicht durch einen definierten <strong>eval_trigger</strong>
+erfolgt ist.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">Raum</span><span class="p">:</span>
+
+<span class="w">    </span><span class="nt">Temperatur</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">average temperature</span>
+<span class="w">        </span><span class="nt">eval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">avg</span>
+<span class="w">        </span><span class="nt">eval_trigger</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">room_a.temp</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">room_b.temp</span>
+
+<span class="w">    </span><span class="nt">Temperatur2</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">average temperature</span>
+<span class="w">        </span><span class="nt">eval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">avg</span>
+<span class="w">        </span><span class="nt">eval_on_trigger_only</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">eval_trigger</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">room_a.temp</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">room_b.temp</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Bemerkung</p>
+<p>Wichtig anzumerken ist, dass die Nutzung der Funktionen, die <strong>eval_trigger</strong>
+Werte zur Berechnung verwenden (sum, avg, min, max, and und or) eingeschränkt
+wird, wenn <strong>eval_on_trigger_only</strong> gesetzt ist.</p>
+<p>Wenn im vorhergehenden Beispiel dem Item Temperatur - z.B. per Logik - der
+Wert 5 zugewiesen wird, löst das die Berechnung der Durchschnittstemperatur
+der beiden Trigger aus.</p>
+<p>Wenn dem Item Temperatur2 per Logik der Wert 5 zugewiesen wird, wird die
+Auswertung des <strong>eval</strong> Ausdrucks übersprungen und statt dessen der Wert
+des Items auf 5 gesetzt.</p>
 </div>
 <section id="gemeinsame-verwendung-von-eval-und-on-item-attributen">
 <h3>Gemeinsame Verwendung von eval und on_... Item Attributen<a class="headerlink" href="#gemeinsame-verwendung-von-eval-und-on-item-attributen" title="Permalink to this heading"></a></h3>
