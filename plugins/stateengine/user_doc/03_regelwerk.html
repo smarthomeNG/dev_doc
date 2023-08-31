@@ -610,6 +610,7 @@
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#wertevergleich">Wertevergleich</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#name-der-bedingung">Name der Bedingung</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#templates-fur-bedingungsabfragen">Templates für Bedingungsabfragen</a></li>
+<li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungen-mittels-eval-ausdrucken">Bedingungen mittels eval-Ausdrücken</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungslisten">Bedingungslisten</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#vergleichsfunktion">Vergleichsfunktion</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#besondere-bedingungen">„Besondere“ Bedingungen</a></li>
@@ -2919,6 +2920,7 @@
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#wertevergleich">Wertevergleich</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#name-der-bedingung">Name der Bedingung</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#templates-fur-bedingungsabfragen">Templates für Bedingungsabfragen</a></li>
+<li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungen-mittels-eval-ausdrucken">Bedingungen mittels eval-Ausdrücken</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungslisten">Bedingungslisten</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#vergleichsfunktion">Vergleichsfunktion</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#besondere-bedingungen">„Besondere“ Bedingungen</a></li>
@@ -4976,24 +4978,24 @@ das Attribute <code class="docutils literal notranslate"><span class="pre">se_pl
 </div>
 <section id="item-definitionen">
 <h2>Item-Definitionen<a class="headerlink" href="#item-definitionen" title="Permalink to this heading"></a></h2>
-<p>Bedingungen und Aktionen beziehen sich überlicherweise auf Items wie beispielsweise
+<p>Bedingungen und Aktionen beziehen sich üblicherweise auf Items wie beispielsweise
 die Höhe einer Jalousie oder die Außenhelligkeit.
 Diese Items müssen auf Ebene des Regelwerk-Items über das Attribut
-<code class="docutils literal notranslate"><span class="pre">se_item_&lt;Bedingungsname/Aktionsname&gt;</span></code> bekannt gemacht werden.</p>
+<code class="docutils literal notranslate"><span class="pre">se_item_&lt;Bedingungsname/Aktionsname&gt;</span></code> bekannt gemacht werden. Um einfacher zwischen Items,
+die für Bedingungen und solchen, die für Aktionen genutzt werden, unterscheiden zu können,
+können Items, die nur für Bedingungen gebraucht werden, mittels <code class="docutils literal notranslate"><span class="pre">se_status_&lt;Bedingungsname&gt;</span></code>
+deklariert werden. Diese Variante ist auch besonders dann relevant, wenn es zwei separate Items
+für „Senden“ und „Empfangen“ gibt, also z.B. Senden der Jalousiehöhe und Empfangen des aktuellen
+Werts vom KNX-Aktor.</p>
 <p>Anstatt direkt das Item in Form des absoluten oder relativen Pfades mittels <code class="docutils literal notranslate"><span class="pre">se_item_</span></code> zu
 setzen, kann auch die Angabe <code class="docutils literal notranslate"><span class="pre">se_eval_</span></code> genutzt werden. In diesem Fall wird eine beliebige
-Funktion anstelle des Itemnamen angegeben. Dies ist sowohl für Bedingungsabfragen,
-als auch für das Setzen von „dynamischen“ Items möglich.</p>
-<p>An dieser Stelle ist es auch möglich, über <code class="docutils literal notranslate"><span class="pre">se_mindelta_</span></code> zu definieren, um welchen Wert
-sich ein Item mindestens geändert haben muss, um neu gesetzt zu werden. Siehe auch <a class="reference internal" href="06_aktionen.html#aktionen"><span class="std std-ref">Aktionen</span></a>.</p>
-<p>Außerdem ist es möglich, über <code class="docutils literal notranslate"><span class="pre">se_repeat_actions</span></code> generell zu definieren,
-ob Aktionen für die Stateengine wiederholt ausgeführt werden sollen oder nicht. Diese Konfiguration
-kann für einzelne Aktionen individuell über die Angabe <code class="docutils literal notranslate"><span class="pre">repeat</span></code> überschrieben werden. Siehe auch <a class="reference internal" href="06_aktionen.html#aktionen"><span class="std std-ref">Aktionen</span></a>.</p>
+Funktion anstelle des Itemnamen angegeben. Dies ist primär für das Setzen von „dynamischen“ Items
+gedacht, allerdings ist es auch möglich, hier einen beliebigen Eval-Ausdruck als Bedingung festzulegen.</p>
 <section id="beispiel-se-item">
 <h3>Beispiel se_item<a class="headerlink" href="#beispiel-se-item" title="Permalink to this heading"></a></h3>
 <p>Im Beispiel wird durch <code class="docutils literal notranslate"><span class="pre">se_item_height</span></code> das Item <code class="docutils literal notranslate"><span class="pre">beispiel.raffstore1.hoehe</span></code>
 dem Plugin unter dem Namen „height“ bekannt gemacht. Das Item <code class="docutils literal notranslate"><span class="pre">beispiel.wetterstation.helligkeit</span></code>
-wird durch <code class="docutils literal notranslate"><span class="pre">se_item_brightness</span></code> als „brightness“ referenziert.</p>
+wird durch <code class="docutils literal notranslate"><span class="pre">se_item_brightness</span></code> (alternativ via <code class="docutils literal notranslate"><span class="pre">se_status_brightness</span></code>) als „brightness“ referenziert.</p>
 <p>Auf diese Namen beziehen sich nun in weiterer Folge Bedingungen und Aktionen. Im Beispiel
 wird im Zustand Nacht das Item <code class="docutils literal notranslate"><span class="pre">beispiel.raffstore1.hoehe</span></code> auf den Wert 100 gesetzt, sobald
 <code class="docutils literal notranslate"><span class="pre">beispiel.wetterstation.helligkeit</span></code> den Wert 25 übersteigt. Erklärungen zu Bedingungen
@@ -5020,7 +5022,7 @@ und Aktionen folgen auf den nächsten Seiten.</p>
 </section>
 <section id="beispiel-se-eval">
 <h3>Beispiel se_eval<a class="headerlink" href="#beispiel-se-eval" title="Permalink to this heading"></a></h3>
-<p>se_eval ist für Sonderfälle und etwas komplexere Konfiurationen sinnvoll, kann aber
+<p>se_eval ist für Sonderfälle und etwas komplexere Konfigurationen sinnvoll, kann aber
 im ersten Durchlauf ignoriert werden. Es wird daher empfohlen, als Beginner
 dieses Beispiel einfach zu überspringen ;)</p>
 <p>Im Beispiel wird durch <code class="docutils literal notranslate"><span class="pre">se_eval_brightness</span></code> das Item für den Check von

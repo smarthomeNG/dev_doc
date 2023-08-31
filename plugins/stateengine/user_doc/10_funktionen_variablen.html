@@ -610,6 +610,7 @@
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#wertevergleich">Wertevergleich</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#name-der-bedingung">Name der Bedingung</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#templates-fur-bedingungsabfragen">Templates für Bedingungsabfragen</a></li>
+<li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungen-mittels-eval-ausdrucken">Bedingungen mittels eval-Ausdrücken</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungslisten">Bedingungslisten</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#vergleichsfunktion">Vergleichsfunktion</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#besondere-bedingungen">„Besondere“ Bedingungen</a></li>
@@ -2919,6 +2920,7 @@
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#wertevergleich">Wertevergleich</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#name-der-bedingung">Name der Bedingung</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#templates-fur-bedingungsabfragen">Templates für Bedingungsabfragen</a></li>
+<li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungen-mittels-eval-ausdrucken">Bedingungen mittels eval-Ausdrücken</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungslisten">Bedingungslisten</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#vergleichsfunktion">Vergleichsfunktion</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#besondere-bedingungen">„Besondere“ Bedingungen</a></li>
@@ -4953,9 +4955,14 @@ Funktionen zur Verfügung, die einfach für
 mittels <code class="docutils literal notranslate"><span class="pre">eval:</span></code> verwendet werden können:</p>
 <p><strong>Sonnenstandsabhängige Lamellenausrichtung</strong>
 <em>Die Neigung der Lamellen wird automatisch von der Höhe der Sonne bestimmt.</em>
-Optional kann noch ein Offset in Klammer mitgegeben werden, um etwaige kleine Abweichungen auszugleichen. Diese Abweichung
-kann auch global bei der Pluginkonfiguration mittels <code class="docutils literal notranslate"><span class="pre">lamella_offset</span></code> eingestellt werden, was sich dann auf
-sämtliche Aufrufe der Funktion auswirkt. Der Offset wird in Grad angegeben, wobei ein negativer Offset dafür sorgt, dass sich die Lamellen weniger weit drehen. Bei einem positiven Offset hingegen werden die Lamellen mehr geschlossen. Die Angabe beim direkten Aufruf der Funktion hat dabei immer Vorrang. Da verschiedene Lamellenarten unterschiedliche Prozentwerte im offenen Zustand
+Optional kann noch ein Offset in Klammer mitgegeben werden, um etwaige kleine
+Abweichungen auszugleichen. Diese Abweichung kann auch global bei der
+Pluginkonfiguration mittels <code class="docutils literal notranslate"><span class="pre">lamella_offset</span></code> eingestellt werden, was sich dann auf
+sämtliche Aufrufe der Funktion auswirkt. Der Offset wird in Grad angegeben,
+wobei ein negativer Offset dafür sorgt, dass sich die Lamellen weniger weit drehen.
+Bei einem positiven Offset hingegen werden die Lamellen mehr geschlossen.
+Die Angabe beim direkten Aufruf der Funktion hat dabei immer Vorrang.
+Da verschiedene Lamellenarten unterschiedliche Prozentwerte im offenen Zustand
 haben können, kann die Berechnung auch mittels <code class="docutils literal notranslate"><span class="pre">lamella_open_value</span></code> manipuliert werden.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">se_eval.sun_tracking(-10)</span>
 </pre></div>
@@ -5055,10 +5062,14 @@ item oder eval initialisiert.</p>
 Bedarf aber auch für andere Zwecke, welche auch immer, genutzt werden.</p>
 <p><strong>item.instant_leaveaction:</strong>
 <em>Information, wie das leave_action Attribut für das Regelwerkitem gesetzt ist</em>
-Die Option instant_leaveaction kann sowohl in der globalen Pluginkonfiguration
-mittels <code class="docutils literal notranslate"><span class="pre">instant_leaveaction</span></code>, als auch pro Item mittels <code class="docutils literal notranslate"><span class="pre">se_instant_leaveaction</span></code>
-festgelegt werden. Sie bestimmt, ob on_leave Aktionen sofort nach dem Verlassen
-eines Zustands ausgeführt werden oder erst am Ende der Statusevaluierung.</p>
+Die Konfiguration von instant_leaveaction bestimmt, ob on_leave Aktionen sofort nach dem Verlassen
+eines Zustands ausgeführt werden oder erst am Ende der Statusevaluierung.
+Die Option kann sowohl in der globalen Pluginkonfiguration
+mittels <code class="docutils literal notranslate"><span class="pre">instant_leaveaction</span></code> (boolscher Wert True oder False), als auch pro Item
+mittels <code class="docutils literal notranslate"><span class="pre">se_instant_leaveaction</span></code> festgelegt werden. Letzteres Attribut kann auch
+auf ein Item verweisen, dem der Wert -1 = Nutzen des Default Wertes, 0 = False,
+1 = True zugewiesen werden kann. Im <code class="docutils literal notranslate"><span class="pre">general</span> <span class="pre">struct</span></code> sind bereits entsprechende
+Einträge und Items angelegt (mit einem Wert von -1).</p>
 <p><strong>current.action_name:</strong>
 <em>Der Name der Aktion, in der auf die Variable zugegriffen wird</em></p>
 <p>Der Name der aktuellen Aktion, also der Teil hinter <code class="docutils literal notranslate"><span class="pre">se_action_</span></code> kann für
@@ -5114,13 +5125,14 @@ auf das passende Unteritem in licht1.automatik.settings.</p>
 </div>
 <p><strong>current.state_id:</strong>
 <em>Die Id des Status, der gerade geprüft wird</em></p>
-<p>Diese Variable wird leer, sobald die Statusevaluierung beendet wurde, noch bevor die Aktionen des
-zuletzt eingenommenen Zustands ausgeführt werden. Sie kann daher nur in der Evaluierung, nicht aber
-in on_enter(_or_stay) genutzt werden. Hierfür wird stattdessen <code class="docutils literal notranslate"><span class="pre">se_eval.get_relative_itemvalue('..state_id')</span></code> genutzt.</p>
+<p>Diese Variable wird leer, sobald die Statusevaluierung beendet wurde,
+noch bevor die Aktionen des zuletzt eingenommenen Zustands ausgeführt werden.
+Sie kann daher nur in der Evaluierung, nicht aber in on_enter(_or_stay) genutzt
+werden. Hierfür wird stattdessen <code class="docutils literal notranslate"><span class="pre">se_eval.get_relative_itemvalue('..state_id')</span></code> genutzt.</p>
 <p><strong>current.state_name:</strong>
 <em>Der Name des Status, der gerade geprüft wird</em></p>
-<p>Wie die state_id Variable wird diese nur während der Statusevaluierung entsprechend befüllt und sofort beim Eintritt
-in einen neuen Zustand geleert (noch vor dem Durchführen der Aktionen).</p>
+<p>Wie die state_id Variable wird diese nur während der Statusevaluierung entsprechend
+befüllt und sofort beim Eintritt in einen neuen Zustand geleert (noch vor dem Durchführen der Aktionen).</p>
 <p>Das angeführte Beispiel zeigt, wie eine Bedingung mit einem Wert abgeglichen
 werden kann, der in einem passenden Settingitem hinterlegt ist. Konkret
 würde beim Evaluieren vom Zustand_Eins mit dem Namen „sueden“ die maximale
@@ -5213,7 +5225,8 @@ auf True gesetzt - aber nur, wenn zuvor der x-Zustand aktiv war.</p>
 <em>Die Id der Bedingungsgruppe, die beim vorigen Durchlauf aktiv war</em></p>
 <p><strong>previous.conditionset_name:</strong>
 <em>Der Name der Bedingungsgruppe, die beim vorigen Durchlauf aktiv war</em></p>
-<p>Bei den previous.conditionset Variablen spielt es keine Rolle, ob ein neuer Zustand eingenommen wurde oder nicht.
+<p>Bei den previous.conditionset Variablen spielt es keine Rolle, ob ein neuer Zustand
+eingenommen wurde oder nicht.
 Beispiel: Ein Item ist aktuell im Zustand „Suspend“ auf Grund einer manuellen Triggerung,
 also der Bedingungsgruppe „enter_manuell“. Die Variable <code class="docutils literal notranslate"><span class="pre">previous.conditionset_name</span></code>
 beinhaltet nun den Namen der Bedingungsgruppe vom vorherigen Zustand. Bei einer erneuten
@@ -5231,6 +5244,35 @@ Zustand aktiv gewesen ist. Ansonsten gelten alle vorhin beschriebenen Regeln.</p
 <em>Die Id der Bedingungsgruppe, die beim vorigen Zustand zuletzt aktiv war</em></p>
 <p><strong>previous.state_conditionset_name:</strong>
 <em>Der Name der Bedingungsgruppe, die beim vorigen Zustand zuletzt aktiv war</em></p>
+<p><strong>release.can_be_released_by:</strong>
+<em>Die Definitionen, die den aktuellen Zustand generell auflösen könnten</em></p>
+<p>Nach einer Bereinigung und Berechnung der <code class="docutils literal notranslate"><span class="pre">se_released_by</span></code> Angaben
+(z.B. Löschen von ungültigen Zuständen, Auflösen relativer Angaben, etc.)
+wird eine Liste mit den noch übrigen Einträgen in diese Variable gespeichert.
+Dabei bleiben die originalen Datentypen (z.B. Item, Eval, etc.) erhalten.</p>
+<p><strong>release.was_released_by:</strong>
+<em>Die Id des Zustandes, der zuletzt den aktuellen Zustand aufgelöst hat</em></p>
+<p>Nachdem der im <code class="docutils literal notranslate"><span class="pre">se_released_by</span></code> Attribut angegebene Zustand den aktuellen Zustand
+aufgelöst hat, wird der auflösende Zustand in dieser Variable hinterlegt.</p>
+<p><strong>release.can_release:</strong>
+<em>Die Ids von Zuständen, die durch den aktuellen Zustand aufgelöst werden können</em></p>
+<p>Wird das <code class="docutils literal notranslate"><span class="pre">se_released_by</span></code> Attribut genutzt, wird dessen Inhalt nach jeder
+Zustandsevaluierung aktualisiert. Ist das Attribut beispielsweise im Zustand
+„suspend“ mit dem Wert „.schnee“ definiert, wird die <code class="docutils literal notranslate"><span class="pre">can_release</span></code> Variable
+des Zustands &lt;Hierarchie&gt;.schnee mit dem Wert „suspend“ aktualisiert.</p>
+<p><strong>release.will_release:</strong>
+<em>Die Id des Zustandes, der aufgelöst wird, sobald die Bedingungen erfüllt werden</em></p>
+<p>Ein im <code class="docutils literal notranslate"><span class="pre">se_released_by</span></code> Attribut angegebener Zustand wird „scharf gestellt“
+(intern an eine übergeordnete Stelle in der Hierarchie kopiert), sobald seine
+Bedingungen nicht mehr erfüllt sind, er also aktuell nicht eingenommen werden kann.
+Sobald die Bedingungen erfüllt sind, wird er allerdings den in dieser Variable
+hinterlegten Zustand auflösen. Sobald die Auflösung stattgefunden hat, wird die
+Variable wieder auf „None“ gestellt.</p>
+<p><strong>release.has_released:</strong>
+<em>Die Id des Zustandes, der zuletzt durch den aktuellen Zustand aufgelöst wurde</em></p>
+<p>Nachdem der im <code class="docutils literal notranslate"><span class="pre">se_released_by</span></code> Attribut angegebene Zustand einen anderen
+Zustand erfolgreich aufgelöst („released“) hat, wird die ID jenes aufgelösten
+Zustandes in dieser Variablen gespeichert.</p>
 </section>
 </section>
 

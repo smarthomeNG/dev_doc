@@ -608,6 +608,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../plugins/stateengine/user_doc/05_bedingungen.html#wertevergleich">Wertevergleich</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../plugins/stateengine/user_doc/05_bedingungen.html#name-der-bedingung">Name der Bedingung</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../plugins/stateengine/user_doc/05_bedingungen.html#templates-fur-bedingungsabfragen">Templates für Bedingungsabfragen</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../plugins/stateengine/user_doc/05_bedingungen.html#bedingungen-mittels-eval-ausdrucken">Bedingungen mittels eval-Ausdrücken</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../plugins/stateengine/user_doc/05_bedingungen.html#bedingungslisten">Bedingungslisten</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../plugins/stateengine/user_doc/05_bedingungen.html#vergleichsfunktion">Vergleichsfunktion</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../plugins/stateengine/user_doc/05_bedingungen.html#besondere-bedingungen">„Besondere“ Bedingungen</a></li>
@@ -2917,6 +2918,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../plugins/stateengine/user_doc/05_bedingungen.html#wertevergleich">Wertevergleich</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../plugins/stateengine/user_doc/05_bedingungen.html#name-der-bedingung">Name der Bedingung</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../plugins/stateengine/user_doc/05_bedingungen.html#templates-fur-bedingungsabfragen">Templates für Bedingungsabfragen</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../plugins/stateengine/user_doc/05_bedingungen.html#bedingungen-mittels-eval-ausdrucken">Bedingungen mittels eval-Ausdrücken</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../plugins/stateengine/user_doc/05_bedingungen.html#bedingungslisten">Bedingungslisten</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../plugins/stateengine/user_doc/05_bedingungen.html#vergleichsfunktion">Vergleichsfunktion</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../plugins/stateengine/user_doc/05_bedingungen.html#besondere-bedingungen">„Besondere“ Bedingungen</a></li>
@@ -5016,13 +5018,14 @@ Wenn hier kein abweichendes Verzeichnis angegeben ist, wird das Verzeichnis <cod
 <section id="log-level">
 <h2>log_level<a class="headerlink" href="#log-level" title="Permalink to this heading"></a></h2>
 <p><strong>Erweiterte Protokollierung:</strong>
-Bei einem Wert von 1 oder 2 wird pro Item eine eigene Logdatei im unter log_directory angegebenen Verzeichnis angelegt. Wenn der Parameter nicht angegeben oder auf 0 gestellt ist, ist die erweiterte Protokollierung deaktiviert.</p>
+Bei einem Wert von 1, 2 oder 3 wird pro Item eine eigene Logdatei im unter log_directory angegebenen Verzeichnis angelegt. Wenn der Parameter nicht angegeben oder auf 0 gestellt ist, ist die erweiterte Protokollierung deaktiviert.</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>int</strong></p></li>
 <li><p>Standardwert: <strong>0</strong></p></li>
 <li><p>Mögliche Werte:</p>
 <ul>
+<li><p><strong>-1</strong>   -   Standardlevel aus plugin.yaml</p></li>
 <li><p><strong>0</strong>   -   deaktiviert</p></li>
 <li><p><strong>1</strong>   -   Info</p></li>
 <li><p><strong>2</strong>   -   Debug</p></li>
@@ -5067,6 +5070,26 @@ Beim Starten von smarthomeNG dauert es üblicherweise einige Sekunden, bis alle 
 </ul>
 </div></blockquote>
 </section>
+<section id="startup-log-level">
+<h2>startup_log_level<a class="headerlink" href="#startup-log-level" title="Permalink to this heading"></a></h2>
+<p><strong>Erweiterte Protokollierung:</strong>
+Bei einem Wert von 1, 2 oder 3 wird pro Item eine eigene Logdatei im unter log_directory angegebenen Verzeichnis angelegt. Ist die Initialisierung eines Stateengine Items abgeschlossen, wird der über se_log_level oder den Standard Loglevel im plugin.yaml eingestellt.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Datentyp: <strong>int</strong></p></li>
+<li><p>Standardwert: <strong>2</strong></p></li>
+<li><p>Mögliche Werte:</p>
+<ul>
+<li><p><strong>-1</strong>   -   Standardlevel aus plugin.yaml</p></li>
+<li><p><strong>0</strong>   -   deaktiviert</p></li>
+<li><p><strong>1</strong>   -   Info</p></li>
+<li><p><strong>2</strong>   -   Debug</p></li>
+<li><p><strong>3</strong>   -   Develop</p></li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+</section>
 <section id="suspend-time-default">
 <h2>suspend_time_default<a class="headerlink" href="#suspend-time-default" title="Permalink to this heading"></a></h2>
 <p><strong>Vorgabezeit zur Unterbrechung der automatischen Steuerung nach manuellen Aktionen:</strong>
@@ -5084,22 +5107,12 @@ Nach manuellen Aktionen kann die Automatik für eine bestimmte Zeit Unterbrochen
 <section id="item-attribute">
 <h1>Item Attribute<a class="headerlink" href="#item-attribute" title="Permalink to this heading"></a></h1>
 <p>Das Plugin unterstützt folgende Item Attribute, die in den Dateien im Verzeichnis  <code class="docutils literal notranslate"><span class="pre">../items</span></code> verwendet werden:</p>
-<section id="se-hasreleased-item">
-<h2>se_hasreleased_item<a class="headerlink" href="#se-hasreleased-item" title="Permalink to this heading"></a></h2>
-<p><strong>ID des Items, in dem interne Informationen für das released_by Feature gespeichert werden:</strong>
-Ein Dictionary mit den Stati als Keys, die ein se_released_by Attribut haben und den Stati/Items als Values, die jene Items bereits aufgelöst haben und somit erst bei erneutem Wechsel von „can not be entered“ auf „can be entered“ den enstprechenden Status released, also (vorübergehend) auflösen.</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>Datentyp: <strong>str</strong></p></li>
-</ul>
-</div></blockquote>
-</section>
 <section id="se-instant-leaveaction">
 <h2>se_instant_leaveaction<a class="headerlink" href="#se-instant-leaveaction" title="Permalink to this heading"></a></h2>
-<p>Ist dieser Parameter auf True gesetzt, werden „on leave“ Aktionen sofort ausgeführt, wenn der aktuelle Zustand nicht mehr eingenommen wird. Standardmäßig werden die Aktionen erst direkt vor dem Eintreten in einen neuen Zustand getriggert.</p>
+<p>Ist dieser Parameter auf True bzw. 1 gesetzt, werden „on leave“ Aktionen sofort ausgeführt, wenn der aktuelle Zustand nicht mehr eingenommen wird. Standardmäßig werden die Aktionen erst direkt vor dem Eintreten in einen neuen Zustand getriggert. Kann auch über ein Item zur Laufzeit geändert werden, beispielsweise durch item:..settings.instant_leaveaction. Der Wert -1 sorgt dafür, dass der in der plugin.yaml angegebene Standardwert herangezogen wird.</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>Datentyp: <strong>bool</strong></p></li>
+<li><p>Datentyp: <strong>foo</strong></p></li>
 <li><p>Standardwert: <strong>False</strong></p></li>
 </ul>
 </div></blockquote>
@@ -5166,18 +5179,10 @@ In das hier verknüpfte Item wird der Name des aktuellen Zustands abgelegt. Das 
 </section>
 <section id="se-log-level">
 <h2>se_log_level<a class="headerlink" href="#se-log-level" title="Permalink to this heading"></a></h2>
-<p>Das global angegebene Loglevel kann für jedes SE item individuell überschrieben werden. Somit ist es einfacher möglich, bestimme State Engines zu debuggen.</p>
+<p>Das global angegebene Loglevel kann für jedes SE item individuell überschrieben werden. Somit ist es einfacher möglich, bestimme State Engines zu debuggen. Das Loglevel kann durch das Settings Item log_level im laufenden Betrieb angepasst werden. Ist der Wert auf -1 gesetzt, wird der Standardwert aus dem plugin.yaml übernommen.</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>Datentyp: <strong>int</strong></p></li>
-<li><p>Mögliche Werte:</p>
-<ul>
-<li><p><strong>0</strong>   -   deaktiviert</p></li>
-<li><p><strong>1</strong>   -   Info</p></li>
-<li><p><strong>2</strong>   -   Debug</p></li>
-<li><p><strong>3</strong>   -   Develop</p></li>
-</ul>
-</li>
+<li><p>Datentyp: <strong>foo</strong></p></li>
 </ul>
 </div></blockquote>
 </section>
@@ -5258,7 +5263,7 @@ In das hier verknüpfte Item wird der Name des vorigen Zustands abgelegt. Das It
 </section>
 <section id="se-released-by">
 <h2>se_released_by<a class="headerlink" href="#se-released-by" title="Permalink to this heading"></a></h2>
-<p>Definieren von untergeordneten Zuständen, die den aktuellen Zustand auflösen können</p>
+<p>Durch Setzen dieses Attributs können Zustände durch untergeordnete Zustände aufgelöst werden. Sobald ein durch das Attribut definierter untergeordneter Zustand neu eingenommen werden könnte, wird der aktuelle Zustand verlassen und eine neue Zustandsevaluierung ausgeführt.</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>list(str)</strong></p></li>
@@ -5272,16 +5277,6 @@ Im Normalfall werden Aktionen jedesmal ausgeführt wenn der aktuelle Zustand neu
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>bool</strong></p></li>
-</ul>
-</div></blockquote>
-</section>
-<section id="se-shouldnotrelease-item">
-<h2>se_shouldnotrelease_item<a class="headerlink" href="#se-shouldnotrelease-item" title="Permalink to this heading"></a></h2>
-<p><strong>ID des Items, in dem interne Informationen für das released_by Feature gespeichert werden:</strong>
-Ein Dictionary mit den Stati als Keys, die ein se_released_by Attribut haben und den Stati/Items als Values, die zuvor schon aktiv waren und erst bei einem erneuten Wechsel von „can not be entered“ auf „can be entered“ den entsprechenden Status released, also (vorübergehend) auflöst.</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>Datentyp: <strong>str</strong></p></li>
 </ul>
 </div></blockquote>
 </section>
@@ -5304,7 +5299,7 @@ Nach manuellen Aktionen kann die Automatik für eine bestimmte Zeit Unterbrochen
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>foo</strong></p></li>
-<li><p>Minimalwert: <strong>1</strong></p></li>
+<li><p>Minimalwert: <strong>-60</strong></p></li>
 <li><p>Maximalwert: <strong>86400</strong></p></li>
 </ul>
 </div></blockquote>

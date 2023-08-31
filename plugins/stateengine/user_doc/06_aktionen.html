@@ -610,6 +610,7 @@
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#wertevergleich">Wertevergleich</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#name-der-bedingung">Name der Bedingung</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#templates-fur-bedingungsabfragen">Templates für Bedingungsabfragen</a></li>
+<li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungen-mittels-eval-ausdrucken">Bedingungen mittels eval-Ausdrücken</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungslisten">Bedingungslisten</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#vergleichsfunktion">Vergleichsfunktion</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#besondere-bedingungen">„Besondere“ Bedingungen</a></li>
@@ -2919,6 +2920,7 @@
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#wertevergleich">Wertevergleich</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#name-der-bedingung">Name der Bedingung</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#templates-fur-bedingungsabfragen">Templates für Bedingungsabfragen</a></li>
+<li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungen-mittels-eval-ausdrucken">Bedingungen mittels eval-Ausdrücken</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungslisten">Bedingungslisten</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#vergleichsfunktion">Vergleichsfunktion</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#besondere-bedingungen">„Besondere“ Bedingungen</a></li>
@@ -4960,7 +4962,12 @@ sich ein Item mindestens geändert haben muss, um neu gesetzt zu werden. Im unte
 stehenden Beispiel wird der Lamellenwert abhängig vom Sonnenstand berechnet. Ohne mindelta
 würden sich die Lamellen ständig um wenige Grad(bruchteile) ändern. Wird jedoch mindelta
 beispielsweise auf den Wert 10 gesetzt, findet eine Änderung erst statt, wenn sich der
-errechnete Wert um mindestens 10 Grad vom aktuellen Lamellenwert unterscheidet.</p>
+errechnete Wert um mindestens 10 Grad vom aktuellen Lamellenwert unterscheidet.
+Im Beispiel wird auch mittels <code class="docutils literal notranslate"><span class="pre">se_status_&lt;Bedingungsname&gt;</span></code> ein gesondertes Item definiert,
+das den Wert vom KNX-Aktor empfängt.</p>
+<p>Außerdem ist es möglich, über <code class="docutils literal notranslate"><span class="pre">se_repeat_actions</span></code> generell zu definieren,
+ob Aktionen für die Stateengine wiederholt ausgeführt werden sollen oder nicht. Diese Konfiguration
+kann für einzelne Aktionen individuell über die Angabe <code class="docutils literal notranslate"><span class="pre">repeat</span></code> überschrieben werden. Siehe auch <a class="reference internal" href="#aktionen"><span class="std std-ref">Aktionen</span></a>.</p>
 <section id="beispiel-zu-aktionen">
 <h2>Beispiel zu Aktionen<a class="headerlink" href="#beispiel-zu-aktionen" title="Permalink to this heading"></a></h2>
 <p>Das folgende Beispiel führt je nach Zustand folgende Aktionen aus:</p>
@@ -4976,6 +4983,7 @@ errechnete Wert um mindestens 10 Grad vom aktuellen Lamellenwert unterscheidet.<
 <span class="w">        </span><span class="nt">rules</span><span class="p">:</span>
 <span class="w">            </span><span class="nt">se_item_height</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raffstore1.hoehe</span><span class="w"> </span><span class="c1"># Definition des zu ändernden Höhe-Items</span>
 <span class="w">            </span><span class="nt">se_item_lamella</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raffstore1.lamelle</span><span class="w"> </span><span class="c1"># Definition des zu ändernden Lamellen-Items</span>
+<span class="w">            </span><span class="nt">se_status_lamella</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raffstore1.lamelle.status</span><span class="w"> </span><span class="c1"># Definition des Lamellen Statusitems</span>
 <span class="w">            </span><span class="nt">se_mindelta_lamella</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span><span class="w"> </span><span class="c1"># Mindeständerung von 10 Grad, sonst werden die Lamellen nicht aktualisiert.</span>
 <span class="w">            </span><span class="nt">Daemmerung</span><span class="p">:</span>
 <span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">&lt;...&gt;</span>
@@ -5155,11 +5163,14 @@ kann auch durch ein eval oder Item zur Laufzeit berechnet werden.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="s">&#39;delay:</span><span class="nv"> </span><span class="s">&lt;eval&gt;/&lt;item&gt;&#39;</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--&gt; Ergebnis eines Eval-Ausdrucks oder eines Items</span>
 <span class="l l-Scalar l-Scalar-Plain">&#39;delay</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30&#39;            --&gt; 30 Sekunden</span>
 <span class="s">&#39;delay:</span><span class="nv"> </span><span class="s">30m&#39;</span><span class="w">           </span><span class="l l-Scalar l-Scalar-Plain">--&gt; 30 Minuten</span>
+<span class="s">&#39;delay:</span><span class="nv"> </span><span class="s">-1&#39;</span><span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">--&gt; Entfernen des Schedulers</span>
 </pre></div>
 </div>
-<p>Der Timer zur Ausführung der Aktion nach der angegebenen
-Verzögerung wird entfernt, wenn eine gleichartige Aktion
-ausgeführt werden soll (egal ob verzögert oder nicht).</p>
+<p>Der Timer zur Ausführung der Aktion nach der angegebenen Verzögerung wird entfernt,
+wenn eine gleichartige Aktion mit Delay-Angabe ausgeführt werden soll. Außerdem
+ist es möglich, den Timer bewusst abzubrechen, ohne eine Aktion auszuführen,
+indem der Delay auf -1 gesetzt wird. Dies macht insbesondere beim Verlassen von
+Zuständen Sinn, um ungewünschte verzögerte Aktionen vom „alten“ Zustand zu verhindern.</p>
 <p><strong>instanteval: &lt;bool&gt;</strong></p>
 <p>Über den optionalen Parameter <code class="docutils literal notranslate"><span class="pre">&lt;instanteval&gt;</span></code> wird für verzögerte Aktionen angegeben,
 ob etwaige eval Ausdrücke sofort evaluiert und gespeichert werden sollen oder

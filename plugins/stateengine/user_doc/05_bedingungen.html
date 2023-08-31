@@ -610,6 +610,7 @@
 <li class="toctree-l5"><a class="reference internal" href="#wertevergleich">Wertevergleich</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#name-der-bedingung">Name der Bedingung</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#templates-fur-bedingungsabfragen">Templates für Bedingungsabfragen</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#bedingungen-mittels-eval-ausdrucken">Bedingungen mittels eval-Ausdrücken</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#bedingungslisten">Bedingungslisten</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#vergleichsfunktion">Vergleichsfunktion</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#besondere-bedingungen">„Besondere“ Bedingungen</a></li>
@@ -2919,6 +2920,7 @@
 <li class="toctree-l5"><a class="reference internal" href="#wertevergleich">Wertevergleich</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#name-der-bedingung">Name der Bedingung</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#templates-fur-bedingungsabfragen">Templates für Bedingungsabfragen</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#bedingungen-mittels-eval-ausdrucken">Bedingungen mittels eval-Ausdrücken</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#bedingungslisten">Bedingungslisten</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#vergleichsfunktion">Vergleichsfunktion</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#besondere-bedingungen">„Besondere“ Bedingungen</a></li>
@@ -4948,13 +4950,13 @@
 <section id="beispiel">
 <h2>Beispiel<a class="headerlink" href="#beispiel" title="Permalink to this heading"></a></h2>
 <p>Im folgenden Beispiel wird der Zustand „Daemmerung“ eingenommen, sobald
-die Helligkeit (über se_item_brightness definiert) über 500 Lux liegt.</p>
+die Helligkeit (über se_item_brightness oder se_status_brightness definiert) über 500 Lux liegt.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">#items/item.yaml</span>
 <span class="nt">raffstore1</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">automatik</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">struct</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stateengine.general</span>
 <span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">rules</span><span class="p p-Indicator">:</span>
-<span class="w">                </span><span class="nt">se_item_brightness</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">beispiel.wetterstation.helligkeit</span>
+<span class="w">                </span><span class="nt">se_status_brightness</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">beispiel.wetterstation.helligkeit</span>
 <span class="w">                </span><span class="nt">Daemmerung</span><span class="p">:</span>
 <span class="w">                    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Dämmerung</span>
 <span class="w">                    </span><span class="nt">remark</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;Aktionen&gt;</span>
@@ -4994,7 +4996,7 @@ Default-Zustand am Ende der Zustände definiert werden.</p></li>
 <li><p>statischer Wert (also z.B. 500 Lux). Wird angegegeben mit <code class="docutils literal notranslate"><span class="pre">value:500</span></code>, wobei das value: auch weggelassen werden kann.</p></li>
 <li><p>Item (beispielsweise ein Item namens settings.helligkeitsschwellwert). Wird angegeben mit <code class="docutils literal notranslate"><span class="pre">item:settings.helligkeitsschwellwert</span></code></p></li>
 <li><p>Eval-Funktion (siehe auch <a class="reference external" href="https://www.smarthomeng.de/user/referenz/items/standard_attribute/eval.html">eval Ausdrücke</a>). Wird angegeben mit <code class="docutils literal notranslate"><span class="pre">eval:1*2*se_eval.get_relative_itemvalue('..bla')</span></code></p></li>
-<li><p>Regular Expression (siehe auch ` RegEx Howto &lt;<a class="reference external" href="https://docs.python.org/3.7/howto/regex.html#regex-howto">https://docs.python.org/3.7/howto/regex.html#regex-howto</a>&gt;`_) - Vergleich mittels re.fullmatch, wobei Groß/Kleinschreibung ignoriert wird. Wird angegeben mit <code class="docutils literal notranslate"><span class="pre">regex:StateEngine</span> <span class="pre">Plugin:(.*)</span></code></p></li>
+<li><p>Regular Expression (siehe auch ` RegEx Howto &lt;<a class="reference external" href="https://docs.python.org/3/howto/regex.html">https://docs.python.org/3/howto/regex.html</a>&gt;`_) - Vergleich mittels re.fullmatch, wobei Groß/Kleinschreibung ignoriert wird. Wird angegeben mit <code class="docutils literal notranslate"><span class="pre">regex:StateEngine</span> <span class="pre">Plugin:(.*)</span></code></p></li>
 <li><p>Template: eine Vorlage, z.B. eine eval Funktion, die immer wieder innerhalb
 des StateEngine Items eingesetzt werden kann. Angegeben durch <code class="docutils literal notranslate"><span class="pre">template:&lt;Name</span> <span class="pre">des</span> <span class="pre">Templates&gt;</span></code></p></li>
 </ul>
@@ -5006,14 +5008,15 @@ die jeweils mit einem Unterstrich „_“ getrennt werden:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">se_</span></code>: eindeutiger Prefix, um dem Plugin zugeordnet zu werden</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&lt;Vergleichsfunktion&gt;</span></code>: siehe unten. Beispiel: min = der Wert des &lt;Bedingungsitems&gt; muss mindestens dem beim Attribut angegebenen Wert entsprechen.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Vergleichsitem/Bedingungsname&gt;</span></code>: Hier wird entweder das im Regelwerk-Item mittels <code class="docutils literal notranslate"><span class="pre">se_item_&lt;Name&gt;</span></code> deklarierte Item oder eine besondere Bedingung (siehe unten) referenziert.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Vergleichsitem/Bedingungsname&gt;</span></code>: Hier wird entweder das im Regelwerk-Item mittels <code class="docutils literal notranslate"><span class="pre">se_item_&lt;Name&gt;</span></code></p></li>
 </ul>
+<p>oder <code class="docutils literal notranslate"><span class="pre">se_status_&lt;Name&gt;</span></code> deklarierte Item oder eine besondere Bedingung (siehe unten) referenziert.</p>
 </section>
 <section id="templates-fur-bedingungsabfragen">
 <h2>Templates für Bedingungsabfragen<a class="headerlink" href="#templates-fur-bedingungsabfragen" title="Permalink to this heading"></a></h2>
 <p>Setzt man für mehrere Bedingungsabfragen (z.B. Helligkeit, Temperatur, etc.) immer die
 gleichen Ausdrücke ein (z.B. eine eval-Funktion), so kann Letzteres als Template
-definiert und referenziert werden. Dadurch wird die  Handhabung
+definiert und referenziert werden. Dadurch wird die Handhabung
 komplexerer Abfragen deutlich vereinfacht. Diese Templates müssen wie se_item/se_eval
 auf höchster Ebene des StateEngine Items (also z.B. rules) deklariert werden.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rules</span><span class="p">:</span>
@@ -5029,6 +5032,24 @@ auf höchster Ebene des StateEngine Items (also z.B. rules) deklariert werden.</
 </div>
 <p>Bei sämtlichen Bedingungen ist es möglich, Werte als Liste anzugeben. Es ist allerdings
 nicht möglich, Templates als Listen zu definieren.</p>
+</section>
+<section id="bedingungen-mittels-eval-ausdrucken">
+<h2>Bedingungen mittels eval-Ausdrücken<a class="headerlink" href="#bedingungen-mittels-eval-ausdrucken" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">se_eval_&lt;Name&gt;</span></code> kann neben der dynamischen Definition von Items auch für einen
+herkömmlichen eval-Ausdruck herhalten, der dann in einem Bedingungsset geprüft wird.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">#items/item.yaml</span>
+<span class="nt">raffstore1</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">automatik</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">struct</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stateengine.general</span>
+<span class="w">        </span><span class="nt">rules</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">se_eval_berechnung</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sh.test.property.value + 1</span>
+
+<span class="w">            </span><span class="nt">Zustand_Eins</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sueden</span>
+<span class="w">                </span><span class="nt">enter</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">se_value_berechnung</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+</pre></div>
+</div>
 </section>
 <section id="bedingungslisten">
 <h2>Bedingungslisten<a class="headerlink" href="#bedingungslisten" title="Permalink to this heading"></a></h2>
@@ -5129,6 +5150,25 @@ Die Werte(liste) kann auch durch <code class="docutils literal notranslate"><spa
 <span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">regex:[WertN]</span>
 
 <span class="nt">se_changedbynegate_&lt;Bedingungsname&gt;</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True|False</span>
+</pre></div>
+</div>
+<p><strong>Triggerung des Items durch</strong></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">se_triggeredby_&lt;Bedingungsname&gt;</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Wert</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+<p>Die Bedingung ist erfüllt, wenn das Item durch den angegebenen Wert bzw.
+einen der angegebenen Werte getriggert wurde. Dies kann relevant werden,
+um herauszufinden, wodurch ein Item mit einem eval-Attribut getriggert wurde,
+unabhängig davon, ob sich daraus eine Wertänderung ergibt oder nicht.
+Hier bietet es sich an, den Wert als Regular Expression mittels
+<code class="docutils literal notranslate"><span class="pre">se_triggeredby_&lt;Bedingungsname&gt;:</span> <span class="pre">regex:StateEngine</span> <span class="pre">Plugin</span></code> zu definieren.
+Die Werte(liste) kann auch durch <code class="docutils literal notranslate"><span class="pre">se_triggeredbynegate_&lt;Bedingungsname&gt;</span></code> negiert werden.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">se_triggeredby_&lt;Bedingungsname&gt;</span><span class="p">:</span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Wert1</span><span class="p p-Indicator">]</span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Wert2</span><span class="p p-Indicator">]</span>
+<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">regex:[WertN]</span>
+
+<span class="nt">se_triggeredbynegate_&lt;Bedingungsname&gt;</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True|False</span>
 </pre></div>
 </div>
 <p><strong>Mindestalter</strong></p>
