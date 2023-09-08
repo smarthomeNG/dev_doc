@@ -606,9 +606,10 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="05_bedingungen.html">Bedingungen</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#beispiel">Beispiel</a></li>
+<li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#name-der-bedingung">Name der Bedingung</a></li>
+<li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#referenzieren-von-items">Referenzieren von Items</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungsgruppen">Bedingungsgruppen</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#wertevergleich">Wertevergleich</a></li>
-<li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#name-der-bedingung">Name der Bedingung</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#templates-fur-bedingungsabfragen">Templates für Bedingungsabfragen</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungen-mittels-eval-ausdrucken">Bedingungen mittels eval-Ausdrücken</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungslisten">Bedingungslisten</a></li>
@@ -2994,9 +2995,10 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="05_bedingungen.html">Bedingungen</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#beispiel">Beispiel</a></li>
+<li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#name-der-bedingung">Name der Bedingung</a></li>
+<li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#referenzieren-von-items">Referenzieren von Items</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungsgruppen">Bedingungsgruppen</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#wertevergleich">Wertevergleich</a></li>
-<li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#name-der-bedingung">Name der Bedingung</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#templates-fur-bedingungsabfragen">Templates für Bedingungsabfragen</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungen-mittels-eval-ausdrucken">Bedingungen mittels eval-Ausdrücken</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungslisten">Bedingungslisten</a></li>
@@ -5062,22 +5064,26 @@ Diese Items müssen auf Ebene des Regelwerk-Items über das Attribut
 <code class="docutils literal notranslate"><span class="pre">se_item_&lt;Bedingungsname/Aktionsname&gt;</span></code> bekannt gemacht werden. Um einfacher zwischen Items,
 die für Bedingungen und solchen, die für Aktionen genutzt werden, unterscheiden zu können,
 können Items, die nur für Bedingungen gebraucht werden, mittels <code class="docutils literal notranslate"><span class="pre">se_status_&lt;Bedingungsname&gt;</span></code>
-deklariert werden. Diese Variante ist auch besonders dann relevant, wenn es zwei separate Items
-für „Senden“ und „Empfangen“ gibt, also z.B. Senden der Jalousiehöhe und Empfangen des aktuellen
-Werts vom KNX-Aktor.</p>
-<p>Anstatt direkt das Item in Form des absoluten oder relativen Pfades mittels <code class="docutils literal notranslate"><span class="pre">se_item_</span></code> zu
-setzen, kann auch die Angabe <code class="docutils literal notranslate"><span class="pre">se_eval_</span></code> genutzt werden. In diesem Fall wird eine beliebige
-Funktion anstelle des Itemnamen angegeben. Dies ist primär für das Setzen von „dynamischen“ Items
-gedacht, allerdings ist es auch möglich, hier einen beliebigen Eval-Ausdruck als Bedingung festzulegen.</p>
+deklariert werden.</p>
+<p>Anstatt direkt das Item in Form des absoluten oder relativen Pfades zu setzen, kann auch ein
+eval-Ausdruck mittels <code class="docutils literal notranslate"><span class="pre">eval:&lt;Ausdruck&gt;</span></code> angegeben werden.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hinweis</p>
+<p>Aus Kompatibilitätsgründen kann für das Setzen „dynamischer“ Items auch die Angabe <code class="docutils literal notranslate"><span class="pre">se_eval_</span></code>
+oder <code class="docutils literal notranslate"><span class="pre">se_status_eval_</span></code> genutzt werden. In diesem Fall wird eine beliebige
+Funktion anstelle des Itemnamen angegeben, also beispielsweise
+se_eval_height: se_eval.get_relative_item(‚..test‘). Hierzu in den Kapiteln <a class="reference internal" href="05_bedingungen.html#bedingungen"><span class="std std-ref">Bedingungen</span></a>
+und <a class="reference internal" href="06_aktionen.html#aktionen"><span class="std std-ref">Aktionen</span></a> mehr.</p>
+</div>
 <section id="beispiel-se-item">
 <h3>Beispiel se_item<a class="headerlink" href="#beispiel-se-item" title="Permalink to this heading"></a></h3>
 <p>Im Beispiel wird durch <code class="docutils literal notranslate"><span class="pre">se_item_height</span></code> das Item <code class="docutils literal notranslate"><span class="pre">beispiel.raffstore1.hoehe</span></code>
 dem Plugin unter dem Namen „height“ bekannt gemacht. Das Item <code class="docutils literal notranslate"><span class="pre">beispiel.wetterstation.helligkeit</span></code>
-wird durch <code class="docutils literal notranslate"><span class="pre">se_item_brightness</span></code> (alternativ via <code class="docutils literal notranslate"><span class="pre">se_status_brightness</span></code>) als „brightness“ referenziert.</p>
+wird durch <code class="docutils literal notranslate"><span class="pre">se_item_brightness</span></code> als „brightness“ referenziert.</p>
 <p>Auf diese Namen beziehen sich nun in weiterer Folge Bedingungen und Aktionen. Im Beispiel
 wird im Zustand Nacht das Item <code class="docutils literal notranslate"><span class="pre">beispiel.raffstore1.hoehe</span></code> auf den Wert 100 gesetzt, sobald
-<code class="docutils literal notranslate"><span class="pre">beispiel.wetterstation.helligkeit</span></code> den Wert 25 übersteigt. Erklärungen zu Bedingungen
-und Aktionen folgen auf den nächsten Seiten.</p>
+<code class="docutils literal notranslate"><span class="pre">beispiel.wetterstation.helligkeit</span></code> den Wert 25 übersteigt. Erklärungen zu Bedingungen und
+Aktionen folgen auf den nächsten Seiten.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">#items/item.yaml</span>
 <span class="nt">raffstore1</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">automatik</span><span class="p">:</span>
@@ -5098,16 +5104,36 @@ und Aktionen folgen auf den nächsten Seiten.</p>
 </pre></div>
 </div>
 </section>
+<section id="beispiel-se-status">
+<h3>Beispiel se_status<a class="headerlink" href="#beispiel-se-status" title="Permalink to this heading"></a></h3>
+<p>Wie erwähnt, können Items, die nur für Bedingungen genutzt werden, auch mittels se_status deklariert
+werden. Diese Variante ist aber auch besonders dann relevant, wenn es zwei separate Items
+für „Senden“ und „Empfangen“ gibt, also z.B. Senden der Jalousiehöhe und Empfangen des aktuellen
+Werts vom KNX-Aktor.</p>
+<p>Im Beispiel wird durch <code class="docutils literal notranslate"><span class="pre">se_item_height</span></code> das Item <code class="docutils literal notranslate"><span class="pre">beispiel.raffstore1.hoehe</span></code> (das den Befehl an den
+KNX Aktor übermittelt) dem Plugin unter dem Namen „height“ bekannt gemacht. <code class="docutils literal notranslate"><span class="pre">se_status_height</span></code> referenziert auf das
+separate Status-Item (das vom KNX Aktor den Rückmeldestatus erhält) <code class="docutils literal notranslate"><span class="pre">beispiel.raffstore1.hoehe.status</span></code>.
+Dies ist aktuell insbesondere dann wichtig, wenn <cite>se_mindelta_height`</cite> genutzt wird (siehe <a class="reference internal" href="06_aktionen.html#aktionen"><span class="std std-ref">Aktionen</span></a>).</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">raffstore1</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">automatik</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">struct</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stateengine.general</span>
+<span class="w">        </span><span class="nt">rules</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">se_item_height</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">beispiel.raffstore1.hoehe</span>
+<span class="w">            </span><span class="nt">se_status_height</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">beispiel.raffstore1.hoehe.status</span>
+<span class="w">            </span><span class="nt">se_mindelta_height</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+
+<span class="w">            </span><span class="nt">Standard</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">on_enter_or_stay</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">se_action_height</span><span class="p">:</span>
+<span class="w">                        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;function:</span><span class="nv"> </span><span class="s">set&#39;</span>
+<span class="w">                        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;to:</span><span class="nv"> </span><span class="s">100&#39;</span>
+</pre></div>
+</div>
+</section>
 <section id="beispiel-se-eval">
 <h3>Beispiel se_eval<a class="headerlink" href="#beispiel-se-eval" title="Permalink to this heading"></a></h3>
-<p>se_eval ist für Sonderfälle und etwas komplexere Konfigurationen sinnvoll, kann aber
-im ersten Durchlauf ignoriert werden. Es wird daher empfohlen, als Beginner
-dieses Beispiel einfach zu überspringen ;)</p>
-<p>Im Beispiel wird durch <code class="docutils literal notranslate"><span class="pre">se_eval_brightness</span></code> das Item für den Check von
-Bedingungen bekannt gemacht. Aufgrund der angegebenen Funktion wird das Item
-abhängig vom aktuellen Zustandsnamen eruiert. Da Zustand_Eins den Namen „sueden“
-hat, wird somit auch der Wert von wetterstation.helligkeit_sueden abgefragt.
-Würde der Zustand „osten“ heißen, würde der Helligkeitswert vom Osten getestet werden.</p>
+<p>Im Beispiel werden zwei Helligkeitswerte addiert und das Resultat durch 2 geteilt
+(also der Mittelwert gebildet). Das Resultat wird dann mit dem Wert 5000 verglichen.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">#items/item.yaml</span>
 <span class="nt">wetterstation</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">helligkeit_sueden</span><span class="p">:</span>
@@ -5124,7 +5150,7 @@ Würde der Zustand „osten“ heißen, würde der Helligkeitswert vom Osten get
 <span class="w">    </span><span class="nt">automatik</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">struct</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stateengine.general</span>
 <span class="w">        </span><span class="nt">rules</span><span class="p">:</span>
-<span class="w">            </span><span class="nt">se_eval_brightness</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">se_eval.get_relative_itemvalue(&#39;wetterstation.helligkeit_{}&#39;.format(se_eval.get_variable(&#39;current.state_name&#39;)))</span>
+<span class="w">            </span><span class="nt">se_eval_brightness</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">(se_eval.get_relative_itemvalue(&#39;wetterstation.helligkeit_sueden&#39;) + se_eval.get_relative_itemvalue(&#39;wetterstation.helligkeit_osten&#39;))/2</span>
 
 <span class="w">            </span><span class="nt">Zustand_Eins</span><span class="p">:</span>
 <span class="w">                </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sueden</span>

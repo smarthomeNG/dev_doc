@@ -606,9 +606,10 @@
 </li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">Bedingungen</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#beispiel">Beispiel</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#name-der-bedingung">Name der Bedingung</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#referenzieren-von-items">Referenzieren von Items</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#bedingungsgruppen">Bedingungsgruppen</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#wertevergleich">Wertevergleich</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#name-der-bedingung">Name der Bedingung</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#templates-fur-bedingungsabfragen">Templates für Bedingungsabfragen</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#bedingungen-mittels-eval-ausdrucken">Bedingungen mittels eval-Ausdrücken</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#bedingungslisten">Bedingungslisten</a></li>
@@ -2994,9 +2995,10 @@
 </li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">Bedingungen</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#beispiel">Beispiel</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#name-der-bedingung">Name der Bedingung</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#referenzieren-von-items">Referenzieren von Items</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#bedingungsgruppen">Bedingungsgruppen</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#wertevergleich">Wertevergleich</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#name-der-bedingung">Name der Bedingung</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#templates-fur-bedingungsabfragen">Templates für Bedingungsabfragen</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#bedingungen-mittels-eval-ausdrucken">Bedingungen mittels eval-Ausdrücken</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#bedingungslisten">Bedingungslisten</a></li>
@@ -5043,6 +5045,47 @@ die Helligkeit (über se_item_brightness oder se_status_brightness definiert) ü
 </pre></div>
 </div>
 </section>
+<section id="name-der-bedingung">
+<h2>Name der Bedingung<a class="headerlink" href="#name-der-bedingung" title="Permalink to this heading"></a></h2>
+<p>Der Name einer Bedingung setzt sich aus folgenden drei Teilen zusammen,
+die jeweils mit einem Unterstrich „_“ getrennt werden:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">se_</span></code>: eindeutiger Prefix, um dem Plugin zugeordnet zu werden</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Vergleichsfunktion&gt;</span></code>: siehe unten. Beispiel: min = der Wert des &lt;Bedingungsitems&gt; muss mindestens dem beim Attribut angegebenen Wert entsprechen.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Vergleichsitem/Bedingungsname&gt;</span></code>: Hier wird entweder das im Regelwerk-Item mittels <code class="docutils literal notranslate"><span class="pre">se_item_&lt;Name&gt;</span></code> oder <code class="docutils literal notranslate"><span class="pre">se_status_&lt;Name&gt;</span></code> deklarierte Item oder eine besondere Bedingung (siehe unten) referenziert.</p></li>
+</ul>
+</section>
+<section id="referenzieren-von-items">
+<h2>Referenzieren von Items<a class="headerlink" href="#referenzieren-von-items" title="Permalink to this heading"></a></h2>
+<p>Für jede „standardmäßige“ Bedingung muss ein Item hinterlegt werden, das geprüft werden soll.
+Dies geschieht in der Regel durch <code class="docutils literal notranslate"><span class="pre">se_status_&lt;Name&gt;</span></code>, kann aber auch durch <code class="docutils literal notranslate"><span class="pre">se_item_&lt;Name&gt;</span></code>
+erfolgen, falls z.B. das gleiche Item für Bedingungen und Aktionen gebraucht wird.</p>
+<p>Im Beispiel wird durch <code class="docutils literal notranslate"><span class="pre">se_status_brightness</span></code> das Item für den Check von
+Bedingungen bekannt gemacht. Aufgrund der angegebenen eval-Funktion wird das Item
+abhängig vom aktuellen Zustandsnamen eruiert. Da Zustand_Eins den Namen „sueden“
+hat, wird somit der Wert von wetterstation.helligkeit_sueden abgefragt. Ist dieser
+mehr als 499, ist die Bedingung erfüllt. Würde der Zustand „osten“ heißen (Name von Zustand_Zwei),
+würde der Helligkeitswert vom Osten getestet werden. Bedingung wäre dann erfüllt,
+wenn die Helligkeit 1500 oder mehr beträge.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">#items/item.yaml</span>
+<span class="nt">raffstore1</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">automatik</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">struct</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stateengine.general</span>
+<span class="w">        </span><span class="nt">rules</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">se_status_brightness</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eval:se_eval.get_relative_itemvalue(&#39;wetterstation.helligkeit_{}&#39;.format(se_eval.get_variable(&#39;current.state_name&#39;)))</span>
+
+<span class="w">            </span><span class="nt">Zustand_Eins</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sueden</span>
+<span class="w">                </span><span class="nt">enter</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">se_min_brightness</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500</span>
+
+<span class="w">            </span><span class="nt">Zustand_Zwei</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">osten</span>
+<span class="w">                </span><span class="nt">enter</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">se_min_brightness</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1500</span>
+</pre></div>
+</div>
+</section>
 <section id="bedingungsgruppen">
 <h2>Bedingungsgruppen<a class="headerlink" href="#bedingungsgruppen" title="Permalink to this heading"></a></h2>
 <p>Unabhängig davon, ob ein Zustand von nur einer Bedingung oder mehreren Bedingungen
@@ -5078,17 +5121,6 @@ Default-Zustand am Ende der Zustände definiert werden.</p></li>
 <li><p>Template: eine Vorlage, z.B. eine eval Funktion, die immer wieder innerhalb
 des StateEngine Items eingesetzt werden kann. Angegeben durch <code class="docutils literal notranslate"><span class="pre">template:&lt;Name</span> <span class="pre">des</span> <span class="pre">Templates&gt;</span></code></p></li>
 </ul>
-</section>
-<section id="name-der-bedingung">
-<h2>Name der Bedingung<a class="headerlink" href="#name-der-bedingung" title="Permalink to this heading"></a></h2>
-<p>Der Name einer Bedingung setzt sich aus folgenden drei Teilen zusammen,
-die jeweils mit einem Unterstrich „_“ getrennt werden:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">se_</span></code>: eindeutiger Prefix, um dem Plugin zugeordnet zu werden</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Vergleichsfunktion&gt;</span></code>: siehe unten. Beispiel: min = der Wert des &lt;Bedingungsitems&gt; muss mindestens dem beim Attribut angegebenen Wert entsprechen.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">&lt;Vergleichsitem/Bedingungsname&gt;</span></code>: Hier wird entweder das im Regelwerk-Item mittels <code class="docutils literal notranslate"><span class="pre">se_item_&lt;Name&gt;</span></code></p></li>
-</ul>
-<p>oder <code class="docutils literal notranslate"><span class="pre">se_status_&lt;Name&gt;</span></code> deklarierte Item oder eine besondere Bedingung (siehe unten) referenziert.</p>
 </section>
 <section id="templates-fur-bedingungsabfragen">
 <h2>Templates für Bedingungsabfragen<a class="headerlink" href="#templates-fur-bedingungsabfragen" title="Permalink to this heading"></a></h2>
@@ -5304,7 +5336,7 @@ Freitag, 5 = Samstag, 6 = Sonntag</p>
 <p>Der Azimut (Horizontalwinkel) ist die Kompassrichtung, in der die
 Sonne steht. Der Azimut wird von smarthomeNg auf Basis der
 aktuellen Zeit sowie der konfigurierten geographischen Position
-berechnet. Siehe auch <a class="reference external" href="https://www.smarthomeng.de/user/logiken/objekteundmethoden_sonne_mond.html">Dokumentation</a>
+berechnet. Siehe auch <a class="reference external" href="https://www.smarthomeng.de/user/referenz/smarthomeng/methoden_sonne_mond.html">Dokumentation</a>
 für Voraussetzungen zur Berechnung der Sonnenposition.
 Beispielwerte: 0 → Sonne exakt im Norden, 90 → Sonne exakt im
 Osten, 180 → Sonne exakt im Süden, 270 → Sonne exakt im Westen</p>
@@ -5313,7 +5345,7 @@ Osten, 180 → Sonne exakt im Süden, 270 → Sonne exakt im Westen</p>
 <p>Die Altitude (Vertikalwikel) ist der Winkel, in dem die Sonne über
 dem Horizont steht. Die Altitude wird von smarthomeNG auf Basis
 der aktuellen Zeit sowie der konfigurierten geographischen
-Position berechnet. Siehe auch <a class="reference external" href="https://www.smarthomeng.de/user/logiken/objekteundmethoden_sonne_mond.html">SmarthomeNG
+Position berechnet. Siehe ebenfalls <a class="reference external" href="https://www.smarthomeng.de/user/referenz/smarthomeng/methoden_sonne_mond.html">SmarthomeNG
 Dokumentation</a>
 für Voraussetzungen zur Berechnung der Sonnenposition. Werte:
 negativ → Sonne unterhalb des Horizonts, 0 →

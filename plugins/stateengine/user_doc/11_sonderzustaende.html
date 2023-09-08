@@ -606,9 +606,10 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="05_bedingungen.html">Bedingungen</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#beispiel">Beispiel</a></li>
+<li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#name-der-bedingung">Name der Bedingung</a></li>
+<li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#referenzieren-von-items">Referenzieren von Items</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungsgruppen">Bedingungsgruppen</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#wertevergleich">Wertevergleich</a></li>
-<li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#name-der-bedingung">Name der Bedingung</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#templates-fur-bedingungsabfragen">Templates für Bedingungsabfragen</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungen-mittels-eval-ausdrucken">Bedingungen mittels eval-Ausdrücken</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungslisten">Bedingungslisten</a></li>
@@ -2994,9 +2995,10 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="05_bedingungen.html">Bedingungen</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#beispiel">Beispiel</a></li>
+<li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#name-der-bedingung">Name der Bedingung</a></li>
+<li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#referenzieren-von-items">Referenzieren von Items</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungsgruppen">Bedingungsgruppen</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#wertevergleich">Wertevergleich</a></li>
-<li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#name-der-bedingung">Name der Bedingung</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#templates-fur-bedingungsabfragen">Templates für Bedingungsabfragen</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungen-mittels-eval-ausdrucken">Bedingungen mittels eval-Ausdrücken</a></li>
 <li class="toctree-l5"><a class="reference internal" href="05_bedingungen.html#bedingungslisten">Bedingungslisten</a></li>
@@ -5265,11 +5267,38 @@ abweichend sein soll, kann dort das Attribut</p>
 </div>
 <p>angegeben werden. Der Parameter kann auch durch ein Item oder eval festgelegt werden.
 Letzteres ermöglicht es, je nach Situation die Suspenddauer von verschiedenen Items
-abhängig zu machen. Im struct <code class="docutils literal notranslate"><span class="pre">state_suspend_dynamic</span></code> wird hier das Item automatik.settings.suspendduration.seconds verknüpft bzw.
-für die verschiedenen „suspendvariants“ automatik.settings.suspendvariant.suspendduration[0-2].seconds.
+abhängig zu machen. Im struct <code class="docutils literal notranslate"><span class="pre">state_suspend_dynamic</span></code> wird hier das
+Item automatik.settings.suspendduration.seconds verknüpft bzw.
+für die verschiedenen „suspendvariants“ die Items automatik.settings.suspendvariant.suspendduration[0-2].seconds.
 Hierzu ist im struct ein Item settings.suspendvariant integriert, das einen numerischen Wert zwischen 0
 und 2 erwartet. 0 ist dabei die „normale“ Funktionsweise, eine 1 würde auf die duration1 und eine 2 auf die
 duration2 verweisen.</p>
+<p>Um diese unterschiedlichen Dauerangaben zu nutzen, ist der Wert von suspendvariant in den entsprechenden
+Zuständen zu setzen. Außerdem sollte beim Beenden des Suspendstatus der Wert wieder auf 0 oder den
+vorherigen Wert gesetzt werden (was im entsprechenden Struct auch passiert).</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">#items/item.yaml</span>
+<span class="nt">beispiel</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">raffstore1</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">automatik</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">struct</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stateengine.general</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stateengine.state_release</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stateengine.state_lock</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stateengine.state_suspend_dynamic</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">beschattung_se_state_abend</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">beschattung_se_state_nacht</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">beschattung_se_state_schnee</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">beschattung_se_state_standard</span>
+
+<span class="w">        </span><span class="nt">rules</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">nacht</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">on_leave</span><span class="p">:</span>
+<span class="w">                  </span><span class="nt">se_set_suspendvariant</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">schnee</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">on_leave</span><span class="p">:</span>
+<span class="w">                  </span><span class="nt">se_set_suspendvariant</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+</pre></div>
+</div>
 </section>
 </section>
 
