@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.item.item &mdash; Dokumentation v1.9.5.6 v1.9.5.6 develop (Stand 26. August 2023, commit 2e0294a) Dokumentation</title>
+  <title>lib.item.item &mdash; Dokumentation v1.9.5.6 v1.9.5.6 develop (Stand 26. August 2023, commit f63c5ba) Dokumentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
@@ -6828,6 +6828,11 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        evaluate the &#39;eval&#39; entry of the actual item</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">caller</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;admin:&#39;</span><span class="p">):</span>
+            <span class="n">caller</span> <span class="o">=</span> <span class="n">caller</span><span class="p">[</span><span class="mi">6</span><span class="p">:]</span> <span class="o">+</span> <span class="s1">&#39;:admin&#39;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">caller</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;eval:&#39;</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">caller</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;:eval&#39;</span><span class="p">)):</span>
+            <span class="n">caller</span> <span class="o">=</span> <span class="s1">&#39;Eval:&#39;</span> <span class="o">+</span> <span class="n">caller</span>
+
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">shng_status</span><span class="p">[</span><span class="s1">&#39;code&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">14</span><span class="p">):</span>
             <span class="c1"># items are not (completly) loaded</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">dbghigh</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Item </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">: Running __run_eval before initialization is finished - eval run ignored- caller=</span><span class="si">{</span><span class="n">caller</span><span class="si">}</span><span class="s2">, source=</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">  -  shng_status</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">shng_status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -6892,12 +6897,12 @@
 
                         <span class="c1"># ms if contab: init = x is set, x is transfered as a string, for that case re-try eval with x converted to float</span>
                         <span class="k">try</span><span class="p">:</span>
-                           <span class="n">value</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">)</span>
+                            <span class="n">value</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">)</span>
                         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                            <span class="c1">#value = self._value = self.cast(value)</span>
+                            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
                             <span class="n">value</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">)</span>
                         <span class="c1"># ms end</span>
-
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="c1"># adding &quot;None&quot; as the &quot;destination&quot; information at end of triggered_by</span>
                     <span class="c1"># This helps figuring out whether an eval expression was successfully evaluated or not.</span>
