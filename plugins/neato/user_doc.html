@@ -1397,6 +1397,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#konfiguration">Konfiguration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#anforderungen">Anforderungen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#unterstutzte-hardware">Unterstützte Hardware</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#authentifizierung">Authentifizierung</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#unterstutzte-plugin-attribute">Unterstützte Plugin Attribute</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#roboter-status">Roboter Status</a></li>
 </ul>
@@ -2451,6 +2452,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#konfiguration">Konfiguration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#anforderungen">Anforderungen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#unterstutzte-hardware">Unterstützte Hardware</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#authentifizierung">Authentifizierung</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#unterstutzte-plugin-attribute">Unterstützte Plugin Attribute</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#roboter-status">Roboter Status</a></li>
 </ul>
@@ -5109,6 +5111,33 @@
 </tr>
 </tbody>
 </table>
+</section>
+<section id="authentifizierung">
+<h2>Authentifizierung<a class="headerlink" href="#authentifizierung" title="Permalink to this heading"></a></h2>
+<p>Das Plugin unterstützt zwei verschiedene Arten der Authentifizierung mit dem Neato oder Vorwerk Backend:</p>
+<ol class="loweralpha simple">
+<li><p>Authentifizierung über Emailadresse des Nutzerkontos und zugehöriges Passwort. Nutzbar für Neato und alte Vorwerk API</p></li>
+</ol>
+<ol class="loweralpha simple" start="2">
+<li><p>Oauth2 Authentifizierung über Emailadresse des Nutzerkontos und Token. Nutzbar nur für Vorwerk mit dem aktuellen MyKobol APP Interface</p></li>
+</ol>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>Neato:
+    plugin_name: neato
+    account_email: &#39;your_neato_account_email&#39;
+    token: &#39;HEX_ASCII_TOKEN&#39;
+    robot_vendor: &#39;vorwerk&#39;
+</pre></div>
+</div>
+<p>Der Token kann hier kompfortabel über die Schritt für Schritt Anleitung des Plugin Webinterfaces generiert werden, siehe Vorwerk OAuth2 Tab.</p>
+<p>Wenn eine Nutzung des Webinterfaces nicht möglich ist, kann ein Token auch manuell generiert werden. Hierzu:</p>
+<ol class="loweralpha simple">
+<li><p>Neato plugin aktivieren und Emailadresse des Vorwerk Nutzerkontos konfigurieren.</p></li>
+<li><p>Plugin Logging auf Level INFO stellen (in logger.yaml oder via Admin Interface)</p></li>
+<li><p>Plugin Funktion request_oauth2_code ausführen. Hierbei wird ein Code bei Vorwerk angefragt, welcher an die oben angegebene Emaildresse gesendet wird.</p></li>
+<li><p>Nach Erhalt des Codes die Plugin Funktion request_oauth2_token(code) ausführen, wobei als Argument der per Email erhaltene Code übergeben wird.</p></li>
+<li><p>Im Logfile nach dem generierten ASCII Token im Hexadezimalformat suchen</p></li>
+<li><p>Das Hex ASCII Token in der plugin.yaml angeben.</p></li>
+</ol>
 </section>
 <section id="unterstutzte-plugin-attribute">
 <h2>Unterstützte Plugin Attribute<a class="headerlink" href="#unterstutzte-plugin-attribute" title="Permalink to this heading"></a></h2>
