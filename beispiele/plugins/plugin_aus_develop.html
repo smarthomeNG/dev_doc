@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ein Plugin aus develop installieren &mdash; Dokumentation v1.9.5.6 v1.9.5.6 develop (Stand 26. August 2023, commit fc4922a) Dokumentation</title>
+  <title>Ein Plugin aus develop installieren &mdash; Dokumentation v1.9.5.6 v1.9.5.6 develop (Stand 26. August 2023, commit 3955452) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -3559,7 +3559,8 @@
 </ul>
 </li>
 <li class="toctree-l2 current"><a class="reference internal" href="plugins.html">Plugins</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Ein Plugin aus develop installieren</a><ul>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Ein Plugin aus develop installieren</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plugin-manuell-installieren">Plugin manuell installieren</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#plugins-repository-aufrufen">Plugins Repository aufrufen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#plugins-repository-download">Plugins Repository Download</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#gewunschtes-plugin-installieren">Gewünschtes Plugin installieren</a></li>
@@ -5060,8 +5061,23 @@
 <p>Falls in Probleme mit einem Plugin auftreten, kann es hilfreich sein eine neuere Version des Plugins aus dem develop
 Branch auf GitHub zu installieren, ohne deshalb die eigene Installation vollständig auf die (nicht notwendigerweise
 stabile) develop Version von SmartHomeNG zu wechseln.</p>
-<p>Im folgenden wird ein mögliches Vorgehen beschrieben, um ein Plugin aus dem develop Branch in eine Release Installation
-zu installieren. Dazu sind folgende Schritte durchzuführen:</p>
+<p>Im tools Verzeichnis gibt es ein Skript, welches ein gewähltes Plugin aus dem develop branch zusätzlich in die
+aktuelle Installation von SmartHomeNG kopiert. Damit kein Namenskonflikt mit einem bestehenden Plugin entsteht,
+wird an den Plugin Namen der String ‚_dev‘ angehängt. Ein Plugin mit dem Namen <strong>xyz</strong> wird also mit dem Namen
+<strong>xyz_dev</strong> in die bestehende SmartHomeNG Installation kopiert.</p>
+<p>Das Skript für Installation wird folgendermaßen gestartet:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>install_plugin_from_develop<span class="w"> </span>xyz
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="plugin-manuell-installieren">
+<h1>Plugin manuell installieren<a class="headerlink" href="#plugin-manuell-installieren" title="Permalink to this heading"></a></h1>
+<p>Alternativ kann das Plugin manuell installiert werden. Im folgenden wird ein mögliches Vorgehen beschrieben,
+um ein Plugin aus dem develop Branch in eine Release Installation zu installieren. Dazu sind folgende Schritte
+durchzuführen:</p>
 <section id="plugins-repository-aufrufen">
 <h2>Plugins Repository aufrufen<a class="headerlink" href="#plugins-repository-aufrufen" title="Permalink to this heading"></a></h2>
 <p>Im Browser die Seite <a class="reference external" href="http://www.github.com/smarthomeng/plugins">http://www.github.com/smarthomeng/plugins</a> aufrufen:</p>
@@ -5089,14 +5105,19 @@ zu installieren. Dazu sind folgende Schritte durchzuführen:</p>
 </section>
 <section id="gewunschtes-plugin-installieren">
 <h2>Gewünschtes Plugin installieren<a class="headerlink" href="#gewunschtes-plugin-installieren" title="Permalink to this heading"></a></h2>
-<p>Um zub Beispiel ein Plugin mit dem Namen <strong>xyz</strong> durch die Version aus dem develop Branch zu ersetzen, sollte
-zuerst das Verzeichnis der bestehenen Version im <code class="docutils literal notranslate"><span class="pre">plugins</span></code> Verzeichnis von <strong>xyz</strong> in <strong>xyz.mstr</strong> umbenannt werden,
-damit man später bei Bedarf darauf zurück wechseln kann.</p>
+<p>Um zum Beispiel ein Plugin mit dem Namen <strong>xyz</strong> aus dem develop Branch zu installieren, sollte (falls es existiert)
+zuerst das Verzeichnis <strong>xyz_dev</strong> im <code class="docutils literal notranslate"><span class="pre">plugins</span></code> Verzeichnis gelöscht werden, damit keine Seiteneffekte durch
+bestehende Dateien auftreten.</p>
 <p>Anschließend kann das Verzeichnis <strong>xyz</strong> (mit allen Bestandteilen/Unterordnern) aus dem beim Entpacken entstandenen
-Verzeichnis <code class="docutils literal notranslate"><span class="pre">plugins-develop</span></code> in das <code class="docutils literal notranslate"><span class="pre">plugins</span></code> Verzeichnis der SmartHomeNG Installation kopiert werden.</p>
-<p>Um das neue Plugin zu aktivieren, muss SmartHomeNG nun neu gestartet werden. Falls die neue Version
-Konfigurationsänderungen benötigen sollte, sind diese vor dem Neustart durchzuführen.</p>
-<p>Nun kann das Verzeichnis <code class="docutils literal notranslate"><span class="pre">plugins-develop</span></code> gelöscht werden.</p>
+Verzeichnis <code class="docutils literal notranslate"><span class="pre">plugins-develop</span></code> in das <code class="docutils literal notranslate"><span class="pre">plugins</span></code> Verzeichnis der SmartHomeNG Installation unter dem Namen <strong>xyz_dev</strong>
+kopiert werden.</p>
+<p>Nun kann das Archiv <code class="docutils literal notranslate"><span class="pre">develop.zip</span></code> und das Verzeichnis <code class="docutils literal notranslate"><span class="pre">plugins-develop</span></code> gelöscht werden.</p>
+<p>Um das neue Plugin zu aktivieren, muss noch die Plugin Konfiguration in der Datei <code class="docutils literal notranslate"><span class="pre">etc/plugin.yaml</span></code> angepasst werden.
+Dazu muss im Abschnitt in dem das Plugin konfiguriert ist, der Eintrag <code class="docutils literal notranslate"><span class="pre">plugin_name:</span> <span class="pre">xyz</span></code> durch
+<code class="docutils literal notranslate"><span class="pre">plugin_name:</span> <span class="pre">xyz_dev</span></code> ersetzt werden.</p>
+<p>Falls ein Logger für das ursprüngliche Plugin <strong>xyz</strong> konfiguriert ist, muss auch noch in <code class="docutils literal notranslate"><span class="pre">etc/logging.yaml</span></code> ein
+Logger für das Plugin <strong>xyz_dev</strong> konfiguriert werden. Dazu einfach den Abschnitt mit dem Logger <code class="docutils literal notranslate"><span class="pre">plugins.xyz</span></code>
+kopieren und in der Kopie den Namen in <code class="docutils literal notranslate"><span class="pre">plugins.xyz_dev</span></code> ändern.</p>
 </section>
 </section>
 
