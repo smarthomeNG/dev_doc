@@ -811,6 +811,9 @@
 <li class="toctree-l4"><a class="reference internal" href="../enocean/user_doc.html#allgemein">Allgemein</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../enocean/user_doc.html#anforderungen">Anforderungen</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../enocean/user_doc.html#verwendung-via-ip">Verwendung via IP</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../enocean/user_doc.html#konfiguration">Konfiguration</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../enocean/user_doc.html#plugin-yaml">plugin.yaml</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../enocean/user_doc.html#item-yaml">item.yaml</a></li>
 </ul>
@@ -1065,7 +1068,7 @@
 <li class="toctree-l5"><a class="reference internal" href="#play-mode">play_mode</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#play-snippet">play_snippet</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#play-tts">play_tts</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#play-tunein-play-sonos-radio">play_tunein / play_sonos_radio</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#play-sonos-radio-play-tunein">play_sonos_radio / play_tunein</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#play-url">play_url</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#play-sharelink">play_sharelink</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#previous">previous</a></li>
@@ -2251,6 +2254,9 @@
 <li class="toctree-l4"><a class="reference internal" href="../enocean/user_doc.html#allgemein">Allgemein</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../enocean/user_doc.html#anforderungen">Anforderungen</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../enocean/user_doc.html#verwendung-via-ip">Verwendung via IP</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../enocean/user_doc.html#konfiguration">Konfiguration</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../enocean/user_doc.html#plugin-yaml">plugin.yaml</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../enocean/user_doc.html#item-yaml">item.yaml</a></li>
 </ul>
@@ -2990,7 +2996,7 @@
 <li class="toctree-l5"><a class="reference internal" href="#play-mode">play_mode</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#play-snippet">play_snippet</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#play-tts">play_tts</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#play-tunein-play-sonos-radio">play_tunein / play_sonos_radio</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#play-sonos-radio-play-tunein">play_sonos_radio / play_tunein</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#play-url">play_url</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#play-sharelink">play_sharelink</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#previous">previous</a></li>
@@ -5457,13 +5463,14 @@ Nach der Ansage wird die Lautstärke jedes Speakers individuell in der Gruppe wi
 Wird ein untergeordnetes Item vom Typ Boolean mit Attribut <code class="docutils literal notranslate"><span class="pre">sonos_attrib:</span> <span class="pre">tts_fade_in</span></code> definiert, wird die Lautstärke
 nach dem Abspielen der Nachricht von 0 auf das gewünschte Level schrittweise angehoben und eingeblendet.</p>
 </section>
-<section id="play-tunein-play-sonos-radio">
-<h3>play_tunein / play_sonos_radio<a class="headerlink" href="#play-tunein-play-sonos-radio" title="Permalink to this heading"></a></h3>
+<section id="play-sonos-radio-play-tunein">
+<h3>play_sonos_radio / play_tunein<a class="headerlink" href="#play-sonos-radio-play-tunein" title="Permalink to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">write</span></code></p>
 <p>Spielt einen Radiosender anhand eines Namens. Das Item ist vom Typ String. Sonos sucht dazu in einer Datenbank
 nach potentiellen Radiostationen, die dem Namen entsprechen.
 Wird mehr als ein zum Suchbegriff passender Radiosender gefunden, wird der erste Treffer verwendet.
-Der Befehl ist ein Gruppenbefehl und wird für alle Speaker einer Gruppe angewendet.</p>
+Der Befehl ist ein Gruppenbefehl und wird für alle Speaker einer Gruppe angewendet. Empfohlen wird die Nutzung der Funktion play_sonos_radio.
+Die alte Funktion play_tunein existiert noch, sollte aber nicht mehr verwendet werden.</p>
 <p>Unteritem <code class="docutils literal notranslate"><span class="pre">start_after</span></code>:
 Wird ein untergeordnetes Item vom Typ Boolean mit Attribut <code class="docutils literal notranslate"><span class="pre">sonos_attrib:</span> <span class="pre">start_after</span></code> definiert, wird das
 Verhalten nach dem Laden der Radiostation definiert. Der Wert <cite>True</cite>, startet die Wiedergabe automatisch.
@@ -5688,16 +5695,21 @@ Der Befehl ist ein Gruppenbefehl und wird für alle Speaker einer Gruppe angewen
 <h3>Nicht echtzeitfähige Eigenschaften<a class="headerlink" href="#nicht-echtzeitfahige-eigenschaften" title="Permalink to this heading"></a></h3>
 <p>Einige Eigenschaften sind nicht Event basiert. Das bedeutet, dass sie nicht direkt nach
 Änderung über ein Event aktualisiert werden, sondern die Änderung erst bei der nächsten
-zyklischen Abfrage bei smarthomeNG ankommt.</p>
-<p>Folgende Eigenschaften sind <strong>nicht</strong> Event basiert:
-* snooze
-* status_light</p>
+zyklischen Abfrage bei smarthomeNG ankommt.
+Folgende Eigenschaften sind <strong>nicht</strong> Event basiert:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>snooze</p></li>
+<li><p>status_light</p></li>
+</ul>
+</div></blockquote>
 </section>
 <section id="gruppenbefehle">
 <h3>Gruppenbefehle<a class="headerlink" href="#gruppenbefehle" title="Permalink to this heading"></a></h3>
 <p>Einige Items werden immer als Gruppenbefehl, d.h. auf alle Speaker innerhalb einer Gruppe ausgeführt.
 Folgende Methoden sind Gruppenbefehle:</p>
-<ul class="simple">
+<blockquote>
+<div><ul class="simple">
 <li><p>play</p></li>
 <li><p>pause</p></li>
 <li><p>stop</p></li>
@@ -5711,6 +5723,7 @@ Folgende Methoden sind Gruppenbefehle:</p>
 <li><p>play_url</p></li>
 <li><p>load_sonos_playlist</p></li>
 </ul>
+</div></blockquote>
 <p>Für diese Items ist es egal, für welchen Speaker einer Gruppe diese Kommandos gesendet werden. Sie werden automatisch für alle
 Speaker einer Gruppe angewendet.</p>
 </section>
