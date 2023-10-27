@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>kodi &mdash; Dokumentation v1.9.5.6 v1.9.5.6 develop (Stand 26. August 2023, commit 5a369ea) Dokumentation</title>
+  <title>kodi &mdash; Dokumentation v1.9.5.6 v1.9.5.6 develop (Stand 26. August 2023, commit 14b7b6a) Dokumentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -1385,13 +1385,9 @@
 </ul>
 </li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">kodi</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#hinweise-zur-umstellung">Hinweise zur Umstellung</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#konfiguration">Konfiguration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#hinweise-zu-verbindungen">Hinweise zu Verbindungen</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#items">Items</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="#kodi-item-instanz-funktion">kodi_item&#64;[Instanz]: [Funktion]</a></li>
-</ul>
-</li>
-<li class="toctree-l4"><a class="reference internal" href="#struct-vorlagen">Struct Vorlagen</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../lms/user_doc.html">lms</a><ul>
@@ -2423,13 +2419,9 @@
 </ul>
 </li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">kodi</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#hinweise-zur-umstellung">Hinweise zur Umstellung</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#konfiguration">Konfiguration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#hinweise-zu-verbindungen">Hinweise zu Verbindungen</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#items">Items</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="#kodi-item-instanz-funktion">kodi_item&#64;[Instanz]: [Funktion]</a></li>
-</ul>
-</li>
-<li class="toctree-l4"><a class="reference internal" href="#struct-vorlagen">Struct Vorlagen</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../lirc/user_doc.html">lirc</a><ul>
@@ -5137,105 +5129,77 @@
              
   <span class="target" id="index-0"></span><section id="kodi">
 <span id="index-1"></span><h1>kodi<a class="headerlink" href="#kodi" title="Permalink to this heading"></a></h1>
+<section id="hinweise-zur-umstellung">
+<h2>Hinweise zur Umstellung<a class="headerlink" href="#hinweise-zur-umstellung" title="Permalink to this heading"></a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warnung</p>
+<p>Das kodi-Plugin wurde komplett auf smartdeviceplugin umgestellt. Damit gehen sowohl in der Struktur der items als auch der verfügbaren Kommandos erhebliche Änderungen einher, die eine Anpassung der Item-Konfiguration erfordern.</p>
+</div>
+<p>Wenn bisher die mitgelieferten Structs genutzt wurden, muss nur die struct-Einbindung geändert werden: aus</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># items/media.yaml</span>
+<span class="nt">kodi</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">struct</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kodi.control</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kodi.info</span>
+</pre></div>
+</div>
+<p>wird neu</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># items/media.yaml</span>
+<span class="nt">kodi</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">struct</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kodi.old_control</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kodi.old_info</span>
+</pre></div>
+</div>
+<p>Damit ist die alte Item-Struktur 1:1 übernommen und nutzt die neuen Funktionen.</p>
+<p>Wenn die Items einzeln erstellt und konfiguriert wurden, muss die alte Item-Konfiguration
+manuell umgestellt werden, indem die entsprechenden Item-Attribute des kodi-Plugins ersetzt werden.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kodi</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">volume</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">        </span><span class="nt">kodi_item</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">volume</span>
+</pre></div>
+</div>
+<p>in der alten Form wird zu</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kodi</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">volume</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">        </span><span class="nt">kodi_command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">control.volume</span>
+<span class="w">        </span><span class="nt">kodi_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">kodi_write</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>Die notwendige Konfiguration der einzelnen Items lässt sich in der <cite>plugins/kodi/plugin.yaml</cite> in der Definition der structs nachlesen.</p>
+</section>
 <section id="konfiguration">
 <h2>Konfiguration<a class="headerlink" href="#konfiguration" title="Permalink to this heading"></a></h2>
 <div class="admonition important">
 <p class="admonition-title">Wichtig</p>
 <p>Die Informationen zur Konfiguration des Plugins sind unter :doc:<code class="docutils literal notranslate"><span class="pre">/plugins_doc/config/kodi</span></code> beschrieben.</p>
+<p>Eine minimale Konfiguration könnte so aussehen:</p>
 </div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># etc/plugin.yaml</span>
 <span class="nt">kodi</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">plugin_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kodi</span>
-<span class="w">    </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0.0.1</span>
-<span class="w">    </span><span class="c1">#instance: kodi_one</span>
-<span class="w">    </span><span class="c1">#autoreconnect: False</span>
-<span class="w">    </span><span class="c1">#connect_retries: 10</span>
-<span class="w">    </span><span class="c1">#connect_cycle: 5</span>
-<span class="w">    </span><span class="c1">#command_repeat: 5</span>
-<span class="w">    </span><span class="c1">#command_timeout: 5</span>
+<span class="w">    </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0.0.42</span>
+<span class="w">    </span><span class="nt">suspend_item</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">media.kodi.suspend</span>
+</pre></div>
+</div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># items/media.yaml</span>
+<span class="nt">kodi</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">struct</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kodi.ALL</span>
+
+<span class="w">    </span><span class="nt">suspend</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
+<span class="w">        </span><span class="nt">cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
 </div>
 </section>
 <section id="hinweise-zu-verbindungen">
 <h2>Hinweise zu Verbindungen<a class="headerlink" href="#hinweise-zu-verbindungen" title="Permalink to this heading"></a></h2>
-<p>Über die plugin-Parameter connect_retries und connect_cycle kann eingestellt werden, wie oft das Plugin versucht, eine Verbindung zu Kodi aufzubauen.
-Nach Ablauf dieser Versuche wartet das Plugin 30 Sekunden, bevor das Ganze wiederholt wird. Für diese Wiederholungen gibt es keine zeitliche Beschränkung, d.h. solange keine Verbindung besteht, versucht das Plugin alle 30 Sekunden erneut, die Verbindung mit den oben genannten Parametern herzustellen.</p>
-</section>
-<section id="items">
-<h2>Items<a class="headerlink" href="#items" title="Permalink to this heading"></a></h2>
-<section id="kodi-item-instanz-funktion">
-<h3>kodi_item&#64;[Instanz]: [Funktion]<a class="headerlink" href="#kodi-item-instanz-funktion" title="Permalink to this heading"></a></h3>
-<p>Folgende Funktionen werden aktuell unterstützt:
-<strong>power</strong>
-Item type <code class="docutils literal notranslate"><span class="pre">bool</span></code>. Wird das Item auf „False“ gesetzt, wird Kodi heruntergefahren. Bei einem „True“ versucht das Plugin, eine Verbindung zu Kodi herzustellen (ohne Wake on LAN o.ä.)</p>
-<p><strong>volume</strong>
-Item type <code class="docutils literal notranslate"><span class="pre">num</span></code>. Einstellen der Lautstärke in Prozent, ein Wert zwischen 0 und 100.</p>
-<p><strong>speed</strong>
-Item type <code class="docutils literal notranslate"><span class="pre">num</span></code>. Einstellen der Abspielgeschwindigkeit. Muss einen gültigen geraden Wert enthalten, also +/- 1, 2, 4, 8, 16, 32. 1 ist Normalgeschwindigkeit.</p>
-<p><strong>seek</strong>
-Item type <code class="docutils literal notranslate"><span class="pre">num</span></code>. Zu einem bestimmten Punkt des aktuellen Mediums springen, in Prozent</p>
-<p><strong>mute</strong>
-Item type <code class="docutils literal notranslate"><span class="pre">bool</span></code>. Stummschalten.</p>
-<p><strong>player</strong>
-Item type <code class="docutils literal notranslate"><span class="pre">num</span></code>. Erhält automatisch die Player ID des aktuellen Players. Achtung: Ohne aktiven Player sind die Befehle Play, Pause, etc. nicht funktionsfähig.</p>
-<p><strong>title</strong>
-Item type <code class="docutils literal notranslate"><span class="pre">str</span></code>. Der Titel des aktuell gespielten Elements. Wird vom Plugin automatisch bei Änderungen aktualisiert.</p>
-<p><strong>media</strong>
-Item type <code class="docutils literal notranslate"><span class="pre">str</span></code>. Der Medientyp des aktuell gespielten Elements. Wird vom Plugin automatisch bei Änderungen aktualisiert.</p>
-<p><strong>macro</strong>
-Item type <code class="docutils literal notranslate"><span class="pre">str</span></code>. Eine Abfolge von Befehlen. Aktuell werden folgende Makros unterstützt, die beim Abspielen eines Elements relevant sind:
-- resume: Falls ein Medium eine gewisse Zeit gelaufen ist, ist es möglich, an der gleichen Stelle fortzusetzen.
-- beginning: Auch wenn ein Medium bereits eine gewisse Zeit gelaufen ist, wird von vorne begonnen.</p>
-<p><strong>state</strong>
-Item type <code class="docutils literal notranslate"><span class="pre">str</span></code>. Information zum aktuellen Status von Kodi (Playing, Stopped, Screensaver,…).</p>
-<p><strong>favourites</strong>
-Item type <code class="docutils literal notranslate"><span class="pre">dict</span></code>. Die in Kodi definierten Favoriten werden als Dictionary in dieses Item gespeichert. Ein Ändern der Einträge ist nicht möglich.</p>
-<p><strong>audio</strong>
-Item type <code class="docutils literal notranslate"><span class="pre">foo</span></code>. Ändern der Tonspur, entweder next, previous oder eine Zahl zur Direktanwahl</p>
-<p><strong>subtitle</strong>
-Item type <code class="docutils literal notranslate"><span class="pre">list</span></code>. Einstellen des Untertitels, entweder on, off, next, previous oder den Index der Untertitelspur. Das Anwählen einer Untertitelspur aktiviert automatisch die Anzeige.</p>
-<p><strong>streams</strong>
-Item type <code class="docutils literal notranslate"><span class="pre">foo</span></code>. Lieste die verfügbaren Audiospuren auf. Ein Ändern ist über die Funktion <code class="docutils literal notranslate"><span class="pre">audio</span></code> möglich.</p>
-<p><strong>subtitles</strong>
-Item type <code class="docutils literal notranslate"><span class="pre">foo</span></code>. Listet die verfügbaren Untertitelspuren auf. Ein Ändern ist über die Funktion <code class="docutils literal notranslate"><span class="pre">subtitle</span></code> möglich.</p>
-<p><strong>update</strong>
-Item type <code class="docutils literal notranslate"><span class="pre">bool</span></code>. Stößt beim Schreiben von True einmalig das Aktualisieren der Player- und Wiedergabeinformationen an.</p>
-<p><strong>stop</strong>
-Item type <code class="docutils literal notranslate"><span class="pre">bool</span></code>. Stoppt die Wiedergabe.</p>
-<p><strong>playpause</strong>
-Item type <code class="docutils literal notranslate"><span class="pre">bool</span></code>. Wechselt zwischen Wiedergabe und Pausenmodus.</p>
-<p><strong>goto</strong>
-Item type <code class="docutils literal notranslate"><span class="pre">str</span></code>. Ermöglicht Sprünge in der Wiedergabeliste mit next und previous als Wert.</p>
-<p><strong>quit</strong>
-Item type <code class="docutils literal notranslate"><span class="pre">bool</span></code>. Beendet Kodi, aber fährt den Rechner nicht herunter. Funktioniert nicht auf allen Installationen.</p>
-<p><strong>action</strong>
-Item type <code class="docutils literal notranslate"><span class="pre">str</span></code>. Diese Funktion ermöglicht die Kontrolle über Kodi wie mit einer Fernbedienung. Für dieses Item sollte <code class="docutils literal notranslate"><span class="pre">enforce_updates</span></code> aktiviert werden. Eine Übersicht über mögliche Aktion ist auf der <a class="reference external" href="https://kodi.wiki/view/Action_IDs">Kodi Wiki Seite</a>
-Ein Auszug der wichtigsten Aktionen:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">play</span></code> Abspielen. Es muss ein aktiver Player vorhanden sein!</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">pause</span></code> Pausieren. Es muss ein aktiver Player vorhanden sein!</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">playpause</span></code> Umschalten zwischen Abspielen und Pause. Es muss ein aktiver Player vorhanden sein!</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">stop</span></code> Stoppen. Es muss ein aktiver Player vorhanden sein!</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">osd</span></code> On Screen Display anzeigen</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">left</span></code> Cursor nach links</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">right</span></code> Cursor nach rechts</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">up</span></code> Cursor nach oben</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">down</span></code> Cursor nach unten</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">select</span></code> Aktuelles Navigationselement aktivieren</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">contextmenu</span></code> Anzeigen des Kontextmenüs</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">back</span></code> Einen Schritt zurück</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">volumeup</span></code> Erhöhen der Lautstärke</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">volumedown</span></code> Verringern der Lautstärke</p></li>
-</ul>
-</section>
-</section>
-<section id="struct-vorlagen">
-<h2>Struct Vorlagen<a class="headerlink" href="#struct-vorlagen" title="Permalink to this heading"></a></h2>
-<p>Ab smarthomeNG 1.6 können Vorlagen aus dem Plugin einfach eingebunden werden. Dabei stehen folgende Vorlagen zur Verfügung:</p>
-<ul class="simple">
-<li><p>query: Enthält Funktionen, die zur Abfrage von Kodi Infos dienen.</p></li>
-<li><p>control: Enthält Funktionen, mit denen Kodi gesteuert werden kann. Hier sind auch die wichtigsten input Befehle als eigene Items hinterlegt (play, pause, next, etc.)</p></li>
-</ul>
+<p>Über die plugin-Parameter <cite>connect_retries</cite> (Anzahl) und <a href="#id1"><span class="problematic" id="id2">`</span></a>connect_cycle (Wartezeit) kann eingestellt werden, wie oft das Plugin versucht, eine Verbindung zu Kodi aufzubauen.</p>
+<p>Das weitere Verhalten wird über die Parameter <cite>retry_cycle</cite> (Wartezeit) und <cite>retry_suspend</cite> (Anzahl Zyklen) eingestellt. Nach Ablauf dieser Versuche wartet das Plugin 30 Sekunden (bzw. die in <cite>retry_cycle</cite> eingestellte Zeit), bevor das Ganze wiederholt wird. Wenn <cite>retry_suspend</cite> gesetzt ist, wechselt das Plugin nach dieser Anzahl von <cite>retry_cycles</cite> in den Suspend-Modus und beendet die Verbindungsversuche.
+Um den Suspend-Modus zu beenden, kann mit dem Plugin-Attribut <cite>suspend_item</cite> ein Item konfiguriert werden, mit dem der Suspend-Modus ein- und ausgeschaltet werden kann. Alternativ stehen die Plugin-Funktionen <cite>suspend()</cite> und <cite>resume()</cite> zur Verfügung.</p>
 </section>
 </section>
 
