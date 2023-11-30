@@ -5363,8 +5363,18 @@
 <p>Bei Items, bei denen ein String aus der Liste im Pfadnamen vorkommt, werden 0-Werte (val_num = 0) bei Datenbankauswertungen ignoriert. Beispieleintrag: temp | hum</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>Datentyp: <strong>list</strong></p></li>
+<li><p>Datentyp: <strong>list(str)</strong></p></li>
 <li><p>Standardwert: <strong>[]</strong></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="lock-db-for-query">
+<h2>lock_db_for_query<a class="headerlink" href="#lock-db-for-query" title="Permalink to this heading"></a></h2>
+<p>Sperren der Datenbank während der Abfrage</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Datentyp: <strong>bool</strong></p></li>
+<li><p>Standardwert: <strong>False</strong></p></li>
 </ul>
 </div></blockquote>
 </section>
@@ -5445,9 +5455,12 @@
 <li><p>Mögliche Werte:</p>
 <ul>
 <li><p><strong>verbrauch_heute</strong></p></li>
+<li><p><strong>verbrauch_tag</strong></p></li>
 <li><p><strong>verbrauch_woche</strong></p></li>
 <li><p><strong>verbrauch_monat</strong></p></li>
 <li><p><strong>verbrauch_jahr</strong></p></li>
+<li><p><strong>verbrauch_last_24h</strong></p></li>
+<li><p><strong>verbrauch_last_7d</strong></p></li>
 <li><p><strong>verbrauch_heute_minus1</strong></p></li>
 <li><p><strong>verbrauch_heute_minus2</strong></p></li>
 <li><p><strong>verbrauch_heute_minus3</strong></p></li>
@@ -5455,6 +5468,15 @@
 <li><p><strong>verbrauch_heute_minus5</strong></p></li>
 <li><p><strong>verbrauch_heute_minus6</strong></p></li>
 <li><p><strong>verbrauch_heute_minus7</strong></p></li>
+<li><p><strong>verbrauch_heute_minus8</strong></p></li>
+<li><p><strong>verbrauch_tag_minus1</strong></p></li>
+<li><p><strong>verbrauch_tag_minus2</strong></p></li>
+<li><p><strong>verbrauch_tag_minus3</strong></p></li>
+<li><p><strong>verbrauch_tag_minus4</strong></p></li>
+<li><p><strong>verbrauch_tag_minus5</strong></p></li>
+<li><p><strong>verbrauch_tag_minus6</strong></p></li>
+<li><p><strong>verbrauch_tag_minus7</strong></p></li>
+<li><p><strong>verbrauch_tag_minus8</strong></p></li>
 <li><p><strong>verbrauch_woche_minus1</strong></p></li>
 <li><p><strong>verbrauch_woche_minus2</strong></p></li>
 <li><p><strong>verbrauch_woche_minus3</strong></p></li>
@@ -5466,7 +5488,9 @@
 <li><p><strong>verbrauch_monat_minus12</strong></p></li>
 <li><p><strong>verbrauch_jahr_minus1</strong></p></li>
 <li><p><strong>verbrauch_jahr_minus2</strong></p></li>
+<li><p><strong>verbrauch_jahr_minus3</strong></p></li>
 <li><p><strong>verbrauch_rolling_12m_heute_minus1</strong></p></li>
+<li><p><strong>verbrauch_rolling_12m_tag_minus1</strong></p></li>
 <li><p><strong>verbrauch_rolling_12m_woche_minus1</strong></p></li>
 <li><p><strong>verbrauch_rolling_12m_monat_minus1</strong></p></li>
 <li><p><strong>verbrauch_rolling_12m_jahr_minus1</strong></p></li>
@@ -5476,6 +5500,9 @@
 <li><p><strong>zaehlerstand_heute_minus1</strong></p></li>
 <li><p><strong>zaehlerstand_heute_minus2</strong></p></li>
 <li><p><strong>zaehlerstand_heute_minus3</strong></p></li>
+<li><p><strong>zaehlerstand_tag_minus1</strong></p></li>
+<li><p><strong>zaehlerstand_tag_minus2</strong></p></li>
+<li><p><strong>zaehlerstand_tag_minus3</strong></p></li>
 <li><p><strong>zaehlerstand_woche_minus1</strong></p></li>
 <li><p><strong>zaehlerstand_woche_minus2</strong></p></li>
 <li><p><strong>zaehlerstand_woche_minus3</strong></p></li>
@@ -5503,6 +5530,18 @@
 <li><p><strong>minmax_heute_minus3_min</strong></p></li>
 <li><p><strong>minmax_heute_minus3_max</strong></p></li>
 <li><p><strong>minmax_heute_minus3_avg</strong></p></li>
+<li><p><strong>minmax_tag_min</strong></p></li>
+<li><p><strong>minmax_tag_max</strong></p></li>
+<li><p><strong>minmax_tag_avg</strong></p></li>
+<li><p><strong>minmax_tag_minus1_min</strong></p></li>
+<li><p><strong>minmax_tag_minus1_max</strong></p></li>
+<li><p><strong>minmax_tag_minus1_avg</strong></p></li>
+<li><p><strong>minmax_tag_minus2_min</strong></p></li>
+<li><p><strong>minmax_tag_minus2_max</strong></p></li>
+<li><p><strong>minmax_tag_minus2_avg</strong></p></li>
+<li><p><strong>minmax_tag_minus3_min</strong></p></li>
+<li><p><strong>minmax_tag_minus3_max</strong></p></li>
+<li><p><strong>minmax_tag_minus3_avg</strong></p></li>
 <li><p><strong>minmax_woche_min</strong></p></li>
 <li><p><strong>minmax_woche_max</strong></p></li>
 <li><p><strong>minmax_woche_minus1_min</strong></p></li>
@@ -5528,6 +5567,10 @@
 <li><p><strong>tagesmitteltemperatur_heute_minus1</strong></p></li>
 <li><p><strong>tagesmitteltemperatur_heute_minus2</strong></p></li>
 <li><p><strong>tagesmitteltemperatur_heute_minus3</strong></p></li>
+<li><p><strong>tagesmitteltemperatur_tag</strong></p></li>
+<li><p><strong>tagesmitteltemperatur_tag_minus1</strong></p></li>
+<li><p><strong>tagesmitteltemperatur_tag_minus2</strong></p></li>
+<li><p><strong>tagesmitteltemperatur_tag_minus3</strong></p></li>
 <li><p><strong>serie_minmax_monat_min_15m</strong></p></li>
 <li><p><strong>serie_minmax_monat_max_15m</strong></p></li>
 <li><p><strong>serie_minmax_monat_avg_15m</strong></p></li>
@@ -5554,8 +5597,16 @@
 <li><p><strong>kaeltesumme</strong></p></li>
 <li><p><strong>waermesumme</strong></p></li>
 <li><p><strong>gruenlandtempsumme</strong></p></li>
-<li><p><strong>tagesmitteltemperatur</strong></p></li>
 <li><p><strong>wachstumsgradtage</strong></p></li>
+<li><p><strong>wuestentage</strong></p></li>
+<li><p><strong>heisse_tage</strong></p></li>
+<li><p><strong>tropennaechte</strong></p></li>
+<li><p><strong>sommertage</strong></p></li>
+<li><p><strong>heiztage</strong></p></li>
+<li><p><strong>vegetationstage</strong></p></li>
+<li><p><strong>frosttage</strong></p></li>
+<li><p><strong>eistage</strong></p></li>
+<li><p><strong>tagesmitteltemperatur</strong></p></li>
 <li><p><strong>db_request</strong></p></li>
 <li><p><strong>minmax</strong></p></li>
 <li><p><strong>minmax_last</strong></p></li>
