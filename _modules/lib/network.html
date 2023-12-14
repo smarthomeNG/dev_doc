@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.network &mdash; Dokumentation v1.9.5.6 v1.9.5.6 develop (Stand 26. August 2023, commit e232f4b) Dokumentation</title>
+  <title>lib.network &mdash; Dokumentation v1.9.5.6 v1.9.5.6 develop (Stand 26. August 2023, commit 97e155b) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5919,7 +5919,11 @@
 <span class="sd">    :type timeout: int</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">autoreconnect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">autoconnect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">connect_retries</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">connect_cycle</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">retry_cycle</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">retry_abort</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">abort_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">terminator</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">autoreconnect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">autoconnect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">connect_retries</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                 <span class="n">connect_cycle</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">retry_cycle</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">retry_abort</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                 <span class="n">abort_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">binary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">terminator</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">rate_limit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_rate_connects</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
         <span class="c1"># public properties</span>
@@ -5942,6 +5946,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_abort_callback</span> <span class="o">=</span> <span class="n">abort_callback</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span> <span class="o">=</span> <span class="n">timeout</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ratelimit</span> <span class="o">=</span> <span class="n">rate_limit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_rate_connects</span> <span class="o">=</span> <span class="n">max_rate_connects</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_connect</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_num_connects</span> <span class="o">=</span> <span class="mi">0</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_hostip</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_family</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_socket</span> <span class="o">=</span> <span class="kc">None</span>
@@ -5958,7 +5967,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__connect_thread</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__connect_threadlock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__receive_thread</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__receive_threadlock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__running</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="c1"># self.logger.setLevel(logging.DEBUG)   # Das sollte hier NICHT gesetzt werden, sondern in etc/logging.yaml im Logger lib.network konfiguriert werden!</span>
@@ -6025,6 +6033,24 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__connect_threadlock</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Starting connect to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__connect_thread</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__connect_thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+
+                <span class="c1"># limit connection rates</span>
+                <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_connect</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ratelimit</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;connect: rate limit active, minimum delay is </span><span class="si">{</span><span class="mf">1.0</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_ratelimit</span><span class="si">}</span><span class="s1">, current delay is </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_last_connect</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_num_connects</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_num_connects</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_rate_connects</span><span class="p">:</span>
+
+                        <span class="c1"># too many rate limits reached</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;connect: max number of rate limits hit </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_max_rate_connects</span><span class="si">}</span><span class="s1">, aborting connect&#39;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_abort_callback</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_abort_callback</span><span class="p">()</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_num_connects</span> <span class="o">=</span> <span class="mi">0</span>
+                            <span class="k">return</span> <span class="kc">False</span>
+
+                    <span class="c1"># wait till we may connect again</span>
+                    <span class="k">while</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_connect</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ratelimit</span><span class="p">):</span>
+                        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">.1</span><span class="p">)</span>
+
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">dbglow</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;connect() creating connect thread &quot;TCP_Connect </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__connect_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_connect_thread_worker</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;TCP_Connect </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__connect_thread</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
@@ -6121,6 +6147,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">()</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_connected</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_last_connect</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connected_callback</span><span class="p">:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">_connected_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
                         <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;TCP_Client </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s1">&#39;</span>
