@@ -527,6 +527,7 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#in-influxdb-uber-udp-oder-http-loggen">In InfluxDB über UDP oder HTTP loggen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#korrektes-logging">Korrektes Logging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#daten-aus-dem-database-plugin-transferieren">Daten aus dem Database Plugin transferieren</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#web-interface">Web Interface</a></li>
 </ul>
 </li>
@@ -2525,6 +2526,7 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#in-influxdb-uber-udp-oder-http-loggen">In InfluxDB über UDP oder HTTP loggen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#korrektes-logging">Korrektes Logging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#daten-aus-dem-database-plugin-transferieren">Daten aus dem Database Plugin transferieren</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#web-interface">Web Interface</a></li>
 </ul>
 </li>
@@ -5475,6 +5477,60 @@ und <a class="reference external" href="https://docs.influxdata.com/influxdb/v1.
 <li><p><a class="reference external" href="https://docs.influxdata.com/influxdb/v1.8/concepts/schema_and_data_layout/#avoid-encoding-data-in-measurement-names">Vermeiden Sie die Kodierung von Daten in Messnamen</a></p></li>
 <li><p>Vermeiden Sie mehr als eine Information in einem Tag &lt;<a class="reference external" href="https://docs.influxdata.com/influxdb/v1.8/concepts/schema_and_data_layout/#avoid-putting-more-than-one-piece-of-information-in-one-tag">https://docs.influxdata.com/influxdb/v1.8/concepts/schema_and_data_layout/#avoid-putting-more-than-one-piece-of-information-in-one-tag</a>&gt;`_</p></li>
 </ul>
+</section>
+<section id="daten-aus-dem-database-plugin-transferieren">
+<h2>Daten aus dem Database Plugin transferieren<a class="headerlink" href="#daten-aus-dem-database-plugin-transferieren" title="Permalink to this heading"></a></h2>
+<p>Diese Anleitung wurde unter influxdb2 getestet und muss eventuell für influxdb1 adaptiert werden.</p>
+<ol class="arabic simple">
+<li><p>Pandas und influxdb_client Module für Python installieren</p></li>
+<li><p>CSV-Dump aus dem Webinterface des Datenbank-Plugins herunterladen</p></li>
+<li><p>Anpassen der Zugriffsparameter im unten stehenden Skript</p></li>
+<li><p>Anpassen des Pfads zur CVS-Datei</p></li>
+<li><p>Ausführen des Skripts</p></li>
+<li><p>Abhängig von der Größe der Datenbank ist Geduld gefragt.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">influxdb_client</span> <span class="kn">import</span> <span class="n">InfluxDBClient</span>
+<span class="kn">from</span> <span class="nn">influxdb_client.client.write_api</span> <span class="kn">import</span> <span class="n">SYNCHRONOUS</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+
+<span class="c1"># ----------------------------------------------</span>
+<span class="n">ip</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
+<span class="n">port</span> <span class="o">=</span> <span class="mi">8086</span>
+<span class="n">token</span> <span class="o">=</span> <span class="s2">&quot;******************&quot;</span>
+<span class="n">org</span> <span class="o">=</span> <span class="s2">&quot;smarthomeng&quot;</span>
+<span class="n">bucket</span> <span class="o">=</span> <span class="s2">&quot;shng&quot;</span>
+<span class="n">value_field</span> <span class="o">=</span> <span class="s2">&quot;value&quot;</span>
+<span class="n">str_value_field</span> <span class="o">=</span> <span class="s2">&quot;str_value&quot;</span>
+
+<span class="n">csvfile</span> <span class="o">=</span> <span class="s2">&quot;smarthomeng_dump.csv&quot;</span>
+<span class="c1"># ----------------------------------------------</span>
+
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">InfluxDBClient</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span> <span class="n">org</span><span class="o">=</span><span class="n">org</span><span class="p">)</span>
+<span class="n">write_api</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">write_api</span><span class="p">(</span><span class="n">write_options</span><span class="o">=</span><span class="n">SYNCHRONOUS</span><span class="p">)</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+
+<span class="n">num_rows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+<span class="n">last_progress_percent</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+<span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+  <span class="n">progress_percent</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">index</span><span class="o">/</span><span class="n">num_rows</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span>
+  <span class="k">if</span> <span class="n">last_progress_percent</span> <span class="o">!=</span> <span class="n">progress_percent</span><span class="p">:</span>
+      <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">progress_percent</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+      <span class="n">last_progress_percent</span> <span class="o">=</span> <span class="n">progress_percent</span>
+
+  <span class="n">p</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;measurement&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;item_name&#39;</span><span class="p">],</span> <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="mi">1000000</span><span class="p">,</span>
+       <span class="s1">&#39;tags&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;item_name&#39;</span><span class="p">]},</span>
+       <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">{</span><span class="n">value_field</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;val_num&#39;</span><span class="p">],</span> <span class="n">str_value_field</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;val_str&#39;</span><span class="p">]}</span>
+       <span class="p">}</span>
+  <span class="n">write_api</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="n">bucket</span><span class="p">,</span> <span class="n">record</span><span class="o">=</span><span class="n">p</span><span class="p">)</span>
+
+<span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
 </section>
 <section id="web-interface">
 <h2>Web Interface<a class="headerlink" href="#web-interface" title="Permalink to this heading"></a></h2>
