@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Release 1.10.x - tt. mmm 2023 &mdash; Dokumentation v1.9.5.6 v1.9.5.6 develop (Stand 26. August 2023, commit 732541f) Dokumentation</title>
+  <title>Release 1.10.x - tt. mmm 2023 &mdash; Dokumentation v1.9.5.6 v1.9.5.6 develop (Stand 26. August 2023, commit bb8a8bf) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
@@ -5409,9 +5409,9 @@ sowie einige neue Plugins.</p>
 <p>Diese Release Notes sind ein Arbeitsstand.</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>Berücksichtigt sind Commits im smarthome Repository bis incl. 29. August 2023
-(Bugfix in dict handling)</p></li>
-<li><p>Berücksichtigt sind Commits im plugins Repository bis incl. 28. August 2023
+<li><p>Berücksichtigt sind Commits im smarthome Repository bis incl. 20. Dezember 2023
+(…)</p></li>
+<li><p>Berücksichtigt sind Commits im plugins Repository bis incl. 26. Dezember 2023
 (…)</p></li>
 </ul>
 </div></blockquote>
@@ -5503,12 +5503,24 @@ include attributes from current item to great-grandparent item</p></li>
 <li><p>eval on trigger only implemented</p></li>
 <li><p>Initial support for access to elements of list and dict items</p></li>
 <li><p>Bugfix in dict handling</p></li>
+<li><p>Implemented option to control full name of item-logger</p></li>
+<li><p>Add some more keyword options to log_text</p></li>
+<li><p>Put log_text options pid and pname in try/except to prevent issues when parent is not found</p></li>
+<li><p>Add itemvalue (getting e.g. text from an item) as additional option to log_text</p></li>
+<li><p>Allow defining entries in log_rules as absolute or relative items, implement exclude option, minor issue fixing</p></li>
+<li><p>Fix perviously introduced issue in log_change handling when attributes in log_rules are not set or no log_rules exists</p></li>
+<li><p>log_text: adjust pname and pid handling when no parent is available</p></li>
 </ul>
 </li>
 <li><p>lib.log:</p>
 <ul>
 <li><p>Improvements to logging configuration</p></li>
 <li><p>Added import logging.config (to keep mockup core from failing)</p></li>
+<li><p>Introduce mapping and cache possibilites for memory logs</p></li>
+<li><p>Allow placeholders for filename {year}, {month}, {day}, {hour}, {stamp}</p></li>
+<li><p>Add cache option for memlog to docu</p></li>
+<li><p>Move cache for memory log to var/log/cache directory</p></li>
+<li><p>Fix test conditions (also mock core)</p></li>
 </ul>
 </li>
 <li><p>lib.logic:</p>
@@ -5532,6 +5544,13 @@ include attributes from current item to great-grandparent item</p></li>
 <li><p>Update sdp connections for standby</p></li>
 <li><p>Update standby mode on failed connect and reconnect</p></li>
 <li><p>Update sdp serial connections</p></li>
+<li><p>Fixed fragmented packet handling for json</p></li>
+<li><p>Modify chunk checking</p></li>
+<li><p>Change json buffering to bytes type to prevent utf decode error on split bytes</p></li>
+<li><p>Use item.path</p></li>
+<li><p>Use item.property.path instead of item.path()</p></li>
+<li><p>Rename get_command_from_reply after changing return type to list</p></li>
+<li><p>Fix logging message</p></li>
 </ul>
 </li>
 <li><p>SmartPlugin:</p>
@@ -5553,6 +5572,10 @@ include attributes from current item to great-grandparent item</p></li>
 <li><p>Fix name reference</p></li>
 <li><p>Small fixes</p></li>
 <li><p>Add open method</p></li>
+<li><p>Modify logging</p></li>
+<li><p>Add connect rate limit</p></li>
+<li><p>Add parameter for rate limit</p></li>
+<li><p>Introduce connect ratelimit</p></li>
 </ul>
 </li>
 <li><p>lib.plugin:</p>
@@ -5567,6 +5590,8 @@ include attributes from current item to great-grandparent item</p></li>
 in hundreds or thousands of active loggers)</p></li>
 <li><p>Added some error handling</p></li>
 <li><p>Bugfix for giving parameters to a task via scheduler.add()</p></li>
+<li><p>Fixed a bug where ‚caller‘ was not initialized in _task when starting an object; Adjusted some log messages</p></li>
+<li><p>Initializing ‚caller‘ (fixed bug) is only performed, if the task-method which is to be called has a parameter ‚caller‘</p></li>
 </ul>
 </li>
 <li><p>lib.shpypi:</p>
@@ -5660,7 +5685,13 @@ now loaded and interpreted</p></li>
 * Update documentation.. add info on tooltips, datepicker, cookies, icons
 * Update sample plugin to include cookies and tooltips
 * Updates to datatables and pageresize
-* Update to base_plugin.html to support bordered tab data</p></li>
+* Update to base_plugin.html to support bordered tab data
+* Fix error when webif_pagelength is not defined
+* Avoid error in console when select_menu from datatable is not present
+* Correctly save and read update interval cookies
+* Some cookie fixes for automatic page update
+* Fix window.pagelength if no datatable is present / cookie reading
+* Improve cookie value handling</p></li>
 </ul>
 </li>
 <li><p>mqtt:</p>
@@ -5713,6 +5744,7 @@ now loaded and interpreted</p></li>
 <li><p>denon: For Denon AV Receivers, based on SmartDevicePlugin</p></li>
 <li><p>epson: Based on SDP control of Epson projectors are supported (minimal setup for now)</p></li>
 <li><p>lms: Logitech Mediaserver / Squeezebox, based on SmartDevicePlugin</p></li>
+<li><p>mikrotik: Mikrotik RouterOS Switch management</p></li>
 <li><p>pioneer: for Pioneer AV Receivers, based on SmartDevicePlugin</p></li>
 <li><p>oppo: First version of SmartDevicePlugin based plugin for Oppo UHD players</p></li>
 <li><p>byd_bat: Plugin to display data from BYD batteries</p></li>
@@ -5727,6 +5759,13 @@ now loaded and interpreted</p></li>
 <ul class="simple">
 <li><p>Small bug-fix in Web-IF</p></li>
 <li><p>Fixed issues with urlencode</p></li>
+</ul>
+</li>
+<li><p>apcups:</p>
+<ul class="simple">
+<li><p>Add user_doc, remove Readme.md</p></li>
+<li><p>Fix docu (translation, layout issues)</p></li>
+<li><p>Add plugin logo</p></li>
 </ul>
 </li>
 <li><p>appletv:</p>
@@ -5744,9 +5783,28 @@ now loaded and interpreted</p></li>
 <li><p>Improve error handling and logging</p></li>
 </ul>
 </li>
+<li><p>artnet:</p>
+<ul class="simple">
+<li><p>Outsource and improve web interface</p></li>
+<li><p>Convert readme to user_doc</p></li>
+<li><p>Bump to version 1.6.1</p></li>
+<li><p>Improve handling of „NoneType“ values</p></li>
+<li><p>Fix Webif, update docu</p></li>
+</ul>
+</li>
+<li><p>asterix:</p>
+<ul class="simple">
+<li><p>Update documentation and remove template logo</p></li>
+<li><p>Fix network callback issues</p></li>
+<li><p>Fix bug in found_terminator to expect bytes instead of str</p></li>
+</ul>
+</li>
 <li><p>avdevice:</p>
 <ul class="simple">
 <li><p>Fix dependency function for int/float values</p></li>
+<li><p>Remove README and english documentation</p></li>
+<li><p>Set state to deprecated as there are new plugins based on SmartDevice framework</p></li>
+<li><p>Remove unneccessary webif pagelength entries in web interface</p></li>
 </ul>
 </li>
 <li><p>avm:</p>
@@ -5776,10 +5834,12 @@ included in item_attributes_master.py</p></li>
 <li><p>FritzHome: Bugfix renewing SID in case SID has expired</p></li>
 <li><p>CallMonitor: bugfix join listing thread</p></li>
 <li><p>CallMonitor: reconnect if connection is lost</p></li>
-<li><p>Bump to 2.0.9</p></li>
 <li><p>CallMonitor: bugfix join counter threads</p></li>
 <li><p>FritzHome: Add support for device statistics</p></li>
-<li><p>bump to 2.1.0</p></li>
+<li><p>Update docu</p></li>
+<li><p>FritzHome: Change all saturations to value range 0-255</p></li>
+<li><p>Bump to 2.2.1</p></li>
+<li><p>Improve plugin shutdown: terminate update loop if plugin is no longer alive</p></li>
 </ul>
 </li>
 <li><p>beolink:</p>
@@ -5787,10 +5847,48 @@ included in item_attributes_master.py</p></li>
 <li><p>Changes to translations</p></li>
 </ul>
 </li>
+<li><p>blockly:</p>
+<ul class="simple">
+<li><p>Remove bootstrap and jquery as it is now part of the http module</p></li>
+<li><p>Remove base.html from webif as it is part of http module</p></li>
+<li><p>Update locale / translation to work with newer translate function of shng</p></li>
+<li><p>Outsource web interface code, update webif translation feature</p></li>
+<li><p>Update blockly core code to 10.2.2</p></li>
+<li><p>Update logics_blockly_code to work with newest blockly core release</p></li>
+<li><p>New plugin logo and webif screenshot</p></li>
+<li><p>Cleanup utils (remove all translation methods)</p></li>
+<li><p>Create and update user_doc</p></li>
+<li><p>Bump to version 1.5.0</p></li>
+<li><p>Replace <a href="#id6"><span class="problematic" id="id7">Blockly.Python.variableDB_</span></a> by nameDB_ in sh_logics.js</p></li>
+<li><p>Refix code</p></li>
+<li><p>Correct Utils import, now everything seems to work…?</p></li>
+<li><p>Fix item get</p></li>
+<li><p>Remove unused buttons, add languages</p></li>
+<li><p>Fix deprecated block definition</p></li>
+<li><p>Cleanup web if code. Load german translation if set language is not found</p></li>
+<li><p>Load language in blockly based on shng language</p></li>
+<li><p>Put 1.4.0 version as a backup in the folder</p></li>
+<li><p>Remove unused css</p></li>
+<li><p>Add headtable, put editor in a bodytab</p></li>
+<li><p>Remove old info on blockly update as seperate rst as it’s updated and implemented in user_doc</p></li>
+</ul>
+</li>
+<li><p>casambi:</p>
+<ul class="simple">
+<li><p>Update doc</p></li>
+</ul>
+</li>
+<li><p>comfoair:</p>
+<ul class="simple">
+<li><p>Modifications for parameter checks, restartability and code cleanness</p></li>
+</ul>
+</li>
 <li><p>database:</p>
 <ul class="simple">
 <li><p>Changed log message, if no cache value was found</p></li>
 <li><p>Added option ‚no‘ to valid list of database attribute</p></li>
+<li><p>Remove unneccessary webif pagelength code from web interface</p></li>
+<li><p>Catch various exceptions that occurred if db was temporarily not reachable</p></li>
 </ul>
 </li>
 <li><p>db_addon:</p>
@@ -5813,10 +5911,30 @@ substring of item_path</p></li>
 <li><p>Enable on-change attributes to be run on startup</p></li>
 <li><p>Bugfix in handle_onchange</p></li>
 <li><p>Code rework to enable more flexible attributes</p></li>
-<li><p>Bump to version 1.2.0 due to significant change in code</p></li>
 <li><p>several fixes</p></li>
-<li><p>bump to v1.2.1</p></li>
 <li><p>Code rework to enable more flexible attributes</p></li>
+<li><p>Update doc</p></li>
+<li><p>Update WebIF for button</p></li>
+<li><p>Add attribute „verbauch_last_24h“</p></li>
+<li><p>Update methods to handle hourly calculation</p></li>
+<li><p>Update WebIF for button</p></li>
+<li><p>Debug _handle_verbrauch</p></li>
+<li><p>Update docu</p></li>
+<li><p>Bugfix bei Verbrauchsberechnung der on-change Items</p></li>
+<li><p>Bugfix bis Zählerstand</p></li>
+<li><p>Bump to 1.2.7</p></li>
+<li><p>Add attribute ‚verbrauch_jahr_minus3‘</p></li>
+<li><p>Reset on_change items if new timeframe starts (e.g. reset all on_change items for day at midnight)</p></li>
+<li><p>Use item_attributes_master.py during parse_item</p></li>
+<li><p>Bugfix on-change item calculation</p></li>
+<li><p>Resolve conflicts to be able to merge</p></li>
+<li><p>Resolve conflicts to be able to merge</p></li>
+<li><p>Update user_doc</p></li>
+</ul>
+</li>
+<li><p>dlms:</p>
+<ul class="simple">
+<li><p>Update doc</p></li>
 </ul>
 </li>
 <li><p>drexelundweiss:</p>
@@ -5833,6 +5951,9 @@ substring of item_path</p></li>
 <li><p>Expanded user documentation</p></li>
 <li><p>Added serial/ethernet connection status to webinterface</p></li>
 <li><p>Clean-up logging import and unused argument of init function</p></li>
+<li><p>Update doc</p></li>
+<li><p>Added key list to user_doc.rst</p></li>
+<li><p>Moved serial open from init to run method (to prepare plugin for restart)</p></li>
 </ul>
 </li>
 <li><p>executor:</p>
@@ -5854,9 +5975,19 @@ without having to wait for fetching the autocomplete dict.</p></li>
 <li><p>Bump to v1.2.1</p></li>
 </ul>
 </li>
+<li><p>garminconnect:</p>
+<ul class="simple">
+<li><p>Adjusted requirements to reflect new package version</p></li>
+</ul>
+</li>
 <li><p>gpio:</p>
 <ul class="simple">
 <li><p>Fix user_doc reference to configuration</p></li>
+</ul>
+</li>
+<li><p>helios:</p>
+<ul class="simple">
+<li><p>Modifications for parameter checks, restartability and code cleanness</p></li>
 </ul>
 </li>
 <li><p>homeconnect:</p>
@@ -5885,21 +6016,115 @@ without having to wait for fetching the autocomplete dict.</p></li>
 <li><p>Update to 4.0.1 including single-key-id login</p></li>
 </ul>
 </li>
+<li><p>influxdb:</p>
+<ul class="simple">
+<li><p>Convert readme to user_doc</p></li>
+<li><p>Add super.init method</p></li>
+<li><p>Bump version to 1.0.3</p></li>
+<li><p>Fix code-blocks in docu</p></li>
+<li><p>Include database conversion script in docu</p></li>
+<li><p>Add info on conversion script that it was tested for influxdb2.</p></li>
+</ul>
+</li>
+<li><p>influxdb2:</p>
+<ul class="simple">
+<li><p>Add screenshot of webif to docu</p></li>
+<li><p>Add conversion script to docu</p></li>
+<li><p>Clean up web interface code and tabs</p></li>
+</ul>
+</li>
+<li><p>intercom_2n:</p>
+<ul class="simple">
+<li><p>Modifications for parameter checks, restartability and code cleanness</p></li>
+</ul>
+</li>
+<li><p>join:</p>
+<ul class="simple">
+<li><p>Convert readme to user_doc, add logo</p></li>
+<li><p>Bump version to 1.4.4</p></li>
+<li><p>Remove documentation link from plugin.yaml</p></li>
+</ul>
+</li>
+<li><p>jsonread:</p>
+<ul class="simple">
+<li><p>Clean up and improve web interface (using internal datatables, etc.)</p></li>
+<li><p>Bump version to 1.0.3</p></li>
+<li><p>Set status to „ready“ (tested successfully)</p></li>
+<li><p>Extend automatic webif update</p></li>
+<li><p>Update locale</p></li>
+<li><p>Add datatableAdditional class to webif table</p></li>
+</ul>
+</li>
+<li><p>jvcproj:</p>
+<ul class="simple">
+<li><p>Add super.init</p></li>
+<li><p>Bump version to 1.0.1</p></li>
+<li><p>Put example item config into struct in plugin.yaml</p></li>
+<li><p>Convert readme to user_doc, add plugin logo</p></li>
+<li><p>Modifications for parameter checks, restartability and code cleanness</p></li>
+</ul>
+</li>
 <li><p>knx:</p>
 <ul class="simple">
 <li><p>Prevent send actions to bus while plugin is not running</p></li>
 <li><p>Fix issue with polling knx items on startup. All polls are put in a waiting list and polled on run only</p></li>
 <li><p>Corrected a translation</p></li>
+<li><p>Replace sh.scheduler.add by smartplugin scheduler_add</p></li>
+<li><p>Add plugin shortname as caller in scheduler</p></li>
+<li><p>Add dpt 5003</p></li>
+</ul>
+</li>
+<li><p>kodi:</p>
+<ul class="simple">
+<li><p>Update docs, include config change warning</p></li>
+<li><p>Fixes, docs, add get_settings</p></li>
+</ul>
+</li>
+<li><p>kostal:</p>
+<ul class="simple">
+<li><p>Modifications for parameter checks, restartability and code cleanness</p></li>
+</ul>
+</li>
+<li><p>lirc:</p>
+<ul class="simple">
+<li><p>Remove webif pagelength code from web interface</p></li>
+<li><p>Improve web interface feedback on button press for sending command</p></li>
+</ul>
+</li>
+<li><p>luxtronic2:</p>
+<ul class="simple">
+<li><p>Modifications for parameter checks, restartability and code cleanness</p></li>
+</ul>
+</li>
+<li><p>mailrcv:</p>
+<ul class="simple">
+<li><p>Replace readme by user_doc</p></li>
+<li><p>Add super().__init__()</p></li>
+<li><p>Bump version to 1.4.2</p></li>
+</ul>
+</li>
+<li><p>mailsend:</p>
+<ul class="simple">
+<li><p>Fixed bug when called from onchange expression</p></li>
+<li><p>Fixed default values of parameters of extended() method</p></li>
+<li><p>Added minimal user_doc.rst</p></li>
 </ul>
 </li>
 <li><p>modbus_tcp:</p>
 <ul class="simple">
 <li><p>Fixed bug</p></li>
+<li><p>Add crontab to poll devices, update log messages to Python f-strings</p></li>
 </ul>
 </li>
 <li><p>neato:</p>
 <ul class="simple">
 <li><p>Clean-up unused argument of init function</p></li>
+<li><p>Improved user_doc</p></li>
+<li><p>Fixed error message decoding</p></li>
+<li><p>Automatically decode mapID for extraction of boundary IDs. This is needed for single room cleaning</p></li>
+<li><p>Corrections in user_doc</p></li>
+<li><p>Neduced timeout exceptions from error to warning level</p></li>
+<li><p>Fixed exception for situations in which mapID attribute is not available</p></li>
 </ul>
 </li>
 <li><p>network:</p>
@@ -5907,11 +6132,25 @@ without having to wait for fetching the autocomplete dict.</p></li>
 <li><p>Remove debug print</p></li>
 </ul>
 </li>
+<li><p>nuki:</p>
+<ul class="simple">
+<li><p>Read Lock State via LISTS webservice, as direct lock access is returning 503 in case of locking</p></li>
+<li><p>Update Lock state via Lists once lock state is changed to get intermediate states</p></li>
+<li><p>Small fix for getting state 4 and 7</p></li>
+<li><p>Updated Log message</p></li>
+</ul>
+</li>
 <li><p>nut:</p>
 <ul class="simple">
 <li><p>Added user_doc, default logo and refined plugin.yaml</p></li>
 <li><p>Clean-up unused argument of init function, switched to parameter import via method get_parameter_value()</p></li>
 <li><p>Bugfix for exception that can occur during termination of the plugin</p></li>
+<li><p>Fixed bug in IP port handling; improved plugin shutdown</p></li>
+</ul>
+</li>
+<li><p>odlinfo:</p>
+<ul class="simple">
+<li><p>Added verify parameter to plugin, to disable certificate checks due to temporary certificate error of endpoint</p></li>
 </ul>
 </li>
 <li><p>philips_tv:</p>
@@ -5937,15 +6176,44 @@ without having to wait for fetching the autocomplete dict.</p></li>
 <li><p>Added locals.location to struct</p></li>
 <li><p>Reworked structs to use new features</p></li>
 <li><p>Modified to use lib.env</p></li>
+<li><p>Ignoring responses from pirateweather, if units in response don’t match units from request</p></li>
+<li><p>Bumped to v1.2.5</p></li>
+</ul>
+</li>
+<li><p>plex:</p>
+<ul class="simple">
+<li><p>Modifications for parameter checks, restartability and code cleanness</p></li>
+</ul>
+</li>
+<li><p>pushover:</p>
+<ul class="simple">
+<li><p>Add ttl parameter</p></li>
+</ul>
+</li>
+<li><p>raumfeld:</p>
+<ul class="simple">
+<li><p>Marked as deprecated</p></li>
 </ul>
 </li>
 <li><p>rcs1000n:</p>
 <p><a href="#id4"><span class="problematic" id="id5">*</span></a>Restructure send method and improve try/except clause</p>
 </li>
+<li><p>rcswithch:</p>
+<ul class="simple">
+<li><p>Modifications for parameter checks, restartability and code cleanness</p></li>
+</ul>
+</li>
 <li><p>resol:</p>
 <ul class="simple">
 <li><p>Improved user_doc</p></li>
 <li><p>Clean-up unused argument of init method</p></li>
+<li><p>Extended user_doc.rst</p></li>
+<li><p>Retired README.md</p></li>
+</ul>
+</li>
+<li><p>roomba_980:</p>
+<ul class="simple">
+<li><p>Modifications for parameter checks, restartability and code cleanness</p></li>
 </ul>
 </li>
 <li><p>rpi_info:</p>
@@ -5958,12 +6226,40 @@ without having to wait for fetching the autocomplete dict.</p></li>
 <li><p>Initial version of plugin with Gen2 api support</p></li>
 </ul>
 </li>
+<li><p>sma:</p>
+<ul class="simple">
+<li><p>Modifications for parameter checks, restartability and code cleanness</p></li>
+</ul>
+</li>
+<li><p>smarttv:</p>
+<ul class="simple">
+<li><p>Modifications for parameter checks, restartability and code cleanness</p></li>
+</ul>
+</li>
 <li><p>smartvisu:</p>
 <ul class="simple">
 <li><p>Changed default value for generate_pages to False</p></li>
 <li><p>Corrected log message</p></li>
 <li><p>Only check dir if handling option is set</p></li>
 <li><p>Adjust empty dir handling</p></li>
+<li><p>Update web interface to make automatic updates of logics and items work</p></li>
+<li><p>Extend locale.yaml</p></li>
+<li><p>Bump version to 1.8.14</p></li>
+<li><p>Add datatableAdditional class to tables</p></li>
+<li><p>locale cleanup</p></li>
+</ul>
+</li>
+<li><p>sml:</p>
+<ul class="simple">
+<li><p>Modifications for parameter checks, restartability and code cleanness</p></li>
+<li><p>Fix tests</p></li>
+<li><p>Set state to deprecated</p></li>
+</ul>
+</li>
+<li><p>sml2:</p>
+<ul class="simple">
+<li><p>Fix webinterface missing item column</p></li>
+<li><p>Update requirements to fix descriptions</p></li>
 </ul>
 </li>
 <li><p>solarforecast:</p>
@@ -5973,11 +6269,18 @@ without having to wait for fetching the autocomplete dict.</p></li>
 <li><p>Fix for fallback to system location as a plugin default value</p></li>
 <li><p>Replaced deprecated sh.now() with method of lib shtime</p></li>
 <li><p>Clean-up unused argument of init method</p></li>
+<li><p>Changed attribute ‚power‘ to ‚energy‘ (breaking change) as power is not correct for forecasted energy (in Wh)</p></li>
+<li><p>Now multi-instance capable</p></li>
 </ul>
 </li>
 <li><p>sonos:</p>
 <ul class="simple">
 <li><p>Improved thread termination; reintroduced old legacy method play_radio</p></li>
+<li><p>Fixed WebIf crash if one speaker is not reachable</p></li>
+<li><p>Update doc</p></li>
+<li><p>Removed deprecated webif_pagelength parameter from plugin.yaml</p></li>
+<li><p>Fix for method _play_radio (had problems with radio station names with spaces)</p></li>
+<li><p>Code clean-up for selection of radio stations</p></li>
 </ul>
 </li>
 <li><p>stateengine:</p>
@@ -5989,6 +6292,69 @@ without having to wait for fetching the autocomplete dict.</p></li>
 <li><p>Bump version to 1.9.6</p></li>
 <li><p>Update struct and logging</p></li>
 <li><p>(re)introduce separate loggers for each stateengine item. Custom logger stateengine.&lt;item&gt;.rules</p></li>
+<li><p>Improve web interface: Icons on conditions are only shown on currently evaluated states (and not on formerly „invalid“ evaluations)</p></li>
+<li><p>Some code refactoring and internal issue fixing and improvements</p></li>
+<li><p>Improve configuration issue handling and logging</p></li>
+<li><p>Improve se_use attribute handling and error checking</p></li>
+<li><p>Introduce possibility to delete a scheduler for delayed actions by setting delay to -1</p></li>
+<li><p>Refactor, optimize and extend se_released_by functionality. Should now work as expected</p></li>
+<li><p>Update suspend structs to delete retrigger schedule on leave</p></li>
+<li><p>Update plugin.yaml</p></li>
+<li><p>Bump version to 2.0.0</p></li>
+<li><p>Fix force action</p></li>
+<li><p>Improve log level handling, minimize queries and workload</p></li>
+<li><p>Improve instant_leaveaction and suspendtime handling</p></li>
+<li><p>Fix/improve plugin.yaml</p></li>
+<li><p>Improve web interface: show when state evaluation will run/has run. zoom into visu graphics using PanZoom</p></li>
+<li><p>Improve web interface refresh</p></li>
+<li><p>Improve log level handling</p></li>
+<li><p>Improve issue handling</p></li>
+<li><p>Introduce possibility to define se_item and se_status as „eval:…“ instead of using se_eval or se_status_eval (which still works)</p></li>
+<li><p>Fix casting issue for eval expressions</p></li>
+<li><p>Fix issue handling in actions (return issue as list)</p></li>
+<li><p>Improve item handling if item does not exist, improve logging</p></li>
+<li><p>Update suspend_dynamic to avoid error messages</p></li>
+<li><p>Update, fix, simplify and extend documentation</p></li>
+<li><p>Fix delayed execution for new scheduler caller</p></li>
+<li><p>Fix manual logger</p></li>
+<li><p>Fix exception when original caller function doesn’t return an item</p></li>
+<li><p>Fix searching for original caller to work with recent scheduler/caller changes from core</p></li>
+<li><p>Auto update webif on start to automatically find out when visu can be redrawn</p></li>
+<li><p>Make original caller finding work with latest changes of core</p></li>
+<li><p>Minor code refactor for stateengine tools</p></li>
+<li><p>Improve log entries for elog (update of manuell item)</p></li>
+<li><p>(re)fix web interface for overview page</p></li>
+<li><p>Fix value evaluation by reintroducing deepcopy of value</p></li>
+<li><p>Fix potential issue with releasedby because of deepcopy</p></li>
+<li><p>Use get_fullname as plugin identification (used as caller, etc.)</p></li>
+<li><p>Fix log level in web interface</p></li>
+<li><p>Check if caller is plugin corrected</p></li>
+<li><p>Fix and improve manual item check</p></li>
+<li><p>Improve and extend web interface and visu</p></li>
+<li><p>Fix manual exclude/include handling (gone wrong in previous commit)</p></li>
+<li><p>Fix regex for manual_exclude</p></li>
+<li><p>Fix unused attribute detection</p></li>
+<li><p>Improve issue logging</p></li>
+<li><p>Introduce se_stateorder attribute to change order of state during runtime</p></li>
+<li><p>Further improve issue logging</p></li>
+<li><p>Fix and improve se_stateorder feature</p></li>
+<li><p>Update and fix docu</p></li>
+<li><p>Introduce internal methods to convert a string to list or dict</p></li>
+<li><p>Minor code improvement in StateengineValue</p></li>
+<li><p>Catch exception if invalid items/values are used</p></li>
+<li><p>Allow to use lists in items</p></li>
+<li><p>Allow list in se_use eval/item declaration</p></li>
+<li><p>Allow definition of se_released_by as list in item</p></li>
+<li><p>Improve se_use handling (only fill if not used yet)</p></li>
+<li><p>Improve eval handling when list is returned</p></li>
+<li><p>Update docu with info about list items</p></li>
+<li><p>Fix reordering of states</p></li>
+<li><p>Improve state order handling</p></li>
+</ul>
+</li>
+<li><p>systemair:</p>
+<ul class="simple">
+<li><p>Modifications for parameter checks, restartability and code cleanness</p></li>
 </ul>
 </li>
 <li><p>tankerkoenig:</p>
@@ -6014,6 +6380,7 @@ without having to wait for fetching the autocomplete dict.</p></li>
 <li><p>Allow unknown tasmota-attrs, move tasmota-attr doc to user_doc.rst</p></li>
 <li><p>Improve Exception handling and handling of power messages</p></li>
 <li><p>Bump version to 1.5.2</p></li>
+<li><p>Update doc</p></li>
 </ul>
 </li>
 <li><p>telegram:</p>
@@ -6025,6 +6392,37 @@ without having to wait for fetching the autocomplete dict.</p></li>
 <li><p>V2.0.0 Additions in locale; evaluate if debugging</p></li>
 <li><p>Retry sending in case of error (with parameters)</p></li>
 <li><p>Attempt to catch the exception in the updater</p></li>
+<li><p>Update doc</p></li>
+<li><p>Improve user documentation, add section about web interface</p></li>
+<li><p>Remove unneccassary webif pagelength from webif index.html</p></li>
+<li><p>Bump version to 2.0.1</p></li>
+</ul>
+</li>
+<li><p>unifi:</p>
+<ul class="simple">
+<li><p>Initialize the web interface the „new“ way</p></li>
+<li><p>Provide plugin logo</p></li>
+<li><p>Replace readme by user_doc.rst</p></li>
+<li><p>Improve web interface - implement datatables, move issue information to responsive row, implement automatic page update</p></li>
+<li><p>Adjust locale based on updated web interface</p></li>
+<li><p>Bump to version 1.6.3</p></li>
+<li><p>Update color in webif</p></li>
+<li><p>Update webif, remove div container of datatable</p></li>
+</ul>
+</li>
+<li><p>uzsu:</p>
+<ul class="simple">
+<li><p>Minor code changes and improvements regarding PEP8 and variables</p></li>
+<li><p>Important update for scheduler handling to work with newest changes in core regarding caller</p></li>
+<li><p>Bump version to 1.6.6</p></li>
+<li><p>Replace caller UZSU Plugin by longname of plugin</p></li>
+<li><p>Re-fix previous implementation</p></li>
+<li><p>Adjust webif pagelength handling to most recent approach</p></li>
+<li><p>Use own interpolation methods, remove scipy/numpy dependencies</p></li>
+<li><p>Partial rewrite</p></li>
+<li><p>Added previous version</p></li>
+<li><p>Bump version to 2.0.0</p></li>
+<li><p>Cast value to float, refactor core</p></li>
 </ul>
 </li>
 <li><p>vacations:</p>
@@ -6034,9 +6432,53 @@ without having to wait for fetching the autocomplete dict.</p></li>
 <li><p>Accept country „Germany“</p></li>
 </ul>
 </li>
-<li><p>Webservices:</p>
+<li><p>vicare:</p>
+<ul class="simple">
+<li><p>Initial commit for new Viessmann plugin, communicating via Viessmann API with backend</p></li>
+<li><p>Code-cleanup; new feature ‚online status‘</p></li>
+</ul>
+</li>
+<li><p>webservices:</p>
 <ul class="simple">
 <li><p>Fix for splitting up of autotimer attribute into _value and _time</p></li>
+</ul>
+</li>
+<li><p>withings:</p>
+<ul class="simple">
+<li><p>Small webif improvement</p></li>
+<li><p>Convert readme to user_doc</p></li>
+<li><p>Metadata update</p></li>
+<li><p>Bump version to 1.8.3</p></li>
+<li><p>Improve docu</p></li>
+<li><p>Catch auth error</p></li>
+<li><p>Improve user doc regarding user_id info</p></li>
+</ul>
+</li>
+<li><p>xiaomi_vac:</p>
+<ul class="simple">
+<li><p>Remove webif pagelength init from web interface, not needed anymore</p></li>
+<li><p>Add super.init to init function</p></li>
+<li><p>Bump version to 1.2.4</p></li>
+</ul>
+</li>
+<li><p>yamahaxyc:</p>
+<ul class="simple">
+<li><p>Fix status info updates</p></li>
+</ul>
+</li>
+<li><p>zigbee2mqtt:</p>
+<ul class="simple">
+<li><p>v2.0 initial commit</p></li>
+<li><p>Updates, refactor</p></li>
+<li><p>Fixes for bool_values handling, modify structs to set base item as state/power item</p></li>
+<li><p>Include rgbxy</p></li>
+<li><p>Reimplement handlers, color sync</p></li>
+<li><p>Added dimmer struct</p></li>
+<li><p>Add hex rgb color item</p></li>
+<li><p>Updated docs</p></li>
+<li><p>Update webif</p></li>
+<li><p>Fixed bridge handling</p></li>
+<li><p>Fix struct error</p></li>
 </ul>
 </li>
 </ul>
@@ -6105,12 +6547,18 @@ Repositiory aufgenommen.</p>
 </section>
 <section id="weitere-anderungen">
 <h2>Weitere Änderungen<a class="headerlink" href="#weitere-anderungen" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Addition to .gitignore</p></li>
+<li><p>Update README.md: Removed old links and travis badge</p></li>
+</ul>
 <section id="tools">
 <h3>Tools<a class="headerlink" href="#tools" title="Permalink to this heading"></a></h3>
 <ul class="simple">
-<li><p>Added script ‚postinstall‘ which sets file permissions and cre…ates a virtual environment to run SmartHomeNG in</p></li>
+<li><p>Added script ‚postinstall‘ which sets file permissions and creates a virtual environment to run SmartHomeNG in</p></li>
+<li><p>checkplugins: catch error when a file resides within plugin directory</p></li>
+<li><p>New tool install_plugin_from_develop</p></li>
+<li><p>tools.setpermissions: Changed directory of venv support scripts</p></li>
 </ul>
-<p>** checkplugins: catch error when a file resides within plugin directory</p>
 </section>
 <section id="dokumentation">
 <h3>Dokumentation<a class="headerlink" href="#dokumentation" title="Permalink to this heading"></a></h3>
