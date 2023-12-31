@@ -5368,12 +5368,12 @@
 <section id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this heading"></a></h2>
 <p>This plugin requires lib PyMVGLive. You can install this lib with:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pip3</span> <span class="n">install</span> <span class="n">PyMVGLive</span> <span class="o">--</span><span class="n">upgrade</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pip3</span> <span class="n">install</span> <span class="n">mvg</span> <span class="o">--</span><span class="n">upgrade</span>
 </pre></div>
 </div>
-<p>This plugin provides functionality to query the data of www.mvg-live.de via the python package PyMVGLive.
-Take care to not run it too often. My example below is manually triggered by a select action in the
-smartVISU 2.9 select widget or a refresh button.</p>
+<p>This plugin provides functionality to query the data of www.mvv-muenchen.de via the python package „mvg“ (pip install mvg).</p>
+<p>Take care to not run it too often. My example below is manually triggered by a select action in the
+smartVISU 2.9 select widget including a refresh button.</p>
 <p>Forum thread to the plugin: https://knx-user-forum.de/forum/supportforen/smarthome-py/1108867-neues-plugin-mvg_live</p>
 </section>
 <section id="configuration">
@@ -5431,26 +5431,39 @@ smartVISU 2.9 select widget or a refresh button.</p>
 </section>
 <section id="mvg-py">
 <h3>mvg.py<a class="headerlink" href="#mvg-py" title="Permalink to this heading"></a></h3>
-<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>results = sh.mvg_live.get_station_departures(sh.travel_info.mvg_station.search(), entries=15, bus=False, tram=False)
+<p>For the images I am using https://commons.wikimedia.org/wiki/M%C3%BCnchen_U-Bahn?uselang=de and https://commons.wikimedia.org/wiki/Category:Line_numbers_of_Munich_S-Bahn
+and put them in the dropins folder of smartVISU (/dropins/icons/myglive/Muenchen_%s.svg.png). %s is e.g. S8 or U3 and inputted from the departure array.</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>import logging
+from datetime import datetime
+from lib.shtime import Shtime
+logger = logging.getLogger(&#39;mvg_info logics&#39;)
+now = Shtime.get_instance().now()
+
+results = sh.mvg_live.get_station_departures(sh.general.travel_info.mvg_station.search())
+logger.error(results)
 html_string = &#39;<span class="p">&lt;</span><span class="nt">table</span><span class="p">&gt;</span>&#39;
 i = 1
-for result in results:
 
-    dir_info = &#39;&#39;
-    line_string = &#39;<span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;&lt;</span><span class="nt">td</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;width: 10px;&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>&#39;
-    line_string += &#39;<span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;%s&quot;</span> <span class="na">alt</span><span class="o">=</span><span class="s">&quot;%s&quot;</span><span class="p">/&gt;&lt;</span><span class="nt">td</span><span class="p">&gt;&lt;</span><span class="nt">td</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;margin-left: 5px;&quot;</span><span class="p">&gt;&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;%s&quot;</span> <span class="na">alt</span><span class="o">=</span><span class="s">&quot;%s&quot;</span><span class="p">/&gt;&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>&#39; % (
-    result[&#39;productsymbolurl&#39;], result[&#39;product&#39;], result[&#39;linesymbolurl&#39;], result[&#39;linename&#39;])
-    line_string += &#39;<span class="p">&lt;</span><span class="nt">td</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;text-align: left; padding-left: 15px; width: 100%;&quot;</span><span class="p">&gt;</span>&#39;
-    line_string += &#39;%s <span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>&#39; % result[&#39;destination&#39;]
-    line_string += &#39;<span class="p">&lt;</span><span class="nt">td</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;color: #000; font-weight: bold; font-size: 25px;&quot;</span><span class="p">&gt;</span>&#39;
-    line_string += &#39;<span class="p">&lt;</span><span class="nt">div</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;background-color: #fff; width: 30px; &quot;</span><span class="p">&gt;</span>%i<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;&lt;/</span><span class="nt">td</span><span class="p">&gt;&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>&#39; % result[&#39;time&#39;]
-    html_string += line_string
-    i = i + 1
-    if i == 7:
-        break
+for result in results:
+    if result[&#39;type&#39;] in [&quot;U-Bahn&quot;,&quot;S-Bahn&quot;]:
+        result[&#39;linesymbolurl&#39;] = &#39;https://<span class="p">&lt;</span><span class="nt">sv_dyndns_url</span><span class="p">&gt;</span>/smartVISU/dropins/icons/mvglive/Muenchen_%s.svg.png&#39;%result[&#39;line&#39;]
+        dir_info = &#39;&#39;
+        line_string = &#39;<span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;&lt;</span><span class="nt">td</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;width: 10px;&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>&#39;
+        line_string += &#39;<span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;%s&quot;</span> <span class="na">alt</span><span class="o">=</span><span class="s">&quot;%s&quot;</span><span class="p">/&gt;&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>&#39; % (result[&#39;linesymbolurl&#39;],result[&#39;linesymbolurl&#39;]) #<span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;&lt;</span><span class="nt">td</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;margin-left: 5px;&quot;</span><span class="p">&gt;&lt;</span><span class="nt">img</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;%s&quot;</span> <span class="na">alt</span><span class="o">=</span><span class="s">&quot;%s&quot;</span><span class="p">/&gt;</span>
+        line_string += &#39;<span class="p">&lt;</span><span class="nt">td</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;text-align: left; padding-left: 15px; width:60%;&quot;</span><span class="p">&gt;</span>&#39;
+        line_string += &#39;%s <span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>&#39; % result[&#39;destination&#39;]
+        line_string += &#39;<span class="p">&lt;</span><span class="nt">td</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;color: #000; font-weight: bold; font-size: 25px;&quot;</span><span class="p">&gt;</span>&#39;
+        calculated_delay = &quot;&quot;
+        if int(datetime.fromtimestamp(result[&#39;time&#39;]-result[&#39;planned&#39;]).strftime(&quot;%M&quot;)) &gt; 0:
+            calculated_delay = &quot;(+%i)&quot;%int(datetime.fromtimestamp(result[&#39;time&#39;]-result[&#39;planned&#39;]).strftime(&quot;%M&quot;))
+        line_string += &#39;<span class="p">&lt;</span><span class="nt">div</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;background-color: #fff; width: 120px; &quot;</span><span class="p">&gt;</span>%s %s<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;&lt;/</span><span class="nt">td</span><span class="p">&gt;&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>&#39; % (datetime.fromtimestamp(result[&#39;time&#39;]).strftime(&quot;%H:%M&quot;),calculated_delay) #calculated_delay)
+        html_string += line_string
+        i = i + 1
+        if i == 7:
+            break
 
 html_string += &#39;<span class="p">&lt;/</span><span class="nt">table</span><span class="p">&gt;</span>&#39;
-sh.travel_info.mvg_station.search.result(html_string)
+sh.general.travel_info.mvg_station.search.result(html_string)
 </pre></div>
 </div>
 </section>
