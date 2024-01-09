@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Module mqtt &mdash; Dokumentation v1.9.5.6 v1.9.5.6 develop (Stand 26. August 2023, commit a9f81f7) Dokumentation</title>
+  <title>Module mqtt &mdash; Dokumentation v1.9.5.6 v1.9.5.6 develop (Stand 26. August 2023, commit 87acd50) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5421,17 +5421,19 @@ Projektes auch die Version MQTT v5.0 unterstützt, wird das SmartHomeNG Modul en
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># etc/module.yaml</span>
 <span class="nt">mqtt</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">module_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mqtt</span>
+<span class="w">    </span><span class="c1"># enabled: False</span>
 <span class="w">    </span><span class="c1"># broker_host: 127.0.0.1</span>
 <span class="w">    </span><span class="c1"># broker_port: 1883</span>
+<span class="w">    </span><span class="c1"># broker_client: MQTT-module</span>
+<span class="w">    </span><span class="c1"># user: Benutzer</span>
+<span class="w">    </span><span class="c1"># password: Geheim</span>
 <span class="w">    </span><span class="c1"># broker_monitoring: False</span>
 <span class="w">    </span><span class="c1"># qos: 1</span>
+<span class="w">    </span><span class="c1"># bool_values: [&#39;Falsch&#39;, &#39;Wahr&#39;]</span>
 <span class="w">    </span><span class="c1"># last_will_topic: devices/shng-module/$online</span>
 <span class="w">    </span><span class="c1"># last_will_payload: &#39;False&#39;</span>
 <span class="w">    </span><span class="c1"># birth_topic: devices/shng-module/$online</span>
 <span class="w">    </span><span class="c1"># birth_payload: &#39;True&#39;</span>
-<span class="w">    </span><span class="c1"># bool_values: [&#39;Falsch&#39;, &#39;Wahr&#39;]</span>
-<span class="w">    </span><span class="c1"># user: Benutzer</span>
-<span class="w">    </span><span class="c1"># password: Geheim</span>
 </pre></div>
 </div>
 </div>
@@ -5447,14 +5449,27 @@ Administrations-Interface geändert werden.</p>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>broker_host</p></td>
+<tr class="row-even"><td><p>enabled</p></td>
+<td><p>MQTT Unterstützung aktivieren oder deaktivieren.</p></td>
+</tr>
+<tr class="row-odd"><td><p>broker_host</p></td>
 <td><p><strong>Optional</strong>: DNS Name oder IP Adresse des MQTT Brokers. Wird <strong>broker_host</strong> nicht angegeben, wird
 angenommen, dass der Broker auf dem selben Rechner läuft wie SmartHomeNG und es wird <strong>127.0.0.1</strong>
 (localhost) genutzt.</p></td>
 </tr>
-<tr class="row-odd"><td><p>broker_port</p></td>
+<tr class="row-even"><td><p>broker_port</p></td>
 <td><p><strong>Optional</strong>: Port auf dem der MQTT Broker hört. Wird <strong>broker_port</strong> nicht angegeben, wird der
 Standard Port <strong>1883</strong> genutzt.</p></td>
+</tr>
+<tr class="row-odd"><td><p>broker_client</p></td>
+<td><p><strong>Optional</strong>: Client Name für die Broker Kommunikation - Muss nur angegeben werden, falls mehrere
+SmartHomeNG Installationen zeitgleich mit dem selben Broker kommunizieren sollen.</p></td>
+</tr>
+<tr class="row-even"><td><p>user</p></td>
+<td><p><strong>Optional</strong>: Benutzername des MQTT Brokers, falls dieser ein Login erfordert.</p></td>
+</tr>
+<tr class="row-odd"><td><p>password</p></td>
+<td><p><strong>Optional</strong>: Password des MQTT Brokers, falls dieser ein Login erfordert.</p></td>
 </tr>
 <tr class="row-even"><td><p>broker_monitoring</p></td>
 <td><p><strong>Optional</strong>: Wenn dieser Parameter auf <strong>True</strong> gesetzt wird, werden Informationen des Brokers zum
@@ -5464,23 +5479,6 @@ Message Durchsatz abgefragt und können im Admin-Interface angezeigt werden.</p>
 <td><p><strong>Optional</strong>: Legt fest, welche Quality-of-Service Anforderungen MQTT Messages beim Publish
 mitgegeben werden soll. Wird der Parameter nicht angegeben, wird als Standardwert <strong>1</strong> verwendet.</p></td>
 </tr>
-<tr class="row-even"><td><p>last_will_topic</p></td>
-<td><p><strong>Optional</strong>: Legt den Topic der MQTT last_will Message fest. Wird der Parameter nicht angegeben,
-wird beim Verbindungsaufbau keine last_will Message festgelegt.</p></td>
-</tr>
-<tr class="row-odd"><td><p>last_will_payload</p></td>
-<td><p><strong>Optional</strong>: Legt die Payload der MQTT last_will Message fest. Wird der Parameter nicht angegeben,
-wird beim Verbindungsaufbau eine last_will Message ohne Payload festgelegt.</p></td>
-</tr>
-<tr class="row-even"><td><p>birth_topic</p></td>
-<td><p><strong>Optional</strong>: Analog zur MQTT last_will Message implementiert das SmartHomeNG mqtt Modul eine
-birth Message, die beim Aufbau der Verbindung zum MQTT Broker versendet wird. Wird dieser Parameter
-nicht angegeben, wird beim Verbindungsaufbau keine birth Message versendet.</p></td>
-</tr>
-<tr class="row-odd"><td><p>birth_payload</p></td>
-<td><p><strong>Optional</strong>: Legt die Payload der birth Message fest. Wird der Parameter nicht angegeben, wird beim
-Verbindungsaufbau eine birth Message ohne Payload versendet.</p></td>
-</tr>
 <tr class="row-even"><td><p>bool_values</p></td>
 <td><p><strong>Optional</strong>: Legt fest, welche Werte als Payload für Topics verwendet werden sollen, wenn Werte vom
 Typ <strong>bool</strong> versendet werden sollen. Außerdem werden diese Werte auch auf eingehende MQTT Messages
@@ -5488,11 +5486,22 @@ angewendet, die in Variablen des Typ <strong>bool</strong> eingelesen werden sol
 <strong>bool_values</strong> muss eine Liste mit <strong>zwei</strong> Werten angegeben werden, wobei der erste Wert für
 <strong>False</strong> steht und der zweiter Wert für <strong>True</strong></p></td>
 </tr>
-<tr class="row-odd"><td><p>user</p></td>
-<td><p><strong>Optional</strong>: Benutzername des MQTT Brokers, falls dieser ein Login erfordert.</p></td>
+<tr class="row-odd"><td><p>last_will_topic</p></td>
+<td><p><strong>Optional</strong>: Legt den Topic der MQTT last_will Message fest. Wird der Parameter nicht angegeben,
+wird beim Verbindungsaufbau keine last_will Message festgelegt.</p></td>
 </tr>
-<tr class="row-even"><td><p>password</p></td>
-<td><p><strong>Optional</strong>: Password des MQTT Brokers, falls dieser ein Login erfordert.</p></td>
+<tr class="row-even"><td><p>last_will_payload</p></td>
+<td><p><strong>Optional</strong>: Legt die Payload der MQTT last_will Message fest. Wird der Parameter nicht angegeben,
+wird beim Verbindungsaufbau eine last_will Message ohne Payload festgelegt.</p></td>
+</tr>
+<tr class="row-odd"><td><p>birth_topic</p></td>
+<td><p><strong>Optional</strong>: Analog zur MQTT last_will Message implementiert das SmartHomeNG mqtt Modul eine
+birth Message, die beim Aufbau der Verbindung zum MQTT Broker versendet wird. Wird dieser Parameter
+nicht angegeben, wird beim Verbindungsaufbau keine birth Message versendet.</p></td>
+</tr>
+<tr class="row-even"><td><p>birth_payload</p></td>
+<td><p><strong>Optional</strong>: Legt die Payload der birth Message fest. Wird der Parameter nicht angegeben, wird beim
+Verbindungsaufbau eine birth Message ohne Payload versendet.</p></td>
 </tr>
 </tbody>
 </table>
