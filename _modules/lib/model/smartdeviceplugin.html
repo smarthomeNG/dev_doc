@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.9.5.6 v1.9.5.6 develop (Stand 26. August 2023, commit 6b9d3cf) Dokumentation</title>
+  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.9.5.6 v1.9.5.6 develop (Stand 26. August 2023, commit 6cff49e) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -6639,11 +6639,6 @@
 
 <span class="s2">        ``__init__.py -v``</span>
 
-<span class="s2">        If you add the -a parameter, all items will have an added</span>
-
-<span class="s2">        ``visu_acl: &lt;ro&gt;/&lt;rw&gt;``</span>
-
-<span class="s2">        attribute depending on the read/write configuration.</span>
 <span class="s2">        ========================================================================</span>
 
 <span class="s2">        If you call it with -s as a parameter, the plugin will insert the struct</span>
@@ -6651,6 +6646,14 @@
 <span class="s2">        content will be overwritten:</span>
 
 <span class="s2">        ``__init__.py -s``</span>
+
+<span class="s2">        If you add the -a parameter, all items will have an added</span>
+
+<span class="s2">        ``visu_acl: &lt;ro&gt;/&lt;rw&gt;``</span>
+
+<span class="s2">        attribute depending on the read/write configuration.</span>
+
+<span class="s2">        If you add the -l parameter, all items will be lowercase.</span>
 
 <span class="s2">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -6667,6 +6670,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">struct_mode</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">acl</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lc</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">indentwidth</span> <span class="o">=</span> <span class="mi">4</span>
 
@@ -6687,6 +6691,9 @@
 
                 <span class="k">elif</span> <span class="n">arg_str</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;-a&#39;</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">acl</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="k">elif</span> <span class="n">arg_str</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;-l&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">lc</span> <span class="o">=</span> <span class="kc">True</span>
 
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
@@ -6729,7 +6736,7 @@
     <span class="k">def</span> <span class="nf">add_item_to_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_path</span><span class="p">,</span> <span class="n">item_dict</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; add entry for custom read group triggers &quot;&quot;&quot;</span>
 
-        <span class="n">dst_path_elems</span> <span class="o">=</span> <span class="n">item_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">dst_path_elems</span> <span class="o">=</span> <span class="n">item_path</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
         <span class="n">item</span> <span class="o">=</span> <span class="p">{</span><span class="n">dst_path_elems</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span> <span class="n">item_dict</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">dst_path_elems</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
             <span class="n">item</span> <span class="o">=</span> <span class="p">{</span><span class="n">elem</span><span class="p">:</span> <span class="n">item</span><span class="p">}</span>
