@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.log &mdash; Dokumentation v1.9.5.6 v1.9.5.6 develop (Stand 26. August 2023, commit 6cff49e) Dokumentation</title>
+  <title>lib.log &mdash; Dokumentation v1.9.5.6 v1.9.5.6 develop (Stand 26. August 2023, commit b4eb2f4) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
@@ -4155,6 +4155,7 @@
 </ul>
 </li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">lib.log</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#lib.log.DateTimeRotatingFileHandler"><code class="docutils literal notranslate"><span class="pre">DateTimeRotatingFileHandler</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib.log.Log"><code class="docutils literal notranslate"><span class="pre">Log</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib.log.Logs"><code class="docutils literal notranslate"><span class="pre">Logs</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib.log.ShngMemLogHandler"><code class="docutils literal notranslate"><span class="pre">ShngMemLogHandler</span></code></a></li>
@@ -4386,6 +4387,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../referenz/logging/logging_handler.html#benutzung-des-handlers">Benutzung des Handlers</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../referenz/logging/logging_handler.html#datetimerotatingfilehandler">DateTimeRotatingFileHandler</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../referenz/logging/logging_handler.html#shngmemloghandler">ShngMemLogHandler</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../referenz/logging/logging_handler.html#id1">Benutzung des Handlers</a></li>
 </ul>
@@ -5404,6 +5406,72 @@
              
   <section id="module-lib.log">
 <span id="lib-log"></span><h1>lib.log<a class="headerlink" href="#module-lib.log" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="lib.log.DateTimeRotatingFileHandler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lib.log.</span></span><span class="sig-name descname"><span class="pre">DateTimeRotatingFileHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">when</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'H'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backupCount</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">utc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/log.html#DateTimeRotatingFileHandler"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.log.DateTimeRotatingFileHandler" title="Link zu dieser Definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">StreamHandler</span></code></p>
+<p>Handler for logging to file using current date and time information in
+the filename. Either placeholders can be used or a standard pattern is used.
+Rotating the log file at each <cite>when</cite> beginning.
+If backupCount is &gt; 0, when rollover is done, no more than backupCount
+files are kept - the oldest ones are deleted.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.log.DateTimeRotatingFileHandler.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/log.html#DateTimeRotatingFileHandler.close"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.log.DateTimeRotatingFileHandler.close" title="Link zu dieser Definition"></a></dt>
+<dd><p>Closes the stream.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.log.DateTimeRotatingFileHandler.do_rollover">
+<span class="sig-name descname"><span class="pre">do_rollover</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/log.html#DateTimeRotatingFileHandler.do_rollover"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.log.DateTimeRotatingFileHandler.do_rollover" title="Link zu dieser Definition"></a></dt>
+<dd><p>Do a rollover. In this case, the current stream will be closed and a new
+filename will be generated when the rollover happens.
+If there is a backup count, then we have to get a list of matching
+filenames, sort them and remove the one with the oldest suffix.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.log.DateTimeRotatingFileHandler.emit">
+<span class="sig-name descname"><span class="pre">emit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/log.html#DateTimeRotatingFileHandler.emit"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.log.DateTimeRotatingFileHandler.emit" title="Link zu dieser Definition"></a></dt>
+<dd><p>Emit a record.
+Output the record to the file, catering for rollover as described
+in do_rollover().</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.log.DateTimeRotatingFileHandler.get_filename">
+<span class="sig-name descname"><span class="pre">get_filename</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/log.html#DateTimeRotatingFileHandler.get_filename"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.log.DateTimeRotatingFileHandler.get_filename" title="Link zu dieser Definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Rückgabetyp<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.log.DateTimeRotatingFileHandler.get_files_to_delete">
+<span class="sig-name descname"><span class="pre">get_files_to_delete</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/log.html#DateTimeRotatingFileHandler.get_files_to_delete"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.log.DateTimeRotatingFileHandler.get_files_to_delete" title="Link zu dieser Definition"></a></dt>
+<dd><p>Determine the files to delete when rolling over.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.log.DateTimeRotatingFileHandler.next_rollover_time">
+<span class="sig-name descname"><span class="pre">next_rollover_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/log.html#DateTimeRotatingFileHandler.next_rollover_time"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.log.DateTimeRotatingFileHandler.next_rollover_time" title="Link zu dieser Definition"></a></dt>
+<dd><p>Work out the rollover time based on current time.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.log.DateTimeRotatingFileHandler.parseFilename">
+<span class="sig-name descname"><span class="pre">parseFilename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/log.html#DateTimeRotatingFileHandler.parseFilename"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.log.DateTimeRotatingFileHandler.parseFilename" title="Link zu dieser Definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Rückgabetyp<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="lib.log.Log">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lib.log.</span></span><span class="sig-name descname"><span class="pre">Log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">smarthome</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapping</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxlen</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/log.html#Log"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.log.Log" title="Link zu dieser Definition"></a></dt>

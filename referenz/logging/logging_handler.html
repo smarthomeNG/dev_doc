@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Logging Handler &mdash; Dokumentation v1.9.5.6 v1.9.5.6 develop (Stand 26. August 2023, commit 6cff49e) Dokumentation</title>
+  <title>Logging Handler &mdash; Dokumentation v1.9.5.6 v1.9.5.6 develop (Stand 26. August 2023, commit b4eb2f4) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -4155,6 +4155,7 @@
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../lib/log.html">lib.log</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.DateTimeRotatingFileHandler"><code class="docutils literal notranslate"><span class="pre">DateTimeRotatingFileHandler</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.Log"><code class="docutils literal notranslate"><span class="pre">Log</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.Logs"><code class="docutils literal notranslate"><span class="pre">Logs</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.ShngMemLogHandler"><code class="docutils literal notranslate"><span class="pre">ShngMemLogHandler</span></code></a></li>
@@ -4386,6 +4387,7 @@
 <li class="toctree-l5"><a class="reference internal" href="#benutzung-des-handlers">Benutzung des Handlers</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="#datetimerotatingfilehandler">DateTimeRotatingFileHandler</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#shngmemloghandler">ShngMemLogHandler</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#id1">Benutzung des Handlers</a></li>
 </ul>
@@ -5458,6 +5460,60 @@ Dort wo im Abschnitt <code class="docutils literal notranslate"><span class="pre
 <div class="line"><br /></div>
 </div>
 </section>
+</section>
+<section id="datetimerotatingfilehandler">
+<h2>DateTimeRotatingFileHandler<a class="headerlink" href="#datetimerotatingfilehandler" title="Permalink to this heading"></a></h2>
+<p>Dieser Handler ermöglicht wie das operationlog und datalog Plugin, die Logdateien
+entsprechend der aktuellen Uhrzeit zu benennen. Gleich wie beim oben beschriebenen
+ShngTimedRotatingFileHandler kann angegeben werden, in welchem zeitlichen Abstand
+eine neue Datei erstellt werden soll und wieviele Backup-Versionen erhalten bleiben.
+Der Handler stellt mehrere Platzhalter für Dateinamen und Ordner zur Verfügung.
+Monat, Tag, Stunde und Minute werden im Normalfall mit einer Ziffer
+ohne vorgestellter 0 geschrieben, außer man setzt dezidiert ein <code class="docutils literal notranslate"><span class="pre">:02</span></code> hinten dran.
+Durch <code class="docutils literal notranslate"><span class="pre">{month:02}</span></code> wird z.B. der März als 03 geschrieben,
+während der März bei <code class="docutils literal notranslate"><span class="pre">{month}</span></code> als 3 geschrieben wird.</p>
+<ul class="simple">
+<li><p>{year}: Das aktuelle Jahr im Format YYYY, z.B. 2023</p></li>
+<li><p>{month}: Der aktuelle Monat im Format (M)M, z.B. (0)3 für März oder 10 für Oktober</p></li>
+<li><p>{day}: Der aktuelle Tag im Format (D)D, z.B. (0)1 für den 1. oder 10 für den 10. des Monats</p></li>
+<li><p>{hour}: Die aktuelle Stunde im Format (H)H, z.B. 22 für zehn Uhr abends oder (0)1 für ein Uhr nachts</p></li>
+<li><p>{minute}: Die aktuelle Minute im Format , z.B. 22 für zehn Uhr abends oder 1 für ein Uhr nachts</p></li>
+<li><p>{stamp}: Der aktuelle Unix Timestamp, z.B. 1699220771.133886</p></li>
+<li><p>{intstamp}: Der aktuelle Unix Timestamp als Integer, z.B. 1699220771</p></li>
+</ul>
+<p>Das folgende Beispiel erstellt eine CSV Datei mit Namen „test“ und dem aktuellen Datum im Format Tag.Monat.Jahr_Stunde im Ordner smarthome/&lt;aktuelles Jahr&gt;.
+Jede volle Stunde wird eine neue Logdatei mit dem gleichen Muster erstellt. Es werden
+zwei Backup-Dateien behalten, ältere Dateien werden zur vollen Stunde gelöscht.</p>
+<p>Hinweis: Ist {hour} nicht Bestandteil des Dateinamens, wird die selbe Datei für den jeweiligen Tag überschrieben, erst am nächsten Tag wird eine neue Datei erstellt.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">handler</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">csv_file</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">()</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lib.log.DateTimeRotatingFileHandler</span>
+<span class="w">        </span><span class="nt">formatter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">shng_simple</span>
+<span class="w">        </span><span class="nt">filename</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./{year}/test_{day}.{month}.{year}_{hour}.csv</span>
+<span class="w">        </span><span class="nt">when</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;H&#39;</span>
+<span class="w">        </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">        </span><span class="nt">backupCount</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+</pre></div>
+</div>
+<p>Wird beim Anlegen des Handlers kein Platzhalter im Dateinamen genutzt,
+kommt die standardmäßige Benennung, bei der zwischen Dateinamen und Dateierweiterung
+die aktuelle minimale Zeitinformation eingefügt wird, zu tragen.</p>
+<p>Das folgende Beispiel erstellt im Log-Ordner alle 10 Minuten eine Datei namens
+<code class="docutils literal notranslate"><span class="pre">test.&lt;Jahr&gt;-&lt;Monat&gt;-&lt;Tag&gt;-&lt;Stunde&gt;.&lt;Minute&gt;.txt</span></code>. Wird die Logrotation auf
+„jeden xten Tag“ gestellt, also <code class="docutils literal notranslate"><span class="pre">when:</span> <span class="pre">'D'</span></code>, wird die Datei
+<code class="docutils literal notranslate"><span class="pre">test.&lt;Jahr&gt;-&lt;Monat&gt;-&lt;Tag&gt;.txt</span></code> benannt.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">handler</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">txt_file</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">()</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lib.log.DateTimeRotatingFileHandler</span>
+<span class="w">        </span><span class="nt">formatter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">shng_simple</span>
+<span class="w">        </span><span class="nt">filename</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./var/log/test.txt</span>
+<span class="w">        </span><span class="nt">when</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;M&#39;</span>
+<span class="w">        </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 </section>
 <section id="shngmemloghandler">
 <h2>ShngMemLogHandler<a class="headerlink" href="#shngmemloghandler" title="Permalink to this heading"></a></h2>
