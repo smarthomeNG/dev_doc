@@ -5406,19 +5406,41 @@
   <span class="target" id="index-0"></span><section id="byd-bat">
 <span id="index-1"></span><h1>byd_bat<a class="headerlink" href="#byd-bat" title="Permalink to this heading"></a></h1>
 <a class="reference internal image-reference" href="../../_images/plugin_logo8.png"><img alt="plugin logo" class="align-left" src="../../_images/plugin_logo8.png" style="width: 150.0px; height: 150.0px;" /></a>
-<p>Anzeigen von Parametern eines BYD Energiespeichers. Die Parameter entsprechen den Daten, die in der Software Be_Connect_Plus_V2.0.2 angezeigt werden.</p>
-<p>Es werden 1-3 Türme unterstützt.</p>
-<p>Die Grunddaten werden alle 60 Sekunden aktualisiert. Die Diagnosedaten werden beim Start des Plugin und gemäss dem Parameter ‚diag_cycle‘ abgerufen.</p>
-<p>Die Spannungen und Temperaturen in den Modulen werden mit Hilfe von Heatmaps dargestellt. Diese werden im Web Interface angezeigt. Zusätzlich können diese Bilder auch in ein weiteres Verzeichnis kopiert werden (z.Bsp. für smartvisu).</p>
-<p>Das Plugin benoetigt nur ein Item mit der folgenden Deklaration:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">byd</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">struct</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">byd_bat.byd_struct</span>
-</pre></div>
-</div>
-<p>Alle verfügbaren Daten werden im Struct ‚byd_struct‘ bereitgestellt. Diverse Parameter besitzen bereits die Eigenschaft ‚database: init‘, so dass die Daten für die Visualisierung bereitgestellt werden.</p>
+<p>Mit Hilfe dieses Plugins können diverse Daten aus einem BYD Energiespeicher ausgelesen werden. Die Parameter entsprechen den Daten, die in der Software „Be_Connect_Plus“ von BYD angezeigt werden.</p>
+<p>Es werden 1-3 Türme und die Batteriesysteme HVS, HVM und LVS unterstützt.</p>
+<p>Das Plugin benötigt nur ein Item mit der folgenden Deklaration:</p>
+<dl class="simple">
+<dt>byd:</dt><dd><p>struct: byd_bat.byd_struct</p>
+</dd>
+</dl>
+<p>Alle verfügbaren Daten werden im Struct ‚byd_struct‘ bereitgestellt. Diverse Parameter besitzen bereits die Eigenschaft ‚database: init‘, so dass die Daten für die Visualisierung (z.Bsp. in smartVISU) bereitgestellt werden.</p>
+<p>Die Grunddaten des Systems werden alle 60 Sekunden aktualisiert. Die Diagnosedaten werden beim Start des Plugins und gemäss dem Parameter ‚diag_cycle‘ abgerufen.</p>
+<p>Der BYD Energiespeicher akzeptiert nur 1 Verbindung gleichzeitig. Mit dem Item ‚byd.enable_connection‘ kann die Verbindung pausiert werden. Im Web Interface ist dieses Item ebenfalls vorhanden.</p>
+<p>Die Log-Daten werden alle 300 Sekunden abgerufen, wenn der Parameter ‚log_data‘ auf ‚true‘ gesetzt ist. Die Logdaten werden in den Items ‚visu/…‘ als HTML-Tabellen oder JSON-Daten bereitgestellt. Diese Items können in smartVISU wie folgt dargestellt werden:</p>
+<p>HTML-Tabelle:</p>
+<blockquote>
+<div><p>{{ basic.print(‚‘,‘byd.visu.bmu_log.log_html‘,‘html‘) }}
+{{ basic.print(‚‘,‘byd.visu.tower1_log.log_html‘,‘html‘) }}</p>
+</div></blockquote>
+<p>JSON-Daten:</p>
+<blockquote>
+<div><p>{{ status.activelist(‚‘,‘byd.visu.bmu_log.log_jsonlist‘,‘title‘,‘date‘,‘content‘,‘level‘) }}
+{{ status.activelist(‚‘,‘byd.visu.tower1_log.log_jsonlist‘,‘title‘,‘date‘,‘content‘,‘level‘) }}</p>
+</div></blockquote>
+<p>Zusätzlich werden die Log-Daten tageweise in Logdateien im Verzeichnis ‚var/log/byd_logs‘ gespeichert. Der Parameter ‚log_age‘ definiert, wie viele Tage die Logs gespeichert bleiben sollen.</p>
+<p>Das Plugin generiert aus den Spannungs- und Temperaturwerten für jeden Turm Plots als Bitmap-Dateien (in den folgenden Dateinamen ist X = Nummer des Turms [1-3]):</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>bydvtX.png  : Spannungen Heatmap</p></li>
+<li><p>bydvbtX.png : Spannungen Balkendiagramm</p></li>
+<li><p>bydttX.png  : Temperaturen Heatmap</p></li>
+</ul>
+</div></blockquote>
+<p>Diese Plots werden im Web Interface angezeigt. Zusätzlich können diese Bilder auch in ein weiteres Verzeichnis kopiert werden (z.Bsp. für smartVISU, siehe Parameter ‚imgpath‘).</p>
+<p>Die Änderungen im Plugin sind am Anfang der Datei ‚__init__.py‘ im Abschnitt ‚History‘ dokumentiert.</p>
 <section id="anforderungen">
 <h2>Anforderungen<a class="headerlink" href="#anforderungen" title="Permalink to this heading"></a></h2>
-<p>Der BYD Energiespeicher muss mit dem LAN verbunden sind. Die IP-Adresse des BYD wird über DHCP zugewiesen und muss ermittelt werden. Diese IP-Adresse muss in der Plugin-Konfiguration gespeichert werden.</p>
+<p>Der BYD Energiespeicher muss mit dem LAN verbunden sind. Die IP-Adresse des BYD wird über DHCP zugewiesen und muss ermittelt werden. Diese IP-Adresse muss in der Plugin-Konfiguration gespeichert werden. In Systemen mit mehr als 1 Turm wird nur der Master mit dem LAN verbunden.</p>
 <section id="notwendige-software">
 <h3>Notwendige Software<a class="headerlink" href="#notwendige-software" title="Permalink to this heading"></a></h3>
 <ul class="simple">
@@ -5427,14 +5449,13 @@
 </section>
 <section id="unterstutzte-gerate">
 <h3>Unterstützte Geräte<a class="headerlink" href="#unterstutzte-gerate" title="Permalink to this heading"></a></h3>
-<p>Folgende Typen werden unterstützt:</p>
+<p>Folgende BYD-Typen werden unterstützt:</p>
 <ul class="simple">
 <li><p>HVS (noch nicht getestet)</p></li>
 <li><p>HVM (getestet mit HVM 19.3kWh und 2 Türmen)</p></li>
-<li><p>HVL (noch nicht getestet)</p></li>
 <li><p>LVS (noch nicht getestet)</p></li>
 </ul>
-<p>Bitte Debug-Daten (level: DEBUG) von noch nicht getesteten BYD Energiespeichern an Plugin-Autor senden. Beim Start von smarthomeng werden die Diagnosedaten sofort ermittelt.</p>
+<p>Bitte Debug-Daten (level: DEBUG) von noch nicht getesteten BYD Energiespeichern an Plugin-Autor senden. Beim Start von SmartHomeNG werden die Diagnosedaten sofort ermittelt.</p>
 </section>
 </section>
 <section id="konfiguration">
@@ -5447,15 +5468,18 @@
 </section>
 <section id="beispiele">
 <h2>Beispiele<a class="headerlink" href="#beispiele" title="Permalink to this heading"></a></h2>
-<p>Oben rechts werden die wichtigsten Daten zum BYD Energiespeicher angezeigt.</p>
+<p>Oben rechts werden die wichtigsten Daten zum BYD Energiespeicher angezeigt. Mit dem Schalter „Verbindung“ kann die Kommunikation mit dem Energiespeicher pausiert werden, um beispielsweise mit einer anderen Software auf das System zugreifen zu können.</p>
+<img alt="../../_images/base.png" class="screenshot" src="../../_images/base.png" />
 <p>Im Tab „BYD Home“ sind die Grunddaten des Energiespeichers dargestellt:</p>
 <img alt="../../_images/home.png" class="screenshot" src="../../_images/home.png" />
 <p>Im Tab „BYD Diagnose“ werden Diagnosedaten angezeigt:</p>
 <img alt="../../_images/diag.png" class="screenshot" src="../../_images/diag.png" />
-<p>Im Tab „BYD Spannungen“ werden die Spannungen der Module als Heatmap angezeigt:</p>
+<p>Im Tab „BYD Spannungen“ werden die Spannungen der Module als Plot angezeigt:</p>
 <img alt="../../_images/volt.png" class="screenshot" src="../../_images/volt.png" />
 <p>Im Tab „BYD Temperaturen“ werden die Temperaturen der Module als Heatmap angezeigt:</p>
 <img alt="../../_images/temp.png" class="screenshot" src="../../_images/temp.png" />
+<p>Im Tab „BYD Log-Daten“ werden die Log-Daten angezeigt:</p>
+<img alt="../../_images/logdata.png" class="screenshot" src="../../_images/logdata.png" />
 </section>
 </section>
 
