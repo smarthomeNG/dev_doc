@@ -21,15 +21,15 @@ Special thanks to Jonofe from the [Edomi-Forum](https://knx-user-forum.de/forum/
 
 ## table of content
 
-1. [PlaceHolders](#placeholders)
-2. [Change Log](#changelog)
-3. [Requirements](#requirements)
-4. [Cookie](#cookie)
-5. [Configuration](#config)
-6. [functions](#functions)
-7. [Web-Interface](#webinterface)
-8. [How to implement new Commands](#newCommand)
-9. [Tips for existing Command-Lets](#tipps)
+1. PlaceHolders
+2. Change Log
+3. Requirements
+4. Cookie
+5. Configuration
+6. functions
+7. Web-Interface
+8. How to implement new Commands
+9. Tips for existing Command-Lets
 
 ### Existing Command-Lets
 
@@ -38,7 +38,7 @@ Special thanks to Jonofe from the [Edomi-Forum](https://knx-user-forum.de/forum/
 - Pause (pauses the actual media)
 - Text2Speech (sends a Text to the echo, echo will speak it)
 - StartTuneInStation (starts a TuneInRadiostation with the guideID you send)
-- SSML (Speak to Text with [Speech Synthesis Markup Language](https://developer.amazon.com/docs/custom-skills/speech-synthesis-markup-language-ssml-reference.html))
+- SSML (Speak to Text with Speech Synthesis Markup Language)
 - VolumeAdj (adjusts the volume during playing some media not working from webinterface test functions)
 - VolumeSet (sets the volume to value from 0-100 percent)
 
@@ -111,7 +111,7 @@ Special thanks to Jonofe from the [Edomi-Forum](https://knx-user-forum.de/forum/
 
 * smarthomeNg 1.5.2 and above for the web-interface
 * needs Python requests
-* a valid [Cookie](#cookie) from an alexa.amazon-Web-Site Session
+* a valid Cookie from an alexa.amazon-Web-Site Session
 * if you work with Autologin the credentials have to be entered "base64"-encoded. You can encode you credentials on the web-interface of the plugin <strong>"user.test@gmail.com:your_pwd"</strong> you will get <strong>```dXNlci50ZXN0QGdtYWlsLmNvbTp5b3VyX3B3ZA==``` </strong>.
 So please enter <strong>```dXNlci50ZXN0QGdtYWlsLmNvbTp5b3VyX3B3ZA==```</strong> in the /etc/plugin.yaml
 
@@ -306,7 +306,7 @@ sh.AlexaRc4shNG.send_cmd('Kueche','Text2Speech','Der Sensor der Hebenlage signal
 ```
 Sends a command to the device. "dvName" is the name of the device,  "cmdName" is the name of the CommandLet, mValue is the value you would send.
 You can find all this informations on the Web-Interface.
-You can also use the [placeholders](#placeholders)
+You can also use the placeholders
 
 - the result will be the HTTP-Status of the request as string (str)
 
@@ -371,7 +371,7 @@ status.activelist('','Alexa_Lists.list.shopping','value','date','value','info')
 </pre>
 
 ### Ergebnis :
-![PlaceHolder](./assets/Alexa_lists.jpg  "jpg")
+!PlaceHolder
 
 
 
@@ -391,12 +391,12 @@ Now the available devices from your alexa-account will be discoverd an shown on 
 
 You can also login / logoff when credentials are available. Please see results in the textarea on the right. Please refresh page manually after successfull login via the Web-Interface.
 
-![PlaceHolder](./assets/webif1.jpg  "jpg")
+!PlaceHolder
 
 ## Alexa devices
 
 By click on one device the device will be selected as acutal device for tests.
-![PlaceHolder](./assets/webif2.jpg  "jpg")
+!PlaceHolder
 
 ## Command-Handling
 
@@ -411,7 +411,7 @@ You can enter test values in the field for the values. Press Test and the comman
 
 <strong>For test dont modify the payload, just use the test-value-field </strong>
 
-![PlaceHolder](./assets/webif3.jpg  "jpg")
+!PlaceHolder
 <br>
 
 ## How to create new Command-Lets (spy out the Amazon-Web-Interface)<a name="newCommand"/></a>
