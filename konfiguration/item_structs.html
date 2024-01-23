@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>structs (Item Strukturen) &mdash; Dokumentation v1.9.5.6 v1.9.5.6 develop (Stand 26. August 2023, commit 63637fa) Dokumentation</title>
+  <title>structs (Item Strukturen) &mdash; Dokumentation v1.9.5.6 v1.9.5.6 develop (Stand 23. January 2024, commit 7586b97) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
@@ -5616,16 +5616,20 @@ unter dem die definierte Struktur (Teil-Item-Baum) eingefügt werden soll.</p>
 <p>Demzufolge können die Item-Struktur-Templates an zwei verschiedenen Stellen definiert werden:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>der Nutzer kann die Strukturen in der Konfigurationsdatei ../etc/struct.yaml definieren</p></li>
-<li><p>Autoren von Plugins können die Strukturen in den Metadaten des Plugins definieren. Beim Start von SmartHomeNG stehen die dann die Strukturen aller konfigurierten Plugins zur Verfügung.</p></li>
+<li><p>der Nutzer kann die Strukturen in der Konfigurationsdatei ../structs/global_structs.yaml definieren</p></li>
+<li><p>Autoren von Plugins können die Strukturen in den Metadaten des Plugins definieren. Beim Start von SmartHomeNG stehen
+die dann die Strukturen aller konfigurierten Plugins zur Verfügung.</p></li>
 </ul>
 </div></blockquote>
 <div class="admonition note">
 <p class="admonition-title">Bemerkung</p>
 <p>Ab SmartHomeNG v1.9 können Item-Struktur-Template Definitionen auf mehrere Dateien verteilt werden.</p>
-<p>Außer der Datei <strong>struct.yaml</strong> im Verzeichnis ../etc können weitere Dateien angelegt werden.
-Deren Name muss mit <strong>struct_</strong> beginnen. Der danach folgende Teil des Dateinamens wird dabei dem
-struct Namen als Prefix vorangestellt, um Namensdopplungen vorzubeugen.</p>
+<p>Ab SmartHomeNG v1.10 werden die Item-Struktur-Template Definitionen nicht mehr in ../etc gespeichert sondern
+in dem neu hinzugekommenen Verzeichnis ../structs.</p>
+<p>Außer der Datei <strong>global_structs.yaml</strong> (die der bisherigen Datei <strong>struct.yaml</strong> im Verzeichnis ../etc entspricht)
+können weitere Dateien angelegt werden. Im ../etc Verzeichnis musste deren Name muss mit <strong>struct_</strong> beginnen.
+Das ist im ../structs Verzeichnis nicht mehr der Fall) Der Dateiname wird dabei der struct Namen als Prefix
+vorangestellt, um Namensdopplungen vorzubeugen.</p>
 </div>
 <p>Um eine doppelte Namensvergabe zu vermeiden, wird bei der Nutzung den structs, die in Plugins definiert wurden, der
 Name des Plugins vorangestellt. Wenn z.B. die struct <strong>weather</strong> genutzt werden soll, die im Plugin <strong>darksky</strong>
@@ -5744,12 +5748,12 @@ selbst hinzugefügten Items natürlich das Attribut <strong>instance</strong> an
 <h2>selbst definierte struct-Templates<a class="headerlink" href="#selbst-definierte-struct-templates" title="Permalink to this heading"></a></h2>
 <section id="id1">
 <h3>Anwendung<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
-<p>Eigens definierte Item-Struktur-Templates werden in der Konfigurationsdatei <strong>../etc/struct.yaml</strong> abgelegt.</p>
+<p>Eigens definierte Item-Struktur-Templates werden in der Konfigurationsdatei <strong>../structs/global_structs.yaml</strong> abgelegt.</p>
 <p>Hierbei gibt die oberste Ebene den Namen der Templates an. Darunter können Item-Strukturen definiert werden, wie man es
 auch in der Item Definition in den items.yaml Dateien machen würde. Das folgende Beispiel zeigt die Definition von zwei
 Strukturen (<strong>individual_struct_01</strong> und <strong>individual_struct_02</strong>):</p>
 <div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">etc/struct.yaml</span><a class="headerlink" href="#id6" title="Link zu diesem Quellcode"></a></div>
+<div class="code-block-caption"><span class="caption-text">structs/global_structs.yaml</span><a class="headerlink" href="#id6" title="Link zu diesem Quellcode"></a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">individual_struct_01</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Name der erste eigenen Item Struktur</span>
 
@@ -5912,18 +5916,18 @@ Attributdefinitionen eingelesen werden.</p>
 </section>
 <section id="verwendung-mehrerer-definitionsdateien">
 <h2>Verwendung mehrerer Definitionsdateien<a class="headerlink" href="#verwendung-mehrerer-definitionsdateien" title="Permalink to this heading"></a></h2>
-<p>Wenn structs in der Datei <strong>../etc/struct.yaml</strong> definiert werden, ist der Name der geladenen struct zur Laufzeit identisch
-mit dem Namen, der in der Datei definiert wurde.</p>
-<p>Wenn eine Datei in einer Datei nach dem Namensschema <strong>../etc/struct_*.yaml</strong> definiert wird, wird dem Namen
-der struct ein Präfix vorangestellt, um Namensdoppelungen zu vermeiden. Der Präfix ist der auf <strong>struct_</strong>
-folgende Teil des Dateinamens. Wenn also eine struct mit dem Namem <strong>individual_struct</strong> in der Datei mit dem Namen
-../etc/<strong>struct_test</strong>.yaml definiert wird, wird als Präfix für die Herkunft <strong>test</strong> vorangestellt. Der struct Name wäre
+<p>Wenn structs in der Datei <strong>../structs/global_structs.yaml</strong> definiert werden, ist der Name der geladenen struct
+zur Laufzeit identisch mit dem Namen, der in der Datei definiert wurde.</p>
+<p>Wenn eine Datei in einer Datei nach dem Namensschema <strong>../structs/&lt;name&gt;.yaml</strong> definiert wird, wird dem Namen
+der struct ein Präfix vorangestellt, um Namensdoppelungen zu vermeiden. Der Präfix ist der Dateiname. Wenn also eine
+struct mit dem Namem <strong>individual_struct</strong> in der Datei mit dem Namen
+../structs/<strong>test</strong>.yaml definiert wird, wird als Präfix für die Herkunft <strong>test</strong> vorangestellt. Der struct Name wäre
 also <strong>test.individual_struct</strong>.</p>
 <p>Das könnte jedoch zu Namenskonflikten führen, falls hierbei der Name eines Plugins verwendet wird.
-Falls z.B. eine struct in einer Datei ../etc/<strong>struct_stateengine</strong>.yaml definiert wird, könnte es zu
-Namenskonflikten mit den structs kommen, die durch das <strong>stateengine Plugin</strong> definiert sind. Deshalb wird ein weiterer
-Präfix <strong>my</strong> dem struct Namen vorangestellt, um Namenskonflikte mit structs aus Plugins auszuschließen.</p>
-<p>Die struct <strong>individual_struct</strong> in der Datei mit dem Namen ../etc/<strong>struct_test</strong>.yaml definiert wurde,
+Falls z.B. eine struct in einer Datei ../structs/<strong>stateengine</strong>.yaml definiert wird, könnte es zu Namenskonflikten mit
+den structs kommen, die durch das <strong>stateengine Plugin</strong> definiert sind. Deshalb wird ein weiterer Präfix <strong>my</strong> dem
+struct Namen vorangestellt, um Namenskonflikte mit structs aus Plugins auszuschließen.</p>
+<p>Die struct <strong>individual_struct</strong> in der Datei mit dem Namen ../structs/<strong>test</strong>.yaml definiert wurde,
 trägt zur Laufzeit also den Namen <strong>my.test.individual_struct</strong>. Unter diesem Namen wird sie in der Admin GUI
 angezeigt und muss auch so in Item Definitionen referenziert werden.</p>
 </section>
