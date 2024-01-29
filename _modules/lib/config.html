@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.config &mdash; Dokumentation v1.10.0.1 develop v1.10.0.1 develop (Stand 29. Januar 2024, commit 24cc29e) Dokumentation</title>
+  <title>lib.config &mdash; Dokumentation v1.10.0.1 develop v1.10.0.1 develop (Stand 29. Januar 2024, commit e7e8317) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -6141,7 +6141,14 @@
         <span class="c1"># add struct/template to temporary item(template) tree</span>
         <span class="c1">#logger.debug(&quot;- add_struct_to_item_template: struct_dict = {}&quot;.format(dict(struct_dict)))</span>
         <span class="c1">#logger.debug(&quot;- add_struct_to_item_template: struct &#39;{}&#39; to item &#39;{}&#39;&quot;.format(struct_name, path))</span>
-        <span class="n">nested_put</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">struct</span><span class="p">))</span>
+        <span class="n">tmp_struct</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">struct</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;name&#39;</span> <span class="ow">in</span> <span class="n">tmp_struct</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">struct</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="kn">from</span> <span class="nn">lib.smarthome</span> <span class="kn">import</span> <span class="n">SmartHome</span>
+            <span class="n">_sh</span> <span class="o">=</span> <span class="n">SmartHome</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">Utils</span><span class="o">.</span><span class="n">to_bool</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">_sh</span><span class="p">,</span> <span class="s1">&#39;_struct_strip_name&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)):</span>
+                <span class="k">del</span> <span class="n">tmp_struct</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;removed &quot;name&quot; attribute from struct </span><span class="si">{</span><span class="n">struct_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">nested_put</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">tmp_struct</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">instance</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span> <span class="kc">True</span><span class="p">:</span>
             <span class="c1"># add instance to items added by template struct</span>
             <span class="n">subtree</span> <span class="o">=</span> <span class="n">nested_get</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
