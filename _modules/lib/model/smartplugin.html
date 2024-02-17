@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.10.0.1 develop v1.10.0.1 develop (Stand 11. Februar 2024, commit c10b663) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.10.0.1 develop v1.10.0.1 develop (Stand 17. Februar 2024, commit 2f7254b) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -5786,20 +5786,20 @@
 <span class="sd">        :return: True, if the information has been added</span>
 <span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">:</span>
 
             <span class="c1"># if called again (e.g. from lib/item/item.py) with updating == True,</span>
             <span class="c1"># update &quot;is_updating&quot; key...</span>
             <span class="k">if</span> <span class="n">updating</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;add_item called with existing item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span><span class="si">}</span><span class="s2">, updating stored data: is_updating enabled&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;add_item called with existing item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">, updating stored data: is_updating enabled&quot;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">register_updating</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">True</span>
 
             <span class="c1"># otherwise return error</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trying to add an existing item: </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trying to add an existing item: </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span>
             <span class="s1">&#39;is_updating&#39;</span><span class="p">:</span> <span class="n">updating</span><span class="p">,</span>
             <span class="s1">&#39;mapping&#39;</span><span class="p">:</span> <span class="n">mapping</span><span class="p">,</span>
@@ -5823,27 +5823,27 @@
 <span class="sd">        :return: True, if the information has been removed</span>
 <span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">:</span>
             <span class="c1"># There is no information stored for that item</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span><span class="si">}</span><span class="s1"> not associated to this plugin, doing nothing&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1"> not associated to this plugin, doing nothing&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="c1"># check if plugin is running</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alive</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stop_on_item_change</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;stopping plugin for removal of item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;stopping plugin for removal of item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;not stopping plugin for removal of item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;not stopping plugin for removal of item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item_path</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item_path</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;trying to remove suspend item </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">. Disabling suspend item function&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item_path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
         <span class="c1"># remove data from item_dict early in case of concurrent actions</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()]</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">]</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">]</span>
 
         <span class="c1"># remove item from self._item_lookup_dict if present</span>
         <span class="n">mapping</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mapping&#39;</span><span class="p">)</span>
@@ -5888,9 +5888,9 @@
 <span class="sd">        :param item: item object</span>
 <span class="sd">        :type item: item</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()][</span><span class="s1">&#39;is_updating&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">][</span><span class="s1">&#39;is_updating&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="SmartPlugin.get_item_config"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_item_config">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5905,7 +5905,7 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">item_path</span> <span class="o">=</span> <span class="n">item</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">item_path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span>
+            <span class="n">item_path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;config_data&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SmartPlugin.get_item_mapping"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_item_mapping">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
@@ -5923,7 +5923,7 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">item_path</span> <span class="o">=</span> <span class="n">item</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">item_path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">path</span><span class="p">()</span>
+            <span class="n">item_path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mapping&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SmartPlugin.get_item_mapping_list"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_item_mapping_list">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_mapping_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
