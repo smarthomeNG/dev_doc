@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zugriff auf die Werte von Items &mdash; Dokumentation v1.10.0.1 develop v1.10.0.1 develop (Stand 25. Februar 2024, commit 237f87c) Dokumentation</title>
+  <title>Zugriff auf die Werte von Items &mdash; Dokumentation v1.10.0.1 develop v1.10.0.1 develop (Stand 26. Februar 2024, commit 0c1f65e) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -324,6 +324,11 @@
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#weitere-parameter-item-zugriff">Weitere Parameter Item Zugriff</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#erweiterter-zugriff-auf-list-und-dict-items-neu">Erweiterter Zugriff auf List- und Dict-Items <span class="redsup">neu</span></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#list-items">List-Items</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#dict-items">Dict-Items</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="plugin_attribute.html">Plugin-spezifische Attribute</a><ul>
@@ -4538,6 +4543,11 @@
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#weitere-parameter-item-zugriff">Weitere Parameter Item Zugriff</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#erweiterter-zugriff-auf-list-und-dict-items-neu">Erweiterter Zugriff auf List- und Dict-Items <span class="redsup">neu</span></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#list-items">List-Items</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#dict-items">Dict-Items</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="plugin_attribute.html">Plugin-spezifische Attribute</a><ul>
@@ -5773,6 +5783,118 @@ angezeigt.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
+</section>
+<section id="erweiterter-zugriff-auf-list-und-dict-items-neu">
+<h2>Erweiterter Zugriff auf List- und Dict-Items <span class="redsup">neu</span><a class="headerlink" href="#erweiterter-zugriff-auf-list-und-dict-items-neu" title="Permalink to this heading"></a></h2>
+<p>Mit den Erweiterungen wird der Zugriff auf Items vom Typ <cite>list</cite> oder <cite>dict</cite>
+noch mehr dem „normalen“ Handling von Python angepasst.</p>
+<p>Ein Item vom Typ List erhält ein Item-Attribut <cite>list</cite>, vom Typ Dict erhält
+analog das Attribut <cite>dict</cite>. Diese Attribute besitzen typspezifische Methoden
+zum Zugriff auf und Ändern von den jeweiligen Item-Werten.</p>
+<p>Mit Ausnahme der (nur lesenden) Methode <cite>get</cite> für dict-Items unterstützen alle
+Methoden die optionalen Parameter <cite>caller</cite>, <cite>source</cite> und <cite>dest</cite>, die - wie beim
+normalen Zugriff auf Items - entsprechend gesetzt werden können.</p>
+<div class="admonition note">
+<p class="admonition-title">Bemerkung</p>
+<p>Alle Methoden sind im Wesentlichen mit den entsprechenden Methoden der <cite>list</cite>-
+bzw. <cite>dict</cite>-Klassen identisch; das genaue Verhalten kann bei Bedarf in der
+Python-Dokumentation nachgelesen werden.</p>
+<p>Ausnahmen sind die Methode <cite>prepend</cite> (existiert so in Python nicht) und
+<cite>delete</cite>, welche das Verhalten von <cite>del</cite> nachbildet, aus Syntaxgründen aber
+anders benannt werden musste.</p>
+<p>Analog zu den Python-Funktionen ist keine zusätzliche Fehlerbehandlung
+implementiert, so dass ungültige Indizes oder Keys nicht abgefangen werden.
+Die Behandlung dieser Fehler obliegt - wie beim normalen Umgang mit Listen
+und Dicts - dem Nutzer.</p>
+</div>
+<section id="list-items">
+<h3>List-Items<a class="headerlink" href="#list-items" title="Permalink to this heading"></a></h3>
+<p>Die Methode <cite>append</cite> hängt Werte an die Liste an:</p>
+<p>..code-block:: python</p>
+<blockquote>
+<div><p>sh.Oma.Papa.Kind.list.append(‚foo‘)</p>
+</div></blockquote>
+<p>Die Methode <cite>prepend</cite> fügt Werte am Beginn der List ein:</p>
+<p>..code-block:: python</p>
+<blockquote>
+<div><p>sh.Oma.Papa.Kind.list.prepend(bar‘)</p>
+</div></blockquote>
+<p>Die Methode <cite>insert</cite> fügt Werte an der angegebenen Stelle <cite>index</cite> ein:</p>
+<p>..code-block:: python</p>
+<blockquote>
+<div><p>sh.Oma.Papa.Kind.list.insert(2, ‚baz‘)</p>
+</div></blockquote>
+<p>Die Methode <cite>pop</cite> entfernt den letzten (bzw. angegebenen) Wert der Liste und gibt ihn zurück:</p>
+<p>..code-block:: python</p>
+<blockquote>
+<div><p>value = sh.Oma.Papa.Kind.list.pop()
+value = sh.Oma.Papa.Kind.list.pop(2)</p>
+</div></blockquote>
+<p>Die Methode <cite>extend</cite> hängt die Elemente der übergebenen Liste an die Liste des Items an:
+def extend(self, value, caller=‘Logic‘, source=None, dest=None):</p>
+<p>..code-block:: python</p>
+<blockquote>
+<div><p>sh.Oma.Papa.Kind.list.extend([‚foo‘, ‚bar‘])</p>
+</div></blockquote>
+<p>Die Methode <cite>clear</cite> leert die Liste:</p>
+<p>..code-block:: python</p>
+<blockquote>
+<div><p>sh.Oma.Papa.Kind.list.clear()</p>
+</div></blockquote>
+<p>Die Methode <cite>delete</cite> entspricht dem Python-Befehl <cite>del list[x[:y]]</cite> und löscht das
+bzw. die angegebenen Elemente der Liste. Aus Syntaxgründen heißt die Methode <cite>delete</cite>
+statt <cite>del</cite> und der Index bzw. der Index-Bereich muss als String übergeben werden:</p>
+<p>..code-block:: python</p>
+<blockquote>
+<div><p>sh.Oma.Papa.Kind.list.delete(2)
+sh.Oma.Papa.Kind.list.delete(„1:3“)</p>
+</div></blockquote>
+<p>Die Methode <cite>remove</cite> entfernt das angegebene Element aus der Liste:</p>
+<p>..code-block:: python</p>
+<blockquote>
+<div><p>sh.Oma.Papa.Kind.list.remove(‚foo‘)</p>
+</div></blockquote>
+</section>
+<section id="dict-items">
+<h3>Dict-Items<a class="headerlink" href="#dict-items" title="Permalink to this heading"></a></h3>
+<p>Die Methode <cite>get</cite> gibt den Wert für den angegebenen Key zurück. Wenn der Key
+im dict nicht existiert, wird <cite>None</cite> oder der übergebene Default-Wert zurückgegeben:</p>
+<p>..code-block:: python</p>
+<blockquote>
+<div><p>value1 = sh.Oma.Papa.Kind.dict.get(‚foo‘)</p>
+</div></blockquote>
+<p>..code-block:: python</p>
+<blockquote>
+<div><p>value2 = sh.Oma.Papa.Kind.dict.get(‚bar‘, 42)</p>
+</div></blockquote>
+<p>Die Methode <cite>delete</cite> entspricht dem Python-Befehl <cite>del dict[key]</cite> und lösche den
+angegebenen Key aus dem dict:</p>
+<p>..code-block:: python</p>
+<blockquote>
+<div><p>sh.Oma.Papa.Kind.dict.delete(‚foo‘)</p>
+</div></blockquote>
+<p>Die Methode <cite>clear</cite> leert das dict:</p>
+<p>..code-block:: python</p>
+<blockquote>
+<div><p>sh.Oma.Papa.Kind.dict.clear()</p>
+</div></blockquote>
+<p>Die Methode <cite>pop</cite> entfernt den angegebenen Key aus dem dict und liefert den
+entfernten Wert zurück:</p>
+<p>..code-block:: python</p>
+<blockquote>
+<div><p>value = sh.Oma.Papa.Kind.dict.pop(‚bar‘)</p>
+</div></blockquote>
+<p>Die Methode <cite>popitem</cite> entfernt den zuletzt hinzugefügten Key aus dem dict und liefert das Set <cite>(key, value)</cite> zurück:</p>
+<p>..code-block:: python</p>
+<blockquote>
+<div><p>(key, value) = sh.Oma.Papa.Kind.dict.popitem()</p>
+</div></blockquote>
+<p>Die Methode <cite>update</cite> aktualisiert das dict mit dem Inhalt des übergebenen dict:</p>
+<p>..code-block:: python</p>
+<blockquote>
+<div><p>sh.Oma.Papa.Kind.dict.update({‚foo‘: 42, ‚bar‘: 23})</p>
+</div></blockquote>
+</section>
 </section>
 </section>
 
