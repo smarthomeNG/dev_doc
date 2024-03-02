@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.10.0.1 develop v1.10.0.1 develop (Stand 29. Februar 2024, commit f3e33c6) Dokumentation</title>
+  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.10.0.1 develop v1.10.0.1 develop (Stand 2. März 2024, commit fbb623a) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -5723,6 +5723,9 @@
 <span class="sd">    described if changed/overwritten.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="c1"># this is the internal SDP version</span>
+    <span class="n">SDP_VERSION</span> <span class="o">=</span> <span class="s1">&#39;1.0.0&#39;</span>
+
     <span class="c1"># this is the placeholder version of the derived plugin, not of SDP</span>
     <span class="n">PLUGIN_VERSION</span> <span class="o">=</span> <span class="s1">&#39;0.0.1&#39;</span>
 
@@ -5805,6 +5808,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_unknown_command</span> <span class="o">=</span> <span class="s1">&#39;.notify.&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initial_value_read_done</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cyclic_update_active</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cyclic_errors</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_on_cycle_error</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="c1"># plugin-wide cycle interval, -1 is undefined</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cycle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_value</span><span class="p">(</span><span class="n">PLUGIN_ATTR_CYCLE</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cycle</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -6693,6 +6698,7 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;_cyclic&#39;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;_cyclic&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;_cyclic&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_cyclic_values</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="n">workercycle</span><span class="p">,</span> <span class="n">prio</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cyclic_errors</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Added cyclic worker thread </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">()</span><span class="si">}</span><span class="s1">_cyclic with </span><span class="si">{</span><span class="n">workercycle</span><span class="si">}</span><span class="s1"> s cycle. Shortest item update cycle found was </span><span class="si">{</span><span class="n">shortestcycle</span><span class="si">}</span><span class="s1"> s&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_read_initial_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -6723,10 +6729,20 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># check if another cyclic cmd run is still active</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cyclic_update_active</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Triggered cyclic command read, but previous cyclic run is still active. Check device and cyclic configuration (too much/too short?)&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cyclic_errors</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cyclic_errors</span> <span class="o">&gt;=</span> <span class="mi">3</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_on_cycle_error</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cyclic command read failed </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_cyclic_errors</span><span class="si">}</span><span class="s1"> times due to long previous cycle. Reconnecting... &#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+                <span class="c1"># reconnect</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">PLUGIN_ATTR_CONN_AUTO_RECONN</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Triggered cyclic command read, but previous cyclic run is still active. Check device and cyclic configuration (too much/too short?)&#39;</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Triggering cyclic command read&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cyclic_errors</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="c1"># set lock</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cyclic_update_active</span> <span class="o">=</span> <span class="kc">True</span>
