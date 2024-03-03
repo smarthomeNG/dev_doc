@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.log &mdash; Dokumentation v1.10.0.1 develop v1.10.0.1 develop (Stand 2. März 2024, commit fbb623a) Dokumentation</title>
+  <title>lib.log &mdash; Dokumentation v1.10.0.1 develop v1.10.0.1 develop (Stand 3. März 2024, commit 6cb8d90) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5701,8 +5701,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Another instance of Logs class already exists: </span><span class="si">{</span><span class="n">logs_instance</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span> <span class="o">=</span> <span class="n">sh</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">etc_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_etcdir</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span> <span class="o">=</span> <span class="n">sh</span>        
         <span class="k">return</span>
 
 
@@ -5712,7 +5711,7 @@
 
         <span class="k">if</span> <span class="n">config_dict</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">()</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: Invalid logging configuration in file &#39;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">etc_dir</span><span class="p">,</span><span class="w"> </span><span class="n">config_filename</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: Invalid logging configuration in file &#39;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_etcdir</span><span class="p">(),</span><span class="w"> </span><span class="n">config_filename</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">()</span>
             <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
@@ -5780,7 +5779,7 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="c1">#self._logger_main.error(f&quot;Invalid logging configuration in file &#39;logging.yaml&#39; - Exception: {e}&quot;)</span>
             <span class="nb">print</span><span class="p">()</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: dictConfig: Invalid logging configuration in file &#39;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">etc_dir</span><span class="p">,</span><span class="w"> </span><span class="n">config_filename</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ERROR: dictConfig: Invalid logging configuration in file &#39;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_etcdir</span><span class="p">(),</span><span class="w"> </span><span class="n">config_filename</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;       Exception: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">()</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -5883,7 +5882,7 @@
 
 <span class="sd">        If logging.yaml does not contain a &#39;shng_version&#39; key, a backup is created</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">conf_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">etc_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">conf_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_etcdir</span><span class="p">(),</span> <span class="n">filename</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">conf_filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.yaml&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">conf_filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.default&#39;</span><span class="p">):</span>
             <span class="n">conf_filename</span> <span class="o">+=</span> <span class="s1">&#39;.yaml&#39;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load</span><span class="p">(</span><span class="n">conf_filename</span><span class="p">,</span> <span class="n">ignore_notfound</span><span class="p">)</span>
@@ -5897,7 +5896,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">logging_config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">logging_config</span><span class="p">[</span><span class="s1">&#39;shng_version&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
-            <span class="n">conf_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">etc_dir</span><span class="p">,</span> <span class="s1">&#39;logging&#39;</span><span class="p">)</span>
+            <span class="n">conf_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_etcdir</span><span class="p">(),</span> <span class="s1">&#39;logging&#39;</span><span class="p">)</span>
             <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_save_roundtrip</span><span class="p">(</span><span class="n">conf_filename</span><span class="p">,</span> <span class="n">logging_config</span><span class="p">,</span> <span class="n">create_backup</span><span class="o">=</span><span class="n">create_backup</span><span class="p">)</span>
         <span class="k">return</span></div>
 
@@ -5909,7 +5908,7 @@
 <span class="sd">        If logging.yaml does not contain a &#39;shng_version&#39; key, a backup is created</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1">#self.etc_dir = self._sh.get_etcdir()</span>
-        <span class="n">conf_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">etc_dir</span><span class="p">,</span> <span class="s1">&#39;logging&#39;</span><span class="p">)</span>
+        <span class="n">conf_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_etcdir</span><span class="p">(),</span> <span class="s1">&#39;logging&#39;</span><span class="p">)</span>
         <span class="n">logging_config</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="n">conf_filename</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;load_logging_config_for_edit: shng_version=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">logging_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;shng_version&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)))</span>
 
