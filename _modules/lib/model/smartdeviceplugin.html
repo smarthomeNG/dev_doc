@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.10.0.1 develop v1.10.0.1 develop (Stand 3. März 2024, commit 6cb8d90) Dokumentation</title>
+  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.10.0.1 develop v1.10.0.1 develop (Stand 4. März 2024, commit 8ecd0ac) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -5669,6 +5669,7 @@
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">ast</span> <span class="kn">import</span> <span class="n">literal_eval</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
@@ -5677,6 +5678,7 @@
 
 <span class="kn">import</span> <span class="nn">lib.shyaml</span> <span class="k">as</span> <span class="nn">shyaml</span>
 <span class="kn">from</span> <span class="nn">lib.plugin</span> <span class="kn">import</span> <span class="n">Plugins</span>
+<span class="kn">from</span> <span class="nn">lib.shtime</span> <span class="kn">import</span> <span class="n">Shtime</span>
 
 <span class="kn">from</span> <span class="nn">lib.model.sdp.globals</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">update</span><span class="p">,</span> <span class="n">ATTR_NAMES</span><span class="p">,</span> <span class="n">CMD_ATTR_CMD_SETTINGS</span><span class="p">,</span> <span class="n">CMD_ATTR_ITEM_ATTRS</span><span class="p">,</span>
@@ -5693,7 +5695,7 @@
     <span class="n">PLUGIN_ATTR_CMD_CLASS</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_CONNECTION</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_SUSPEND_ITEM</span><span class="p">,</span>
     <span class="n">PLUGIN_ATTR_CONN_AUTO_RECONN</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_CONN_AUTO_CONN</span><span class="p">,</span>
     <span class="n">PLUGIN_ATTR_PROTOCOL</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_RECURSIVE</span><span class="p">,</span> <span class="n">PLUGIN_PATH</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_CYCLE</span><span class="p">,</span>
-    <span class="n">PLUGIN_ATTR_CB_SUSPEND</span><span class="p">,</span> <span class="n">CMD_IATTR_CYCLIC</span><span class="p">,</span> <span class="n">ITEM_ATTR_CYCLIC</span><span class="p">)</span>
+    <span class="n">PLUGIN_ATTR_CB_SUSPEND</span><span class="p">,</span> <span class="n">CMD_IATTR_CYCLIC</span><span class="p">,</span> <span class="n">ITEM_ATTR_READAFTERWRITE</span><span class="p">,</span> <span class="n">ITEM_ATTR_CYCLIC</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">lib.model.sdp.commands</span> <span class="kn">import</span> <span class="n">SDPCommands</span>
 <span class="kn">from</span> <span class="nn">lib.model.sdp.command</span> <span class="kn">import</span> <span class="n">SDPCommand</span>
@@ -5819,6 +5821,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_dispatch_callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dispatch_data</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_webif</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shtime</span> <span class="o">=</span> <span class="n">Shtime</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>
 
         <span class="c1"># init parameters in standalone mode</span>
         <span class="k">if</span> <span class="n">SDP_standalone</span><span class="p">:</span>
@@ -5955,7 +5959,7 @@
                 <span class="c1"># if no parameter set, try to use item setting</span>
                 <span class="n">suspend_active</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span><span class="p">())</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># if not available, default to &quot;resume&quot;</span>
+                <span class="c1"># if not available, default to &quot;resume&quot; (non-breaking default)</span>
                 <span class="n">suspend_active</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="c1"># print debug logging</span>
@@ -6185,7 +6189,16 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_triggers_initial</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">item_msg</span><span class="si">}</span><span class="s1"> startup triggering of read group </span><span class="si">{</span><span class="n">grp</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-            <span class="c1"># read cyclically?</span>
+            <span class="c1"># read cyclically (global cycle)?</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iattr_value</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">conf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ITEM_ATTR_CYCLIC&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cycle</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># set plpugin-wide cycle</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_triggers_cyclic</span><span class="p">[</span><span class="n">grp</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;cycle&#39;</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cycle</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_commands_cyclic</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cycle</span><span class="p">)),</span> <span class="s1">&#39;next&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Item </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1"> saved for global cyclic reading for group </span><span class="si">{</span><span class="n">grp</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Item </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1"> wants global cyclic reading of group </span><span class="si">{</span><span class="n">grp</span><span class="si">}</span><span class="s1">, but global cycle is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_cycle</span><span class="si">}</span><span class="s1">, ignoring.&#39;</span><span class="p">)</span>
+
+            <span class="c1"># read individual-cyclically?</span>
             <span class="n">cycle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iattr_value</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">conf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ITEM_ATTR_CYCLE&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">cycle</span><span class="p">:</span>
                 <span class="c1"># if cycle is already set for command, use the lower value of the two</span>
@@ -6261,6 +6274,18 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Writing value &quot;</span><span class="si">{</span><span class="n">item</span><span class="p">()</span><span class="si">}</span><span class="s1">&quot; from item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1"> with command &quot;</span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1">&quot; failed, resetting item value&#39;</span><span class="p">)</span>
                         <span class="n">item</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">last_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">())</span>
                         <span class="k">return</span>
+
+<span class="c1"># TODO: add readafterwrite code</span>
+                    <span class="n">readafterwrite</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iattr_value</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">conf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ITEM_ATTR_READAFTERWRITE&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">readafterwrite</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">readafterwrite</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">readafterwrite</span><span class="p">)</span>
+                        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Item </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1"> has readafterwrite set to </span><span class="si">{</span><span class="n">readafterwrite</span><span class="si">}</span><span class="s1">, which is not parseable as (float) seconds. Ignoring.&#39;</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">command</span> <span class="ow">and</span> <span class="n">readafterwrite</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Attempting to schedule read after write for item </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">, command </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1">, delay </span><span class="si">{</span><span class="n">readafterwrite</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_add</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">-readafterwrite&#39;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">send_command</span><span class="p">(</span><span class="n">command</span><span class="p">),</span> <span class="nb">next</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shtime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">readafterwrite</span><span class="p">))</span>
 
                 <span class="k">elif</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items_read_all</span><span class="p">:</span>
 
@@ -6851,8 +6876,8 @@
     <span class="k">def</span> <span class="nf">_set_item_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        reads all item attributes defined in sdp.globals, tries to find the</span>
-<span class="sd">        actual item attribute (as imported from plugin.yaml) and modifies the</span>
-<span class="sd">        global variable to refer to the actual item attribute.</span>
+<span class="sd">        actual item attribute (as imported from plugin.yaml) and stores the</span>
+<span class="sd">        actual item attribute in class member dict _item_attrs.</span>
 
 <span class="sd">        This way, only the prefixes in plugin.yaml need to be adjusted for new</span>
 <span class="sd">        plugin classes, and the symbolic names can be used without additional</span>
