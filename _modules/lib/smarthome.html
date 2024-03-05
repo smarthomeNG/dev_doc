@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.smarthome &mdash; Dokumentation v1.10.0.1 develop v1.10.0.1 develop (Stand 4. März 2024, commit 8ecd0ac) Dokumentation</title>
+  <title>lib.smarthome &mdash; Dokumentation v1.10.0.1 develop v1.10.0.1 develop (Stand 5. März 2024, commit a387c57) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5950,7 +5950,7 @@
 
         <span class="c1">#############################################################</span>
         <span class="c1"># setup logging</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_logging</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_conf_basename</span><span class="p">,</span> <span class="n">MODE</span><span class="p">)</span>
+        <span class="n">logsetup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_logging</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_conf_basename</span><span class="p">,</span> <span class="n">MODE</span><span class="p">)</span>
 
 
         <span class="c1">#############################################################</span>
@@ -5985,6 +5985,8 @@
         <span class="k">if</span> <span class="n">lib</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">running_virtual</span><span class="p">():</span>
             <span class="n">virtual_text</span> <span class="o">=</span> <span class="s1">&#39; in virtual environment&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger_main</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;--------------------   Init SmartHomeNG </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">   --------------------&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">logsetup</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger_main</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem with logging config: </span><span class="si">{</span><span class="n">logsetup</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger_main</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running in Python interpreter &#39;v</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">PYTHON_VERSION</span><span class="si">}</span><span class="s2">&#39;</span><span class="si">{</span><span class="n">virtual_text</span><span class="si">}</span><span class="s2">, from directory </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger_main</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; - operating system &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">systeminfo</span><span class="o">.</span><span class="n">get_osname</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39; (pid=</span><span class="si">{</span><span class="n">pid</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">systeminfo</span><span class="o">.</span><span class="n">get_rasppi_info</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
@@ -6240,8 +6242,9 @@
         <span class="k">if</span> <span class="n">conf_basename</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="n">conf_basename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_conf_basename</span>
         <span class="c1"># conf_dict = lib.shyaml.yaml_load(conf_basename + YAML_FILE, True)</span>
+        <span class="n">logsetup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">configure_logging</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">configure_logging</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">logsetup</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">conf_basename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_conf_basename</span> <span class="o">+</span> <span class="n">YAML_FILE</span> <span class="o">+</span> <span class="s1">&#39;.default&#39;</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;       Trying default logging configuration from:&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;       </span><span class="si">{</span><span class="n">conf_basename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -6261,7 +6264,7 @@
             <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">MODE</span> <span class="o">==</span> <span class="s1">&#39;quiet&#39;</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
-        <span class="k">return</span></div>
+        <span class="k">return</span> <span class="n">logsetup</span></div>
 
 
     <span class="c1">#################################################################</span>
