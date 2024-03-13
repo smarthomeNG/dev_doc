@@ -525,7 +525,7 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#erlauterungen-zu-temperatursummen">Erläuterungen zu Temperatursummen</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#grunlandtemperatursumme">Grünlandtemperatursumme</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#wachstumsgradtag">Wachstumsgradtag</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#wachstumsgradtage">Wachstumsgradtage</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#warmesumme">Wärmesumme</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#kaltesumme">Kältesumme</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#tagesmitteltemperatur">Tagesmitteltemperatur</a></li>
@@ -2440,7 +2440,7 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#erlauterungen-zu-temperatursummen">Erläuterungen zu Temperatursummen</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#grunlandtemperatursumme">Grünlandtemperatursumme</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#wachstumsgradtag">Wachstumsgradtag</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#wachstumsgradtage">Wachstumsgradtage</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#warmesumme">Wärmesumme</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#kaltesumme">Kältesumme</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#tagesmitteltemperatur">Tagesmitteltemperatur</a></li>
@@ -6062,21 +6062,30 @@ Bei einer Wärmesumme von 200 Grad ist eine Düngung angesagt.</p>
 <li><p>year: Jahreszahl (str oder int), für das die Berechnung ausgeführt werden soll oder „current“ für aktuelles Jahr  (default: ‚current‘)</p></li>
 </ul>
 </section>
-<section id="wachstumsgradtag">
-<h3>Wachstumsgradtag<a class="headerlink" href="#wachstumsgradtag" title="Permalink to this heading"></a></h3>
+<section id="wachstumsgradtage">
+<h3>Wachstumsgradtage<a class="headerlink" href="#wachstumsgradtage" title="Permalink to this heading"></a></h3>
 <p>Der Begriff Wachstumsgradtage (WGT) ist ein Überbegriff für verschiedene Größen.
 Gemeinsam ist ihnen, daß zur Berechnung eine Lufttemperatur von einem Schwellenwert subtrahiert wird.
 Je nach Fragestellung und Pflanzenart werden der Schwellenwert unterschiedlich gewählt und die Temperatur unterschiedlich bestimmt.
-Verfügbar sind die Berechnung über 0) „einfachen Durchschnitt der Tagestemperaturen“, 1) „modifizierten Durchschnitt der Tagestemperaturen“
-und 2) Anzahl der Tage, deren Mitteltempertatur oberhalb der Schwellentemperatur lag.</p>
+Verfügbar sind die Berechnung über die Methoden:</p>
+<ul class="simple">
+<li><ol class="arabic simple" start="0">
+<li><p>„einfachen Durchschnitt der Tagestemperaturen“: Vergleich des Durchschnitts der täglichen Minimal- und Maximaltemperatur mit Schwellenwert. Die Maximaltemperaturen werden bei 30 °C gekappt.</p></li>
+</ol>
+</li>
+<li><ol class="arabic simple">
+<li><p>„modifizierten Durchschnitt der Tagestemperaturen“: Vergleich des Durchschnitts der täglichen Minimal- und Maximaltemperatur mit Schwellenwert. Vor der Berechnung des Durchschnittes wird jede Temperatur, die den Schwellenwert unterschreitet, auf den Schwellenwert geändert. Maximaltemperaturen werden bei 30 °C gekappt.</p></li>
+</ol>
+</li>
+</ul>
 <p>siehe <a class="reference external" href="https://de.wikipedia.org/wiki/Wachstumsgradtag">Wikipedia Wachstumsgradtag</a></p>
 <p>Folgende Parameter sind möglich / notwendig:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">db_addon_params</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;year=current,</span><span class="nv"> </span><span class="s">method=1,</span><span class="nv"> </span><span class="s">threshold=10&quot;</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">db_addon_params</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;year=current,</span><span class="nv"> </span><span class="s">variant=1,</span><span class="nv"> </span><span class="s">threshold=10&quot;</span>
 </pre></div>
 </div>
 <ul class="simple">
 <li><p>year: Jahreszahl (str oder int), für das die Berechnung ausgeführt werden soll oder „current“ für aktuelles Jahr  (default: ‚current‘)</p></li>
-<li><p>method: 0-Berechnung über „einfachen Durchschnitt der Tagestemperaturen“, 1-Berechnung über „modifizierten Durchschnitt (default: 0) der Tagestemperaturen“ 2-Anzahl der Tage, mit Mitteltempertatur oberhalb Schwellentemperatur// 10, 11 Ausgabe aus Zeitserie</p></li>
+<li><p>variant: 0-Berechnung über „einfachen Durchschnitt der Tagestemperaturen“, 1-Berechnung über „modifizierten Durchschnitt (default: 0) der Tagestemperaturen“ // 10, 11 Ausgabe aus Zeitserie (default: 0)</p></li>
 <li><p>threshold: Schwellentemperatur in °C (int) (default: 10)</p></li>
 </ul>
 </section>
