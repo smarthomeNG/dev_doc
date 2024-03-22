@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Class SmartPlugin &mdash; Dokumentation v1.10.0.1 develop v1.10.0.1 develop (Stand 13. März 2024, commit 9bdc845) Dokumentation</title>
+  <title>Class SmartPlugin &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 22. März 2024, commit 1ed6baa) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -39,7 +39,7 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            Dokumentation v1.10.0.1 develop
+            Dokumentation v1.10.0.2
               <img src="../../../_static/logo_long_inverse3.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
@@ -5602,7 +5602,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">Dokumentation v1.10.0.1 develop</a>
+          <a href="../../../index.html">Dokumentation v1.10.0.2</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -5691,7 +5691,7 @@ items is a list of items (or a single Item() object).</p>
 <dd><p>For items that are used/handled by a plugin, this method stores the configuration information
 that is individual for the plugin. The configuration information is/has to be stored in a dictionary</p>
 <p>The configuration information can be retrieved later by a call to the method get_item_configdata(&lt;item_path&gt;)</p>
-<p>If data is beeing received by the plugin, a mapping ( a ‚device-command‘ or matchstring) has to be specified
+<p>If data is being received by the plugin, a mapping ( a ‚device-command‘ or matchstring) has to be specified
 as an optional 3rd parameter. This allows a reverse lookup. The method get_itemlist_for_mapping(&lt;mapping&gt;)
 returns a list of items for the items that have defined the &lt;mapping&gt;. In most cases, the list will have
 only one entry, but if multiple items should receive data from the same device (or command), the list can
@@ -6280,6 +6280,51 @@ called for all plugins before the plugins are started (calling all run methods).
 <dd><p>This methods gets a scheduler entry of a plugin-scheduler</p>
 <p>A plugin identifiction is added to the scheduler name</p>
 <p>The parameters are identical to the scheduler.get method from lib.scheduler</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lib.model.smartplugin.SmartPlugin.run_queue">
+<span class="sig-name descname"><span class="pre">run_queue</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#lib.model.smartplugin.SmartPlugin.run_queue" title="Link zu dieser Definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.model.smartplugin.SmartPlugin.start_asyncio">
+<span class="sig-name descname"><span class="pre">start_asyncio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plugin_coro</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/lib/model/smartplugin.html#SmartPlugin.start_asyncio"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartplugin.SmartPlugin.start_asyncio" title="Link zu dieser Definition"></a></dt>
+<dd><p>Start the thread for the asyncio loop</p>
+<p>The started asyncio thread sets up the asyncio environment and starts the evemtloop.
+This routine is to be called from the plugin’s run() method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameter<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>plugin_coro</strong> – The asyncio coroutine which implements the async part of the plugin</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.model.smartplugin.SmartPlugin.stop_asyncio">
+<span class="sig-name descname"><span class="pre">stop_asyncio</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/lib/model/smartplugin.html#SmartPlugin.stop_asyncio"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartplugin.SmartPlugin.stop_asyncio" title="Link zu dieser Definition"></a></dt>
+<dd><p>stop the eventloop and the thread it is running in</p>
+<p>This routine is to be called from the plugin’s stop() method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.model.smartplugin.SmartPlugin.run_asyncio_coro">
+<span class="sig-name descname"><span class="pre">run_asyncio_coro</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coro</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/lib/model/smartplugin.html#SmartPlugin.run_asyncio_coro"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartplugin.SmartPlugin.run_asyncio_coro" title="Link zu dieser Definition"></a></dt>
+<dd><p>Run a coroutine in the eventloop of the plugin</p>
+<p>When the asyncio eventloop of the plugin is running, this method can be used to add a coroutine
+to the eventloop from the part of the plugin which is thread operated.
+E.g.: This can be used in the plugins update_item() method to send data to the device through an asyncio package</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameter<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>coro</strong> – A coroutine that should be run in the eventloop of the asyncio-thread</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.model.smartplugin.SmartPlugin.list_asyncio_tasks">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_asyncio_tasks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/lib/model/smartplugin.html#SmartPlugin.list_asyncio_tasks"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartplugin.SmartPlugin.list_asyncio_tasks" title="Link zu dieser Definition"></a></dt>
+<dd><p>Log al list of the tasks that are in the eventloop</p>
 </dd></dl>
 
 <dl class="py method">

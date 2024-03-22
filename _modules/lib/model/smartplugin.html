@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.10.0.1 develop v1.10.0.1 develop (Stand 13. März 2024, commit 9bdc845) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 22. März 2024, commit 1ed6baa) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -37,7 +37,7 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            Dokumentation v1.10.0.1 develop
+            Dokumentation v1.10.0.2
               <img src="../../../_static/logo_long_inverse3.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
@@ -5600,7 +5600,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">Dokumentation v1.10.0.1 develop</a>
+          <a href="../../../index.html">Dokumentation v1.10.0.2</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -5650,6 +5650,9 @@
 <span class="kn">from</span> <span class="nn">lib.translation</span> <span class="kn">import</span> <span class="n">translate</span> <span class="k">as</span> <span class="n">lib_translate</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 
 
@@ -5752,7 +5755,7 @@
 
 <span class="sd">        The configuration information can be retrieved later by a call to the method get_item_configdata(&lt;item_path&gt;)</span>
 
-<span class="sd">        If data is beeing received by the plugin, a mapping ( a &#39;device-command&#39; or matchstring) has to be specified</span>
+<span class="sd">        If data is being received by the plugin, a mapping ( a &#39;device-command&#39; or matchstring) has to be specified</span>
 <span class="sd">        as an optional 3rd parameter. This allows a reverse lookup. The method get_itemlist_for_mapping(&lt;mapping&gt;)</span>
 <span class="sd">        returns a list of items for the items that have defined the &lt;mapping&gt;. In most cases, the list will have</span>
 <span class="sd">        only one entry, but if multiple items should receive data from the same device (or command), the list can</span>
@@ -6575,7 +6578,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;scheduler_add: name = </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">, parameters: </span><span class="si">{</span><span class="n">parameters</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">prio</span><span class="p">,</span> <span class="n">cron</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="nb">next</span><span class="p">,</span> <span class="n">from_smartplugin</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-
 <div class="viewcode-block" id="SmartPlugin.scheduler_change"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.scheduler_change">[Doku]</a>    <span class="k">def</span> <span class="nf">scheduler_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This methods changes a scheduler entry of a plugin-scheduler</span>
@@ -6592,7 +6594,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;scheduler_change: name = </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">, parameters: </span><span class="si">{</span><span class="n">parameters</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">change</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-
 <div class="viewcode-block" id="SmartPlugin.scheduler_remove"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.scheduler_remove">[Doku]</a>    <span class="k">def</span> <span class="nf">scheduler_remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This methods removes a scheduler entry of a plugin-scheduler</span>
@@ -6607,7 +6608,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;scheduler_remove: name = </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">from_smartplugin</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-
 <div class="viewcode-block" id="SmartPlugin.scheduler_get"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.scheduler_get">[Doku]</a>    <span class="k">def</span> <span class="nf">scheduler_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This methods gets a scheduler entry of a plugin-scheduler</span>
@@ -6621,6 +6621,122 @@
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pluginname_prefix</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">()</span> <span class="o">+</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;scheduler_get: name = </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">from_smartplugin</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+    <span class="c1"># ----------------------------------------------------------------------------------</span>
+    <span class="c1">#   Ascyncio handling (to be moved to SmartPlugin?)</span>
+    <span class="c1"># ----------------------------------------------------------------------------------</span>
+
+    <span class="n">_asyncio_loop</span> <span class="o">=</span> <span class="kc">None</span>        <span class="c1"># eventloop of the plugin</span>
+    <span class="n">run_queue</span> <span class="o">=</span> <span class="kc">None</span>            <span class="c1"># queue to send commends to the main-coro/plugin-coro</span>
+
+<div class="viewcode-block" id="SmartPlugin.start_asyncio"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.start_asyncio">[Doku]</a>    <span class="k">def</span> <span class="nf">start_asyncio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_coro</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start the thread for the asyncio loop</span>
+
+<span class="sd">        The started asyncio thread sets up the asyncio environment and starts the evemtloop.</span>
+<span class="sd">        This routine is to be called from the plugin&#39;s run() method</span>
+
+<span class="sd">        :param plugin_coro: The asyncio coroutine which implements the async part of the plugin</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">threadname</span> <span class="o">=</span> <span class="s1">&#39;plugins.&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39;.asyncio&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pluginThread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop_thread</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">threadname</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;plugin_coro&#39;</span><span class="p">:</span> <span class="n">plugin_coro</span><span class="p">})</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting thread </span><span class="si">{</span><span class="n">threadname</span><span class="si">}</span><span class="s2"> for asyncio loop...&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pluginThread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot start thread &#39;</span><span class="si">{</span><span class="n">threadname</span><span class="si">}</span><span class="s2">&#39; - Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="SmartPlugin.stop_asyncio"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.stop_asyncio">[Doku]</a>    <span class="k">def</span> <span class="nf">stop_asyncio</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        stop the eventloop and the thread it is running in</span>
+
+<span class="sd">        This routine is to be called from the plugin&#39;s stop() method</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Shutting down asyncio loop and thread...&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Send termination command to plugin_coro to stop the plugin</span>
+            <span class="n">asyncio</span><span class="o">.</span><span class="n">run_coroutine_threadsafe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;STOP&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;stop_asyncio: Exception &#39;</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&#39; in run_queue.put&quot;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pluginThread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;_asyncio_loop_thread of plugin stopped&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error stopping _asyncio_loop_thread: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">pass</span>
+        <span class="k">return</span></div>
+
+    <span class="k">def</span> <span class="nf">_asyncio_loop_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_coro</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Thread to start and execute the asyncio event loop</span>
+
+<span class="sd">        It starts the main task, which starts the plugin coroutine as a task</span>
+
+<span class="sd">        :param plugin_coro: Coroutine that should be started in the eventloop of the asyncio-thread</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;_asyncio_loop_thread of plugin started&quot;</span><span class="p">)</span>
+
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_main</span><span class="p">(</span><span class="n">plugin_coro</span><span class="p">))</span>
+
+        <span class="k">return</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_asyncio_main</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_coro</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        main coroutine to set up the environment for the coroutine of the specific plugin</span>
+
+<span class="sd">        :param plugin_coro: Coroutine that should be started in the eventloop of the asyncio-thread</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;_asyncio main task of plugin started&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">current_task</span><span class="p">()</span>
+        <span class="n">task</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s1">&#39;MainTask&#39;</span><span class="p">)</span>
+        <span class="c1"># Create queue to send termination command to plugin_coro when the plugin should be stopped</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_queue</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+
+        <span class="c1"># Create the main task of the plugin and await it</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">plugin_coro</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;PluginTask&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exception raised in PluginTask: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;_asyncio main task of plugin finished&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SmartPlugin.run_asyncio_coro"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.run_asyncio_coro">[Doku]</a>    <span class="k">def</span> <span class="nf">run_asyncio_coro</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coro</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run a coroutine in the eventloop of the plugin</span>
+
+<span class="sd">        When the asyncio eventloop of the plugin is running, this method can be used to add a coroutine</span>
+<span class="sd">        to the eventloop from the part of the plugin which is thread operated.</span>
+<span class="sd">        E.g.: This can be used in the plugins update_item() method to send data to the device through an asyncio package</span>
+
+<span class="sd">        :param coro: A coroutine that should be run in the eventloop of the asyncio-thread</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;run_asyncio_coro: Cannot run coro because no eventloop is active (</span><span class="si">{</span><span class="n">coro</span><span class="si">=}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">asyncio</span><span class="o">.</span><span class="n">run_coroutine_threadsafe</span><span class="p">(</span><span class="n">coro</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;run_asyncio_coro: Exception </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">coro</span><span class="si">=}</span><span class="s2">, loop=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="SmartPlugin.list_asyncio_tasks"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.list_asyncio_tasks">[Doku]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">list_asyncio_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Log al list of the tasks that are in the eventloop</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="s2">&quot;list_asyncio_tasks: Task list&quot;</span><span class="p">)</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">all_tasks</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">get_coro</span><span class="p">()</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;list_asyncio_tasks&#39;</span><span class="p">:</span>
+                <span class="n">task</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s1">&#39;ListTasks&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; - </span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="SmartPlugin.run"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.run">[Doku]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
