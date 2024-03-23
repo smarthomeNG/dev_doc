@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Beispielplugin update &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 22. März 2024, commit cc2a840) Dokumentation</title>
+  <title>Beispielplugin update &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 23. März 2024, commit ff7f747) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -5750,6 +5750,8 @@
 <span class="c1">#</span>
 <span class="c1">#########################################################################</span>
 
+<span class="kn">import</span> <span class="nn">asyncio</span>
+
 <span class="kn">from</span> <span class="nn">lib.model.smartplugin</span> <span class="kn">import</span> <span class="n">SmartPlugin</span>
 <span class="kn">from</span> <span class="nn">lib.item</span> <span class="kn">import</span> <span class="n">Items</span>
 
@@ -5791,7 +5793,7 @@
         <span class="c1"># cycle time in seconds, only needed, if hardware/interface needs to be</span>
         <span class="c1"># polled for value changes by adding a scheduler entry in the run method of this plugin</span>
         <span class="c1"># (maybe you want to make it a plugin parameter?)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cycle</span> <span class="o">=</span> <span class="mi">60</span>
+        <span class="c1"># self._cycle = 60</span>
 
         <span class="c1"># Initialization code goes here</span>
 
@@ -5811,10 +5813,18 @@
 <span class="sd">        Run method for the plugin</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">dbghigh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s2">&quot;Methode &#39;</span><span class="si">{method}</span><span class="s2">&#39; aufgerufen&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;method&#39;</span><span class="p">:</span> <span class="s1">&#39;run()&#39;</span><span class="p">}))</span>
-        <span class="c1"># setup scheduler for device poll loop   (disable the following line, if you don&#39;t need to poll the device. Rember to comment the self_cycle statement in __init__ as well)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_add</span><span class="p">(</span><span class="s1">&#39;poll_device&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">poll_device</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cycle</span><span class="p">)</span>
+        <span class="c1"># setup scheduler for device poll loop</span>
+        <span class="c1"># (enable the following line, if you need to poll the device.</span>
+        <span class="c1">#  Rember to un-comment the self._cycle statement in __init__ as well)</span>
+        <span class="c1">#self.scheduler_add(&#39;poll_device&#39;, self.poll_device, cycle=self._cycle)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">alive</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># Start the asyncio eventloop in it&#39;s own thread</span>
+        <span class="c1"># and set self.alive to True when the eventloop is running</span>
+        <span class="c1"># (enable the following line, if you need to use asyncio in the plugin)</span>
+        <span class="c1">#self.start_asyncio(self.plugin_coro())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">alive</span> <span class="o">=</span> <span class="kc">True</span>     <span class="c1"># if using asyncio, do not set self.alive here. Set it in the session coroutine</span>
+
         <span class="c1"># if you need to create child threads, do not make them daemon = True!</span>
         <span class="c1"># They will not shutdown properly. (It&#39;s a python bug)</span>
 
@@ -5823,8 +5833,14 @@
 <span class="sd">        Stop method for the plugin</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">dbghigh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s2">&quot;Methode &#39;</span><span class="si">{method}</span><span class="s2">&#39; aufgerufen&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;method&#39;</span><span class="p">:</span> <span class="s1">&#39;stop()&#39;</span><span class="p">}))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_remove</span><span class="p">(</span><span class="s1">&#39;poll_device&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">alive</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alive</span> <span class="o">=</span> <span class="kc">False</span>     <span class="c1"># if using asyncio, do not set self.alive here. Set it in the session coroutine</span>
+
+        <span class="c1"># if you use a scheduled poll loop, enable the following line</span>
+        <span class="c1">#self.scheduler_remove(&#39;poll_device&#39;)</span>
+
+        <span class="c1"># stop the asyncio eventloop and it&#39;s thread</span>
+        <span class="c1"># If you use asyncio, enable the following line</span>
+        <span class="c1">#self.stop_asyncio()</span>
 
     <span class="k">def</span> <span class="nf">parse_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5863,18 +5879,20 @@
 <span class="sd">        It should write the changed value out to the device (hardware/interface) that</span>
 <span class="sd">        is managed by this plugin.</span>
 
+<span class="sd">        To prevent a loop, the changed value should only be written to the device, if the plugin is running and</span>
+<span class="sd">        the value was changed outside of this plugin(-instance). That is checked by comparing the caller parameter</span>
+<span class="sd">        with the fullname (plugin name &amp; instance) of the plugin.</span>
+
 <span class="sd">        :param item: item to be updated towards the plugin</span>
 <span class="sd">        :param caller: if given it represents the callers name</span>
 <span class="sd">        :param source: if given it represents the source</span>
 <span class="sd">        :param dest: if given it represents the dest</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alive</span> <span class="ow">and</span> <span class="n">caller</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">():</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alive</span> <span class="ow">and</span> <span class="n">caller</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">():</span>
             <span class="c1"># code to execute if the plugin is not stopped</span>
-            <span class="c1"># and only, if the item has not been changed by this this plugin:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Update item: </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">, item has been changed outside this plugin&quot;</span><span class="p">)</span>
+            <span class="c1"># and only, if the item has not been changed by this plugin:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;update_item: </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> has been changed outside this plugin by caller &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">callerinfo</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span><span class="w"> </span><span class="n">source</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_iattr</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">conf</span><span class="p">,</span> <span class="s1">&#39;foo_itemtag&#39;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;update_item was called with item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> from caller </span><span class="si">{</span><span class="n">caller</span><span class="si">}</span><span class="s2">, source </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> and dest </span><span class="si">{</span><span class="n">dest</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">poll_device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -5895,11 +5913,25 @@
         <span class="c1">#     # - value and caller must be specified, source and dest are optional</span>
         <span class="c1">#     #</span>
         <span class="c1">#     # The simple case:</span>
-        <span class="c1">#     item(device_value, self.get_shortname())</span>
+        <span class="c1">#     item(device_value, self.get_fullname())</span>
         <span class="c1">#     # if the plugin is a gateway plugin which may receive updates from several external sources,</span>
-        <span class="c1">#     # the source should be included when updating the the value:</span>
-        <span class="c1">#     item(device_value, self.get_shortname(), source=device_source_id)</span>
+        <span class="c1">#     # the source should be included when updating the value:</span>
+        <span class="c1">#     item(device_value, self.get_fullname(), source=device_source_id)</span>
         <span class="k">pass</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">plugin_coro</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Coroutine for the plugin session (only needed, if using asyncio)</span>
+
+<span class="sd">        This coroutine opens the session to the hue bridge and</span>
+<span class="sd">        only terminate, when the plugin ois stopped</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="s2">&quot;plugin_coro started&quot;</span><span class="p">)</span>
+
+        <span class="c1"># ...</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="s2">&quot;plugin_coro finished&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
 </pre></div>
 </div>
 </div>
