@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 23. März 2024, commit ff7f747) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 24. März 2024, commit 1d9e89c) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -6664,12 +6664,13 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Shutting down asyncio loop and thread...&quot;</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># Send termination command to plugin_coro to stop the plugin</span>
-            <span class="n">asyncio</span><span class="o">.</span><span class="n">run_coroutine_threadsafe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;STOP&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;stop_asyncio: Exception &#39;</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&#39; in run_queue.put&quot;</span><span class="p">)</span>
-        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Send termination command to plugin_coro to stop the plugin</span>
+                <span class="n">asyncio</span><span class="o">.</span><span class="n">run_coroutine_threadsafe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;STOP&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;stop_asyncio: Exception &#39;</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&#39; in run_queue.put (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span><span class="si">=}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pluginThread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;_asyncio_loop_thread of plugin stopped&quot;</span><span class="p">)</span>
