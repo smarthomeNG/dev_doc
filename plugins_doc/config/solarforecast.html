@@ -5658,7 +5658,6 @@
 <a class="reference internal image-reference" href="../../_images/plugin_logo46.png" id="index-0"><img alt="plugin logo" class="align-left" id="index-0" src="../../_images/plugin_logo46.png" style="width: 150.0px; height: 150.0px;" /></a>
 <p>Im folgenden sind etwaige Anforderungen und unterstützte Hardware beschrieben. Danach folgt die               Beschreibung, wie das Plugin <strong>solarforecast</strong> konfiguriert wird. Außerdem ist im folgenden               beschrieben, wie das Plugin in den Item Definitionen genutzt werden kann. <a class="footnote-reference brackets" href="#f1" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p>
 <p>Es handelt sich bei diesem Plugin um ein <strong>web Plugin</strong>.</p>
-<p><strong>ACHTUNG</strong>: Dieses Plugin ist als develop gekennzeichnet. Es kann daher sein, dass es                  noch nicht Feature-Complete oder noch fehlerhaft ist.</p>
 <section id="beschreibung">
 <h2>Beschreibung<a class="headerlink" href="#beschreibung" title="Permalink to this heading"></a></h2>
 <p>Plugin zur Anbindung an eine Web-basierte Solaretragsvorhersage</p>
@@ -5667,7 +5666,7 @@
 <h2>Anforderungen<a class="headerlink" href="#anforderungen" title="Permalink to this heading"></a></h2>
 <blockquote>
 <div><ul class="simple">
-<li><p>Minimum SmartHomeNG Version: <strong>1.8.0</strong></p></li>
+<li><p>Minimum SmartHomeNG Version: <strong>1.10.0</strong></p></li>
 </ul>
 </div></blockquote>
 </section>
@@ -5717,7 +5716,6 @@
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>num</strong></p></li>
-<li><p>Standardwert: <strong>0.0</strong></p></li>
 <li><p>Minimalwert: <strong>-90</strong></p></li>
 <li><p>Maximalwert: <strong>90</strong></p></li>
 </ul>
@@ -5729,7 +5727,6 @@
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>num</strong></p></li>
-<li><p>Standardwert: <strong>0.0</strong></p></li>
 <li><p>Minimalwert: <strong>-180</strong></p></li>
 <li><p>Maximalwert: <strong>180</strong></p></li>
 </ul>
@@ -5756,7 +5753,7 @@
 <p>Das Plugin unterstützt folgende Item Attribute, die in den Dateien im Verzeichnis  <code class="docutils literal notranslate"><span class="pre">../items</span></code> verwendet werden:</p>
 <section id="solarforecast-attribute">
 <h2>solarforecast_attribute<a class="headerlink" href="#solarforecast-attribute" title="Permalink to this heading"></a></h2>
-<p>Solarforecast Attribute: Vorhersage Energie in Wh morgen Vorhersage Energie in Wh heute Datum morgen Datum heute</p>
+<p>Solarforecast Attribute: Vorhersage Energie in Wh morgen Vorhersage Energie in Wh heute Datum morgen Datum heute stündliche Vorhersage und Leistungchecks</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>str</strong></p></li>
@@ -5766,6 +5763,7 @@
 <li><p><strong>energy_today</strong></p></li>
 <li><p><strong>date_tomorrow</strong></p></li>
 <li><p><strong>date_today</strong></p></li>
+<li><p><strong>watts_hourly</strong></p></li>
 </ul>
 </li>
 </ul>
@@ -5780,13 +5778,42 @@
 <section id="plugin-functions">
 <h1>Plugin Functions<a class="headerlink" href="#plugin-functions" title="Permalink to this heading"></a></h1>
 <p>Das Plugin verfügt über folgende öffentliche Funktionen, die z.B. in Logiken aufgerufen werden können.</p>
-<p><strong>Keine</strong></p>
+<section id="is-power-available-power-hours-2">
+<h2>is_power_available(power, hours=2)<a class="headerlink" href="#is-power-available-power-hours-2" title="Permalink to this heading"></a></h2>
+<p>Prüft, ob die angegebene Leistung für die angegebene Zahl an Stunden voraussichtlich erreicht wird</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Ergebnistyp der Funktion: <strong>bool</strong></p></li>
+</ul>
+</div></blockquote>
+<section id="power">
+<h3>power<a class="headerlink" href="#power" title="Permalink to this heading"></a></h3>
+<p>Geforderte Leistung in Watt</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Datentyp: <strong>int</strong></p></li>
+<li><p>Minimalwert: <strong>0</strong></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="hours">
+<h3>hours<a class="headerlink" href="#hours" title="Permalink to this heading"></a></h3>
+<p>Geforderte Anzahl an Stunden ab jetzt bzw. der nächsten vollen Stunde</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Datentyp: <strong>int</strong></p></li>
+<li><p>Standardwert: <strong>2</strong></p></li>
+<li><p>Minimalwert: <strong>1</strong></p></li>
+</ul>
+</div></blockquote>
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="f1" role="note">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>Diese Seite wurde aus den Metadaten des Plugins erzeugt.</p>
 </aside>
 </aside>
+</section>
+</section>
 </section>
 
 
