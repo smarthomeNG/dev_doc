@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.utils &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 23. April 2024, commit 8dacf9c) Dokumentation</title>
+  <title>lib.utils &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 23. April 2024, commit 75488e3) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5865,8 +5865,12 @@
 
         <span class="n">ip_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="n">interfaces</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">ifaddresses</span><span class="p">(</span><span class="n">interface</span><span class="p">)[</span><span class="n">AF_INET</span><span class="p">]:</span>
-                <span class="n">ip_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">link</span><span class="p">[</span><span class="s1">&#39;addr&#39;</span><span class="p">])</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">ifaddresses</span><span class="p">(</span><span class="n">interface</span><span class="p">)[</span><span class="n">AF_INET</span><span class="p">]:</span>
+                    <span class="n">ip_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">link</span><span class="p">[</span><span class="s1">&#39;addr&#39;</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;get_all_local_ipv4_addresses: Exception </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">ifaddresses</span><span class="p">(</span><span class="n">interface</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">ip_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Utils</span><span class="o">.</span><span class="n">get_local_ipv4_address</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">ip_list</span></div>
 
 <div class="viewcode-block" id="Utils.get_all_local_ipv6_addresses"><a class="viewcode-back" href="../../lib/utils.html#lib.utils.Utils.get_all_local_ipv6_addresses">[Doku]</a>    <span class="nd">@staticmethod</span>
@@ -5882,8 +5886,12 @@
 
         <span class="n">ip_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="n">interfaces</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">ifaddresses</span><span class="p">(</span><span class="n">interface</span><span class="p">)[</span><span class="n">AF_INET6</span><span class="p">]:</span>
-                <span class="n">ip_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">link</span><span class="p">[</span><span class="s1">&#39;addr&#39;</span><span class="p">])</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">ifaddresses</span><span class="p">(</span><span class="n">interface</span><span class="p">)[</span><span class="n">AF_INET6</span><span class="p">]:</span>
+                    <span class="n">ip_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">link</span><span class="p">[</span><span class="s1">&#39;addr&#39;</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;get_all_local_ipv4_addresses: Exception </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">ifaddresses</span><span class="p">(</span><span class="n">interface</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">ip_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Utils</span><span class="o">.</span><span class="n">get_local_ipv6_address</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">ip_list</span></div>
 
 <div class="viewcode-block" id="Utils.is_knx_groupaddress"><a class="viewcode-back" href="../../lib/utils.html#lib.utils.Utils.is_knx_groupaddress">[Doku]</a>    <span class="nd">@staticmethod</span>
