@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 23. April 2024, commit 75488e3) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 24. April 2024, commit 225d768) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -6752,7 +6752,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;_asyncio main task of plugin finished&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SmartPlugin.run_asyncio_coro"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.run_asyncio_coro">[Doku]</a>    <span class="k">def</span> <span class="nf">run_asyncio_coro</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coro</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.run_asyncio_coro"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.run_asyncio_coro">[Doku]</a>    <span class="k">def</span> <span class="nf">run_asyncio_coro</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coro</span><span class="p">,</span> <span class="n">return_exeption</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run a coroutine in the eventloop of the plugin</span>
 
@@ -6766,10 +6766,15 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;run_asyncio_coro: Cannot run coro &#39;</span><span class="si">{</span><span class="n">coro</span><span class="si">}</span><span class="s2">&#39; because no eventloop is active&quot;</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">asyncio</span><span class="o">.</span><span class="n">run_coroutine_threadsafe</span><span class="p">(</span><span class="n">coro</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span><span class="p">)</span>
+            <span class="n">future</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run_coroutine_threadsafe</span><span class="p">(</span><span class="n">coro</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;run_asyncio_coro: Exception </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">coro</span><span class="si">=}</span><span class="s2">, loop=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
-        <span class="k">return</span></div>
+            <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">return_exeption</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span> <span class="n">ex</span> <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;run_asyncio_coro: Exception </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">coro</span><span class="si">=}</span><span class="s2">, loop=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="SmartPlugin.list_asyncio_tasks"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.list_asyncio_tasks">[Doku]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">list_asyncio_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
