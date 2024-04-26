@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.utils &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 24. April 2024, commit 72556b6) Dokumentation</title>
+  <title>lib.utils &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 26. April 2024, commit 6c80fb5) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5102,6 +5102,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../lib/utils.html#lib.utils.Utils.check_hashed_password"><code class="docutils literal notranslate"><span class="pre">Utils.check_hashed_password()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/utils.html#lib.utils.Utils.create_hash"><code class="docutils literal notranslate"><span class="pre">Utils.create_hash()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/utils.html#lib.utils.Utils.execute_subprocess"><code class="docutils literal notranslate"><span class="pre">Utils.execute_subprocess()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/utils.html#lib.utils.Utils.get_all_addresses_for_addressfamily"><code class="docutils literal notranslate"><span class="pre">Utils.get_all_addresses_for_addressfamily()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/utils.html#lib.utils.Utils.get_all_local_ipv4_addresses"><code class="docutils literal notranslate"><span class="pre">Utils.get_all_local_ipv4_addresses()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/utils.html#lib.utils.Utils.get_all_local_ipv6_addresses"><code class="docutils literal notranslate"><span class="pre">Utils.get_all_local_ipv6_addresses()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/utils.html#lib.utils.Utils.get_local_ipv4_address"><code class="docutils literal notranslate"><span class="pre">Utils.get_local_ipv4_address()</span></code></a></li>
@@ -5227,6 +5228,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../lib/utils.html#lib.utils.Utils.check_hashed_password"><code class="docutils literal notranslate"><span class="pre">Utils.check_hashed_password()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/utils.html#lib.utils.Utils.create_hash"><code class="docutils literal notranslate"><span class="pre">Utils.create_hash()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/utils.html#lib.utils.Utils.execute_subprocess"><code class="docutils literal notranslate"><span class="pre">Utils.execute_subprocess()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/utils.html#lib.utils.Utils.get_all_addresses_for_addressfamily"><code class="docutils literal notranslate"><span class="pre">Utils.get_all_addresses_for_addressfamily()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/utils.html#lib.utils.Utils.get_all_local_ipv4_addresses"><code class="docutils literal notranslate"><span class="pre">Utils.get_all_local_ipv4_addresses()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/utils.html#lib.utils.Utils.get_all_local_ipv6_addresses"><code class="docutils literal notranslate"><span class="pre">Utils.get_all_local_ipv6_addresses()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/utils.html#lib.utils.Utils.get_local_ipv4_address"><code class="docutils literal notranslate"><span class="pre">Utils.get_local_ipv4_address()</span></code></a></li>
@@ -5852,54 +5854,46 @@
                 <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">IP</span></div>
 
-<div class="viewcode-block" id="Utils.get_all_local_ipv4_addresses"><a class="viewcode-back" href="../../lib/utils.html#lib.utils.Utils.get_all_local_ipv4_addresses">[Doku]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_all_local_ipv4_addresses</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<div class="viewcode-block" id="Utils.get_all_addresses_for_addressfamily"><a class="viewcode-back" href="../../lib/utils.html#lib.utils.Utils.get_all_addresses_for_addressfamily">[Doku]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_all_addresses_for_addressfamily</span><span class="p">(</span><span class="n">af</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get all ipv4 addresses as a list</span>
+<span class="sd">        Get all addresses for an address-family as a list</span>
 
 <span class="sd">        https://stackoverflow.com/questions/270745/how-do-i-determine-all-of-my-ip-addresses-when-i-have-multiple-nics/274644#274644</span>
 
-<span class="sd">        :return: ipv4 adresses</span>
+<span class="sd">        :return: addresses</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">netifaces</span> <span class="kn">import</span> <span class="n">interfaces</span><span class="p">,</span> <span class="n">ifaddresses</span><span class="p">,</span> <span class="n">AF_INET</span>
+        <span class="kn">from</span> <span class="nn">netifaces</span> <span class="kn">import</span> <span class="n">interfaces</span><span class="p">,</span> <span class="n">ifaddresses</span>
 
         <span class="n">ip_list</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">interf</span> <span class="o">=</span> <span class="n">interfaces</span><span class="p">()</span>
-        <span class="n">interf_data</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="n">interfaces</span><span class="p">():</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">interf_data</span><span class="p">[</span><span class="n">interface</span><span class="p">]</span> <span class="o">=</span> <span class="n">ifaddresses</span><span class="p">(</span><span class="n">interface</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">ifaddresses</span><span class="p">(</span><span class="n">interface</span><span class="p">)[</span><span class="n">AF_INET</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">af</span> <span class="ow">in</span> <span class="n">ifaddresses</span><span class="p">(</span><span class="n">interface</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">ifaddresses</span><span class="p">(</span><span class="n">interface</span><span class="p">)[</span><span class="n">af</span><span class="p">]:</span>
                     <span class="n">ip_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">link</span><span class="p">[</span><span class="s1">&#39;addr&#39;</span><span class="p">])</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;get_all_local_ipv4_addresses: Exception </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">- interfaces=</span><span class="si">{</span><span class="n">interf</span><span class="si">}</span><span class="se">\n</span><span class="s2">-act. interface=</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="se">\n</span><span class="s2">-act. interface data=</span><span class="si">{</span><span class="n">interf_data</span><span class="si">}</span><span class="se">\n</span><span class="s2">- </span><span class="si">{</span><span class="n">ifaddresses</span><span class="p">(</span><span class="n">interface</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">ip_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Utils</span><span class="o">.</span><span class="n">get_local_ipv4_address</span><span class="p">())</span>
         <span class="k">return</span> <span class="n">ip_list</span></div>
+
+<div class="viewcode-block" id="Utils.get_all_local_ipv4_addresses"><a class="viewcode-back" href="../../lib/utils.html#lib.utils.Utils.get_all_local_ipv4_addresses">[Doku]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_all_local_ipv4_addresses</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get ipv4 addresses of all interfaces as a list</span>
+
+<span class="sd">        :return: ipv4 addresses</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">netifaces</span> <span class="kn">import</span> <span class="n">AF_INET</span>
+        <span class="k">return</span> <span class="n">Utils</span><span class="o">.</span><span class="n">get_all_addresses_for_addressfamily</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Utils.get_all_local_ipv6_addresses"><a class="viewcode-back" href="../../lib/utils.html#lib.utils.Utils.get_all_local_ipv6_addresses">[Doku]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_all_local_ipv6_addresses</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get all ipv6 addresses as a list</span>
+<span class="sd">        Get ipv6 addresses of all interfaces as a list</span>
 
-<span class="sd">        https://stackoverflow.com/questions/270745/how-do-i-determine-all-of-my-ip-addresses-when-i-have-multiple-nics/274644#274644</span>
-
-<span class="sd">        :return: ipv6 adresses</span>
+<span class="sd">        :return: ipv6 addresses</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">netifaces</span> <span class="kn">import</span> <span class="n">interfaces</span><span class="p">,</span> <span class="n">ifaddresses</span><span class="p">,</span> <span class="n">AF_INET6</span>
-
-        <span class="n">ip_list</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">interf</span> <span class="o">=</span> <span class="n">interfaces</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="n">interfaces</span><span class="p">():</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">ifaddresses</span><span class="p">(</span><span class="n">interface</span><span class="p">)[</span><span class="n">AF_INET6</span><span class="p">]:</span>
-                    <span class="n">ip_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">link</span><span class="p">[</span><span class="s1">&#39;addr&#39;</span><span class="p">])</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;get_all_local_ipv6_addresses: Exception </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">- interfaces=</span><span class="si">{</span><span class="n">interf</span><span class="si">}</span><span class="se">\n</span><span class="s2">-act. interface=</span><span class="si">{</span><span class="n">interface</span><span class="si">}</span><span class="se">\n</span><span class="s2">- </span><span class="si">{</span><span class="n">ifaddresses</span><span class="p">(</span><span class="n">interface</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">ip_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Utils</span><span class="o">.</span><span class="n">get_local_ipv6_address</span><span class="p">())</span>
-        <span class="k">return</span> <span class="n">ip_list</span></div>
+        <span class="kn">from</span> <span class="nn">netifaces</span> <span class="kn">import</span> <span class="n">AF_INET6</span>
+        <span class="k">return</span> <span class="n">Utils</span><span class="o">.</span><span class="n">get_all_addresses_for_addressfamily</span><span class="p">(</span><span class="n">AF_INET6</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Utils.is_knx_groupaddress"><a class="viewcode-back" href="../../lib/utils.html#lib.utils.Utils.is_knx_groupaddress">[Doku]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">is_knx_groupaddress</span><span class="p">(</span><span class="n">groupaddress</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">is_knx_groupaddress</span><span class="p">(</span><span class="n">groupaddress</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if the passed string is a valid knx goup address</span>
 
@@ -5935,7 +5929,7 @@
 
 
 <div class="viewcode-block" id="Utils.is_timeframe"><a class="viewcode-back" href="../../lib/utils.html#lib.utils.Utils.is_timeframe">[Doku]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">is_timeframe</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">is_timeframe</span><span class="p">(</span><span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if a string is a timeframe. A timeframe consists of a</span>
 <span class="sd">        number and an optional unit identifier (e.g. 2h, 30m, ...).</span>
@@ -5956,7 +5950,8 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Utils.to_timeframe"><a class="viewcode-back" href="../../lib/utils.html#lib.utils.Utils.to_timeframe">[Doku]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">to_timeframe</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">to_timeframe</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>        <span class="c1"># works for Python 3.9 and under</span>
+<span class="c1">#    def to_timeframe(value: str | int) -&gt; int:  # works for Python 3.10 and above</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts a timeframe value to milliseconds. See is_timeframe() method.</span>
 <span class="sd">        The special value &#39;now&#39; is supported for the current time.</span>
@@ -5965,7 +5960,6 @@
 <span class="sd">        :type value: str, int, ...</span>
 
 <span class="sd">        :return: True if cant be converted and is true, False otherwise.</span>
-<span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">minute</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span>
@@ -5989,15 +5983,13 @@
             <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Utils.is_int"><a class="viewcode-back" href="../../lib/utils.html#lib.utils.Utils.is_int">[Doku]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">is_int</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">is_int</span><span class="p">(</span><span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if a string is a integer.</span>
 
 <span class="sd">        :param string: String to check.</span>
-<span class="sd">        :type string: str</span>
 
 <span class="sd">        :return: True if a cast to int works, false otherwise.</span>
-<span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">try</span><span class="p">:</span>
@@ -6009,15 +6001,13 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Utils.is_float"><a class="viewcode-back" href="../../lib/utils.html#lib.utils.Utils.is_float">[Doku]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">is_float</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">is_float</span><span class="p">(</span><span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if a string is a float.</span>
 
 <span class="sd">        :param string: String to check.</span>
-<span class="sd">        :type string: str</span>
 
 <span class="sd">        :return: True if a cast to float works, false otherwise.</span>
-<span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">try</span><span class="p">:</span>
@@ -6029,7 +6019,9 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Utils.to_bool"><a class="viewcode-back" href="../../lib/utils.html#lib.utils.Utils.to_bool">[Doku]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">to_bool</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;exception&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">to_bool</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="s1">&#39;exception&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>           <span class="c1"># works for Python 3.9 and under</span>
+<span class="c1">#    def to_bool(value: str|int|float, default: bool=&#39;exception&#39;) -&gt; bool:   # works for Python 3.10 and above</span>
+
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts a value to boolean.</span>
 
@@ -6041,11 +6033,8 @@
 
 <span class="sd">        :param value : value to convert</span>
 <span class="sd">        :param default: optional, value to return if value can not be parsed, if default is not set this method throws an exception</span>
-<span class="sd">        :type value: str, object, int, ...</span>
-<span class="sd">        :type value: str, object, int, ...</span>
 
 <span class="sd">        :return: True if cant be converted and is true, False otherwise.</span>
-<span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># -&gt; should it be possible to cast strings: 0 -&gt; False and non-0 -&gt; True (analog to integer values)?</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -6060,15 +6049,13 @@
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Utils.create_hash"><a class="viewcode-back" href="../../lib/utils.html#lib.utils.Utils.create_hash">[Doku]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">create_hash</span><span class="p">(</span><span class="n">plaintext</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">create_hash</span><span class="p">(</span><span class="n">plaintext</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create hash (currently sha512) for given plaintext value</span>
 
 <span class="sd">        :param plaintext: plaintext</span>
-<span class="sd">        :type plaintext: str</span>
 
 <span class="sd">        :return: hash of plaintext, lowercase letters</span>
-<span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">hashfunc</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha512</span><span class="p">()</span>
@@ -6076,15 +6063,13 @@
         <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">format</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="s2">&quot;02x&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">hashfunc</span><span class="o">.</span><span class="n">digest</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="Utils.is_hash"><a class="viewcode-back" href="../../lib/utils.html#lib.utils.Utils.is_hash">[Doku]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">is_hash</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">is_hash</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if value is a valid hash (currently sha512) value</span>
 
 <span class="sd">        :param value: value to check</span>
-<span class="sd">        :type value: str</span>
 
 <span class="sd">        :return: True: given value can be a sha512 hash, False: given value can not be a sha512 hash</span>
-<span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># a valid sha512 hash is a 128 charcter long string value</span>
@@ -6099,18 +6084,15 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Utils.check_hashed_password"><a class="viewcode-back" href="../../lib/utils.html#lib.utils.Utils.check_hashed_password">[Doku]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">check_hashed_password</span><span class="p">(</span><span class="n">pwd_to_check</span><span class="p">,</span> <span class="n">hashed_pwd</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">check_hashed_password</span><span class="p">(</span><span class="n">pwd_to_check</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">hashed_pwd</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if given plaintext password matches the hashed password</span>
 <span class="sd">        An empty password is always rejected</span>
 
 <span class="sd">        :param pwd_to_check: plaintext password to check</span>
-<span class="sd">        :type pwd_to_check: str</span>
 <span class="sd">        :param hashed_pwd: hashed password</span>
-<span class="sd">        :type hashed_pwd: str</span>
 
 <span class="sd">        :return: True: password matches, False: password does not match</span>
-<span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">pwd_to_check</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">pwd_to_check</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
@@ -6122,16 +6104,14 @@
         <span class="k">return</span> <span class="n">Utils</span><span class="o">.</span><span class="n">create_hash</span><span class="p">(</span><span class="n">pwd_to_check</span><span class="p">)</span> <span class="o">==</span> <span class="n">hashed_pwd</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Utils.strip_quotes"><a class="viewcode-back" href="../../lib/utils.html#lib.utils.Utils.strip_quotes">[Doku]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">strip_quotes</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">strip_quotes</span><span class="p">(</span><span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If a string contains quotes as first and last character, this function</span>
 <span class="sd">        returns the string without quotes, otherwise the string is returned unchanged</span>
 
 <span class="sd">        :param string: string to check for quotes</span>
-<span class="sd">        :type string: str</span>
 
 <span class="sd">        :return: string with quotes stripped</span>
-<span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">string</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
             <span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
