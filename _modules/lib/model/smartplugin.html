@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 15. Mai 2024, commit 64ef9c3) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 20. Mai 2024, commit 5917724) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -6670,13 +6670,25 @@
 
 
     <span class="c1"># ----------------------------------------------------------------------------------</span>
-    <span class="c1">#   Ascyncio handling (to be moved to SmartPlugin?)</span>
+    <span class="c1">#   Ascyncio handling</span>
     <span class="c1"># ----------------------------------------------------------------------------------</span>
 
     <span class="n">_asyncio_loop</span> <span class="o">=</span> <span class="kc">None</span>        <span class="c1"># eventloop of the plugin</span>
+    <span class="n">_asyncio_state</span> <span class="o">=</span> <span class="s1">&#39;unused&#39;</span>
     <span class="n">run_queue</span> <span class="o">=</span> <span class="kc">None</span>            <span class="c1"># queue to send commends to the main-coro/plugin-coro</span>
 
-<div class="viewcode-block" id="SmartPlugin.start_asyncio"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.start_asyncio">[Doku]</a>    <span class="k">def</span> <span class="nf">start_asyncio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_coro</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.asyncio_state"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.asyncio_state">[Doku]</a>    <span class="k">def</span> <span class="nf">asyncio_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the state of asyncio for the plugin</span>
+<span class="sd">         - &#39;unused&#39;  - If the plugin does not use asyncio (the start_asyncio method has not been successfully executed)</span>
+<span class="sd">         - &#39;running&#39; - An active eventloop is beeing processed</span>
+<span class="sd">         - &#39;stopped&#39; - There is no active eventloop</span>
+
+<span class="sd">        :return: &#39;unused&#39; | &#39;running&#39; | &#39;stopped&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_state</span></div>
+
+<div class="viewcode-block" id="SmartPlugin.start_asyncio"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.start_asyncio">[Doku]</a>    <span class="k">def</span> <span class="nf">start_asyncio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_coro</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Start the thread for the asyncio loop</span>
 
@@ -6715,6 +6727,7 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error stopping _asyncio_loop_thread: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_state</span> <span class="o">=</span> <span class="s1">&#39;stopped&#39;</span>
         <span class="k">return</span></div>
 
     <span class="k">def</span> <span class="nf">_asyncio_loop_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_coro</span><span class="p">):</span>
@@ -6746,11 +6759,13 @@
 
         <span class="c1"># Create the main task of the plugin and await it</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">plugin_coro</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;PluginTask&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_state</span> <span class="o">=</span> <span class="s1">&#39;running&#39;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exception raised in PluginTask: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_state</span> <span class="o">=</span> <span class="s1">&#39;stopped&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;_asyncio main task of plugin finished&quot;</span><span class="p">)</span>
 
