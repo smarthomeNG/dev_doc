@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 20. Mai 2024, commit 5917724) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 20. Mai 2024, commit f2e55ff) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -6675,6 +6675,7 @@
 
     <span class="n">_asyncio_loop</span> <span class="o">=</span> <span class="kc">None</span>        <span class="c1"># eventloop of the plugin</span>
     <span class="n">_asyncio_state</span> <span class="o">=</span> <span class="s1">&#39;unused&#39;</span>
+    <span class="n">_used_plugin_coro</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1"># plugin coro used when calling start_asyncio (to be able to used by a generic &#39;restart asyncio&#39; method</span>
     <span class="n">run_queue</span> <span class="o">=</span> <span class="kc">None</span>            <span class="c1"># queue to send commends to the main-coro/plugin-coro</span>
 
 <div class="viewcode-block" id="SmartPlugin.asyncio_state"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.asyncio_state">[Doku]</a>    <span class="k">def</span> <span class="nf">asyncio_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -6697,16 +6698,32 @@
 
 <span class="sd">        :param plugin_coro: The asyncio coroutine which implements the async part of the plugin</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_used_plugin_coro</span> <span class="o">=</span> <span class="n">plugin_coro</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_known_asyncio_coro</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_start_known_asyncio_coro</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start the thread for the asyncio loop, when plugin_coro is already known</span>
+
+<span class="sd">        The started asyncio thread sets up the asyncio environment and starts the evemtloop.</span>
+<span class="sd">        This routine is to be called from the plugin&#39;s run() method</span>
+
+<span class="sd">        :param plugin_coro: The asyncio coroutine which implements the async part of the plugin</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_used_plugin_coro</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Called &#39;_start_known_asyncio_coro()&#39; without known plugin_coro&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
         <span class="n">threadname</span> <span class="o">=</span> <span class="s1">&#39;plugins.&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39;.asyncio&#39;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pluginThread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop_thread</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">threadname</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;plugin_coro&#39;</span><span class="p">:</span> <span class="n">plugin_coro</span><span class="p">})</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pluginThread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop_thread</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">threadname</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;plugin_coro&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_used_plugin_coro</span><span class="p">})</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting thread </span><span class="si">{</span><span class="n">threadname</span><span class="si">}</span><span class="s2"> for asyncio loop...&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pluginThread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot start thread &#39;</span><span class="si">{</span><span class="n">threadname</span><span class="si">}</span><span class="s2">&#39; - Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span></div>
+        <span class="k">return</span>
 
-<div class="viewcode-block" id="SmartPlugin.stop_asyncio"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.stop_asyncio">[Doku]</a>    <span class="k">def</span> <span class="nf">stop_asyncio</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.stop_asyncio"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.stop_asyncio">[Doku]</a>    <span class="k">def</span> <span class="nf">stop_asyncio</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        stop the eventloop and the thread it is running in</span>
 
