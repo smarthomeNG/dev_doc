@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 21. Mai 2024, commit 789731b) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 21. Mai 2024, commit 697676f) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -6813,6 +6813,25 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;run_asyncio_coro: Exception </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">coro</span><span class="si">=}</span><span class="s2">, loop=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
+<div class="viewcode-block" id="SmartPlugin.wait_for_asyncio_termination"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.wait_for_asyncio_termination">[Doku]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">wait_for_asyncio_termination</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Wait for the command to stop the plugin_coro</span>
+
+<span class="sd">        This is used to block the plugin_coro until the plugin should be stopped.</span>
+
+<span class="sd">        When the plugin should be stopped, a string &#39;STOP&#39; is written into the queue</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">queue_command</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">while</span> <span class="n">queue_command</span> <span class="o">!=</span> <span class="s1">&#39;STOP&#39;</span><span class="p">:</span>
+            <span class="n">queue_command</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">queue_command</span> <span class="o">!=</span> <span class="s1">&#39;STOP&#39;</span><span class="p">:</span>
+                <span class="c1"># put command back to queue?</span>
+                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+
+        <span class="k">return</span></div>
+
 <div class="viewcode-block" id="SmartPlugin.put_command_to_run_queue"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.put_command_to_run_queue">[Doku]</a>    <span class="k">def</span> <span class="nf">put_command_to_run_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Put an entry to the run-queue</span>
@@ -6833,7 +6852,6 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get an entry from the run-queue</span>
 
-<span class="sd">        At the moment this is used, to block the plugin_coro until the plugin should be stopped.</span>
 <span class="sd">        When the plugin should be stopped, a string &#39;STOP&#39; is written into the queue and the plugin_coro can check for</span>
 <span class="sd">        the string &#39;STOP&#39; and terminate itself.</span>
 
@@ -6841,25 +6859,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">queue_item</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">queue_item</span></div>
-
-<div class="viewcode-block" id="SmartPlugin.wait_for_asyncio_termination"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.wait_for_asyncio_termination">[Doku]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">wait_for_asyncio_termination</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Wait for the command to stop the plugin_coro</span>
-
-<span class="sd">        This is used to block the plugin_coro until the plugin should be stopped.</span>
-
-<span class="sd">        When the plugin should be stopped, a string &#39;STOP&#39; is written into the queue</span>
-
-<span class="sd">        :return:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">queue_command</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="k">while</span> <span class="n">queue_command</span> <span class="o">!=</span> <span class="s1">&#39;STOP&#39;</span><span class="p">:</span>
-            <span class="n">queue_command</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">queue_command</span> <span class="o">!=</span> <span class="s1">&#39;STOP&#39;</span><span class="p">:</span>
-                <span class="c1"># put command back to queue?</span>
-                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
-
-        <span class="k">return</span></div>
 
 <div class="viewcode-block" id="SmartPlugin.list_asyncio_tasks"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.list_asyncio_tasks">[Doku]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">list_asyncio_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
