@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Class SmartPlugin &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 20. Mai 2024, commit f2e55ff) Dokumentation</title>
+  <title>Class SmartPlugin &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 21. Mai 2024, commit 789731b) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -4852,6 +4852,13 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../referenz/plugins/plugins.html">Plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../referenz/plugins/asyncio_support.html">asyncio Unterstützung in Plugins <span class="redsup">Neu</span></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../referenz/plugins/asyncio_support.html#methoden-zur-unterstutzung-von-asyncio">Methoden zur Unterstützung von asyncio</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../referenz/plugins/asyncio_support.html#lib.model.smartplugin.SmartPlugin"><code class="docutils literal notranslate"><span class="pre">SmartPlugin</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../referenz/plugins/plugin_typen/plugin_typen.html">Plugin Typen</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../referenz/plugins/plugin_typen/plugin_typen.html#classic-plugin">Classic Plugin</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../referenz/plugins/plugin_typen/plugin_typen.html#smartplugin">SmartPlugin</a><ul>
@@ -6324,11 +6331,6 @@ called for all plugins before the plugins are started (calling all run methods).
 <p>The parameters are identical to the scheduler.get method from lib.scheduler</p>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">run_queue</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em></dt>
-<dd></dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">asyncio_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/lib/model/smartplugin.html#SmartPlugin.asyncio_state"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a></dt>
@@ -6394,8 +6396,54 @@ E.g.: This can be used in the plugins update_item() method to send data to the d
 
 <dl class="py method">
 <dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">put_command_to_run_queue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/lib/model/smartplugin.html#SmartPlugin.put_command_to_run_queue"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a></dt>
+<dd><p>Put an entry to the run-queue</p>
+<dl class="field-list simple">
+<dt class="field-odd">Rückgabetyp<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_command_from_run_queue</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/lib/model/smartplugin.html#SmartPlugin.get_command_from_run_queue"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a></dt>
+<dd><p>Get an entry from the run-queue</p>
+<p>At the moment this is used, to block the plugin_coro until the plugin should be stopped.
+When the plugin should be stopped, a string ‚STOP‘ is written into the queue and the plugin_coro can check for
+the string ‚STOP‘ and terminate itself.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Rückgabetyp<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-even">Rückgabe<span class="colon">:</span></dt>
+<dd class="field-even"><p>First command from the queue</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wait_for_asyncio_termination</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/lib/model/smartplugin.html#SmartPlugin.wait_for_asyncio_termination"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a></dt>
+<dd><p>Wait for the command to stop the plugin_coro</p>
+<p>This is used to block the plugin_coro until the plugin should be stopped.</p>
+<p>When the plugin should be stopped, a string ‚STOP‘ is written into the queue</p>
+<dl class="field-list simple">
+<dt class="field-odd">Rückgabetyp<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-even">Rückgabe<span class="colon">:</span></dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_asyncio_tasks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/lib/model/smartplugin.html#SmartPlugin.list_asyncio_tasks"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a></dt>
-<dd><p>Log al list of the tasks that are in the eventloop</p>
+<dd><p>Log a list of the tasks that are in the eventloop</p>
+<p>The intention of this method is to support the plugin development/debugging. It can be called
+from the executor plugin or from the evaql-syntax-chacker of the admin gui</p>
 </dd></dl>
 
 <dl class="py method">
