@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>modules.admin &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 27. Mai 2024, commit 7afce66) Dokumentation</title>
+  <title>modules.admin &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 30. Mai 2024, commit 6573020) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5729,10 +5729,11 @@
 
 
 <span class="n">suburl</span> <span class="o">=</span> <span class="s1">&#39;admin&#39;</span>
+<span class="n">suburl2</span> <span class="o">=</span> <span class="s1">&#39;admin2&#39;</span>
 
 
 <span class="k">class</span> <span class="nc">Admin</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
-    <span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;1.8.1&#39;</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;1.8.2&#39;</span>
     <span class="n">longname</span> <span class="o">=</span> <span class="s1">&#39;Admin module for SmartHomeNG&#39;</span>
     <span class="n">_port</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -5791,11 +5792,15 @@
         <span class="n">mysuburl</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="k">if</span> <span class="n">suburl</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="n">mysuburl</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">suburl</span>
+        <span class="n">mysuburl2</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">suburl2</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">mysuburl2</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">suburl2</span>
         <span class="n">ip</span> <span class="o">=</span> <span class="n">Utils</span><span class="o">.</span><span class="n">get_local_ipv4_address</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod_http</span><span class="o">.</span><span class="n">_port</span>
         <span class="c1"># self.logger.warning(&#39;port = {}&#39;.format(self._port))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shng_url_root</span> <span class="o">=</span> <span class="s1">&#39;http://&#39;</span> <span class="o">+</span> <span class="n">ip</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="p">)</span>         <span class="c1"># for links mto plugin webinterfaces</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">url_root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shng_url_root</span> <span class="o">+</span> <span class="n">mysuburl</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url_root2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shng_url_root</span> <span class="o">+</span> <span class="n">mysuburl2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api_url_root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shng_url_root</span> <span class="o">+</span> <span class="s1">&#39;api&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api2_url_root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shng_url_root</span> <span class="o">+</span> <span class="s1">&#39;api2&#39;</span>
 
@@ -5808,6 +5813,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">dbghigh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s2">&quot;Methode &#39;</span><span class="si">{method}</span><span class="s2">&#39; aufgerufen&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;method&#39;</span><span class="p">:</span> <span class="s1">&#39;start()&#39;</span><span class="p">}))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">webif_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/webif&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">webif2_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/webif2&#39;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Module &#39;</span><span class="si">{}</span><span class="s2">&#39;: webif_dir = webif_dir = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shortname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">webif_dir</span><span class="p">))</span>
         <span class="c1"># config for Angular app (special: error page)</span>
@@ -5823,6 +5829,24 @@
                 <span class="s1">&#39;tools.expires.on&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
                 <span class="s1">&#39;tools.expires.secs&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
                 <span class="s1">&#39;error_page.404&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">webif_dir</span> <span class="o">+</span> <span class="s1">&#39;/static/index.html&#39;</span><span class="p">,</span>
+                <span class="c1">#                    &#39;error_page.404&#39;: self.error_page,</span>
+                <span class="c1">#                   &#39;tools.auth_basic.on&#39;: False,</span>
+                <span class="c1">#                   &#39;tools.auth_basic.realm&#39;: &#39;shng_admin_webif&#39;,</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="c1"># config for Angular app (special: error page)</span>
+        <span class="n">config2</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;/&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;tools.staticdir.root&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">webif2_dir</span><span class="p">,</span>
+                <span class="s1">&#39;tools.staticdir.on&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s1">&#39;tools.staticdir.dir&#39;</span><span class="p">:</span> <span class="s1">&#39;static&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;tools.staticdir.index&#39;</span><span class="p">:</span> <span class="s1">&#39;index.html&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;tools.chaching.on&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s1">&#39;tools.caching.force&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s1">&#39;tools.caching.delay&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+                <span class="s1">&#39;tools.expires.on&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s1">&#39;tools.expires.secs&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+                <span class="s1">&#39;error_page.404&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">webif2_dir</span> <span class="o">+</span> <span class="s1">&#39;/static/index.html&#39;</span><span class="p">,</span>
                 <span class="c1">#                    &#39;error_page.404&#39;: self.error_page,</span>
                 <span class="c1">#                   &#39;tools.auth_basic.on&#39;: False,</span>
                 <span class="c1">#                   &#39;tools.auth_basic.realm&#39;: &#39;shng_admin_webif&#39;,</span>
@@ -5877,11 +5901,23 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Register the web interface as a cherrypy app</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;register_webif: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">webif_dir</span><span class="si">=}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">shng_url_root</span><span class="si">=}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">url_root</span><span class="si">=}</span><span class="s2"> - </span><span class="si">{</span><span class="n">suburl</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mod_http</span><span class="o">.</span><span class="n">register_webif</span><span class="p">(</span><span class="n">WebInterface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">webif_dir</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shng_url_root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">url_root</span><span class="p">),</span>
                                      <span class="n">suburl</span><span class="p">,</span>
                                      <span class="n">config</span><span class="p">,</span>
                                      <span class="s1">&#39;admin&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
                                      <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Administrationsoberfläche für SmartHomeNG&#39;</span><span class="p">,</span>
+                                     <span class="n">webifname</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                     <span class="n">use_global_basic_auth</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                     <span class="n">useprefix</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Register the alternate web interface as a cherrypy app</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;register_webif: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">webif2_dir</span><span class="si">=}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">shng_url_root</span><span class="si">=}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">url_root2</span><span class="si">=}</span><span class="s2"> - </span><span class="si">{</span><span class="n">suburl2</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mod_http</span><span class="o">.</span><span class="n">register_webif</span><span class="p">(</span><span class="n">WebInterface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">webif2_dir</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shng_url_root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">url_root2</span><span class="p">),</span>
+                                     <span class="n">suburl2</span><span class="p">,</span>
+                                     <span class="n">config2</span><span class="p">,</span>
+                                     <span class="s1">&#39;admin2&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                     <span class="n">description</span><span class="o">=</span><span class="s1">&#39;kommende Administrationsoberfläche für SmartHomeNG&#39;</span><span class="p">,</span>
                                      <span class="n">webifname</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
                                      <span class="n">use_global_basic_auth</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                      <span class="n">useprefix</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
