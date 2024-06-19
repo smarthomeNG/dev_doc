@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 19. Juni 2024, commit ae4d1e5) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 19. Juni 2024, commit a24ee12) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -5751,6 +5751,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span> <span class="o">=</span> <span class="p">{}</span>      <span class="c1"># make sure, that the dict is local to the plugin</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_item_lookup_dict</span> <span class="o">=</span> <span class="p">{}</span>   <span class="c1"># make sure, that the dict is local to the plugin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_schedulers</span> <span class="o">=</span> <span class="p">[]</span>         <span class="c1"># all created schedulers for this plugin</span>
 
         <span class="c1"># set parameter value</span>
         <span class="c1"># TODO: need to check for this item in parse_item and set self._suspend_item</span>
@@ -6630,6 +6631,7 @@
 
 <span class="sd">        The parameters are identical to the scheduler.add method from lib.scheduler</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_schedulers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">name</span>
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pluginname_prefix</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">()</span> <span class="o">+</span> <span class="n">name</span>
@@ -6662,6 +6664,10 @@
 
 <span class="sd">        The parameters are identical to the scheduler.remove method from lib.scheduler</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_schedulers</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">pass</span>  <span class="c1"># TODO: maybe give a warning?</span>
         <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">name</span>
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pluginname_prefix</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">()</span> <span class="o">+</span> <span class="n">name</span>
@@ -6682,6 +6688,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;scheduler_get: name = </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">from_smartplugin</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="SmartPlugin.scheduler_get_all"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.scheduler_get_all">[Doku]</a>    <span class="k">def</span> <span class="nf">scheduler_get_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; This method returns a list of all added schedulers &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schedulers</span></div>
+
+<div class="viewcode-block" id="SmartPlugin.scheduler_remove_all"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.scheduler_remove_all">[Doku]</a>    <span class="k">def</span> <span class="nf">scheduler_remove_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; This method removes all schedulers added by the plugin &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">sched</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schedulers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_remove</span><span class="p">(</span><span class="n">sched</span><span class="p">)</span></div>
 
     <span class="c1"># ----------------------------------------------------------------------------------</span>
     <span class="c1">#   Ascyncio handling</span>
