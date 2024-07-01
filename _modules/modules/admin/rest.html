@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>modules.admin.rest &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 30. Juni 2024, commit 8c414ae) Dokumentation</title>
+  <title>modules.admin.rest &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 1. Juli 2024, commit 3783a79) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -6077,7 +6077,10 @@
     <span class="nd">@cherrypy</span><span class="o">.</span><span class="n">expose</span>
     <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">vpath</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RESTResource.default: *vpath=</span><span class="si">{</span><span class="n">vpath</span><span class="si">}</span><span class="s2">, **params=</span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">vpath</span><span class="p">)</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_response_headers</span><span class="p">(</span><span class="o">*</span><span class="n">vpath</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_response_headers</span><span class="p">(</span><span class="o">*</span><span class="n">vpath</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;reas.py default: Exception </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2"> - parameters: </span><span class="si">{</span><span class="n">vpath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">vpath</span><span class="p">:</span>
             <span class="n">resource</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="c1"># self.logger.info(&quot;RESTResource.default: vpath = &#39;{}&#39;,  params = &#39;{}&#39;&quot;.format(list(vpath), dict(**params)))</span>
