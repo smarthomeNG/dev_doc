@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 1. Juli 2024, commit 3783a79) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 3. Juli 2024, commit 65903b9) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -5693,18 +5693,18 @@
 <span class="c1">#########################################################################</span>
 
 <span class="kn">from</span> <span class="nn">lib.model.smartobject</span> <span class="kn">import</span> <span class="n">SmartObject</span>
-
 <span class="kn">from</span> <span class="nn">lib.shtime</span> <span class="kn">import</span> <span class="n">Shtime</span>
 <span class="kn">from</span> <span class="nn">lib.module</span> <span class="kn">import</span> <span class="n">Modules</span>
 <span class="kn">import</span> <span class="nn">lib.shyaml</span> <span class="k">as</span> <span class="nn">shyaml</span>
 <span class="kn">from</span> <span class="nn">lib.utils</span> <span class="kn">import</span> <span class="n">Utils</span>
 <span class="kn">from</span> <span class="nn">lib.translation</span> <span class="kn">import</span> <span class="n">translate</span> <span class="k">as</span> <span class="n">lib_translate</span>
+
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Coroutine</span><span class="p">,</span> <span class="n">Any</span>
 
 
 <div class="viewcode-block" id="SmartPlugin"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin">[Doku]</a><span class="k">class</span> <span class="nc">SmartPlugin</span><span class="p">(</span><span class="n">SmartObject</span><span class="p">,</span> <span class="n">Utils</span><span class="p">):</span>
@@ -5718,74 +5718,179 @@
 
     <span class="n">PLUGIN_VERSION</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="n">ALLOW_MULTIINSTANCE</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="n">__instance</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>       <span class="c1">#: Name of this instance of the plugin</span>
-    <span class="n">_sh</span> <span class="o">=</span> <span class="kc">None</span>            <span class="c1">#: Variable containing a pointer to the main SmartHomeNG object; is initialized during loading of the plugin; :Warning: Don&#39;t change it</span>
-    <span class="n">_configfilename</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>  <span class="c1">#: Configfilename of the plugin; is initialized during loading of the plugin; :Warning: Don&#39;t change it</span>
-    <span class="n">_configname</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>      <span class="c1">#: Configname of the plugin; is initialized during loading of the plugin; :Warning: Don&#39;t change it</span>
-    <span class="n">_shortname</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>       <span class="c1">#: Shortname of the plugin; is initialized during loading of the plugin; :Warning: Don&#39;t change it</span>
-    <span class="n">_classname</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>       <span class="c1">#: Classname of the plugin; is initialized during loading of the plugin; :Warning: Don&#39;t change it</span>
-    <span class="n">shtime</span> <span class="o">=</span> <span class="kc">None</span>         <span class="c1">#: Variable containing a pointer to the SmartHomeNG time handling object; is initialized during loading of the plugin; :Warning: Don&#39;t change it</span>
-
-    <span class="n">_stop_on_item_change</span> <span class="o">=</span> <span class="kc">True</span>     <span class="c1"># Plugin needs to be stopped on/before item changes</span>
+    <span class="n">STOP_ON_ITEM_CHANGE</span> <span class="o">=</span> <span class="kc">True</span>      <span class="c1"># Plugin needs to be stopped on/before item changes</span>
                                     <span class="c1"># needed by self.remove_item(), don&#39;t change unless you know how and why</span>
+
+    <span class="c1"># these variables are initialized by the plugin loader for each plugin</span>
+
+    <span class="n">__instance</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>             <span class="c1">#: Name of this instance of the plugin</span>
+    <span class="n">_sh</span> <span class="o">=</span> <span class="kc">None</span>                  <span class="c1">#: Variable containing a pointer to the main SmartHomeNG object; is initialized during loading of the plugin; :Warning: Don&#39;t change it</span>
+    <span class="n">_configfilename</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>        <span class="c1">#: Configfilename of the plugin; is initialized during loading of the plugin; :Warning: Don&#39;t change it</span>
+    <span class="n">_configname</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>            <span class="c1">#: Configname of the plugin; is initialized during loading of the plugin; :Warning: Don&#39;t change it</span>
+    <span class="n">_shortname</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>             <span class="c1">#: Shortname of the plugin; is initialized during loading of the plugin; :Warning: Don&#39;t change it</span>
+    <span class="n">_classname</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>             <span class="c1">#: Classname of the plugin; is initialized during loading of the plugin; :Warning: Don&#39;t change it</span>
+    <span class="n">shtime</span> <span class="o">=</span> <span class="kc">None</span>               <span class="c1">#: Variable containing a pointer to the SmartHomeNG time handling object; is initialized during loading of the plugin; :Warning: Don&#39;t change it</span>
+
+    <span class="n">_parameters</span> <span class="o">=</span> <span class="p">{}</span>            <span class="c1"># Dict for storing the configuration parameters read from /etc/plugin.yaml</span>
+    <span class="n">_hide_parameters</span> <span class="o">=</span> <span class="p">{}</span>       <span class="c1"># Dict for storing parameters to hide from AdminUI</span>
 
     <span class="n">_pluginname_prefix</span> <span class="o">=</span> <span class="s1">&#39;plugins.&#39;</span>
 
-    <span class="n">_plg_item_dict</span> <span class="o">=</span> <span class="p">{}</span>     <span class="c1"># dict to hold the items assigned to the plugin and their plugin specific information</span>
-    <span class="n">_item_lookup_dict</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># dict for the reverse lookup from a mapping (device-command or matchstring) to an item,</span>
-                            <span class="c1"># contains a list of items for each mapping</span>
-    <span class="n">_add_translation</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1"># these variables _should_ be instance members (not class members) ...</span>
+    <span class="c1"># BUT if a plugin fails to call the parent class&#39; __init__(), these are</span>
+    <span class="c1"># not present and cause errors.</span>
+    <span class="c1"># So - until a proper QA for 3rd party plugins is in place - we define these</span>
+    <span class="c1"># as class members to prevent AttributeErrors later on...</span>
 
-    <span class="n">_parameters</span> <span class="o">=</span> <span class="p">{}</span>        <span class="c1"># Dict for storing the configuration parameters read from /etc/plugin.yaml</span>
-    <span class="n">_hide_parameters</span> <span class="o">=</span> <span class="p">{}</span>   <span class="c1"># Dict for storing parameters to hide from AdminUI</span>
-    <span class="n">_schedulers</span> <span class="o">=</span> <span class="p">[]</span>        <span class="c1"># List for all plugin schedulers</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-    <span class="n">alive</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">suspended</span> <span class="o">=</span> <span class="kc">False</span>       <span class="c1"># flag for setting suspended (inactive) state</span>
-    <span class="n">_suspend_item</span> <span class="o">=</span> <span class="kc">None</span>      <span class="c1"># suspend item</span>
-    <span class="n">_suspend_item_path</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># path of suspend item</span>
+    <span class="n">_plg_item_dict</span> <span class="o">=</span> <span class="p">{}</span>         <span class="c1"># dict to hold the items assigned to the plugin and their plugin specific information</span>
+    <span class="n">_item_lookup_dict</span> <span class="o">=</span> <span class="p">{}</span>      <span class="c1"># dict for the reverse lookup from a mapping (device-command or matchstring) to an item,</span>
+                                <span class="c1"># contains a list of items for each mapping</span>
 
-    <span class="c1"># Initialization of SmartPlugin class called by super().__init__() from the plugin&#39;s __init__() method</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span> <span class="o">=</span> <span class="p">{}</span>      <span class="c1"># make sure, that the dict is local to the plugin</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_item_lookup_dict</span> <span class="o">=</span> <span class="p">{}</span>   <span class="c1"># make sure, that the dict is local to the plugin</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_schedulers</span> <span class="o">=</span> <span class="p">[]</span>         <span class="c1"># all created schedulers for this plugin</span>
+    <span class="n">alive</span> <span class="o">=</span> <span class="kc">False</span>               <span class="c1"># flag if plugin is running</span>
+    <span class="n">_schedulers</span> <span class="o">=</span> <span class="p">[]</span>            <span class="c1"># all created schedulers for this plugin</span>
 
-        <span class="c1"># set parameter value</span>
-        <span class="c1"># TODO: need to check for this item in parse_item and set self._suspend_item</span>
-        <span class="c1">#       for suspend item functionality to work</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_value</span><span class="p">(</span><span class="s1">&#39;suspend_item&#39;</span><span class="p">)</span>
+    <span class="n">_add_translation</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="SmartPlugin.suspend"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.suspend">[Doku]</a>    <span class="k">def</span> <span class="nf">suspend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">_pause_item</span> <span class="o">=</span> <span class="kc">None</span>          <span class="c1"># pause item</span>
+    <span class="n">_pause_item_path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>       <span class="c1"># path of pause item</span>
+
+    <span class="n">_asyncio_loop</span> <span class="o">=</span> <span class="kc">None</span>        <span class="c1"># eventloop of the plugin</span>
+    <span class="n">_asyncio_state</span> <span class="o">=</span> <span class="s1">&#39;unused&#39;</span>   <span class="c1"># stored state of the asyncio use of the plugin</span>
+    <span class="n">_used_plugin_coro</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1"># plugin coro used when calling start_asyncio (to be able to used by a generic &#39;restart asyncio&#39; method</span>
+    <span class="n">_run_queue</span> <span class="o">=</span> <span class="kc">None</span>           <span class="c1"># queue to send commends to the main-coro/plugin-coro</span>
+
+<span class="c1">#</span>
+<span class="c1"># the following methods need to be overwritten / implemented</span>
+<span class="c1">#</span>
+
+<div class="viewcode-block" id="SmartPlugin.run"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.run">[Doku]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        sets plugin into suspended mode, no network/serial activity and no item changed</span>
+<span class="sd">        This method of the plugin is called to start the plugin</span>
+
+<span class="sd">        :note: This method needs to be overwritten by the plugin implementation. Otherwise an error will be raised</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alive</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;plugin suspended by </span><span class="si">{</span><span class="n">by</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;unknown&quot;</span><span class="si">}</span><span class="s1">, connections will be closed&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">suspended</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;disconnect&#39;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;&#39;Plugin&#39; subclasses should have a &#39;run()&#39; method&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.resume"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.resume">[Doku]</a>    <span class="k">def</span> <span class="nf">resume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.stop"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.stop">[Doku]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        disabled suspended mode, network/serial connections are resumed</span>
+<span class="sd">        This method of the plugin is called to stop the plugin when SmartHomeNG shuts down</span>
+
+<span class="sd">        :note: This method needs to be overwritten by the plugin implementation. Otherwise an error will be raised</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alive</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;plugin resumed by </span><span class="si">{</span><span class="n">by</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;unknown&quot;</span><span class="si">}</span><span class="s1">, connections will be resumed&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">suspended</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;connect&#39;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;&#39;Plugin&#39; subclasses should have a &#39;stop()&#39; method&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.deinit"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.deinit">[Doku]</a>    <span class="k">def</span> <span class="nf">deinit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="p">[]):</span>
+<span class="c1">#</span>
+<span class="c1"># the following methods should be overwritten, but also called via super().&lt;method&gt;()</span>
+<span class="c1">#</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialization of SmartPlugin instance</span>
+
+<span class="sd">        Should be called by super().__init__() from the plugin&#39;s __init__() method</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># initialize instance members; for mutable types make sure these are &quot;instance-specific&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span> <span class="o">=</span> <span class="p">{}</span>        <span class="c1"># dict to hold the items assigned to the plugin and their plugin specific information</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_item_lookup_dict</span> <span class="o">=</span> <span class="p">{}</span>     <span class="c1"># dict for the reverse lookup from a mapping (device-command or matchstring) to an item,</span>
+                                        <span class="c1"># contains a list of items for each mapping</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_schedulers</span> <span class="o">=</span> <span class="p">[]</span>           <span class="c1"># all created schedulers for this plugin</span>
+
+        <span class="c1"># initialize plugin variables</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">alive</span> <span class="o">=</span> <span class="kc">False</span>              <span class="c1"># flag if plugin is running</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_translation</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pause_item</span> <span class="o">=</span> <span class="kc">None</span>         <span class="c1"># pause item</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pause_item_path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>      <span class="c1"># pause item path</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span> <span class="o">=</span> <span class="kc">None</span>       <span class="c1"># eventloop of the plugin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_state</span> <span class="o">=</span> <span class="s1">&#39;unused&#39;</span>  <span class="c1"># stored state of the asyncio use of the plugin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_used_plugin_coro</span> <span class="o">=</span> <span class="kc">None</span>   <span class="c1"># plugin coro used when calling start_asyncio (to be able to used by a generic &#39;restart asyncio&#39; method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_run_queue</span> <span class="o">=</span> <span class="kc">None</span>          <span class="c1"># queue to send commends to the main-coro/plugin-coro</span>
+
+<span class="c1">#</span>
+<span class="c1"># the following methods should be overwritten</span>
+<span class="c1">#</span>
+
+<div class="viewcode-block" id="SmartPlugin.update_item"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.update_item">[Doku]</a>    <span class="k">def</span> <span class="nf">update_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Item has been updated</span>
+
+<span class="sd">        This method is called, if the value of an item has been updated by</span>
+<span class="sd">        SmartHomeNG. It should write the changed value out to the device</span>
+<span class="sd">        (hardware/interface) that is managed by this plugin.</span>
+
+<span class="sd">        Method must be overwritten for the plugin to be able to react to</span>
+<span class="sd">        item changes.</span>
+
+<span class="sd">        :param item: item to be updated towards the plugin</span>
+<span class="sd">        :param caller: if given it represents the callers name</span>
+<span class="sd">        :param source: if given it represents the source</span>
+<span class="sd">        :param dest: if given it represents the dest</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># check for pause item</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pause_item</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">caller</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;pause item changed to </span><span class="si">{</span><span class="n">item</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">item</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">alive</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="n">item</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">alive</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">alive</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Received item update for item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">, but plugin is not running. Ignoring...&#39;</span><span class="p">)</span>
+            <span class="k">return</span></div>
+
+<div class="viewcode-block" id="SmartPlugin.parse_item"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.parse_item">[Doku]</a>    <span class="k">def</span> <span class="nf">parse_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is used to parse the configuration of an item for this plugin. It is</span>
+<span class="sd">        called for each item before the plugins are started (calling all run methods).</span>
+<span class="sd">        Copy code to own function; calling via super() does not work without bending three arms...</span>
+
+<span class="sd">        :note: This method should be overwritten by the plugin implementation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># check for pause item</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pause_item_path</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;pause item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1"> registered&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pause_item</span> <span class="o">=</span> <span class="n">item</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">updating</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_item</span></div>
+
+<span class="c1">#</span>
+<span class="c1"># the following methods can be overwritten</span>
+<span class="c1">#</span>
+
+<div class="viewcode-block" id="SmartPlugin.poll_device"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.poll_device">[Doku]</a>    <span class="k">def</span> <span class="nf">poll_device</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        periodically poll device (or do other things periodically)</span>
+
+<span class="sd">        :note: This method can be overwritten by plugin implementation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="SmartPlugin.parse_logic"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.parse_logic">[Doku]</a>    <span class="k">def</span> <span class="nf">parse_logic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logic</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is used to parse the configuration of a logic for this plugin. It is</span>
+<span class="sd">        called for all plugins before the plugins are started (calling all run methods).</span>
+
+<span class="sd">        :note: This method should to be overwritten by the plugin implementation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="SmartPlugin.deinit"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.deinit">[Doku]</a>    <span class="k">def</span> <span class="nf">deinit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="p">[])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method &quot;deinitializes&quot; the plugin, i.e. prepares for unloading.</span>
+<span class="sd">        The plugin is stopped and all (or all provided) items are un-registered.</span>
+
 <span class="sd">        If the Plugin needs special code to be executed before it is unloaded, this method</span>
-<span class="sd">        has to be overwritten with the code needed for de-initialization</span>
+<span class="sd">        has to be overwritten with the code needed for de-initialization. Keep the</span>
+<span class="sd">        original code or call super().deinit()...</span>
 
 <span class="sd">        If called without parameters, all registered items are unregistered.</span>
 <span class="sd">        items is a list of items (or a single Item() object).</span>
@@ -5801,7 +5906,14 @@
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">remove_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.add_item"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.add_item">[Doku]</a>    <span class="k">def</span> <span class="nf">add_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">config_data_dict</span><span class="o">=</span><span class="p">{},</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">updating</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># the following methods should NOT be overwritten</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+
+<div class="viewcode-block" id="SmartPlugin.add_item"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.add_item">[Doku]</a>    <span class="k">def</span> <span class="nf">add_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">config_data_dict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">mapping</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">updating</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For items that are used/handled by a plugin, this method stores the configuration information</span>
 <span class="sd">        that is individual for the plugin. The configuration information is/has to be stored in a dictionary</span>
@@ -5861,7 +5973,7 @@
 
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.remove_item"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.remove_item">[Doku]</a>    <span class="k">def</span> <span class="nf">remove_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.remove_item"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.remove_item">[Doku]</a>    <span class="k">def</span> <span class="nf">remove_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove configuration data for an item (and remove the item from the mapping&#39;s list</span>
 
@@ -5878,16 +5990,16 @@
 
         <span class="c1"># check if plugin is running</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alive</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stop_on_item_change</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">STOP_ON_ITEM_CHANGE</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;stopping plugin for removal of item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;not stopping plugin for removal of item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item_path</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;trying to remove suspend item </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">. Disabling suspend item function&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item_path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pause_item_path</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;trying to remove pause item </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">. Disabling pause item function&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pause_item</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pause_item_path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
         <span class="c1"># remove data from item_dict early in case of concurrent actions</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">]</span>
@@ -5905,32 +6017,14 @@
 
         <span class="k">return</span> <span class="kc">True</span></div>
 
-
-<div class="viewcode-block" id="SmartPlugin.callerinfo"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.callerinfo">[Doku]</a>    <span class="k">def</span> <span class="nf">callerinfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.callerinfo"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.callerinfo">[Doku]</a>    <span class="k">def</span> <span class="nf">callerinfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
         <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">caller</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">caller</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="n">source</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.update_item"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.update_item">[Doku]</a>    <span class="k">def</span> <span class="nf">update_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Item has been updated</span>
-
-<span class="sd">        This method is called, if the value of an item has been updated by</span>
-<span class="sd">        SmartHomeNG. It should write the changed value out to the device</span>
-<span class="sd">        (hardware/interface) that is managed by this plugin.</span>
-
-<span class="sd">        Method must be overwritten to be functional.</span>
-
-<span class="sd">        :param item: item to be updated towards the plugin</span>
-<span class="sd">        :param caller: if given it represents the callers name</span>
-<span class="sd">        :param source: if given it represents the source</span>
-<span class="sd">        :param dest: if given it represents the dest</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
-
-<div class="viewcode-block" id="SmartPlugin.register_updating"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.register_updating">[Doku]</a>    <span class="k">def</span> <span class="nf">register_updating</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.register_updating"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.register_updating">[Doku]</a>    <span class="k">def</span> <span class="nf">register_updating</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Mark item in self._plg_item_dict as registered in shng for updating</span>
 <span class="sd">        (usually done by returning self.update_item from self.parse_item)</span>
@@ -5948,7 +6042,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">][</span><span class="s1">&#39;is_updating&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.get_item_config"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_item_config">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_item_config"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_item_config">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the plugin-specific configuration information (config_data_dict) for the given item</span>
 
@@ -5964,7 +6058,7 @@
             <span class="n">item_path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;config_data&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.get_item_mapping"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_item_mapping">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_item_mapping"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_item_mapping">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the plugin-specific mapping that was defined by add_item()</span>
 
@@ -5982,7 +6076,7 @@
             <span class="n">item_path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mapping&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.get_item_mapping_list"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_item_mapping_list">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_mapping_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_item_mapping_list"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_item_mapping_list">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_mapping_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the plugin-specific mapping that was defined by add_item()</span>
 
@@ -5992,14 +6086,14 @@
 <span class="sd">        Only available in SmartHomeNG versions **v1.10.0 and up**.</span>
 
 <span class="sd">        :return: mapping string for that item</span>
-<span class="sd">        :rtype: str</span>
+<span class="sd">        :rtype: list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
             <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">item_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mapping&#39;</span><span class="p">)])</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
-    <span class="k">def</span> <span class="nf">_string_compare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_string_compare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">s2</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compare strings of different length</span>
 
@@ -6010,11 +6104,10 @@
 <span class="sd">        :param s1: First string to compare</span>
 <span class="sd">        :param s2: Second string to compare</span>
 <span class="sd">        :param mode: Compare mode (&#39;start&#39;, &#39;end&#39;) for comparing strings of different length</span>
-<span class="sd">        :return:</span>
+<span class="sd">        :return: True if strings match, False otherwise</span>
+<span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">s1</span> <span class="o">==</span> <span class="n">s2</span>
-        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">s2</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">s1</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -6024,8 +6117,10 @@
                 <span class="k">return</span> <span class="n">s1</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">s2</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">s1</span> <span class="o">==</span> <span class="n">s2</span>
 
-<div class="viewcode-block" id="SmartPlugin.get_item_path_list"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_item_path_list">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_path_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_key</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filter_value</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<div class="viewcode-block" id="SmartPlugin.get_item_path_list"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_item_path_list">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_path_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_key</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">filter_value</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return list of stored item paths used by this plugin</span>
 
@@ -6038,14 +6133,15 @@
 
 <span class="sd">        :return: List of item pathes</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">filter_key</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">filter_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">filter_key</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span> <span class="n">filter_value</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">item_path</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;config_data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">filter_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">filter_value</span><span class="p">]</span>
+
         <span class="k">return</span> <span class="p">[</span><span class="n">item_path</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_string_compare</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;config_data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">filter_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">filter_value</span><span class="p">,</span> <span class="n">mode</span><span class="p">)]</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.get_item_list"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_item_list">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_key</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filter_value</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<div class="viewcode-block" id="SmartPlugin.get_item_list"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_item_list">[Doku]</a>    <span class="k">def</span> <span class="nf">get_item_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_key</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">filter_value</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return list of stored items used by this plugin</span>
 
@@ -6058,14 +6154,15 @@
 
 <span class="sd">        :return: List of item objects</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">filter_key</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">filter_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">filter_key</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span> <span class="n">filter_value</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())]</span>
 
-        <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;config_data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">filter_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">filter_value</span><span class="p">]</span>
+
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_string_compare</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;config_data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">filter_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">filter_value</span><span class="p">,</span> <span class="n">mode</span><span class="p">)]</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.get_trigger_items"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_trigger_items">[Doku]</a>    <span class="k">def</span> <span class="nf">get_trigger_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_trigger_items"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_trigger_items">[Doku]</a>    <span class="k">def</span> <span class="nf">get_trigger_items</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return list of stored items which were marked as updating</span>
 
@@ -6073,7 +6170,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;item&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item_path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plg_item_dict</span><span class="p">[</span><span class="n">item_path</span><span class="p">][</span><span class="s1">&#39;is_updating&#39;</span><span class="p">]]</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.get_items_for_mapping"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_items_for_mapping">[Doku]</a>    <span class="k">def</span> <span class="nf">get_items_for_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_items_for_mapping"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_items_for_mapping">[Doku]</a>    <span class="k">def</span> <span class="nf">get_items_for_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapping</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list of items that should receive data for the given mapping</span>
 
@@ -6087,7 +6184,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_lookup_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="p">[])</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.get_mappings"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_mappings">[Doku]</a>    <span class="k">def</span> <span class="nf">get_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_mappings"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_mappings">[Doku]</a>    <span class="k">def</span> <span class="nf">get_mappings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a list containing all mappings, which have items associated with it</span>
 
@@ -6098,7 +6195,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_lookup_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.unparse_item"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.unparse_item">[Doku]</a>    <span class="k">def</span> <span class="nf">unparse_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.unparse_item"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.unparse_item">[Doku]</a>    <span class="k">def</span> <span class="nf">unparse_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensure that changes to &lt;item&gt; are no longer propagated to this plugin</span>
 
@@ -6111,7 +6208,7 @@
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.get_configname"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_configname">[Doku]</a>    <span class="k">def</span> <span class="nf">get_configname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_configname"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_configname">[Doku]</a>    <span class="k">def</span> <span class="nf">get_configname</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        return the name of the plugin instance as defined in plugin.yaml (section name)</span>
 
@@ -6121,7 +6218,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_configname</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_set_configname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configname</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_set_configname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configname</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        set the name of the plugin instance as defined in plugin.yaml (section name)</span>
 
@@ -6133,7 +6230,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_configname</span> <span class="o">=</span> <span class="n">configname</span>
 
 
-<div class="viewcode-block" id="SmartPlugin.get_shortname"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_shortname">[Doku]</a>    <span class="k">def</span> <span class="nf">get_shortname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_shortname"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_shortname">[Doku]</a>    <span class="k">def</span> <span class="nf">get_shortname</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        return the shortname of the plugin (name of it&#39;s directory)</span>
 
@@ -6143,7 +6240,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shortname</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_set_shortname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shortname</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_set_shortname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shortname</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        ...</span>
 
@@ -6155,7 +6252,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_shortname</span> <span class="o">=</span> <span class="n">shortname</span>
 
 
-<div class="viewcode-block" id="SmartPlugin.get_instance_name"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_instance_name">[Doku]</a>    <span class="k">def</span> <span class="nf">get_instance_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_instance_name"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_instance_name">[Doku]</a>    <span class="k">def</span> <span class="nf">get_instance_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the name of this instance of the plugin</span>
 
@@ -6165,7 +6262,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__instance</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_set_instance_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_set_instance_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        set instance name of the plugin</span>
 
@@ -6180,7 +6277,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plugin &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;: Only multi-instance capable plugins allow setting a name for an instance&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="SmartPlugin.get_fullname"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_fullname">[Doku]</a>    <span class="k">def</span> <span class="nf">get_fullname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_fullname"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_fullname">[Doku]</a>    <span class="k">def</span> <span class="nf">get_fullname</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        return the full name of the plugin (shortname &amp; instancename)</span>
 
@@ -6193,7 +6290,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_instance_name</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="SmartPlugin.get_classname"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_classname">[Doku]</a>    <span class="k">def</span> <span class="nf">get_classname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_classname"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_classname">[Doku]</a>    <span class="k">def</span> <span class="nf">get_classname</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        return the classname of the plugin</span>
 
@@ -6203,7 +6300,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_classname</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_set_classname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classname</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_set_classname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classname</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        ...</span>
 
@@ -6215,7 +6312,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_classname</span> <span class="o">=</span> <span class="n">classname</span>
 
 
-<div class="viewcode-block" id="SmartPlugin.get_version"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_version">[Doku]</a>    <span class="k">def</span> <span class="nf">get_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extended</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_version"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_version">[Doku]</a>    <span class="k">def</span> <span class="nf">get_version</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extended</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return plugin version</span>
 
@@ -6231,7 +6328,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">PLUGIN_VERSION</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_set_multi_instance_capable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mi</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_set_multi_instance_capable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mi</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets information if plugin is capable of multi instance handling (derived from metadate),</span>
 <span class="sd">        but only, if ALLOW_MULTIINSTANCE is not set in source code</span>
@@ -6248,20 +6345,19 @@
         <span class="k">return</span> <span class="kc">True</span>
 
 
-<div class="viewcode-block" id="SmartPlugin.is_multi_instance_capable"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.is_multi_instance_capable">[Doku]</a>    <span class="k">def</span> <span class="nf">is_multi_instance_capable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.is_multi_instance_capable"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.is_multi_instance_capable">[Doku]</a>    <span class="k">def</span> <span class="nf">is_multi_instance_capable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns information if plugin is capable of multi instance handling</span>
 
 <span class="sd">        :return: True: If multiinstance capable</span>
 <span class="sd">        :rtype: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ALLOW_MULTIINSTANCE</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;ALLOW_MULTIINSTANCE&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">ALLOW_MULTIINSTANCE</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ALLOW_MULTIINSTANCE</span></div>
 
 
-<div class="viewcode-block" id="SmartPlugin.get_plugin_dir"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_plugin_dir">[Doku]</a>    <span class="k">def</span> <span class="nf">get_plugin_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_plugin_dir"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_plugin_dir">[Doku]</a>    <span class="k">def</span> <span class="nf">get_plugin_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        return the directory where the pluing files are stored in</span>
 
@@ -6271,7 +6367,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugin_dir</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_set_plugin_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">dir</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_set_plugin_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the object&#39;s local variable `_plugin_dir` to root directory of the plugins.</span>
 <span class="sd">        You can reference the main object of SmartHmeNG by using self._plugin_dir.</span>
@@ -6284,7 +6380,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_plugin_dir</span> <span class="o">=</span> <span class="nb">dir</span>
 
 
-<div class="viewcode-block" id="SmartPlugin.get_info"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_info">[Doku]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_info"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_info">[Doku]</a>    <span class="k">def</span> <span class="nf">get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a small plugin info like: class, version and instance name</span>
 
@@ -6294,7 +6390,7 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Plugin: &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">()</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;, Version: &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;, Instance: &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_instance_name</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;&quot;</span></div>
 
 
-<div class="viewcode-block" id="SmartPlugin.get_parameter_value"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_parameter_value">[Doku]</a>    <span class="k">def</span> <span class="nf">get_parameter_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter_name</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_parameter_value"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_parameter_value">[Doku]</a>    <span class="k">def</span> <span class="nf">get_parameter_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the configured value for the given parameter name</span>
 
@@ -6309,7 +6405,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">parameter_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SmartPlugin.get_parameter_value_for_display"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_parameter_value_for_display">[Doku]</a>    <span class="k">def</span> <span class="nf">get_parameter_value_for_display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter_name</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_parameter_value_for_display"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_parameter_value_for_display">[Doku]</a>    <span class="k">def</span> <span class="nf">get_parameter_value_for_display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the configured value for the given parameter name</span>
 
@@ -6330,21 +6426,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">param</span></div>
 
-
-<span class="c1">#    def has_parameter_value(self, key):</span>
-<span class="c1">#        &quot;&quot;&quot;</span>
-<span class="c1">#        Returns True, if a value is configured for the given parameter name</span>
-<span class="c1">#</span>
-<span class="c1">#        :param parameter_name: Name of the parameter for which the value should be retrieved</span>
-<span class="c1">#        :type parameter_name: str</span>
-<span class="c1">#</span>
-<span class="c1">#        :return: True, if a value is configured for the given parameter name</span>
-<span class="c1">#        :rtype: bool</span>
-<span class="c1">#        &quot;&quot;&quot;</span>
-<span class="c1">#        return (self.get_parameter_value(key) is not None)</span>
-
-
-<div class="viewcode-block" id="SmartPlugin.update_config_section"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.update_config_section">[Doku]</a>    <span class="k">def</span> <span class="nf">update_config_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_dict</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.update_config_section"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.update_config_section">[Doku]</a>    <span class="k">def</span> <span class="nf">update_config_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update the config section of ../etc/plugin.yaml</span>
 
@@ -6398,10 +6480,9 @@
         <span class="c1"># write plugin.yaml</span>
         <span class="k">if</span> <span class="n">parameters_changed</span><span class="p">:</span>
             <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_save_roundtrip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_configfilename</span><span class="p">,</span> <span class="n">plugin_conf</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;update_config_section: Finished updating section &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_configname</span><span class="si">}</span><span class="s2">&#39; of ../etc/plugin.yaml&quot;</span><span class="p">)</span>
-        <span class="k">return</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;update_config_section: Finished updating section &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_configname</span><span class="si">}</span><span class="s2">&#39; of ../etc/plugin.yaml&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.get_loginstance"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_loginstance">[Doku]</a>    <span class="k">def</span> <span class="nf">get_loginstance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_loginstance"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_loginstance">[Doku]</a>    <span class="k">def</span> <span class="nf">get_loginstance</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a prefix for logmessages of multi instance capable plugins.</span>
 
@@ -6423,7 +6504,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__instance</span> <span class="o">+</span> <span class="s1">&#39;@: &#39;</span></div>
 
 
-    <span class="k">def</span> <span class="nf">__get_iattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__get_iattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the given item attribute name for this plugin instance</span>
 <span class="sd">        (by adding the instance to the attribute name)</span>
@@ -6440,7 +6521,7 @@
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__instance</span><span class="si">}</span><span class="s2">&quot;</span>
 
 
-    <span class="k">def</span> <span class="nf">__get_iattr_conf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__get_iattr_conf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        returns item attribute name including instance if required and found</span>
 <span class="sd">        in item configuration</span>
@@ -6490,7 +6571,7 @@
         <span class="k">return</span> <span class="n">default</span> <span class="k">if</span> <span class="n">__attr</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">conf</span><span class="p">[</span><span class="n">__attr</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="SmartPlugin.set_attr_value"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.set_attr_value">[Doku]</a>    <span class="k">def</span> <span class="nf">set_attr_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.set_attr_value"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.set_attr_value">[Doku]</a>    <span class="k">def</span> <span class="nf">set_attr_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set value for an attribute in item configuration</span>
 
@@ -6506,7 +6587,7 @@
             <span class="n">conf</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__get_iattr</span><span class="p">(</span><span class="n">attr</span><span class="p">)]</span> <span class="o">=</span> <span class="n">value</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method ic called during the creation of an object of the class SmartPlugin.</span>
 
@@ -6517,7 +6598,7 @@
         <span class="k">return</span> <span class="n">SmartObject</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="SmartPlugin.get_sh"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_sh">[Doku]</a>    <span class="k">def</span> <span class="nf">get_sh</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_sh"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_sh">[Doku]</a>    <span class="k">def</span> <span class="nf">get_sh</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the main object of smarthomeNG (usually refered to as **smarthome** or **sh**)</span>
 <span class="sd">        You can reference the main object of SmartHomeNG by using self.get_sh() in your plugin</span>
@@ -6528,7 +6609,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_set_sh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">smarthome</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_set_sh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">smarthome</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the object&#39;s local variable `_sh` to the main smarthomeNG object.</span>
 <span class="sd">        You can reference the main object of SmartHomeNG by using self._sh.</span>
@@ -6544,7 +6625,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span> <span class="o">=</span> <span class="n">Shtime</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="SmartPlugin.get_module"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_module">[Doku]</a>    <span class="k">def</span> <span class="nf">get_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modulename</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.get_module"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_module">[Doku]</a>    <span class="k">def</span> <span class="nf">get_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modulename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test if module http is loaded and if loaded, return a handle to the module</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -6565,47 +6646,20 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">dir</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="SmartPlugin.parse_logic"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.parse_logic">[Doku]</a>    <span class="k">def</span> <span class="nf">parse_logic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logic</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This method is used to parse the configuration of a logic for this plugin. It is</span>
-<span class="sd">        called for all plugins before the plugins are started (calling all run methods).</span>
-
-<span class="sd">        :note: This method should to be overwritten by the plugin implementation.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
-
-
-<div class="viewcode-block" id="SmartPlugin.parse_item"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.parse_item">[Doku]</a>    <span class="k">def</span> <span class="nf">parse_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This method is used to parse the configuration of an item for this plugin. It is</span>
-<span class="sd">        called for all plugins before the plugins are started (calling all run methods).</span>
-
-<span class="sd">        :note: This method should be overwritten by the plugin implementation.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># check for suspend item</span>
-        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item_path</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;suspend item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1"> registered&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span> <span class="o">=</span> <span class="n">item</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">updating</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_item</span></div>
-
-
-
 <div class="viewcode-block" id="SmartPlugin.now"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.now">[Doku]</a>    <span class="k">def</span> <span class="nf">now</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns SmartHomeNGs current time (timezone aware)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.scheduler_return_next"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.scheduler_return_next">[Doku]</a>    <span class="k">def</span> <span class="nf">scheduler_return_next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.scheduler_return_next"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.scheduler_return_next">[Doku]</a>    <span class="k">def</span> <span class="nf">scheduler_return_next</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">name</span>
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pluginname_prefix</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">()</span> <span class="o">+</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;scheduler_return_next: name = </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">return_next</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">from_smartplugin</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.scheduler_trigger"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.scheduler_trigger">[Doku]</a>    <span class="k">def</span> <span class="nf">scheduler_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prio</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.scheduler_trigger"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.scheduler_trigger">[Doku]</a>    <span class="k">def</span> <span class="nf">scheduler_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prio</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This methods triggers the scheduler entry for a plugin-scheduler</span>
 
@@ -6623,7 +6677,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;scheduler_trigger: name = </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">, parameters: </span><span class="si">{</span><span class="n">parameters</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">by</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">prio</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">from_smartplugin</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.scheduler_add"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.scheduler_add">[Doku]</a>    <span class="k">def</span> <span class="nf">scheduler_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">prio</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">cron</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">next</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.scheduler_add"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.scheduler_add">[Doku]</a>    <span class="k">def</span> <span class="nf">scheduler_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">prio</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">cron</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">next</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This methods adds a scheduler entry for a plugin-scheduler</span>
 
@@ -6640,7 +6694,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;scheduler_add: name = </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">, parameters: </span><span class="si">{</span><span class="n">parameters</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">prio</span><span class="p">,</span> <span class="n">cron</span><span class="p">,</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="nb">next</span><span class="p">,</span> <span class="n">from_smartplugin</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.scheduler_change"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.scheduler_change">[Doku]</a>    <span class="k">def</span> <span class="nf">scheduler_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.scheduler_change"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.scheduler_change">[Doku]</a>    <span class="k">def</span> <span class="nf">scheduler_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This methods changes a scheduler entry of a plugin-scheduler</span>
 
@@ -6656,7 +6710,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;scheduler_change: name = </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">, parameters: </span><span class="si">{</span><span class="n">parameters</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">change</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.scheduler_remove"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.scheduler_remove">[Doku]</a>    <span class="k">def</span> <span class="nf">scheduler_remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.scheduler_remove"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.scheduler_remove">[Doku]</a>    <span class="k">def</span> <span class="nf">scheduler_remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This methods removes a scheduler entry of a plugin-scheduler</span>
 
@@ -6667,14 +6721,14 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_schedulers</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="k">pass</span>  <span class="c1"># TODO: maybe give a warning?</span>
+            <span class="k">pass</span>
         <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">name</span>
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pluginname_prefix</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">()</span> <span class="o">+</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;scheduler_remove: name = </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">from_smartplugin</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SmartPlugin.scheduler_get"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.scheduler_get">[Doku]</a>    <span class="k">def</span> <span class="nf">scheduler_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.scheduler_get"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.scheduler_get">[Doku]</a>    <span class="k">def</span> <span class="nf">scheduler_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This methods gets a scheduler entry of a plugin-scheduler</span>
 
@@ -6703,13 +6757,6 @@
     <span class="c1"># ----------------------------------------------------------------------------------</span>
     <span class="c1">#   Ascyncio handling</span>
     <span class="c1"># ----------------------------------------------------------------------------------</span>
-
-    <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Coroutine</span><span class="p">,</span> <span class="n">Any</span>
-
-    <span class="n">_asyncio_loop</span> <span class="o">=</span> <span class="kc">None</span>        <span class="c1"># eventloop of the plugin</span>
-    <span class="n">_asyncio_state</span> <span class="o">=</span> <span class="s1">&#39;unused&#39;</span>   <span class="c1"># stored state of the asyncio use of the plugin</span>
-    <span class="n">_used_plugin_coro</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1"># plugin coro used when calling start_asyncio (to be able to used by a generic &#39;restart asyncio&#39; method</span>
-    <span class="n">_run_queue</span> <span class="o">=</span> <span class="kc">None</span>           <span class="c1"># queue to send commends to the main-coro/plugin-coro</span>
 
 <div class="viewcode-block" id="SmartPlugin.asyncio_state"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.asyncio_state">[Doku]</a>    <span class="k">def</span> <span class="nf">asyncio_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6754,7 +6801,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">pluginThread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot start thread &#39;</span><span class="si">{</span><span class="n">threadname</span><span class="si">}</span><span class="s2">&#39; - Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span>
 
 <div class="viewcode-block" id="SmartPlugin.stop_asyncio"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.stop_asyncio">[Doku]</a>    <span class="k">def</span> <span class="nf">stop_asyncio</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6773,10 +6819,9 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error stopping _asyncio_loop_thread: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">pass</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_state</span> <span class="o">=</span> <span class="s1">&#39;stopped&#39;</span>
-        <span class="k">return</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_state</span> <span class="o">=</span> <span class="s1">&#39;stopped&#39;</span></div>
 
-    <span class="k">def</span> <span class="nf">_asyncio_loop_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_coro</span><span class="p">:</span> <span class="n">Coroutine</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_asyncio_loop_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_coro</span><span class="p">:</span> <span class="n">Coroutine</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Thread to start and execute the asyncio event loop</span>
 
@@ -6787,8 +6832,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;_asyncio_loop_thread of plugin started&quot;</span><span class="p">)</span>
 
         <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_main</span><span class="p">(</span><span class="n">plugin_coro</span><span class="p">))</span>
-
-        <span class="k">return</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_asyncio_main</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_coro</span><span class="p">:</span> <span class="n">Coroutine</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6857,9 +6900,7 @@
             <span class="n">queue_command</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">queue_command</span> <span class="o">!=</span> <span class="s1">&#39;STOP&#39;</span><span class="p">:</span>
                 <span class="c1"># put command back to queue?</span>
-                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
-
-        <span class="k">return</span></div>
+                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SmartPlugin.put_command_to_run_queue"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.put_command_to_run_queue">[Doku]</a>    <span class="k">def</span> <span class="nf">put_command_to_run_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6876,8 +6917,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;put_command_to_run_queue: Exception &#39;</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&#39; in _run_queue.put (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span><span class="si">=}</span><span class="s2">)&quot;</span><span class="p">)</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;put_command_to_run_queue: Cannot write command &#39;</span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2">&#39; to run-queue, no active event-loop&quot;</span><span class="p">)</span>
-        <span class="k">return</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;put_command_to_run_queue: Cannot write command &#39;</span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2">&#39; to run-queue, no active event-loop&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SmartPlugin.get_command_from_run_queue"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_command_from_run_queue">[Doku]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_command_from_run_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6905,27 +6945,6 @@
                 <span class="n">task</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s1">&#39;ListTasks&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; - </span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-    <span class="c1"># ----------------------------------------------------------------------------------</span>
-
-
-<div class="viewcode-block" id="SmartPlugin.run"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.run">[Doku]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This method of the plugin is called to start the plugin</span>
-
-<span class="sd">        :note: This method needs to be overwritten by the plugin implementation. Otherwise an error will be raised</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;&#39;Plugin&#39; subclasses should have a &#39;run()&#39; method&quot;</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="SmartPlugin.stop"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.stop">[Doku]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This method of the plugin is called to stop the plugin when SmartHomeNG shuts down</span>
-
-<span class="sd">        :note: This method needs to be overwritten by the plugin implementation. Otherwise an error will be raised</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;&#39;Plugin&#39; subclasses should have a &#39;stop()&#39; method&quot;</span><span class="p">)</span></div>
-
-
 <div class="viewcode-block" id="SmartPlugin.translate"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.translate">[Doku]</a>    <span class="k">def</span> <span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">txt</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns translated text for class SmartPlugin</span>
@@ -6945,7 +6964,7 @@
             <span class="k">return</span> <span class="n">lib_translate</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="nb">vars</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SmartPlugin.init_webinterface"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.init_webinterface">[Doku]</a>    <span class="k">def</span> <span class="nf">init_webinterface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">WebInterface</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartPlugin.init_webinterface"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.init_webinterface">[Doku]</a>    <span class="k">def</span> <span class="nf">init_webinterface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">WebInterface</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the web interface for this plugin</span>
 

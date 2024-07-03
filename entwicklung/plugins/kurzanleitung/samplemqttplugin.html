@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Beispielplugin mit MQTT-Unterstützung &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 1. Juli 2024, commit 3783a79) Dokumentation</title>
+  <title>Beispielplugin mit MQTT-Unterstützung &mdash; Dokumentation v1.10.0.2 v1.10.0.2 develop (Stand 3. Juli 2024, commit 65903b9) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -5704,26 +5704,28 @@
 <span class="c1">#    support: https://knx-user-forum.de/forum/supportforen/smarthome-py</span>
 
     <span class="n">version</span><span class="p">:</span> <span class="mf">1.0.0</span>                  <span class="c1"># Plugin version</span>
-    <span class="n">sh_minversion</span><span class="p">:</span> <span class="mf">1.8</span>              <span class="c1"># minimum shNG version to use this plugin</span>
-<span class="c1">#    sh_maxversion:                 # maximum shNG version to use this plugin (leave empty if latest)</span>
-<span class="c1">#    py_minversion: 3.6             # minimum Python version to use for this plugin</span>
-<span class="c1">#    py_maxversion:                 # maximum Python version to use for this plugin (leave empty if latest)</span>
+
+    <span class="c1"># these min/max-versions MUST be given in quotes, or e.g. 3.10 will be interpreted as 3.1 (3.1 &lt; 3.9 &lt; 3.10)</span>
+    <span class="n">sh_minversion</span><span class="p">:</span> <span class="s1">&#39;1.10&#39;</span>           <span class="c1"># minimum shNG version to use this plugin</span>
+<span class="c1">#    sh_maxversion: &#39;1.11&#39;          # maximum shNG version to use this plugin (omit if latest)</span>
+<span class="c1">#    py_minversion: &#39;3.10&#39;          # minimum Python version to use for this plugin</span>
+<span class="c1">#    py_maxversion: &#39;4.25&#39;          # maximum Python version to use for this plugin (omit if latest)</span>
+
     <span class="n">multi_instance</span><span class="p">:</span> <span class="n">false</span>           <span class="c1"># plugin supports multi instance</span>
-    <span class="n">restartable</span><span class="p">:</span> <span class="n">unknown</span>
-    <span class="n">suspendable</span><span class="p">:</span> <span class="n">false</span>              <span class="c1"># plugin can be suspended, must be implemented in code</span>
+    <span class="n">restartable</span><span class="p">:</span> <span class="n">unknown</span>            <span class="c1"># plugin supports stopping and starting again, must be implemented</span>
     <span class="n">classname</span><span class="p">:</span> <span class="n">SamplePlugin</span>         <span class="c1"># class containing the plugin</span>
 
 <span class="n">parameters</span><span class="p">:</span>
     <span class="c1"># Definition of parameters to be configured in etc/plugin.yaml (enter &#39;parameters: NONE&#39;, if section should be empty)</span>
 
-    <span class="c1"># item to toggle suspend mode</span>
-    <span class="n">suspend_item</span><span class="p">:</span>
+    <span class="c1"># item to toggle plugin execution, remove if not wanted</span>
+    <span class="c1"># (needs plugin to be restartable)</span>
+    <span class="n">pause_item</span><span class="p">:</span>
         <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span>
         <span class="n">default</span><span class="p">:</span> <span class="s1">&#39;&#39;</span>
         <span class="n">description</span><span class="p">:</span>
-            <span class="n">de</span><span class="p">:</span> <span class="s1">&#39;Item zum Schalten des Suspend-Modus&#39;</span>
-            <span class="n">en</span><span class="p">:</span> <span class="s1">&#39;item for toggling suspend mode&#39;</span>
-
+            <span class="n">de</span><span class="p">:</span> <span class="s1">&#39;Item, um die Ausführung des Plugins zu steuern&#39;</span>
+            <span class="n">en</span><span class="p">:</span> <span class="s1">&#39;item for controlling plugin execution&#39;</span>
 
 <span class="n">item_attributes</span><span class="p">:</span>
     <span class="c1"># Definition of item attributes defined by this plugin (enter &#39;item_attributes: NONE&#39;, if section should be empty)</span>
@@ -5805,6 +5807,10 @@
         <span class="c1"># Call init code of parent class (MqttPlugin)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
+        <span class="c1"># if you want to use an item to toggle plugin execution, enable the</span>
+        <span class="c1"># definition in plugin.yaml and uncomment the following line</span>
+        <span class="c1">#self._pause_item_path = self.get_parameter_value(&#39;pause_item&#39;)</span>
+
         <span class="c1"># Initialization code goes here</span>
 
         <span class="c1"># On initialization error use:</span>
@@ -5824,6 +5830,10 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">alive</span> <span class="o">=</span> <span class="kc">True</span>
 
+        <span class="c1"># let the plugin change the state of pause_item</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pause_item</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pause_item</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">())</span>
+
         <span class="c1"># start subscription to all topics</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_subscriptions</span><span class="p">()</span>
 
@@ -5833,6 +5843,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">dbghigh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s2">&quot;Methode &#39;</span><span class="si">{method}</span><span class="s2">&#39; aufgerufen&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;method&#39;</span><span class="p">:</span> <span class="s1">&#39;stop()&#39;</span><span class="p">}))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alive</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># let the plugin change the state of pause_item</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pause_item</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pause_item</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">())</span>
+
+        <span class="c1"># if you use schedulers, this stops all schedulers the plugin has started.</span>
+        <span class="c1">#self.scheduler_remove_all()</span>
 
         <span class="c1"># stop subscription to all topics</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stop_subscriptions</span><span class="p">()</span>
@@ -5850,6 +5867,13 @@
 <span class="sd">                        with the item, caller, source and dest as arguments and in case of the knx plugin the value</span>
 <span class="sd">                        can be sent to the knx with a knx write function within the knx plugin.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># check for pause item</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pause_item_path</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;pause item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s1"> registered&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pause_item</span> <span class="o">=</span> <span class="n">item</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">updating</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_item</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_iattr</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">conf</span><span class="p">,</span> <span class="s1">&#39;foo_itemid&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;parse item: </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -5894,6 +5918,16 @@
 <span class="sd">        :param source: if given it represents the source</span>
 <span class="sd">        :param dest: if given it represents the dest</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># check for pause item</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pause_item</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">caller</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;pause item changed to </span><span class="si">{</span><span class="n">item</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">item</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">alive</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="n">item</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">alive</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+            <span class="k">return</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alive</span> <span class="ow">and</span> <span class="n">caller</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">():</span>
             <span class="c1"># code to execute if the plugin is not stopped</span>
             <span class="c1"># and only, if the item has not been changed by this this plugin:</span>
