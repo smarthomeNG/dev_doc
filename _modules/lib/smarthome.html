@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.smarthome &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 14. Juli 2024, commit 26f1de6) Dokumentation</title>
+  <title>lib.smarthome &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 22. Juli 2024, commit 1e26156) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5730,7 +5730,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">logging.handlers</span>
 <span class="kn">import</span> <span class="nn">logging.config</span>
-<span class="kn">import</span> <span class="nn">platform</span>  <span class="c1"># TODO: remove? unused</span>
+<span class="c1"># import platform  # TODO: remove? unused</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 
 <span class="kn">import</span> <span class="nn">signal</span>
@@ -5738,10 +5738,10 @@
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">traceback</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">psutil</span>  <span class="c1"># TODO: remove? unused</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="k">pass</span>
+<span class="c1"># try:</span>
+<span class="c1">#     import psutil  # TODO: remove? unused</span>
+<span class="c1"># except ImportError:</span>
+<span class="c1">#     pass</span>
 
 <span class="n">BASE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
 <span class="n">PIDFILE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE</span><span class="p">,</span> <span class="s1">&#39;var&#39;</span><span class="p">,</span> <span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="s1">&#39;smarthome.pid&#39;</span><span class="p">)</span>
@@ -5825,31 +5825,37 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_base_dir</span> <span class="o">=</span> <span class="n">BASE</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_dir</span>  <span class="c1"># **base_dir** is deprecated. Use method get_basedir() instead. - for external modules using that var (backend, ...?)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_extern_conf_dir</span> <span class="o">=</span> <span class="n">BASE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_etc_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_extern_conf_dir</span><span class="p">,</span> <span class="s1">&#39;etc&#39;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_etc_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_dir</span><span class="p">,</span> <span class="s1">&#39;etc&#39;</span><span class="p">)</span>
-
-        <span class="c1"># decide where to look for config files</span>
+        <span class="c1"># self._conf_dir contains the base dir for config folders</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_etc</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_conf_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_etc_dir</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_conf_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_dir</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_conf_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extern_conf_dir</span>
 
+        <span class="c1"># shng system dirs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_var_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_dir</span><span class="p">,</span> <span class="s1">&#39;var&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lib_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_dir</span><span class="p">,</span> <span class="s1">&#39;lib&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_plugins_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_dir</span><span class="p">,</span> <span class="s1">&#39;plugins&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_structs_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_conf_dir</span><span class="p">,</span> <span class="s1">&#39;structs&#39;</span><span class="p">)</span>
+
+        <span class="c1"># env and var dirs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_env_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lib_dir</span><span class="p">,</span> <span class="s1">&#39;env&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_env_logic_conf_basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_env_dir</span><span class="p">,</span> <span class="s1">&#39;logic&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_items_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_conf_dir</span><span class="p">,</span> <span class="s1">&#39;items&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logic_conf_basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_conf_dir</span><span class="p">,</span> <span class="s1">&#39;logic&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logic_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_conf_dir</span><span class="p">,</span> <span class="s1">&#39;logics&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_var_dir</span><span class="p">,</span> <span class="s1">&#39;cache&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_log_conf_basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_etc_dir</span><span class="p">,</span> <span class="s1">&#39;logging&#39;</span><span class="p">)</span>
 
+        <span class="c1"># user config dirs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_items_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_conf_dir</span><span class="p">,</span> <span class="s1">&#39;items&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_structs_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_conf_dir</span><span class="p">,</span> <span class="s1">&#39;structs&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logic_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_conf_dir</span><span class="p">,</span> <span class="s1">&#39;logics&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_functions_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_conf_dir</span><span class="p">,</span> <span class="s1">&#39;functions&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scenes_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_conf_dir</span><span class="p">,</span> <span class="s1">&#39;scenes&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
+
+        <span class="c1"># system config files</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_smarthome_conf_basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_etc_dir</span><span class="p">,</span> <span class="s1">&#39;smarthome&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_conf_basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_etc_dir</span><span class="p">,</span> <span class="s1">&#39;logging&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_module_conf_basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_etc_dir</span><span class="p">,</span> <span class="s1">&#39;module&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_plugin_conf_basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_etc_dir</span><span class="p">,</span> <span class="s1">&#39;plugin&#39;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plugin_conf_basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_etc_dir</span><span class="p">,</span> <span class="s1">&#39;plugin&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logic_conf_basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_etc_dir</span><span class="p">,</span> <span class="s1">&#39;logic&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SmartHome.create_directories"><a class="viewcode-back" href="../../entwicklung/core/core_shng.html#lib.smarthome.SmartHome.create_directories">[Doku]</a>    <span class="k">def</span> <span class="nf">create_directories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -5859,8 +5865,8 @@
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_structs_dir</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="mo">0o775</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_var_dir</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="mo">0o775</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_var_dir</span><span class="p">,</span> <span class="s1">&#39;backup&#39;</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="mo">0o775</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="mo">0o775</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_var_dir</span><span class="p">,</span> <span class="s1">&#39;backup&#39;</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="mo">0o775</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_var_dir</span><span class="p">,</span> <span class="s1">&#39;db&#39;</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="mo">0o775</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_var_dir</span><span class="p">,</span> <span class="s1">&#39;log&#39;</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="mo">0o775</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_var_dir</span><span class="p">,</span> <span class="s1">&#39;run&#39;</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="mo">0o775</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
@@ -5887,6 +5893,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">MODE</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_config_etc</span> <span class="o">=</span> <span class="n">config_etc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_extern_conf_dir</span> <span class="o">=</span> <span class="n">BASE</span>
+        <span class="k">if</span> <span class="n">extern_conf_dir</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_extern_conf_dir</span> <span class="o">=</span> <span class="n">extern_conf_dir</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">initialize_vars</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">initialize_dir_vars</span><span class="p">()</span>
@@ -5898,9 +5907,6 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">PYTHON_VERSION</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_python_version</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">python_bin</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">executable</span>
-
-        <span class="k">if</span> <span class="n">extern_conf_dir</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_extern_conf_dir</span> <span class="o">=</span> <span class="n">extern_conf_dir</span>
 
         <span class="c1"># get systeminfo closs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">systeminfo</span> <span class="o">=</span> <span class="n">Systeminfo</span>
@@ -5916,25 +5922,6 @@
         <span class="c1"># self.branch = shngversion.get_shng_branch()</span>
         <span class="c1"># self.version = shngversion.get_shng_version()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connections</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="c1"># reinitialize dir vars with path to extern configuration directory</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_etc_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_extern_conf_dir</span><span class="p">,</span> <span class="s1">&#39;etc&#39;</span><span class="p">)</span>
-
-        <span class="c1"># decide where to look for config files</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_etc</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_conf_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_etc_dir</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_conf_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extern_conf_dir</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_items_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_conf_dir</span><span class="p">,</span> <span class="s1">&#39;items&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_functions_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_conf_dir</span><span class="p">,</span> <span class="s1">&#39;functions&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logic_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_conf_dir</span><span class="p">,</span> <span class="s1">&#39;logics&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_scenes_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_conf_dir</span><span class="p">,</span> <span class="s1">&#39;scenes&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_smarthome_conf_basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_etc_dir</span><span class="p">,</span> <span class="s1">&#39;smarthome&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logic_conf_basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_etc_dir</span><span class="p">,</span> <span class="s1">&#39;logic&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_module_conf_basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_etc_dir</span><span class="p">,</span> <span class="s1">&#39;module&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_plugin_conf_basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_etc_dir</span><span class="p">,</span> <span class="s1">&#39;plugin&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_log_conf_basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_etc_dir</span><span class="p">,</span> <span class="s1">&#39;logging&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_pidfile</span> <span class="o">=</span> <span class="n">PIDFILE</span>
 
@@ -6218,6 +6205,24 @@
 <span class="sd">        :return: Config directory as an absolute path</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_structs_dir</span></div>
+
+
+<div class="viewcode-block" id="SmartHome.get_logicsdir"><a class="viewcode-back" href="../../entwicklung/core/core_shng.html#lib.smarthome.SmartHome.get_logicsdir">[Doku]</a>    <span class="k">def</span> <span class="nf">get_logicsdir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to return the logics config directory</span>
+
+<span class="sd">        :return: Config directory as an absolute path</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logic_dir</span></div>
+
+
+<div class="viewcode-block" id="SmartHome.get_functionsdir"><a class="viewcode-back" href="../../entwicklung/core/core_shng.html#lib.smarthome.SmartHome.get_functionsdir">[Doku]</a>    <span class="k">def</span> <span class="nf">get_functionsdir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to return the userfunctions config directory</span>
+
+<span class="sd">        :return: Config directory as an absolute path</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_functions_dir</span></div>
 
 
 <div class="viewcode-block" id="SmartHome.get_vardir"><a class="viewcode-back" href="../../entwicklung/core/core_shng.html#lib.smarthome.SmartHome.get_vardir">[Doku]</a>    <span class="k">def</span> <span class="nf">get_vardir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
