@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.item.item &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 1. August 2024, commit 7b8fa7c) Dokumentation</title>
+  <title>lib.item.item &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 1. August 2024, commit 1038d60) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -6349,30 +6349,56 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the value of an other attribute using a relative reference</span>
 
-<span class="sd">        at the moment only the current, parent, grandparent and greatgrandparent items are supported</span>
-
 <span class="sd">        :param attr_ref: Reference to attribute</span>
 <span class="sd">        :param ignore_current_item: Skip attributes of current item (needed in attr loop)</span>
 
-<span class="sd">        :return: Value of the referenced attribute</span>
+<span class="sd">        :return: Value of the referenced attribute or &#39;&#39; if given number of parents are not present</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">attr_ref</span>
         <span class="n">attr_ref</span> <span class="o">=</span> <span class="n">attr_ref</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">attr_ref</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span> <span class="p">(</span><span class="s1">&#39;.:&#39;</span><span class="p">,</span> <span class="s1">&#39;..:&#39;</span><span class="p">,</span> <span class="s1">&#39;...:&#39;</span><span class="p">,</span> <span class="s1">&#39;....:&#39;</span><span class="p">)</span> <span class="p">):</span>
-            <span class="n">fromitem</span> <span class="o">=</span> <span class="n">attr_ref</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">attr_ref</span><span class="p">:</span>
             <span class="n">fromattr</span> <span class="o">=</span> <span class="n">attr_ref</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">fromattr</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">]:</span>
                 <span class="n">fromattr</span> <span class="o">=</span> <span class="n">current_attr</span>
-            <span class="k">if</span> <span class="n">fromitem</span> <span class="o">==</span> <span class="s1">&#39;.&#39;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">ignore_current_item</span><span class="p">:</span>
-                    <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_attr</span><span class="p">(</span><span class="n">fromattr</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">fromitem</span> <span class="o">==</span> <span class="s1">&#39;..&#39;</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_attr_from_parent</span><span class="p">(</span><span class="n">fromattr</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">fromitem</span> <span class="o">==</span> <span class="s1">&#39;...&#39;</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_attr_from_grandparent</span><span class="p">(</span><span class="n">fromattr</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">fromitem</span> <span class="o">==</span> <span class="s1">&#39;....&#39;</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_attr_from_greatgrandparent</span><span class="p">(</span><span class="n">fromattr</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+
+            <span class="n">fromitem</span> <span class="o">=</span> <span class="n">attr_ref</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># needed for attr loop</span>
+            <span class="k">if</span> <span class="n">fromitem</span> <span class="o">==</span> <span class="s1">&#39;.&#39;</span> <span class="ow">and</span> <span class="n">ignore_current_item</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">value</span>
+
+            <span class="c1"># if fromitem is only dots</span>
+            <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">x</span> <span class="o">==</span> <span class="s1">&#39;.&#39;</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">fromitem</span><span class="p">):</span>
+                <span class="n">level</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fromitem</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_attribute</span><span class="p">(</span><span class="n">fromattr</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">value</span>
+
+
+<div class="viewcode-block" id="Item.find_attribute"><a class="viewcode-back" href="../../../lib/item_class_item.html#lib.item.item.Item.find_attribute">[Doku]</a>    <span class="k">def</span> <span class="nf">find_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find attribute value from item (level == 0) or parent item of given level</span>
+
+<span class="sd">        If level &lt; 0, search up the whole item tree</span>
+<span class="sd">        If strict is set and level is not reached, return &#39;&#39;</span>
+
+<span class="sd">        :param attr: Get the value from this attribute of the parent item</span>
+<span class="sd">        :return: value from attribute of parent item</span>
+<span class="sd">        :param level: number of parent-levels</span>
+<span class="sd">        :ptype level: int</span>
+<span class="sd">        :param strict: define if level is max-level or exact level</span>
+<span class="sd">        :ptype strict: bool</span>
+<span class="sd">        :return: attribute value</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="n">nolimit</span> <span class="o">=</span> <span class="n">level</span> <span class="o">&lt;</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">level</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">nolimit</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">strict</span> <span class="ow">or</span> <span class="n">attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">conf</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">_is_top_of_item_tree</span><span class="p">():</span>
+                <span class="k">return</span> <span class="n">default</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">return_parent</span><span class="p">()</span>
+            <span class="n">level</span> <span class="o">-=</span> <span class="mi">1</span>
+
+        <span class="n">attr_value</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">attr_value</span></div>
 
 
     <span class="k">def</span> <span class="nf">_split_destitem_from_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -8241,9 +8267,45 @@
         <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__children</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">child</span></div>
 
-<div class="viewcode-block" id="Item.return_parent"><a class="viewcode-back" href="../../../lib/item_class_item.html#lib.item.item.Item.return_parent">[Doku]</a>    <span class="k">def</span> <span class="nf">return_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span></div>
+<div class="viewcode-block" id="Item.return_parent"><a class="viewcode-back" href="../../../lib/item_class_item.html#lib.item.item.Item.return_parent">[Doku]</a>    <span class="k">def</span> <span class="nf">return_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return ancestor item of given level</span>
 
+<span class="sd">        If item doesn&#39;t have &lt;level&gt; ancestors, and...</span>
+<span class="sd">        - strict is set, return None</span>
+<span class="sd">        - strict is not set, return the highest found ancestor</span>
+
+<span class="sd">        If level is &lt; 1, method returns this item</span>
+
+<span class="sd">        :param level: number of parent-levels</span>
+<span class="sd">        :ptype level: int</span>
+<span class="sd">        :param strict: define if level is max-level or exact level</span>
+<span class="sd">        :ptype strict: bool</span>
+<span class="sd">        :return: ancestor item (or this item, or None)</span>
+<span class="sd">        :rtype: object | None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># for performance reasons, add a shortcut</span>
+        <span class="c1"># also for compatibility, as self.__parent is not accessible from outside</span>
+        <span class="k">if</span> <span class="n">level</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span>
+
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">while</span> <span class="n">level</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;level is </span><span class="si">{</span><span class="n">level</span><span class="si">}</span><span class="s1">, item is </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">_is_top_of_item_tree</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
+                    <span class="k">return</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">item</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">return_parent</span><span class="p">()</span>
+            <span class="n">level</span> <span class="o">-=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">item</span></div>
+
+    <span class="k">def</span> <span class="nf">_is_top_of_item_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">_items_instance</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span> <span class="ow">is</span> <span class="n">_items_instance</span>
 
 <div class="viewcode-block" id="Item.set"><a class="viewcode-back" href="../../../lib/item_class_item.html#lib.item.item.Item.set">[Doku]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="s1">&#39;Logic&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prev_change</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">last_change</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
