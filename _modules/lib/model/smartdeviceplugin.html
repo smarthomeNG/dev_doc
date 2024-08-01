@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 30. Juli 2024, commit 7321d60) Dokumentation</title>
+  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 1. August 2024, commit 7b8fa7c) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -5724,9 +5724,9 @@
     <span class="n">INDEX_GENERIC</span><span class="p">,</span> <span class="n">INDEX_MODEL</span><span class="p">,</span> <span class="n">ITEM_ATTR_COMMAND</span><span class="p">,</span> <span class="n">ITEM_ATTR_CUSTOM1</span><span class="p">,</span>
     <span class="n">ITEM_ATTR_CYCLE</span><span class="p">,</span> <span class="n">ITEM_ATTR_GROUP</span><span class="p">,</span> <span class="n">ITEM_ATTR_LOOKUP</span><span class="p">,</span> <span class="n">ITEM_ATTR_READ</span><span class="p">,</span>
     <span class="n">ITEM_ATTR_READ_GRP</span><span class="p">,</span> <span class="n">ITEM_ATTR_READ_INIT</span><span class="p">,</span> <span class="n">ITEM_ATTR_WRITE</span><span class="p">,</span>
-    <span class="n">PLUGIN_ATTR_CB_ON_CONNECT</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_CB_ON_DISCONNECT</span><span class="p">,</span>
+    <span class="n">PLUGIN_ATTR_CB_ON_CONNECT</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_CB_ON_DISCONNECT</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_DELAY_INITIAL</span><span class="p">,</span>
     <span class="n">PLUGIN_ATTR_CMD_CLASS</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_CONNECTION</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_SUSPEND_ITEM</span><span class="p">,</span>
-    <span class="n">PLUGIN_ATTR_CONN_AUTO_RECONN</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_CONN_AUTO_CONN</span><span class="p">,</span>
+    <span class="n">PLUGIN_ATTR_CONN_AUTO_RECONN</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_CONN_AUTO_CONN</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_REREAD_INITIAL</span><span class="p">,</span>
     <span class="n">PLUGIN_ATTR_PROTOCOL</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_RECURSIVE</span><span class="p">,</span> <span class="n">PLUGIN_PATH</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_CYCLE</span><span class="p">,</span>
     <span class="n">PLUGIN_ATTR_CB_SUSPEND</span><span class="p">,</span> <span class="n">CMD_IATTR_CYCLIC</span><span class="p">,</span> <span class="n">ITEM_ATTR_READAFTERWRITE</span><span class="p">,</span> <span class="n">ITEM_ATTR_CYCLIC</span><span class="p">)</span>
 
@@ -5759,7 +5759,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># this is the internal SDP version</span>
-    <span class="n">SDP_VERSION</span> <span class="o">=</span> <span class="s1">&#39;1.0.1&#39;</span>
+    <span class="n">SDP_VERSION</span> <span class="o">=</span> <span class="s1">&#39;1.0.2&#39;</span>
 
     <span class="c1"># this is the placeholder version of the derived plugin, not of SDP</span>
     <span class="n">PLUGIN_VERSION</span> <span class="o">=</span> <span class="s1">&#39;0.0.1&#39;</span>
@@ -5851,6 +5851,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_cycle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_value</span><span class="p">(</span><span class="n">PLUGIN_ATTR_CYCLE</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cycle</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_cycle</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="c1"># delay initial read</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initial_value_read_delay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_value</span><span class="p">(</span><span class="n">PLUGIN_ATTR_DELAY_INITIAL</span><span class="p">)</span>
+        <span class="c1"># resend initial commands on resume</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resume_initial_read</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_value</span><span class="p">(</span><span class="n">PLUGIN_ATTR_REREAD_INITIAL</span><span class="p">)</span>
 
         <span class="c1"># set (overwritable) callback</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dispatch_callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dispatch_data</span>
@@ -5875,6 +5879,9 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
         <span class="c1"># init device</span>
+
+        <span class="c1"># allow other classes to access plugin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;plugin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
 
         <span class="c1"># possibly initialize additional (overwrite _set_device_defaults)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_device_defaults</span><span class="p">()</span>
@@ -5993,8 +6000,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">suspended</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">())</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;disconnect&#39;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_remove_all</span><span class="p">()</span>
+
+            <span class="c1"># call user-defined suspend actions</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">on_suspend</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SmartDevicePlugin.resume"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#lib.model.smartdeviceplugin.SmartDevicePlugin.resume">[Doku]</a>    <span class="k">def</span> <span class="nf">resume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6005,8 +6015,25 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">suspended</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">())</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;connect&#39;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="o">.</span><span class="n">connected</span><span class="p">():</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resume_initial_read</span><span class="p">:</span>
+                    <span class="c1"># make sure to read again on resume (if configured)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_initial_value_read_done</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">read_initial_values</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">SDP_standalone</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_create_cyclic_scheduler</span><span class="p">()</span>
+
+            <span class="c1"># call user-defined resume actions</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">on_resume</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SmartDevicePlugin.on_suspend"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#lib.model.smartdeviceplugin.SmartDevicePlugin.on_suspend">[Doku]</a>    <span class="k">def</span> <span class="nf">on_suspend</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; called when suspend is enabled. Overwrite as needed &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="SmartDevicePlugin.on_resume"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#lib.model.smartdeviceplugin.SmartDevicePlugin.on_resume">[Doku]</a>    <span class="k">def</span> <span class="nf">on_resume</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; called when suspend is disabled. Overwrite as needed &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="SmartDevicePlugin.set_suspend"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#lib.model.smartdeviceplugin.SmartDevicePlugin.set_suspend">[Doku]</a>    <span class="k">def</span> <span class="nf">set_suspend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suspend_active</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6033,15 +6060,7 @@
         <span class="k">if</span> <span class="n">suspend_active</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">suspend</span><span class="p">(</span><span class="n">by</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">resume</span><span class="p">(</span><span class="n">by</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">suspend_active</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;_cyclic&#39;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;_cyclic&#39;</span><span class="p">)</span>
-
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="o">.</span><span class="n">connected</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">SDP_standalone</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_create_cyclic_scheduler</span><span class="p">()</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resume</span><span class="p">(</span><span class="n">by</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SmartDevicePlugin.run"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#lib.model.smartdeviceplugin.SmartDevicePlugin.run">[Doku]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6057,7 +6076,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set_suspend</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;run()&#39;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="o">.</span><span class="n">connected</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_read_initial_values</span><span class="p">()</span></div>
+            <span class="c1"># make sure this is called once at startup, even if resume_initial is not set</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">read_initial_values</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SmartDevicePlugin.stop"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#lib.model.smartdeviceplugin.SmartDevicePlugin.stop">[Doku]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6066,8 +6086,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">dbghigh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s2">&quot;Methode &#39;</span><span class="si">{method}</span><span class="s2">&#39; aufgerufen&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;method&#39;</span><span class="p">:</span> <span class="s1">&#39;stop()&#39;</span><span class="p">}))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">alive</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;_cyclic&#39;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;_cyclic&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_remove_all</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SmartDevicePlugin.connect"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#lib.model.smartdeviceplugin.SmartDevicePlugin.connect">[Doku]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -6784,6 +6803,16 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_cyclic_errors</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Added cyclic worker thread </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">()</span><span class="si">}</span><span class="s1">_cyclic with </span><span class="si">{</span><span class="n">workercycle</span><span class="si">}</span><span class="s1"> s cycle. Shortest item update cycle found was </span><span class="si">{</span><span class="n">shortestcycle</span><span class="si">}</span><span class="s1"> s&#39;</span><span class="p">)</span>
 
+<div class="viewcode-block" id="SmartDevicePlugin.read_initial_values"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#lib.model.smartdeviceplugin.SmartDevicePlugin.read_initial_values">[Doku]</a>    <span class="k">def</span> <span class="nf">read_initial_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; control call of _read_initial_values - run instantly or delay &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_get</span><span class="p">(</span><span class="s1">&#39;read_initial_values&#39;</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_value_read_delay</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">dbghigh</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Delaying reading initial values for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_initial_value_read_delay</span><span class="si">}</span><span class="s2"> seconds.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_add</span><span class="p">(</span><span class="s1">&#39;read_initial_values&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_initial_values</span><span class="p">,</span> <span class="nb">next</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shtime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_initial_value_read_delay</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_read_initial_values</span><span class="p">()</span></div>
+
     <span class="k">def</span> <span class="nf">_read_initial_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read all values configured to be read/triggered at startup</span>
@@ -6796,7 +6825,6 @@
                 <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_commands_initial</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Sending initial command </span><span class="si">{</span><span class="n">cmd</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">send_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_initial_value_read_done</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Initial read commands sent&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_triggers_initial</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Starting initial read group triggers&#39;</span><span class="p">)</span>
@@ -6804,6 +6832,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Triggering initial read group </span><span class="si">{</span><span class="n">grp</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">read_all_commands</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Initial read group triggers sent&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initial_value_read_done</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">_read_cyclic_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
