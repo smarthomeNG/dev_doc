@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 1. August 2024, commit 1038d60) Dokumentation</title>
+  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 6. August 2024, commit dd4ec55) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -5728,7 +5728,8 @@
     <span class="n">PLUGIN_ATTR_CMD_CLASS</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_CONNECTION</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_SUSPEND_ITEM</span><span class="p">,</span>
     <span class="n">PLUGIN_ATTR_CONN_AUTO_RECONN</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_CONN_AUTO_CONN</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_REREAD_INITIAL</span><span class="p">,</span>
     <span class="n">PLUGIN_ATTR_PROTOCOL</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_RECURSIVE</span><span class="p">,</span> <span class="n">PLUGIN_PATH</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_CYCLE</span><span class="p">,</span>
-    <span class="n">PLUGIN_ATTR_CB_SUSPEND</span><span class="p">,</span> <span class="n">CMD_IATTR_CYCLIC</span><span class="p">,</span> <span class="n">ITEM_ATTR_READAFTERWRITE</span><span class="p">,</span> <span class="n">ITEM_ATTR_CYCLIC</span><span class="p">)</span>
+    <span class="n">PLUGIN_ATTR_CB_SUSPEND</span><span class="p">,</span> <span class="n">CMD_IATTR_CYCLIC</span><span class="p">,</span> <span class="n">ITEM_ATTR_READAFTERWRITE</span><span class="p">,</span> <span class="n">ITEM_ATTR_CYCLIC</span><span class="p">,</span>
+    <span class="n">PROTO_RESEND</span><span class="p">,</span><span class="n">PLUGIN_ATTR_SEND_RETRIES</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_SEND_RETRIES_CYCLE</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">lib.model.sdp.commands</span> <span class="kn">import</span> <span class="n">SDPCommands</span>
 <span class="kn">from</span> <span class="nn">lib.model.sdp.command</span> <span class="kn">import</span> <span class="n">SDPCommand</span>
@@ -5862,6 +5863,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_webif</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_shtime</span> <span class="o">=</span> <span class="n">Shtime</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>
+
+        <span class="c1">#resend</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="n">PLUGIN_ATTR_SEND_RETRIES</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_value</span><span class="p">(</span><span class="n">PLUGIN_ATTR_SEND_RETRIES</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="n">PLUGIN_ATTR_SEND_RETRIES_CYCLE</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_value</span><span class="p">(</span><span class="n">PLUGIN_ATTR_SEND_RETRIES_CYCLE</span><span class="p">)</span>
+
+        <span class="n">resend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">PLUGIN_ATTR_SEND_RETRIES</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">0</span>
+        <span class="n">protocol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">PLUGIN_ATTR_PROTOCOL</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">resend</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Set protocol to resend if send_retries is &gt; 0 and protocol is not defined</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">protocol</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="n">PLUGIN_ATTR_PROTOCOL</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;resend&#39;</span>
+            <span class="c1"># if send_retries is set and protocl is not set to resend, log info that protocol is overruling the parameter</span>
+            <span class="k">elif</span> <span class="n">protocol</span> <span class="o">!=</span> <span class="s1">&#39;resend&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;send_retries is set to </span><span class="si">{</span><span class="n">resend</span><span class="si">}</span><span class="s1">, however,  protocol is overruled to </span><span class="si">{</span><span class="n">protocol</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
         <span class="c1"># init parameters in standalone mode</span>
         <span class="k">if</span> <span class="n">SDP_standalone</span><span class="p">:</span>
@@ -6438,14 +6453,25 @@
         <span class="n">data_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform_send_data</span><span class="p">(</span><span class="n">data_dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;command </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1"> with value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1"> yielded send data_dict </span><span class="si">{</span><span class="n">data_dict</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-        <span class="c1"># if an error occurs on sending, an exception is thrown &quot;below&quot;</span>
+        <span class="c1"># creating resend info, necessary for resend protocol</span>
         <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">reply_pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_commands</span><span class="o">.</span><span class="n">get_commandlist</span><span class="p">(</span><span class="n">command</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;reply_pattern&#39;</span><span class="p">)</span>
+        <span class="n">read_cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform_send_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_commands</span><span class="o">.</span><span class="n">get_send_data</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+        <span class="c1"># if no reply_pattern given, no response is expected</span>
+        <span class="k">if</span> <span class="n">reply_pattern</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">resend_info</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;command&#39;</span><span class="p">:</span> <span class="n">command</span><span class="p">,</span> <span class="s1">&#39;returnvalue&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;read_cmd&#39;</span><span class="p">:</span> <span class="n">read_cmd</span><span class="p">}</span>
+        <span class="c1"># if no reply_pattern has lookup or capture group, put it in resend_info</span>
+        <span class="k">elif</span> <span class="s1">&#39;(&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">reply_pattern</span> <span class="ow">and</span> <span class="s1">&#39;{&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">reply_pattern</span><span class="p">:</span>
+            <span class="n">resend_info</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;command&#39;</span><span class="p">:</span> <span class="n">command</span><span class="p">,</span> <span class="s1">&#39;returnvalue&#39;</span><span class="p">:</span> <span class="n">reply_pattern</span><span class="p">,</span> <span class="s1">&#39;read_cmd&#39;</span><span class="p">:</span> <span class="n">read_cmd</span><span class="p">}</span>
+        <span class="c1"># if reply pattern does not expect a specific value, use value as expected reply</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">resend_info</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;command&#39;</span><span class="p">:</span> <span class="n">command</span><span class="p">,</span> <span class="s1">&#39;returnvalue&#39;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;read_cmd&#39;</span><span class="p">:</span> <span class="n">read_cmd</span><span class="p">}</span>
+        <span class="c1"># if an error occurs on sending, an exception is thrown &quot;below&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send</span><span class="p">(</span><span class="n">data_dict</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send</span><span class="p">(</span><span class="n">data_dict</span><span class="p">,</span> <span class="n">resend_info</span><span class="o">=</span><span class="n">resend_info</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># Exception as e:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error on sending command </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1">, error was </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
-
         <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
             <span class="n">by</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;by&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;command </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1"> received result </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s1"> by </span><span class="si">{</span><span class="n">by</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -6508,6 +6534,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">custom</span><span class="p">:</span>
                     <span class="n">command</span> <span class="o">=</span> <span class="n">command</span> <span class="o">+</span> <span class="n">CUSTOM_SEP</span> <span class="o">+</span> <span class="n">custom</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="o">.</span><span class="n">check_reply</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="c1"># needed for resend protocol</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_dispatch_callback</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">by</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_process_additional_data</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">custom</span><span class="p">,</span> <span class="n">by</span><span class="p">)</span></div>
 
@@ -6669,7 +6696,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="c1"># return (False, True)</span>
 
-    <span class="k">def</span> <span class="nf">_send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_dict</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method acts as a overwritable intermediate between the handling</span>
 <span class="sd">        logic of send_command() and the connection layer.</span>
@@ -6679,8 +6706,8 @@
 <span class="sd">        By default, this just forwards the data_dict to the connection instance</span>
 <span class="sd">        and return the result.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sending </span><span class="si">{</span><span class="n">data_dict</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">data_dict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sending </span><span class="si">{</span><span class="n">data_dict</span><span class="si">}</span><span class="s1">, kwargs </span><span class="si">{</span><span class="n">kwargs</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">data_dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SmartDevicePlugin.on_connect"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#lib.model.smartdeviceplugin.SmartDevicePlugin.on_connect">[Doku]</a>    <span class="k">def</span> <span class="nf">on_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; callback if connection is made. &quot;&quot;&quot;</span>
@@ -7402,7 +7429,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">yaml</span><span class="p">[</span><span class="s1">&#39;item_structs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
 
-        <span class="c1"># this means the commands dict has &#39;ALL&#39; and model names at the top level </span>
+        <span class="c1"># this means the commands dict has &#39;ALL&#39; and model names at the top level</span>
         <span class="c1"># otherwise, the top level nodes are commands or sections</span>
         <span class="n">cmds_has_models</span> <span class="o">=</span> <span class="n">INDEX_GENERIC</span> <span class="ow">in</span> <span class="n">top_level_entries</span>
 
