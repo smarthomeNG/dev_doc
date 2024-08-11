@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 6. August 2024, commit dd4ec55) Dokumentation</title>
+  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 11. August 2024, commit fb8029f) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -5714,7 +5714,7 @@
 <span class="kn">from</span> <span class="nn">lib.shtime</span> <span class="kn">import</span> <span class="n">Shtime</span>
 
 <span class="kn">from</span> <span class="nn">lib.model.sdp.globals</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">update</span><span class="p">,</span> <span class="n">ATTR_NAMES</span><span class="p">,</span> <span class="n">CMD_ATTR_CMD_SETTINGS</span><span class="p">,</span> <span class="n">CMD_ATTR_ITEM_ATTRS</span><span class="p">,</span>
+    <span class="n">PLUGIN_ATTR_SEND_TIMEOUT</span><span class="p">,</span> <span class="n">update</span><span class="p">,</span> <span class="n">ATTR_NAMES</span><span class="p">,</span> <span class="n">CMD_ATTR_CMD_SETTINGS</span><span class="p">,</span> <span class="n">CMD_ATTR_ITEM_ATTRS</span><span class="p">,</span>
     <span class="n">CMD_ATTR_ITEM_TYPE</span><span class="p">,</span> <span class="n">CMD_ATTR_LOOKUP</span><span class="p">,</span> <span class="n">CMD_ATTR_OPCODE</span><span class="p">,</span> <span class="n">CMD_ATTR_PARAMS</span><span class="p">,</span>
     <span class="n">CMD_ATTR_READ</span><span class="p">,</span> <span class="n">CMD_ATTR_READ_CMD</span><span class="p">,</span> <span class="n">CMD_ATTR_WRITE</span><span class="p">,</span> <span class="n">CMD_IATTR_ATTRIBUTES</span><span class="p">,</span>
     <span class="n">CMD_IATTR_CYCLE</span><span class="p">,</span> <span class="n">CMD_IATTR_ENFORCE</span><span class="p">,</span> <span class="n">CMD_IATTR_INITIAL</span><span class="p">,</span>
@@ -5729,7 +5729,7 @@
     <span class="n">PLUGIN_ATTR_CONN_AUTO_RECONN</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_CONN_AUTO_CONN</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_REREAD_INITIAL</span><span class="p">,</span>
     <span class="n">PLUGIN_ATTR_PROTOCOL</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_RECURSIVE</span><span class="p">,</span> <span class="n">PLUGIN_PATH</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_CYCLE</span><span class="p">,</span>
     <span class="n">PLUGIN_ATTR_CB_SUSPEND</span><span class="p">,</span> <span class="n">CMD_IATTR_CYCLIC</span><span class="p">,</span> <span class="n">ITEM_ATTR_READAFTERWRITE</span><span class="p">,</span> <span class="n">ITEM_ATTR_CYCLIC</span><span class="p">,</span>
-    <span class="n">PROTO_RESEND</span><span class="p">,</span><span class="n">PLUGIN_ATTR_SEND_RETRIES</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_SEND_RETRIES_CYCLE</span><span class="p">)</span>
+    <span class="n">PROTO_RESEND</span><span class="p">,</span> <span class="n">PROTO_JSONRPC</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_SEND_RETRIES</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_SEND_RETRY_CYCLE</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">lib.model.sdp.commands</span> <span class="kn">import</span> <span class="n">SDPCommands</span>
 <span class="kn">from</span> <span class="nn">lib.model.sdp.command</span> <span class="kn">import</span> <span class="n">SDPCommand</span>
@@ -5863,20 +5863,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_webif</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_shtime</span> <span class="o">=</span> <span class="n">Shtime</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>
-
-        <span class="c1">#resend</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="n">PLUGIN_ATTR_SEND_RETRIES</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_value</span><span class="p">(</span><span class="n">PLUGIN_ATTR_SEND_RETRIES</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="n">PLUGIN_ATTR_SEND_RETRIES_CYCLE</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_value</span><span class="p">(</span><span class="n">PLUGIN_ATTR_SEND_RETRIES_CYCLE</span><span class="p">)</span>
-
-        <span class="n">resend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">PLUGIN_ATTR_SEND_RETRIES</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">0</span>
-        <span class="n">protocol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">PLUGIN_ATTR_PROTOCOL</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">resend</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># Set protocol to resend if send_retries is &gt; 0 and protocol is not defined</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">protocol</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="n">PLUGIN_ATTR_PROTOCOL</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;resend&#39;</span>
-            <span class="c1"># if send_retries is set and protocl is not set to resend, log info that protocol is overruling the parameter</span>
-            <span class="k">elif</span> <span class="n">protocol</span> <span class="o">!=</span> <span class="s1">&#39;resend&#39;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;send_retries is set to </span><span class="si">{</span><span class="n">resend</span><span class="si">}</span><span class="s1">, however,  protocol is overruled to </span><span class="si">{</span><span class="n">protocol</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
         <span class="c1"># init parameters in standalone mode</span>
         <span class="k">if</span> <span class="n">SDP_standalone</span><span class="p">:</span>
@@ -6780,6 +6766,24 @@
         <span class="n">conn_cls</span> <span class="o">=</span> <span class="n">SDPConnection</span><span class="o">.</span><span class="n">_get_connection_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn_cls</span><span class="p">,</span> <span class="n">conn_classname</span><span class="p">,</span> <span class="n">conn_type</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">conn_cls</span><span class="p">:</span>
             <span class="k">return</span>
+
+        <span class="c1"># check for resend protocol</span>
+        <span class="n">resend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_value</span><span class="p">(</span><span class="n">PLUGIN_ATTR_SEND_RETRIES</span><span class="p">)</span>
+        <span class="n">protocol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">PLUGIN_ATTR_PROTOCOL</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">resend</span><span class="p">:</span>
+            <span class="c1"># if PLUGIN_ATTR_SEND_RETRIES is set, check other resend attributes</span>
+            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="n">PLUGIN_ATTR_SEND_RETRIES</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_SEND_RETRY_CYCLE</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_SEND_TIMEOUT</span><span class="p">):</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_value</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">params</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+            <span class="c1"># Set protocol to resend only if protocol is not (yet) defined</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">protocol</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="n">PLUGIN_ATTR_PROTOCOL</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;resend&#39;</span>
+            <span class="c1"># if send_retries is set and protocl is not set to resend, log info that protocol is overruling the parameter</span>
+            <span class="k">elif</span> <span class="n">protocol</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">PROTO_JSONRPC</span><span class="p">,</span> <span class="n">PROTO_RESEND</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">PLUGIN_ATTR_SEND_RETRIES</span><span class="si">}</span><span class="s1"> is set to </span><span class="si">{</span><span class="n">resend</span><span class="si">}</span><span class="s1">, but protocol </span><span class="si">{</span><span class="n">protocol</span><span class="si">}</span><span class="s1"> is requested, so resend may not apply&#39;</span><span class="p">)</span>
 
         <span class="c1"># if protocol is specified, find second class</span>
         <span class="k">if</span> <span class="n">PLUGIN_ATTR_PROTOCOL</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">:</span>
