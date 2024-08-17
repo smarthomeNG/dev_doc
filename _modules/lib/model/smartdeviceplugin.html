@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 17. August 2024, commit 0b19cad) Dokumentation</title>
+  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 17. August 2024, commit 984364a) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -6753,7 +6753,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="n">PLUGIN_ATTR_CB_ON_DISCONNECT</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_disconnect</span>
 
         <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-
         <span class="n">conn_cls</span> <span class="o">=</span> <span class="n">SDPConnection</span><span class="o">.</span><span class="n">_get_connection_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn_cls</span><span class="p">,</span> <span class="n">conn_classname</span><span class="p">,</span> <span class="n">conn_type</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">conn_cls</span><span class="p">:</span>
             <span class="k">return</span>
@@ -6767,7 +6766,7 @@
             <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="n">PLUGIN_ATTR_SEND_RETRIES</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_SEND_RETRY_CYCLE</span><span class="p">,</span> <span class="n">PLUGIN_ATTR_SEND_TIMEOUT</span><span class="p">):</span>
                 <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_value</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">params</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
 
             <span class="c1"># Set protocol to resend only if protocol is not (yet) defined</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">protocol</span><span class="p">:</span>
@@ -6779,11 +6778,12 @@
         <span class="c1"># if protocol is specified, find second class</span>
         <span class="k">if</span> <span class="n">PLUGIN_ATTR_PROTOCOL</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">:</span>
 
+            <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="n">proto_cls</span> <span class="o">=</span> <span class="n">SDPConnection</span><span class="o">.</span><span class="n">_get_protocol_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proto_cls</span><span class="p">,</span> <span class="n">proto_classname</span><span class="p">,</span> <span class="n">proto_type</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">proto_cls</span><span class="p">:</span>
                 <span class="k">return</span>
 
-            <span class="c1"># set connection class in _params dict for protocol class to use</span>
+            <span class="c1"># set connection class in self._parameters dict for protocol class to use</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="n">PLUGIN_ATTR_CONNECTION</span><span class="p">]</span> <span class="o">=</span> <span class="n">conn_cls</span>
 
             <span class="c1"># return protocol instance as connection instance</span>
