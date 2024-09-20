@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aktionen &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 31. August 2024, commit da4c23a) Dokumentation</title>
+  <title>Aktionen &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 20. September 2024, commit da4c23a) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -5721,8 +5721,9 @@ bezieht sich dabei auf das Item, das über <code class="docutils literal notrans
 definiert und benannt wurde. Die Herangehensweise ähnelt also stark der Deklaration von Bedingungen.</p>
 <p>Zusätzlich zu <code class="docutils literal notranslate"><span class="pre">se_item_&lt;Bedingungsname/Aktionsname&gt;</span></code> lässt sich über den Eintrag
 <code class="docutils literal notranslate"><span class="pre">se_mindelta_&lt;Bedingungsname/Aktionsname&gt;</span></code> definieren, um welchen Wert
-sich ein Item mindestens geändert haben muss, um neu gesetzt zu werden. Im unten
-stehenden Beispiel wird der Lamellenwert abhängig vom Sonnenstand berechnet. Ohne mindelta
+sich ein Item mindestens geändert haben muss, um neu gesetzt zu werden. Diese Konfiguration
+kann für einzelne Aktionen individuell über die Angabe <code class="docutils literal notranslate"><span class="pre">mindelta</span></code> überschrieben werden.
+Im unten stehenden Beispiel wird der Lamellenwert abhängig vom Sonnenstand berechnet. Ohne mindelta
 würden sich die Lamellen ständig um wenige Grad(bruchteile) ändern. Wird jedoch mindelta
 beispielsweise auf den Wert 10 gesetzt, findet eine Änderung erst statt, wenn sich der
 errechnete Wert um mindestens 10 Grad vom aktuellen Lamellenwert unterscheidet.
@@ -5952,7 +5953,8 @@ der Zustand auf <code class="docutils literal notranslate"><span class="pre">son
 herangezogen werden. Wenn dies nicht erwünscht ist und das Item also auf den Vorgabewert des
 ursprünglichen Zustands (regen) gesetzt werden soll, kann der Parameter <code class="docutils literal notranslate"><span class="pre">instanteval:</span> <span class="pre">True</span></code> gesetzt werden.</p>
 <p><strong>repeat: &lt;bool&gt;</strong></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="s">&#39;repeat:</span><span class="nv"> </span><span class="s">[True|False]&#39;</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="s">&#39;repeat:</span><span class="nv"> </span><span class="s">&lt;eval&gt;/&lt;item&gt;&#39;</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--&gt; Ergebnis eines Eval-Ausdrucks oder eines Items</span>
+<span class="l l-Scalar l-Scalar-Plain">&#39;repeat</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">True|False</span><span class="p p-Indicator">]</span><span class="s">&#39;</span>
 </pre></div>
 </div>
 <p>Über das Attribut wird unabhängig vom globalen Setting für das
@@ -6030,19 +6032,62 @@ regnet hingegen auf den Wert, der in den Settings hinterlegt ist.</p>
 </pre></div>
 </div>
 <p><strong>previousconditionset: &lt;conditionset regex&gt;</strong></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">previousconditionset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">regex:enter_(.*)_test&quot;</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="s">&quot;previousconditionset:</span><span class="nv"> </span><span class="s">regex:enter_(.*)_test&quot;</span>
 </pre></div>
 </div>
 <p>Über das Attribut wird festgelegt, dass die Aktion nur dann ausgeführt werden
 soll, wenn die vorherige Bedingungsgruppe des aktuellen Zustands mit dem angegebenen Ausdruck übereinstimmt.
 Die Abfrage erfolgt dabei nach den gleichen Regeln wie bei <code class="docutils literal notranslate"><span class="pre">conditionset</span></code> oben angegeben.</p>
 <p><strong>previousstate_conditionset: &lt;conditionset regex&gt;</strong></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">previousstate_conditionset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">regex:enter_(.*)_test&quot;</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="s">&quot;previousstate_conditionset:</span><span class="nv"> </span><span class="s">regex:enter_(.*)_test&quot;</span>
 </pre></div>
 </div>
 <p>Über das Attribut wird festgelegt, dass die Aktion nur dann ausgeführt werden
 soll, wenn die Bedingungsgruppe, mit der der vorherige Zustand eingenommen wurde, mit dem angegebenen Ausdruck übereinstimmt.
 Die Abfrage erfolgt dabei ebenfalls nach den gleichen Regeln wie bei <code class="docutils literal notranslate"><span class="pre">conditionset</span></code> oben angegeben.</p>
+<p><strong>next_conditionset: &lt;conditionset regex&gt;</strong></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="s">&quot;next_conditionset:</span><span class="nv"> </span><span class="s">regex:enter_(.*)_test&quot;</span>
+</pre></div>
+</div>
+<p>Über das Attribut wird festgelegt, dass die Aktion nur dann ausgeführt werden
+soll, wenn die Bedingungsgruppe, mit der der zukünftige Zustand eingenommen wird, mit dem angegebenen Ausdruck übereinstimmt.
+Die Abfrage erfolgt dabei ebenfalls nach den gleichen Regeln wie bei <code class="docutils literal notranslate"><span class="pre">conditionset</span></code> oben angegeben.
+Diese Angabe ist primär bei leave_actions sinnvoll.</p>
+<p><strong>mindelta: &lt;num&gt;</strong></p>
+<p>Im folgenden Beispiel wird mindelta für eine einzelne Aktion gesetzt. Anstatt also eine minimale Änderung
+für alle Aktionen mit bestimmtem Namen festzulegen, wird eine einzelne Aktion nur dann ausgeführt,
+wenn sich der Wert um mindestens den angegeben Wert geändert hat.
+Wird mindelta beispielsweise auf den Wert 10 gesetzt, findet eine Änderung erst statt, wenn sich der
+errechnete Wert um mindestens 10 Grad vom aktuellen Lamellenwert unterscheidet.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">#items/item.yaml</span>
+<span class="nt">raffstore1</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">automatik</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">struct</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stateengine.general</span>
+<span class="w">        </span><span class="nt">rules</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">se_item_height</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raffstore1.hoehe</span><span class="w"> </span><span class="c1"># Definition des zu ändernden Höhe-Items</span>
+<span class="w">            </span><span class="nt">se_item_lamella</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raffstore1.lamelle</span><span class="w"> </span><span class="c1"># Definition des zu ändernden Lamellen-Items</span>
+<span class="w">            </span><span class="nt">se_status_lamella</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raffstore1.lamelle.status</span><span class="w"> </span><span class="c1"># Definition des Lamellen Statusitems</span>
+<span class="w">            </span><span class="nt">Daemmerung</span><span class="p">:</span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">&lt;...&gt;</span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">se_action_height</span><span class="p p-Indicator">:</span>
+<span class="w">                    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;function:</span><span class="nv"> </span><span class="s">set&#39;</span>
+<span class="w">                    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;to:</span><span class="nv"> </span><span class="s">value:100&#39;</span>
+<span class="w">                </span><span class="nt">se_action_lamella</span><span class="p">:</span>
+<span class="w">                    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;function:</span><span class="nv"> </span><span class="s">set&#39;</span>
+<span class="w">                    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;to:</span><span class="nv"> </span><span class="s">value:25&#39;</span>
+<span class="w">                    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;mindelta:</span><span class="nv"> </span><span class="s">10&#39;</span>
+<span class="w">                </span><span class="l l-Scalar l-Scalar-Plain">&lt;...&gt;</span>
+</pre></div>
+</div>
+<p><strong>minagedelta: &lt;num&gt;</strong></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">minagedelta</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">300</span>
+</pre></div>
+</div>
+<p>Über das Attribut wird festgelegt, dass eine Aktion nur in einem vorgegebenen Intervall ausgeführt wird.
+Im angegebenen Beispiel wird die Aktion also nur ausgeführt, wenn der letzte Ausführungszeitpunkt mindestens
+5 Minuten zurück liegt. So kann verhindert werden, dass die Aktion bei jeder Neuevaluierung des Status ausgeführt wird.
+Ein Neustart des Plugins setzt den Counter wieder zurück, der letzte Ausführungszeitpunkt wird also nur bei laufendem
+Betrieb gespeichert und überdauert einen Neustart nicht.</p>
 </section>
 <section id="templates-fur-aktionen">
 <h2>Templates für Aktionen<a class="headerlink" href="#templates-fur-aktionen" title="Permalink to this heading"></a></h2>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aktionen - einzeln &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 31. August 2024, commit da4c23a) Dokumentation</title>
+  <title>Aktionen - einzeln &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 20. September 2024, commit da4c23a) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -5821,8 +5821,45 @@ erläutert, sondern an den Stellen, an denen Sie verwendet werden.</p>
 aktuellen Wert des Items und dem ermittelten neuen Wert kleiner
 ist als die festgelegte Minimumabweichung wird keine Änderung
 vorgenommen. Die Minimumabweichung wird über das Attribut
-<code class="docutils literal notranslate"><span class="pre">se_mindelta_&lt;Aktionsname&gt;</span></code> auf der Ebene des Regelwerk-Items
-festgelegt.</p>
+<code class="docutils literal notranslate"><span class="pre">se_mindelta_&lt;Aktionsname&gt;</span></code> auf der Ebene des Regelwerk-Items für alle
+Aktionen mit dem entsprechenden Namen festgelegt. Alternativ kann dieses
+Attribut aber auch für einzelne Aktionen festgelegt und/oder überschrieben werden.</p>
+<p>Im angeführten Beispiel werden die Lamellen beim Eintritt in einen Zustand und
+beim Verlassen des Zustands nur dann gesetzt, wenn sich der Wert der Lamellen inzwischen
+um mindestens 10 verändert hat. Wird der Zustand erneut eingenommen (stay), wird der
+Wert hingegen mit 5 überschrieben.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">#items/item.yaml</span>
+<span class="nt">raffstore1</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">automatik</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">struct</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">stateengine.general</span>
+<span class="w">        </span><span class="nt">rules</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">se_item_height</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raffstore1.hoehe</span><span class="w"> </span><span class="c1"># Definition des zu ändernden Höhe-Items</span>
+<span class="w">            </span><span class="nt">se_item_lamella</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raffstore1.lamelle</span><span class="w"> </span><span class="c1"># Definition des zu ändernden Lamellen-Items</span>
+<span class="w">            </span><span class="nt">se_status_lamella</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">raffstore1.lamelle.status</span><span class="w"> </span><span class="c1"># Definition des Lamellen Statusitems</span>
+<span class="w">            </span><span class="nt">se_mindelta_lamella</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span><span class="w"> </span><span class="c1"># Alle Aktionen mit Namen lamella sind betroffen</span>
+<span class="w">            </span><span class="nt">Daemmerung</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">on_enter</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">se_set_height</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">                    </span><span class="nt">se_set_lamella</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="w">                </span><span class="nt">on_leave</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">se_set_height</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">                    </span><span class="nt">se_set_lamella</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">15</span>
+<span class="w">                </span><span class="nt">on_stay</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">se_set_height</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">                    </span><span class="nt">se_set_lamella</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="w">                    </span><span class="nt">se_set_lamella</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="w">                    </span><span class="nt">se_mindelta_lamella</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+</pre></div>
+</div>
+<p><strong>minagedelta: &lt;int&gt;</strong></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">se_minagedelta_&lt;Aktionsname&gt;</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">300 (Sekunden)|30m (Minuten)</span>
+</pre></div>
+</div>
+<p>Über das Attribut wird festgelegt, dass eine Aktion nur in einem vorgegebenen Intervall ausgeführt wird.
+Im angegebenen Beispiel wird die Aktion also nur ausgeführt, wenn der letzte Ausführungszeitpunkt mindestens
+300 Sekunden zurück liegt. So kann verhindert werden, dass die Aktion bei jeder Neuevaluierung des Status ausgeführt wird.
+Ein Neustart des Plugins setzt den Counter wieder zurück, der letzte Ausführungszeitpunkt wird also nur bei laufendem
+Betrieb gespeichert und überdauert einen Neustart nicht.</p>
 <p><strong>delay: &lt;int&gt;</strong></p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">se_delay_&lt;Aktionsname&gt;</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30 (Sekunden)|30m (Minuten)</span>
 </pre></div>
@@ -5834,8 +5871,10 @@ mit dem Suffix „m“ in Minuten.</p>
 Verzögerung wird entfernt, wenn eine gleichartige Aktion
 ausgeführt werden soll (egal ob verzögert oder nicht). Wenn also
 die Verzögerung größer als der <code class="docutils literal notranslate"><span class="pre">cycle</span></code> ist, wird die Aktion
-nie durchgeführt werden, es sei denn die Aktion soll nur
-einmalig ausgeführt werden.</p>
+nicht mehr durchgeführt.
+Außerdem ist es möglich, den Timer bewusst abzubrechen, ohne eine Aktion auszuführen,
+indem der Delay auf -1 gesetzt wird. Dies macht insbesondere beim Verlassen von
+Zuständen Sinn, um ungewünschte verzögerte Aktionen vom „alten“ Zustand zu verhindern.</p>
 <p><strong>repeat: &lt;bool&gt;</strong></p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">se_repeat_&lt;Aktionsname&gt;</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">True|False</span><span class="p p-Indicator">]</span>
 </pre></div>
