@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ESPHome Dashboard new &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 1. Oktober 2024, commit abfd484) Dokumentation</title>
+  <title>ESPHome Dashboard new &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 1. Oktober 2024, commit 38c764e) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5727,7 +5727,7 @@ Rechner zu installieren, auf dem SmartHomeNG läuft.</p>
 <h2>Virtuelles Environment erstellen<a class="headerlink" href="#virtuelles-environment-erstellen" title="Permalink to this heading"></a></h2>
 <p>Das ESPHome Dashboard verwendet eine recht große Anzahl von Python Packages. Um Konflikte mit Packages/Package-Versionen
 die in SmartHomeNG verwendet werden zu vermeiden, sollte das ESPHome Dashboard in einem eigenen virtuellen Environment
-laufen.</p>
+laufen. Die minimal benötigte Python Version für das ESPHome Dashboard ist zurzeit Python 3.10.</p>
 <p>Das virtuelle Environemnt hierfür wird mit dem folgenden Befehl angelegt:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>make_venv<span class="w"> </span><span class="m">3</span>.10<span class="w"> </span>esphome
 </pre></div>
@@ -5788,6 +5788,25 @@ Konfiguration von SmartHomeNG mit gesichert bzw. zurück gespielt.</p>
 <h2>ESPHome Dashboard als Dienst einrichten<a class="headerlink" href="#esphome-dashboard-als-dienst-einrichten" title="Permalink to this heading"></a></h2>
 <p>Damit das ESPHome Dashboard bei jedem Start des Systems automatisch gestartet wird, muss es als Dienst eingerichtet
 werden.</p>
+<p>…</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>Unit<span class="o">]</span>
+<span class="nv">Description</span><span class="o">=</span>ESPHome<span class="w"> </span>dashboard<span class="w"> </span>daemon
+<span class="nv">After</span><span class="o">=</span>network.target
+
+<span class="o">[</span>Service<span class="o">]</span>
+<span class="nv">Type</span><span class="o">=</span>forking
+<span class="nv">ExecStart</span><span class="o">=</span>/usr/local/smarthome/venvs/py_esphome/bin/esphome<span class="w"> </span>dashboard<span class="w"> </span>/usr/local/smarthome/var/esphome/config
+<span class="nv">WorkingDirectory</span><span class="o">=</span>/usr/local/smarthome
+<span class="nv">User</span><span class="o">=</span>smarthome
+<span class="nv">PIDFile</span><span class="o">=</span>/usr/local/smarthome/var/run/esphome.pid
+<span class="nv">Restart</span><span class="o">=</span>on-failure
+<span class="nv">TimeoutStartSec</span><span class="o">=</span><span class="m">900</span>
+<span class="nv">RestartForceExitStatus</span><span class="o">=</span><span class="m">5</span>
+
+<span class="o">[</span>Install<span class="o">]</span>
+<span class="nv">WantedBy</span><span class="o">=</span>default.target
+</pre></div>
+</div>
 <p>…</p>
 </section>
 </section>
