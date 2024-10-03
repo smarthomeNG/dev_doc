@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ESPHome Dashboard new &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 1. Oktober 2024, commit 38c764e) Dokumentation</title>
+  <title>ESPHome Dashboard new &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 3. Oktober 2024, commit 5e35e2e) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -155,10 +155,9 @@
 </ul>
 </li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">ESPHome Dashboard <span class="redsup">new</span></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#virtuelles-environment-erstellen">Virtuelles Environment erstellen</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#esphome-dashboard-installieren">ESPHome Dashboard installieren</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#esphome-dashboard-starten-und-testen">ESPHome Dashboard starten und testen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#esphome-dashboard-als-dienst-einrichten">ESPHome Dashboard als Dienst einrichten</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#starten-des-dienstes">Starten des Dienstes</a></li>
 </ul>
 </li>
 </ul>
@@ -5719,67 +5718,46 @@
 <span id="index-0"></span><h1>ESPHome Dashboard <span class="redsup">new</span><a class="headerlink" href="#esphome-dashboard-new" title="Permalink to this heading"></a></h1>
 <p>Wenn ESPHome Devices mit SmartHomeNG verwendet werden sollen, kann es hilfreich sein das ESPHome Dashboard auf dem
 Rechner zu installieren, auf dem SmartHomeNG läuft.</p>
-<p>Im folgenden wird beschrieben, wie das ESPHome Dashboard auf dem SmartHomeNG System installiert werden sollte.</p>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
-<section id="virtuelles-environment-erstellen">
-<h2>Virtuelles Environment erstellen<a class="headerlink" href="#virtuelles-environment-erstellen" title="Permalink to this heading"></a></h2>
 <p>Das ESPHome Dashboard verwendet eine recht große Anzahl von Python Packages. Um Konflikte mit Packages/Package-Versionen
-die in SmartHomeNG verwendet werden zu vermeiden, sollte das ESPHome Dashboard in einem eigenen virtuellen Environment
-laufen. Die minimal benötigte Python Version für das ESPHome Dashboard ist zurzeit Python 3.10.</p>
-<p>Das virtuelle Environemnt hierfür wird mit dem folgenden Befehl angelegt:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>make_venv<span class="w"> </span><span class="m">3</span>.10<span class="w"> </span>esphome
+die in SmartHomeNG verwendet werden zu vermeiden, wird das ESPHome Dashboard in einem eigenen virtuellen Environment
+installiert. Die minimal benötigte Python Version für ESPHome ist zurzeit Python 3.9.</p>
+<p>Zur Installation und Verwaltung von ESPHome sind Skripte im <code class="docutils literal notranslate"><span class="pre">tools</span></code> Verzeichnis der SmartHomeNG Installation
+vorhanden.</p>
+<p>Die Installation erfolgt mithilfe des Skripts <cite>esphome_install</cite>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esphome_install
 </pre></div>
 </div>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
-</section>
-<section id="esphome-dashboard-installieren">
-<h2>ESPHome Dashboard installieren<a class="headerlink" href="#esphome-dashboard-installieren" title="Permalink to this heading"></a></h2>
-<p>Das ESPHome Dashboard muss im laufenden virtuellen Environment installiert werden. Das virtuelle Environment muss dazu
-vorher mit dem folgenden Befehl aktiviert werden:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">source</span><span class="w"> </span>act<span class="w"> </span>epshome
-</pre></div>
-</div>
-<p>Nun kann das ESPHome Dashboard mit den folgenden Befehlen angelegt werden:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>py_esphome<span class="o">)</span><span class="w"> </span>$<span class="w"> </span>pip3<span class="w"> </span>install<span class="w"> </span>wheel
-<span class="o">(</span>py_esphome<span class="o">)</span><span class="w"> </span>$<span class="w"> </span>pip3<span class="w"> </span>install<span class="w"> </span>esphome
-</pre></div>
-</div>
-<p>Nun sollte das ESPHome Dashboard installiert sein. Mit dem folgenden Befehl kann die Installation überprüft und
-die installierte Version angezeigt werden:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>py_esphome<span class="o">)</span><span class="w"> </span>$<span class="w"> </span>esphome<span class="w"> </span>version
-Version:<span class="w"> </span><span class="m">2024</span>.9.2
-</pre></div>
-</div>
-<p>Nun muss noch das Verzeichnis angelegt werden, in dem die Konfigurationen für ESPHome gespeichert werden.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>py_esphome<span class="o">)</span><span class="w"> </span>$<span class="w"> </span>mkdir<span class="w"> </span>/usr/local/smarthome/var/esphome
-<span class="o">(</span>py_esphome<span class="o">)</span><span class="w"> </span>$<span class="w"> </span>mkdir<span class="w"> </span>/usr/local/smarthome/var/esphome/config
-</pre></div>
-</div>
+<p>Das Skript</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>prüft ob eine für ESPHome benötigte Python Version auf dem System gefunden wird</p></li>
+<li><p>erstellt ein virtuelles Environment mit der entsprechenden Python Version</p></li>
+<li><p>aktiviert das erstellte virtuelle Environment</p></li>
+<li><p>installiert ESPHome in das virtuelle Environment</p></li>
+<li><p>zeigt anschließend die Version von ESPHome an, die installiert wurde</p></li>
+<li><p>und erzeugt das Verseichnis in dem die Konfigurationen für ESPHome gespeichert werden</p></li>
+</ul>
+</div></blockquote>
 <p>Die Dateien aus dem Verzeichnis <code class="docutils literal notranslate"><span class="pre">/usr/local/smarthome/var/esphome/config</span></code> werden beim Backup und Restore der
-Konfiguration von SmartHomeNG mit gesichert bzw. zurück gespielt.</p>
+SmartHomeNG Konfiguration mit gesichert bzw. zurück restauriert.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-</section>
 <section id="esphome-dashboard-starten-und-testen">
 <h2>ESPHome Dashboard starten und testen<a class="headerlink" href="#esphome-dashboard-starten-und-testen" title="Permalink to this heading"></a></h2>
-<p>Innerhalb des virtuellen Environments wird das Dashboard mit dem folgenden Befehl gestartet:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>py_esphome<span class="o">)</span><span class="w"> </span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>/Users/Martin/ESPHome
-<span class="o">(</span>py_esphome<span class="o">)</span><span class="w"> </span>$<span class="w"> </span>esphome<span class="w"> </span>dashboard<span class="w"> </span>/usr/local/smarthome/var/esphome/config
+<p>Das ESPHome Dashboard kann im aktuellen Terminal Fenster mit dem Befehl</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>esphome_start
 </pre></div>
 </div>
+<p>gestartet werden und mit Ctrl-C wieder beendet werden.</p>
 <p>Nun sollte das Dashboard mit einem Browser (Chrome oder Safari) aufgerufen werden können. Die URL dazu ist</p>
 <blockquote>
-<div><p>&lt;Name/ip des SmartHomeNG Systems&gt;:6052</p>
+<div><p>&lt;Name/IP des SmartHomeNG Systems&gt;:6052</p>
 </div></blockquote>
 <p>Nun sollte das ESPHome Dashboard angezeigt werden.</p>
 <p>Der folgende Screenshot zeigt das Dashboard, welches im lokalen Netzwerk bereits ein ESPHome Device entdeckt
 (discovered) hat.</p>
-<img alt="_static/img/esphome-dashboard.jpg" class="screenshot" src="_static/img/esphome-dashboard.jpg" />
+<img alt="installation/assets/esphome-dashboard.jpg" class="screenshot" src="installation/assets/esphome-dashboard.jpg" />
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -5788,26 +5766,64 @@ Konfiguration von SmartHomeNG mit gesichert bzw. zurück gespielt.</p>
 <h2>ESPHome Dashboard als Dienst einrichten<a class="headerlink" href="#esphome-dashboard-als-dienst-einrichten" title="Permalink to this heading"></a></h2>
 <p>Damit das ESPHome Dashboard bei jedem Start des Systems automatisch gestartet wird, muss es als Dienst eingerichtet
 werden.</p>
-<p>…</p>
+<p>Da ESPHome in ein virtuelles Environment installiert wurde, muss dieses virtuelle Environment zum starten dest
+Dienstes genutzt werden. Es muss der Python Interpreter aus diesem virtuellen Environment genutzt werden um
+esphome zu betreiben. Dazu muss der folgende Text in die Datei <code class="docutils literal notranslate"><span class="pre">/etc/systemd/system/esphome.service</span></code> eingefügt werden:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>Unit<span class="o">]</span>
-<span class="nv">Description</span><span class="o">=</span>ESPHome<span class="w"> </span>dashboard<span class="w"> </span>daemon
-<span class="nv">After</span><span class="o">=</span>network.target
+<span class="nv">Description</span><span class="o">=</span>ESPHome-dashboard<span class="w"> </span>daemon
+<span class="nv">After</span><span class="o">=</span>network-online.target
 
 <span class="o">[</span>Service<span class="o">]</span>
-<span class="nv">Type</span><span class="o">=</span>forking
-<span class="nv">ExecStart</span><span class="o">=</span>/usr/local/smarthome/venvs/py_esphome/bin/esphome<span class="w"> </span>dashboard<span class="w"> </span>/usr/local/smarthome/var/esphome/config
-<span class="nv">WorkingDirectory</span><span class="o">=</span>/usr/local/smarthome
+<span class="nv">Type</span><span class="o">=</span>simple
+<span class="nv">ExecStart</span><span class="o">=</span>/usr/local/smarthome/tools/esphome_start
 <span class="nv">User</span><span class="o">=</span>smarthome
-<span class="nv">PIDFile</span><span class="o">=</span>/usr/local/smarthome/var/run/esphome.pid
 <span class="nv">Restart</span><span class="o">=</span>on-failure
+<span class="nv">RestartSec</span><span class="o">=</span><span class="m">30</span>
 <span class="nv">TimeoutStartSec</span><span class="o">=</span><span class="m">900</span>
 <span class="nv">RestartForceExitStatus</span><span class="o">=</span><span class="m">5</span>
+<span class="nv">Environment</span><span class="o">=</span><span class="s2">&quot;PATH=/usr/local/smarthome/venvs/py_esphome/bin:/usr/local/sbin:/usr</span>$
 
-<span class="o">[</span>Install<span class="o">]</span>
-<span class="nv">WantedBy</span><span class="o">=</span>default.target
+<span class="s2">[Install]</span>
+<span class="s2">WantedBy=default.target</span>
 </pre></div>
 </div>
-<p>…</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="starten-des-dienstes">
+<h2>Starten des Dienstes<a class="headerlink" href="#starten-des-dienstes" title="Permalink to this heading"></a></h2>
+<p>Der so vorbereitete Dienst kann über den <strong>systemctl</strong> Befehl gestartet
+werden.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>esphome.service
+</pre></div>
+</div>
+<p>Wenn alles ok ist, kann der Autostart aktiviert werden:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>esphome.service
+</pre></div>
+</div>
+<p>Bei Systemstart wird nun das ESPHome Dashboard automatisch gestartet.</p>
+<p>Um den Dienst wieder auszuschalten und den Neustart bei Systemstart zu
+verhindern nutzt man:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>disable<span class="w"> </span>esphome.service
+</pre></div>
+</div>
+<p>Um zu sehen, ob das ESPHome Dashboard läuft, genügt ein</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>systemctl<span class="w"> </span>status<span class="w"> </span>esphome.service
+</pre></div>
+</div>
+<p>Läuft es noch nicht und man möchte sozusagen manuell starten reicht ein:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>esphome.service
+</pre></div>
+</div>
+<p>Ein Neustart des Dashboards würde mit</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>esphome.service
+</pre></div>
+</div>
+<p>funktionieren, ein Stop von SmartHomeNG entsprechend</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>stop<span class="w"> </span>esphome.service
+</pre></div>
+</div>
 </section>
 </section>
 
