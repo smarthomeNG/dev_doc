@@ -3,11 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 3. Oktober 2024, commit db90ac4) Dokumentation</title>
+  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 11. Oktober 2024, commit fdf6482) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
 
   
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
@@ -21,7 +20,6 @@
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/sphinx_highlight.js"></script>
-        <script src="../../../_static/tabs.js"></script>
         <script src="../../../_static/translations.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Stichwortverzeichnis" href="../../../genindex.html" />
@@ -5922,7 +5920,7 @@
         <span class="c1"># possibly initialize additional (overwrite _set_device_defaults)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_device_defaults</span><span class="p">()</span>
 
-        <span class="c1"># save modified value for passing to SDPCommands</span>
+        <span class="c1"># save modified value for ing to SDPCommands</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;custom_patterns&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_custom_patterns</span>
 
         <span class="c1"># set/update plugin configuration</span>
@@ -6052,13 +6050,6 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">())</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="o">.</span><span class="n">connected</span><span class="p">():</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resume_initial_read</span><span class="p">:</span>
-                    <span class="c1"># make sure to read again on resume (if configured)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_initial_value_read_done</span> <span class="o">=</span> <span class="kc">False</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">read_initial_values</span><span class="p">()</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">SDP_standalone</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_create_cyclic_scheduler</span><span class="p">()</span>
 
             <span class="c1"># call user-defined resume actions</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">on_resume</span><span class="p">()</span></div>
@@ -6501,8 +6492,8 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reply_pattern</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">return_list</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">reply_pattern</span><span class="p">:</span>
-                 <span class="k">if</span> <span class="s1">&#39;(&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">r</span> <span class="ow">and</span> <span class="s1">&#39;{&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">r</span><span class="p">:</span>
-                     <span class="n">return_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s1">&#39;(&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">r</span> <span class="ow">and</span> <span class="s1">&#39;{&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">r</span><span class="p">:</span>
+                    <span class="n">return_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
             <span class="n">reply_pattern</span> <span class="o">=</span> <span class="n">return_list</span> <span class="k">if</span> <span class="n">return_list</span> <span class="k">else</span> <span class="n">value</span>
             <span class="n">resend_info</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;command&#39;</span><span class="p">:</span> <span class="n">resend_command</span><span class="p">,</span> <span class="s1">&#39;returnvalue&#39;</span><span class="p">:</span> <span class="n">reply_pattern</span><span class="p">,</span> <span class="s1">&#39;read_cmd&#39;</span><span class="p">:</span> <span class="n">read_cmd</span><span class="p">}</span>
         <span class="c1"># if reply pattern does not expect a specific value, use value as expected reply</span>
@@ -6753,7 +6744,13 @@
 
 <div class="viewcode-block" id="SmartDevicePlugin.on_connect"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#lib.model.smartdeviceplugin.SmartDevicePlugin.on_connect">[Doku]</a>    <span class="k">def</span> <span class="nf">on_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; callback if connection is made. &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="o">.</span><span class="n">connected</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resume_initial_read</span><span class="p">:</span>
+                <span class="c1"># make sure to read again on resume (if configured)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_initial_value_read_done</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">read_initial_values</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">SDP_standalone</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_create_cyclic_scheduler</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SmartDevicePlugin.on_disconnect"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#lib.model.smartdeviceplugin.SmartDevicePlugin.on_disconnect">[Doku]</a>    <span class="k">def</span> <span class="nf">on_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; callback if connection is broken. &quot;&quot;&quot;</span>
@@ -6935,7 +6932,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_cyclic_update_active</span> <span class="o">=</span> <span class="kc">False</span>
 
                 <span class="c1"># reconnect</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">PLUGIN_ATTR_CONN_AUTO_RECONN</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">PLUGIN_ATTR_CONN_AUTO_RECONN</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
                     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
@@ -7388,7 +7385,9 @@
                             <span class="n">rg_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">rg_list</span><span class="p">]</span>
                         <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">rg_list</span><span class="p">:</span>
                             <span class="n">grps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">))</span>
-                    <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_GROUP</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grps</span>
+                    <span class="c1"># only create read_groups if they actually exist</span>
+                    <span class="k">if</span> <span class="n">grps</span><span class="p">:</span>
+                        <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_GROUP</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grps</span>
 
                 <span class="c1"># item attributes</span>
                 <span class="k">if</span> <span class="n">ia_node</span><span class="p">:</span>
