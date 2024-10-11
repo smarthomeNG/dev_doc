@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.logic &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 11. Oktober 2024, commit fdf6482) Dokumentation</title>
+  <title>lib.logic &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 11. Oktober 2024, commit 386fe1e) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5771,7 +5771,7 @@
 <span class="kn">from</span> <span class="nn">lib.utils</span> <span class="kn">import</span> <span class="n">Utils</span>
 
 <span class="kn">from</span> <span class="nn">lib.constants</span> <span class="kn">import</span> <span class="n">PLUGIN_PARSE_LOGIC</span>
-<span class="kn">from</span> <span class="nn">lib.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">YAML_FILE</span><span class="p">,</span> <span class="n">CONF_FILE</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">lib.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">YAML_FILE</span><span class="p">,</span> <span class="n">CONF_FILE</span><span class="p">,</span> <span class="n">DIR_LOGICS</span><span class="p">,</span> <span class="n">DIR_ETC</span><span class="p">,</span> <span class="n">BASE_LOGIC</span><span class="p">,</span> <span class="n">BASE_ADMIN</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">lib.item</span> <span class="kn">import</span> <span class="n">Items</span>
 <span class="kn">from</span> <span class="nn">lib.plugin</span> <span class="kn">import</span> <span class="n">Plugins</span>
@@ -5809,8 +5809,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_userlogicconf</span> <span class="o">=</span> <span class="n">userlogicconf</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_env_dir</span> <span class="o">=</span> <span class="n">smarthome</span><span class="o">.</span><span class="n">_env_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_envlogicconf</span> <span class="o">=</span> <span class="n">envlogicconf</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_etc_dir</span> <span class="o">=</span> <span class="n">smarthome</span><span class="o">.</span><span class="n">get_etcdir</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logic_dir</span> <span class="o">=</span> <span class="n">smarthome</span><span class="o">.</span><span class="n">get_logicsdir</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_etc_dir</span> <span class="o">=</span> <span class="n">smarthome</span><span class="o">.</span><span class="n">get_config_dir</span><span class="p">(</span><span class="n">DIR_ETC</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logic_dir</span> <span class="o">=</span> <span class="n">smarthome</span><span class="o">.</span><span class="n">get_config_dir</span><span class="p">(</span><span class="n">DIR_LOGICS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logic_conf</span> <span class="o">=</span> <span class="n">smarthome</span><span class="o">.</span><span class="n">get_config_file</span><span class="p">(</span><span class="n">BASE_LOGIC</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_workers</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logics</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="c1">#self._bytecode = {}</span>
@@ -5838,7 +5839,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_load_logic</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">_config</span><span class="p">)</span>
 
         <span class="c1"># load /etc/admin.yaml</span>
-        <span class="n">admconf_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_etc_dir</span><span class="p">(),</span> <span class="s1">&#39;admin&#39;</span><span class="p">)</span>
+        <span class="n">admconf_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_config_file</span><span class="p">(</span><span class="n">BASE_ADMIN</span><span class="p">)</span>
         <span class="n">_admin_conf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="n">admconf_filename</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">_admin_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;logics&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span> <span class="o">=</span> <span class="p">{}</span>
@@ -5849,7 +5850,7 @@
     <span class="k">def</span> <span class="nf">_save_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="c1"># load /etc/admin.yaml</span>
-        <span class="n">admconf_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_etc_dir</span><span class="p">(),</span> <span class="s1">&#39;admin&#39;</span><span class="p">)</span>
+        <span class="n">admconf_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_config_file</span><span class="p">(</span><span class="n">BASE_ADMIN</span><span class="p">)</span>
         <span class="n">_admin_conf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="n">admconf_filename</span><span class="p">)</span>
         <span class="n">_admin_conf</span><span class="p">[</span><span class="s1">&#39;logics&#39;</span><span class="p">][</span><span class="s1">&#39;groups&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span>
         <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_save_roundtrip</span><span class="p">(</span><span class="n">admconf_filename</span><span class="p">,</span> <span class="n">_admin_conf</span><span class="p">,</span> <span class="n">create_backup</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -6220,7 +6221,7 @@
             <span class="n">pathname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">return_logic</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">_pathname</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">pathname</span><span class="p">))</span> <span class="o">==</span> <span class="s1">&#39;logics&#39;</span></div>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">pathname</span><span class="p">))</span> <span class="o">==</span> <span class="n">DIR_LOGICS</span></div>
 
 
 <div class="viewcode-block" id="Logics.load_logic"><a class="viewcode-back" href="../../lib/logic.html#lib.logic.Logics.load_logic">[Doku]</a>    <span class="k">def</span> <span class="nf">load_logic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
@@ -6330,8 +6331,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;return_logictype: name </span><span class="si">{}</span><span class="s2"> is not loaded&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
             <span class="c1"># load /etc/logic.yaml if logic is not in the loaded logics</span>
-            <span class="n">conf_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_etc_dir</span><span class="p">(),</span> <span class="s1">&#39;logic&#39;</span><span class="p">)</span>
-            <span class="n">config</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="n">conf_filename</span><span class="p">)</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logic_conf</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
                     <span class="n">filename</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
@@ -6366,8 +6366,7 @@
             <span class="n">logic_list</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="c1"># load /etc/logic.yaml</span>
-        <span class="n">conf_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_etc_dir</span><span class="p">(),</span> <span class="s1">&#39;logic&#39;</span><span class="p">)</span>
-        <span class="n">config</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="n">conf_filename</span><span class="p">)</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logic_conf</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
@@ -6441,8 +6440,7 @@
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="c1"># load /etc/logic.yaml</span>
-        <span class="n">conf_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_etc_dir</span><span class="p">(),</span> <span class="s1">&#39;logic&#39;</span><span class="p">)</span>
-        <span class="n">_conf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="n">conf_filename</span><span class="p">)</span>
+        <span class="n">_conf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logic_conf</span><span class="p">)</span>
 
         <span class="n">config_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">_conf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -6492,8 +6490,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># load /etc/logic.yaml</span>
-        <span class="n">conf_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_etc_dir</span><span class="p">(),</span> <span class="s1">&#39;logic&#39;</span><span class="p">)</span>
-        <span class="n">conf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="n">conf_filename</span><span class="p">)</span>
+        <span class="n">conf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logic_conf</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;set_config_section_key: section=</span><span class="si">{}</span><span class="s2">, key=</span><span class="si">{}</span><span class="s2">, value=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
         <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
@@ -6503,7 +6500,7 @@
             <span class="n">conf</span><span class="p">[</span><span class="n">section</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
         <span class="c1"># save /etc/logic.yaml</span>
-        <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_save_roundtrip</span><span class="p">(</span><span class="n">conf_filename</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_save_roundtrip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logic_conf</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># activate visu_acl without reloading the logic</span>
         <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;visu_acl&#39;</span><span class="p">:</span>
@@ -6540,8 +6537,7 @@
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="c1"># load /etc/logic.yaml</span>
-        <span class="n">conf_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_etc_dir</span><span class="p">(),</span> <span class="s1">&#39;logic&#39;</span><span class="p">)</span>
-        <span class="n">conf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="n">conf_filename</span><span class="p">)</span>
+        <span class="n">conf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logic_conf</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">conf</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">conf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">get_emptynode</span><span class="p">()</span>
 
@@ -6601,7 +6597,7 @@
 
         <span class="k">if</span> <span class="n">conf</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">==</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">get_emptynode</span><span class="p">():</span>
             <span class="n">conf</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_save_roundtrip</span><span class="p">(</span><span class="n">conf_filename</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span></div>
+        <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_save_roundtrip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logic_conf</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span></div>
 
 
     <span class="k">def</span> <span class="nf">_count_filename_uses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
@@ -6620,8 +6616,7 @@
 
 <div class="viewcode-block" id="Logics.filename_used_count"><a class="viewcode-back" href="../../lib/logic.html#lib.logic.Logics.filename_used_count">[Doku]</a>    <span class="k">def</span> <span class="nf">filename_used_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
         <span class="c1"># load /etc/logic.yaml</span>
-        <span class="n">conf_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_etc_dir</span><span class="p">(),</span> <span class="s1">&#39;logic&#39;</span><span class="p">)</span>
-        <span class="n">conf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="n">conf_filename</span><span class="p">)</span>
+        <span class="n">conf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logic_conf</span><span class="p">)</span>
         <span class="n">count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count_filename_uses</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">count</span></div>
 
@@ -6651,8 +6646,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">unload_logic</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
         <span class="c1"># load /etc/logic.yaml</span>
-        <span class="n">conf_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_etc_dir</span><span class="p">(),</span> <span class="s1">&#39;logic&#39;</span><span class="p">)</span>
-        <span class="n">conf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="n">conf_filename</span><span class="p">)</span>
+        <span class="n">conf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logic_conf</span><span class="p">)</span>
 
         <span class="n">section</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">section</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -6686,7 +6680,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;delete_logic: Section &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; from configuration deleted&quot;</span><span class="p">)</span>
 
         <span class="c1"># save /etc/logic.yaml</span>
-        <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_save_roundtrip</span><span class="p">(</span><span class="n">conf_filename</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_save_roundtrip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logic_conf</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span></div></div>
 
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.scene &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 11. Oktober 2024, commit fdf6482) Dokumentation</title>
+  <title>lib.scene &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 11. Oktober 2024, commit 386fe1e) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5748,6 +5748,7 @@
 <span class="kn">from</span> <span class="nn">lib.utils</span> <span class="kn">import</span> <span class="n">Utils</span>
 <span class="kn">from</span> <span class="nn">lib.shtime</span> <span class="kn">import</span> <span class="n">Shtime</span>
 <span class="kn">import</span> <span class="nn">lib.shyaml</span> <span class="k">as</span> <span class="nn">yaml</span>
+<span class="kn">from</span> <span class="nn">lib.constants</span> <span class="kn">import</span> <span class="p">(</span><span class="n">YAML_FILE</span><span class="p">,</span> <span class="n">DIR_SCENES</span><span class="p">)</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -5793,7 +5794,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_scenes</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_learned_values</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_scenes_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_scenes_dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scenes_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_config_dir</span><span class="p">(</span><span class="n">DIR_SCENES</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scenes_dir</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">translate</span><span class="p">(</span><span class="s2">&quot;Directory &#39;</span><span class="si">{scenes_dir}</span><span class="s2">&#39; not found. Ignoring scenes.&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;scenes_dir&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scenes_dir</span><span class="p">}))</span>
             <span class="k">return</span>
@@ -5804,7 +5805,7 @@
             <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;scene&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">scene_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scenes_dir</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
 
-                <span class="n">scene_file_yaml</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">yaml_load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scene_file</span><span class="o">+</span><span class="s1">&#39;.yaml&#39;</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ignore_notfound</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">scene_file_yaml</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">yaml_load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scene_file</span> <span class="o">+</span> <span class="n">YAML_FILE</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ignore_notfound</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">scene_file_yaml</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="c1"># Reading yaml file with scene definition</span>
                     <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">scene_file_yaml</span><span class="p">:</span>
@@ -5898,7 +5899,7 @@
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot; - Saving value </span><span class="si">{}</span><span class="s2"> for state/ditem </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lvalue</span><span class="p">,</span> <span class="n">fkey</span><span class="p">))</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; -&gt; to dict learned_dict </span><span class="si">{}</span><span class="s2">:&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">learned_dict</span><span class="p">))</span>
         <span class="n">scene_learnfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scenes_dir</span><span class="p">,</span> <span class="n">scene</span><span class="o">+</span><span class="s1">&#39;_learned&#39;</span><span class="p">)</span>
-        <span class="n">yaml</span><span class="o">.</span><span class="n">yaml_save</span><span class="p">(</span><span class="n">scene_learnfile</span><span class="o">+</span><span class="s1">&#39;.yaml&#39;</span><span class="p">,</span> <span class="n">learned_dict</span><span class="p">)</span>
+        <span class="n">yaml</span><span class="o">.</span><span class="n">yaml_save</span><span class="p">(</span><span class="n">scene_learnfile</span> <span class="o">+</span> <span class="n">YAML_FILE</span><span class="p">,</span> <span class="n">learned_dict</span><span class="p">)</span>
         <span class="k">return</span>
 
 
@@ -5906,8 +5907,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load learned values for the scene from a file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">scene_learnfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scenes_dir</span><span class="p">,</span> <span class="n">scene</span><span class="o">+</span><span class="s1">&#39;_learned&#39;</span><span class="p">)</span>
-        <span class="n">learned_dict</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">yaml_load</span><span class="p">(</span><span class="n">scene_learnfile</span><span class="o">+</span><span class="s1">&#39;.yaml&#39;</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ignore_notfound</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">scene_learnfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scenes_dir</span><span class="p">,</span> <span class="n">scene</span> <span class="o">+</span> <span class="s1">&#39;_learned&#39;</span><span class="p">)</span>
+        <span class="n">learned_dict</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">yaml_load</span><span class="p">(</span><span class="n">scene_learnfile</span> <span class="o">+</span> <span class="n">YAML_FILE</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ignore_notfound</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading learned values for scene </span><span class="si">{}</span><span class="s2"> from file </span><span class="si">{}</span><span class="s2">:&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">scene</span><span class="p">,</span> <span class="n">scene_learnfile</span><span class="p">))</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; -&gt; loaded dict learned_dict </span><span class="si">{}</span><span class="s2">:&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">learned_dict</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">learned_dict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
