@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.item.item &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 14. Oktober 2024, commit ac8992e) Dokumentation</title>
+  <title>lib.item.item &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 16. Oktober 2024, commit f1eeeb5) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -6002,6 +6002,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_on_change_dest_var_unexp</span> <span class="o">=</span> <span class="p">[]</span>	<span class="c1"># -&gt; KEY_ON_CHANGE destination var (with unexpanded item reference)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_log_change</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_log_change_logger</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_level_attrib</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_log_level</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_log_level_name</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_log_mapping</span> <span class="o">=</span> <span class="p">{}</span>
@@ -6134,18 +6135,8 @@
 
                 <span class="k">elif</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">[</span><span class="n">KEY_LOG_LEVEL</span><span class="p">]:</span>
                     <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-                        <span class="n">level</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-                        <span class="n">level_name</span> <span class="o">=</span> <span class="n">level</span>
-                        <span class="k">if</span> <span class="n">Utils</span><span class="o">.</span><span class="n">is_int</span><span class="p">(</span><span class="n">level</span><span class="p">):</span>
-                            <span class="n">level</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
-                            <span class="n">level_name</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="n">level</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;Level &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">level</span><span class="p">):</span>
-                            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Item </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">: Invalid loglevel &#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39; defined in attribute &#39;</span><span class="si">{</span><span class="n">KEY_LOG_LEVEL</span><span class="si">}</span><span class="s2">&#39; - Level &#39;INFO&#39; will be used instead&quot;</span><span class="p">)</span>
-                            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_log_level_name&#39;</span><span class="p">,</span> <span class="s1">&#39;INFO&#39;</span><span class="p">)</span>
-                            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_log_level&#39;</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="s1">&#39;INFO&#39;</span><span class="p">))</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_log_level_name&#39;</span><span class="p">,</span> <span class="n">level_name</span><span class="p">)</span>
-                            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_log_level&#39;</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="n">level_name</span><span class="p">))</span>
+                        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_log_level_attrib&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
                 <span class="k">elif</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">[</span><span class="n">KEY_LOG_CHANGE</span><span class="p">]:</span>
                     <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
                         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_log_change&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
@@ -7941,7 +7932,7 @@
             <span class="c1">#logger.warning(f&quot;self._log_text: {self._log_text}, type={type(self._log_text)}&quot;)</span>
             <span class="n">txt</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;f&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_text</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">: Invalid log_text template &#39; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_text</span><span class="si">}</span><span class="s2">&#39; - (Exception: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">: Invalid log_text template &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_text</span><span class="si">}</span><span class="s2">&#39; - (Exception: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
             <span class="n">txt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_text</span>
         <span class="k">return</span> <span class="n">txt</span>
 
@@ -8026,6 +8017,24 @@
             <span class="c1"># if dest is not None:</span>
             <span class="c1">#     log_dst += &#39;, dest: &#39; + dest</span>
             <span class="c1">#self._log_change_logger.log(self._log_level, &quot;Item Change: {} = {}  -  caller: {}{}{}&quot;.format(self._path, value, caller, log_src, log_dst))</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_level_attrib</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+                <span class="n">log_level</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;f&#39;</span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_level_attrib</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">: Invalid log_level template &#39;</span><span class="si">{</span><span class="n">log_level</span><span class="si">}</span><span class="s2">&#39; - (Exception: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="n">level</span> <span class="o">=</span> <span class="n">log_level</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+            <span class="n">level_name</span> <span class="o">=</span> <span class="n">level</span>
+            <span class="k">if</span> <span class="n">Utils</span><span class="o">.</span><span class="n">is_int</span><span class="p">(</span><span class="n">level</span><span class="p">):</span>
+                <span class="n">level</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+                <span class="n">level_name</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="n">level</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;Level &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">level</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Item </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">: Invalid loglevel &#39;</span><span class="si">{</span><span class="n">log_level</span><span class="si">}</span><span class="s2">&#39; defined in attribute &#39;</span><span class="si">{</span><span class="n">KEY_LOG_LEVEL</span><span class="si">}</span><span class="s2">&#39; - Level &#39;INFO&#39; will be used instead&quot;</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_log_level_name&#39;</span><span class="p">,</span> <span class="s1">&#39;INFO&#39;</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_log_level&#39;</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="s1">&#39;INFO&#39;</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_log_level_name&#39;</span><span class="p">,</span> <span class="n">level_name</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_log_level&#39;</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="n">level_name</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_log_change_logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_level</span><span class="p">,</span> <span class="n">txt</span><span class="p">)</span>
 
 

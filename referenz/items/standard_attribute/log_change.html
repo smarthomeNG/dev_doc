@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>log_change und log_text &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 14. Oktober 2024, commit ac8992e) Dokumentation</title>
+  <title>log_change und log_text &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 16. Oktober 2024, commit f1eeeb5) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -5732,6 +5732,12 @@ Bedürfnisse angepasst werden.</p>
 festzulegen. Der angegebene Loglevel kann jeder in SmartHomeNG unterstützte Python Loglevel sein (DEBUG, INFO, WARNING,
 ERROR, CRITICAL). Die Angabe kann durch den Namen oder den Integer Wert des Loglevels erfolgen.</p>
 <p><strong>Beispiel:</strong> <code class="docutils literal notranslate"><span class="pre">log_level:</span> <span class="pre">WARNING</span></code></p>
+<section id="eval-ausduck-in-log-level">
+<h3>eval-Ausduck in log_level<a class="headerlink" href="#eval-ausduck-in-log-level" title="Permalink to this heading"></a></h3>
+<p>Ab <strong>SmarthomeNG v1.10.1</strong> ist es möglich, das Loglevel variabel mittels Eval-Ausdruck festzulegen. Es wird dadurch
+vor dem Schreiben eines jeden Logging-Eintrags neu evaluiert.</p>
+<p><strong>Beispiel:</strong> <code class="docutils literal notranslate"><span class="pre">log_level:</span> <span class="pre">'{10</span> <span class="pre">if</span> <span class="pre">value</span> <span class="pre">==</span> <span class="pre">5</span> <span class="pre">else</span> <span class="pre">&quot;WARNING&quot;</span> <span class="pre">if</span> <span class="pre">value</span> <span class="pre">==</span> <span class="pre">1</span> <span class="pre">else</span> <span class="pre">&quot;INFO&quot;}'</span></code></p>
+</section>
 </section>
 <section id="attribut-log-text">
 <h2>Attribut <em>log_text</em><a class="headerlink" href="#attribut-log-text" title="Permalink to this heading"></a></h2>
@@ -5825,12 +5831,11 @@ eingeschlossen werden.</p>
 </section>
 <section id="eval-ausdrucke-in-log-text">
 <h3>eval-Ausdrücke in log_text<a class="headerlink" href="#eval-ausdrucke-in-log-text" title="Permalink to this heading"></a></h3>
-<p>Zusätzlich zu den Variaben, können in den Log Text auch eval Ausdrücke eingeschlossen werden. Der Syntax dazu ist
-folgender: <code class="docutils literal notranslate"><span class="pre">{eval(&lt;Ausdruck&gt;)}</span></code>. Dabei muss sicher gestellt sein, dass der Ausdruck ein String ist. Wenn man
-zum Beispiel nur Zahlen addiert <code class="docutils literal notranslate"><span class="pre">3+5</span></code>, muss dieser Ausdruck in <strong>doppelte</strong> Anführungszeichen (<code class="docutils literal notranslate"><span class="pre">&quot;</span></code>) gesetzt werden:
-<code class="docutils literal notranslate"><span class="pre">{eval(&quot;3+5&quot;)}</span></code>.</p>
+<p>Zusätzlich zu den Variaben, können in den Log Text auch eval Ausdrücke eingeschlossen werden. Diese sind in
+geschwungene Klammern zu setzen.</p>
 <p>Es können auch mehrere eval-Ausdrücke in einen Log Text eingebunden und mit Variablen konfiguriert werden.</p>
-<p><strong>Beispiel:</strong> <code class="docutils literal notranslate"><span class="pre">log_text:</span> <span class="pre">Ergebnis={eval(&quot;1+4&quot;)}</span> <span class="pre">für</span> <span class="pre">item</span> <span class="pre">{id}</span></code></p>
+<p><strong>Beispiel:</strong> <code class="docutils literal notranslate"><span class="pre">log_text:</span> <span class="pre">Ergebnis={1+value}</span> <span class="pre">für</span> <span class="pre">item</span> <span class="pre">{id}</span></code>
+<strong>Beispiel:</strong> <code class="docutils literal notranslate"><span class="pre">log_text:</span> <span class="pre">Ergebnis={&quot;Eins&quot;</span> <span class="pre">if</span> <span class="pre">value</span> <span class="pre">==</span> <span class="pre">1</span> <span class="pre">else</span> <span class="pre">&quot;Zwei&quot;</span> <span class="pre">if</span> <span class="pre">value</span> <span class="pre">==</span> <span class="pre">2</span> <span class="pre">else</span> <span class="pre">1+value}</span> <span class="pre">für</span> <span class="pre">item</span> <span class="pre">{id}</span></code></p>
 </section>
 </section>
 <section id="attribut-log-mapping">
