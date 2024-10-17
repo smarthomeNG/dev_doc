@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.item.item &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 16. Oktober 2024, commit d8d808f) Dokumentation</title>
+  <title>lib.item.item &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 17. Oktober 2024, commit 11bb17b) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -7785,7 +7785,7 @@
 
 
     <span class="c1"># New for on_update / on_change</span>
-    <span class="k">def</span> <span class="nf">_run_on_xxx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">on_dest</span><span class="p">,</span> <span class="n">on_eval</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s1">&#39;?&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_run_on_xxx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">on_dest</span><span class="p">,</span> <span class="n">on_eval</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s1">&#39;?&#39;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        common method for __run_on_update and __run_on_change</span>
 
@@ -7847,7 +7847,7 @@
                 <span class="k">pass</span>
 
 
-    <span class="k">def</span> <span class="nf">__run_on_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__run_on_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        evaluate all &#39;on_update&#39; entries of the actual item</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -7855,10 +7855,10 @@
             <span class="c1"># sh = self._sh  # noqa</span>
 <span class="c1">#            logger.info(&quot;Item {}: &#39;on_update&#39; evaluating {} = {}&quot;.format(self._path, self._on_update_dest_var, self._on_update))</span>
             <span class="k">for</span> <span class="n">on_update_dest</span><span class="p">,</span> <span class="n">on_update_eval</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_update_dest_var</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_update</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_run_on_xxx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">on_update_dest</span><span class="p">,</span> <span class="n">on_update_eval</span><span class="p">,</span> <span class="s1">&#39;On_Update&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_run_on_xxx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">on_update_dest</span><span class="p">,</span> <span class="n">on_update_eval</span><span class="p">,</span> <span class="s1">&#39;On_Update&#39;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="n">dest</span><span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="nf">__run_on_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__run_on_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        evaluate all &#39;on_change&#39; entries of the actual item</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -7866,7 +7866,7 @@
             <span class="c1"># sh = self._sh  # noqa</span>
 <span class="c1">#            logger.info(&quot;Item {}: &#39;on_change&#39; evaluating lists {} = {}&quot;.format(self._path, self._on_change_dest_var, self._on_change))</span>
             <span class="k">for</span> <span class="n">on_change_dest</span><span class="p">,</span> <span class="n">on_change_eval</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_change_dest_var</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_change</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_run_on_xxx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">on_change_dest</span><span class="p">,</span> <span class="n">on_change_eval</span><span class="p">,</span> <span class="s1">&#39;On_Change&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_run_on_xxx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">on_change_dest</span><span class="p">,</span> <span class="n">on_change_eval</span><span class="p">,</span> <span class="s1">&#39;On_Change&#39;</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="n">dest</span><span class="p">)</span>
 
 
     <span class="k">def</span> <span class="nf">_log_build_standardtext</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -8144,7 +8144,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
 
         <span class="c1"># ms: call run_on_update() from here</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__run_on_update</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__run_on_update</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="n">dest</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">_changed</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enforce_updates</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">==</span> <span class="s1">&#39;scene&#39;</span><span class="p">:</span>
             <span class="c1"># ms: call run_on_change() from here -&gt; noved down</span>
             <span class="c1">#self.__run_on_change(value)</span>
@@ -8171,7 +8171,7 @@
                 <span class="n">args</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">}</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;items.&#39;</span> <span class="o">+</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">__run_hysteresis</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="n">dest</span><span class="p">)</span>
             <span class="c1"># ms: call run_on_change() from here - after eval is run</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__run_on_change</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__run_on_change</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="n">dest</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">_changed</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fading</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
