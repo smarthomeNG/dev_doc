@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.orb &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 16. Februar 2025, commit 24cbe8b) Dokumentation</title>
+  <title>lib.orb &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 16. Februar 2025, commit b5556d7) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5752,7 +5752,7 @@
 <span class="c1"># vim: set encoding=utf-8 tabstop=4 softtabstop=4 shiftwidth=4 expandtab</span>
 <span class="c1">#########################################################################</span>
 <span class="c1"># Copyright 2011-2014 Marcus Popp                          marcus@popp.mx</span>
-<span class="c1"># Copyright 2021-2022 Bernd Meiners                 Bernd.Meiners@mail.de</span>
+<span class="c1"># Copyright 2021-2025 Bernd Meiners                 Bernd.Meiners@mail.de</span>
 <span class="c1">#########################################################################</span>
 <span class="c1">#  This file is part of SmartHomeNG.    https://github.com/smarthomeNG//</span>
 <span class="c1">#</span>
@@ -5809,7 +5809,7 @@
 <span class="sd">        `pressure` - 1010 mBar</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">orb</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">elev</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">orb</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">elev</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">neverup_delta</span><span class="o">=</span><span class="mf">0.00001</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save location and celestial body</span>
 <span class="sd">        </span>
@@ -5826,6 +5826,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lat</span> <span class="o">=</span> <span class="n">lat</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lon</span> <span class="o">=</span> <span class="n">lon</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elev</span> <span class="o">=</span> <span class="n">elev</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">orb</span> <span class="o">==</span> <span class="s1">&#39;sun&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">neverup_delta</span> <span class="o">=</span> <span class="n">neverup_delta</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">neverup_delta</span> <span class="o">==</span> <span class="mf">0.00001</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;neverup_delta was adjusted to </span><span class="si">{</span><span class="n">neverup_delta</span><span class="si">}</span><span class="s2"> for sun calculations&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">neverup_delta</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="Orb.get_observer_and_orb"><a class="viewcode-back" href="../../lib/orb.html#lib.orb.Orb.get_observer_and_orb">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_observer_and_orb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5889,7 +5895,7 @@
                                 <span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="p">(</span><span class="n">offset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">degree</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">noon</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
 
         <span class="c1"># Limit degree offset to the highest or lowest possible for the given date</span>
-        <span class="n">doff</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">doff</span><span class="p">,</span> <span class="n">max_altitude</span> <span class="o">+</span> <span class="mf">0.00001</span><span class="p">)</span> <span class="k">if</span> <span class="n">doff</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="nb">min</span><span class="p">(</span><span class="n">doff</span><span class="p">,</span> <span class="n">max_altitude</span> <span class="o">-</span> <span class="mf">0.00001</span><span class="p">)</span> <span class="k">if</span> <span class="n">doff</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">doff</span>
+        <span class="n">doff</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">doff</span><span class="p">,</span> <span class="n">max_altitude</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">neverup_delta</span><span class="p">)</span> <span class="k">if</span> <span class="n">doff</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="nb">min</span><span class="p">(</span><span class="n">doff</span><span class="p">,</span> <span class="n">max_altitude</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">neverup_delta</span><span class="p">)</span> <span class="k">if</span> <span class="n">doff</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">doff</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">originaldoff</span> <span class="o">==</span> <span class="n">doff</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;offset </span><span class="si">{</span><span class="n">originaldoff</span><span class="si">}</span><span class="s2"> truncated to </span><span class="si">{</span><span class="n">doff</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">doff</span>

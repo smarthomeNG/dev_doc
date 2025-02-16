@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.smarthome &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 16. Februar 2025, commit 24cbe8b) Dokumentation</title>
+  <title>lib.smarthome &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 16. Februar 2025, commit b5556d7) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5753,7 +5753,7 @@
 <span class="c1"># Copyright 2011-2014 Marcus Popp                          marcus@popp.mx</span>
 <span class="c1"># Copyright 2016      Christian Strassburg            c.strassburg@gmx.de</span>
 <span class="c1"># Copyright 2016-     Martin Sinn                           m.sinn@gmx.de</span>
-<span class="c1"># Copyright 2020-     Bernd Meiners                 bernd.meiners@mail.de</span>
+<span class="c1"># Copyright 2020-2025 Bernd Meiners                 bernd.meiners@mail.de</span>
 <span class="c1">#########################################################################</span>
 <span class="c1">#  This file is part of SmartHomeNG.</span>
 <span class="c1">#</span>
@@ -6207,14 +6207,21 @@
         <span class="c1"># Link Sun and Moon</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sun</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">moon</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># optional in smarthome,yaml but needed for orbital calculations</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_elev&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_elev</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_sun_neverup_delta&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sun_neverup_delta</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sun_neverup_delta</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sun_neverup_delta</span> <span class="o">=</span> <span class="mf">0.00001</span>
+
         <span class="k">if</span> <span class="n">lib</span><span class="o">.</span><span class="n">orb</span><span class="o">.</span><span class="n">ephem</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not find/use ephem!&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_lon&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_lat&#39;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_lon&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_lat&#39;</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No latitude/longitude specified =&gt; you could not use the sun and moon object.&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_elev&#39;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_elev</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sun</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">orb</span><span class="o">.</span><span class="n">Orb</span><span class="p">(</span><span class="s1">&#39;sun&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elev</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sun</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">orb</span><span class="o">.</span><span class="n">Orb</span><span class="p">(</span><span class="s1">&#39;sun&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elev</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sun_neverup_delta</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">moon</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">orb</span><span class="o">.</span><span class="n">Orb</span><span class="p">(</span><span class="s1">&#39;moon&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elev</span><span class="p">)</span>
 
 
