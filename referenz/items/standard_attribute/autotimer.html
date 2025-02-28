@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>autotimer &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 28. Februar 2025, commit d4f1577) Dokumentation</title>
+  <title>autotimer &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 28. Februar 2025, commit 04abbde) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -5767,7 +5767,7 @@ beginnt der Timer erneut zu laufen. Damit lässt sich z.B. ein Treppenhauslicht 
 <span class="w">    </span><span class="nt">autotimer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;Dauer&gt; [; &lt;Wert&gt;]</span>
 </pre></div>
 </div>
-<p><strong>Ab SmartHomeNG v1.10</strong> möglichen Angaben für die Dauer erweitert. Der Wert für <strong>Dauer</strong> kann auf folgende
+<p><strong>Ab SmartHomeNG v1.10</strong> sind die möglichen Angaben für die Dauer erweitert. Der Wert für <strong>Dauer</strong> kann auf folgende
 Weise angegeben werden:</p>
 <blockquote>
 <div><ul class="simple">
@@ -5775,22 +5775,19 @@ Weise angegeben werden:</p>
 <li><p>eine Zahl gefolgt von <strong>h</strong>, gibt die Anzahl an Stunden an</p></li>
 <li><p>eine Zahl gefolgt von <strong>m</strong>, gibt die Anzahl an Minuten an</p></li>
 <li><p>eine Zahl gefolgt von <strong>s</strong>, gibt die Anzahl an Sekunden an</p></li>
-<li><p>Eine Kombination der Stunden, Minuten und Sekunden Angaben (z.B.: 2h30m45s)</p></li>
+<li><p>eine Kombination der Stunden, Minuten und Sekunden Angaben (z.B.: 2h30m45s)</p></li>
 </ul>
 </div></blockquote>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
-<p>Der Wert für <strong>Wert</strong> ist optional. Falls er weg gelassen wird, wird nach Ablauf der Dauer das Item auf den
-Wert gesetzt, den es zum Zeitpunkt der auslösenden Wertänderung angenommen hat.</p>
+<p>Der Wert für <strong>Wert</strong> ist optional. Falls er weg gelassen wird, wird nach Ablauf der Dauer das Item auf den Wert gesetzt, den es zum Zeitpunkt der auslösenden Wertänderung angenommen hat.</p>
+<p>Falls der Wert None ist, wird ebenfalls der zum Zeitpunkt des Triggers aktuelle Itemwert erneut gesetzt.</p>
 <p>Der Trenner (Delimiter) zwischen <strong>Dauer</strong> und <strong>Wert</strong> ist ab SmartHomeNG v1.10 standardmäßig ein Semikolon.
 Es kann jedoch auch der alte Delimiter (das Gleichheitszeichen) verwendet werden.</p>
-<p><strong>Ab SmartHomeNG v1.10</strong> werden die Konfigurationsmöglichkeiten erweitert:</p>
-<p>Für <strong>Dauer</strong> und <strong>Wert</strong> können nun <strong>eval</strong> Ausdrücke angegeben werden. Bisher waren nur konstante Werte und
-Itemnamen (absolut oder relativ) möglich.</p>
+<p><strong>Ab SmartHomeNG v1.11</strong> werden die Konfigurationsmöglichkeiten erweitert:</p>
+<p>Für <strong>Dauer</strong> und <strong>Wert</strong> können nun <strong>eval</strong> Ausdrücke angegeben werden, die zur Laufzeit entsprechend der Itemänderungen neu evaluiert werden.
+Dabei können auch Item Properties genutzt werden.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">myitem</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
-<span class="w">    </span><span class="nt">autotimer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sh.item.dauer() ; 1 + sh.item.wert()</span>
+<span class="w">    </span><span class="nt">autotimer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sh.myitem.dauer() + 1 ; sh...wert.property.value</span><span class="w">  </span><span class="c1"># oder sh...wert()</span>
 <span class="w">    </span><span class="nt">dauer</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">initial_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">41</span>
 <span class="w">    </span><span class="nt">wert</span><span class="p">:</span>
@@ -5799,15 +5796,20 @@ Itemnamen (absolut oder relativ) möglich.</p>
 </div>
 <p>setzt nach der in <em>myitem.dauer</em> angegebenen Dauer (41 Sekunden) plus 1 Sekunde aus dem Ausdruck
 den Wert des Items auf in <em>myitem.wert</em> (hier initial mit 1 angegebenen).
-Die Angabe der Items kann auch als relative Angabe erfolgen
-(bspw. <em>sh..dauer()</em>)</p>
-<p>Der Wert für <em>dauer</em> kann auf folgende Weise angegeben werden:</p>
-<ol class="arabic simple">
-<li><p>eine Zahl, die die Anzahl an Sekunden angibt</p></li>
-<li><p>eine Zahl gefolgt von <strong>m</strong>, gibt die Anzahl an Minuten an</p></li>
-<li><p>eine Zahl gefolgt von <strong>s</strong>, gibt die Anzahl an Sekunden an
-(alternative Schreibweise zur Variante 1)</p></li>
-</ol>
+Die Angabe der Items kann auch als relative Angabe erfolgen (bspw. <em>sh..dauer()</em>)</p>
+<p>Wird der Wert des Intervalls während eines laufenden autotimers geändert, wird diese Wertänderung erst für die nächste
+Ausführung des autotimers relevant. Wird der Wert während eines aktiven autotimers geändert, wird der neue aktualisierte
+Wert nach Ablauf der Dauer geschrieben.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">myitem2</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+<span class="w">    </span><span class="nt">autotimer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str(sh..interval.property.value + sh..interval2.property.value * 2) + &quot;m&quot; ; sh...wert.property.last_change</span>
+<span class="w">    </span><span class="nt">interval</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">        </span><span class="nt">initial_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">41</span>
+<span class="w">    </span><span class="nt">wert</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+</pre></div>
+</div>
 </section>
 
 

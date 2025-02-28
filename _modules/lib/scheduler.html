@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.scheduler &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 28. Februar 2025, commit d4f1577) Dokumentation</title>
+  <title>lib.scheduler &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 28. Februar 2025, commit 04abbde) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5779,31 +5779,27 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">lib.env</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">lib.shtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">Shtime</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">lib.env</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">lib.item</span><span class="w"> </span><span class="kn">import</span> <span class="n">Items</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">lib.model.smartplugin</span><span class="w"> </span><span class="kn">import</span> <span class="n">SmartPlugin</span>
-
-<span class="kn">import</span><span class="w"> </span><span class="nn">dateutil.relativedelta</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dateutil.relativedelta</span><span class="w"> </span><span class="kn">import</span> <span class="n">MO</span><span class="p">,</span> <span class="n">TU</span><span class="p">,</span> <span class="n">WE</span><span class="p">,</span> <span class="n">TH</span><span class="p">,</span> <span class="n">FR</span><span class="p">,</span> <span class="n">SA</span><span class="p">,</span> <span class="n">SU</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dateutil.tz</span><span class="w"> </span><span class="kn">import</span> <span class="n">tzutc</span>
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">lib.triggertimes</span><span class="w"> </span><span class="kn">import</span> <span class="n">TriggerTimes</span>
 
 <span class="c1"># following modules) are imported to have those functions available during logic execution</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">gc</span>  <span class="c1"># noqa</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">lib.userfunctions</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">uf</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>  <span class="c1"># noqa</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>  <span class="c1"># noqa</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lib.userfunctions</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">uf</span>  <span class="c1"># noqa</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">types</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">types</span>  <span class="c1"># noqa</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>  <span class="c1"># noqa</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">lib.module</span><span class="w"> </span><span class="kn">import</span> <span class="n">Modules</span>
     <span class="n">_lib_modules_found</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="k">except</span><span class="p">:</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="n">_lib_modules_found</span> <span class="o">=</span> <span class="kc">False</span>
 
 
@@ -5812,9 +5808,10 @@
 
 <span class="n">_scheduler_instance</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1"># Pointer to the initialized instance of the scheduler class  (for use by static methods)</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">lib.triggertimes</span><span class="w"> </span><span class="kn">import</span> <span class="n">TriggerTimes</span>
 
-<div class="viewcode-block" id="LeaveLogic"><a class="viewcode-back" href="../../lib/scheduler.html#lib.scheduler.LeaveLogic">[Doku]</a><span class="k">class</span><span class="w"> </span><span class="nc">LeaveLogic</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span> <span class="k">pass</span>  <span class="c1"># declare a label for &#39;raise LeaveLogic&#39;</span></div>
+<div class="viewcode-block" id="LeaveLogic"><a class="viewcode-back" href="../../lib/scheduler.html#lib.scheduler.LeaveLogic">[Doku]</a><span class="k">class</span><span class="w"> </span><span class="nc">LeaveLogic</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span>  <span class="c1"># declare a label for &#39;raise LeaveLogic&#39;</span></div>
+
 
 <span class="k">class</span><span class="w"> </span><span class="nc">_PriorityQueue</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5897,6 +5894,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span> <span class="o">=</span> <span class="n">smarthome</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_runc</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Condition</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cycle_items</span> <span class="o">=</span> <span class="p">{}</span>          <span class="c1"># store items for dynamic cycles {&#39;item2.property.path&#39;: {name1, name2, ...}}</span>
 
         <span class="k">global</span> <span class="n">_scheduler_instance</span>
         <span class="k">if</span> <span class="n">_scheduler_instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -5911,7 +5909,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">items</span> <span class="o">=</span> <span class="n">Items</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">crontabs</span> <span class="o">=</span> <span class="n">TriggerTimes</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mqtt</span> <span class="o">=</span> <span class="kc">None</span>
-
 
     <span class="c1"># --------------------------------------------------------------------------------------------------</span>
     <span class="c1">#   Following (static) method of the class Scheduler implement the API for schedulers in SmartHomeNG</span>
@@ -5936,7 +5933,7 @@
 <span class="sd">        :return: scheduler instance</span>
 <span class="sd">        :rtype: object or None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">_scheduler_instance</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">_scheduler_instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_scheduler_instance</span></div>
@@ -6182,7 +6179,17 @@
         <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;next&#39;</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Scheduler.add"><a class="viewcode-back" href="../../lib/scheduler.html#lib.scheduler.Scheduler.add">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">prio</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">cron</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">next</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_smartplugin</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__get_first</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; return first k, v pair from dict &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">return</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Scheduler.add"><a class="viewcode-back" href="../../lib/scheduler.html#lib.scheduler.Scheduler.add">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">prio</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">cron</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">next</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">from_smartplugin</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds an entry to the scheduler.</span>
 
@@ -6190,11 +6197,12 @@
 <span class="sd">        :param obj: Method to call by the scheduler</span>
 <span class="sd">        :param prio: a priority with default of 3 having 1 as most important and higher numbers less important</span>
 <span class="sd">        :param cron: a crontab entry of type string or a list of entries</span>
-<span class="sd">        :param cycle: a time given as integer in seconds or a string with a time given in seconds and a value after an equal sign</span>
+<span class="sd">        :param cycle: a time given as integer in seconds or a string with a time given in seconds and a value after an equal sign or</span>
 <span class="sd">        :param value: Value that an item should be set to or to be handed to a logic, otherwise: None</span>
 <span class="sd">        :param offset: an optional offset for cycle. If not given, cycle start point will be varied between 10..15 seconds to prevent too many scheduler entries with the same starting times</span>
 <span class="sd">        :param next:</span>
 <span class="sd">        :param from_smartplugin: Only to set to True, if called from the internal method in SmartPlugin class</span>
+<span class="sd">        :param items: None or list of items to register for update_item calls (if cycle time is calculated from expression containing item(s))</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># set shtime and items if they were initialized to None in __init__  (potenital timing problem in init of shng)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
@@ -6236,11 +6244,32 @@
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">cron</span> <span class="o">=</span> <span class="n">_cron</span>
 
+                <span class="c1"># NOTE: moved up so the full name is present for registering cycle items</span>
+                <span class="c1"># change name for multi instance plugins</span>
+                <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;method&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="vm">__self__</span><span class="p">,</span> <span class="n">SmartPlugin</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__self__</span><span class="o">.</span><span class="n">get_instance_name</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="ow">not</span> <span class="n">from_smartplugin</span><span class="p">:</span>
+                                <span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__self__</span><span class="o">.</span><span class="n">get_instance_name</span><span class="p">()</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Scheduler: Name changed by adding plugin instance name to: &quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
+
+                <span class="n">item</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cycle</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
                     <span class="n">source</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;cycle1&#39;</span><span class="p">,</span> <span class="s1">&#39;details&#39;</span><span class="p">:</span> <span class="n">cycle</span><span class="p">}</span>
-                    <span class="n">cycle</span> <span class="o">=</span> <span class="p">{</span><span class="n">cycle</span><span class="p">:</span> <span class="n">cycle</span><span class="p">}</span>
+                    <span class="n">cycle</span> <span class="o">=</span> <span class="p">{</span><span class="n">cycle</span><span class="p">:</span> <span class="n">value</span><span class="p">}</span>
+
+                <span class="c1"># this should not occur anymore, as it should have been done in lib.item.item</span>
+                <span class="c1"># just in case, and only for static values...</span>
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cycle</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                    <span class="n">cycle</span><span class="p">,</span> <span class="n">__</span><span class="p">,</span> <span class="n">_value</span> <span class="o">=</span> <span class="n">cycle</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
+                    <span class="c1"># TODO: could be ; instead of = according to the docs!</span>
+                    <span class="k">if</span> <span class="s1">&#39;=&#39;</span> <span class="ow">in</span> <span class="n">cycle</span><span class="p">:</span>
+                        <span class="n">cycle</span><span class="p">,</span> <span class="n">__</span><span class="p">,</span> <span class="n">_value</span> <span class="o">=</span> <span class="n">cycle</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="s1">&#39;;&#39;</span> <span class="ow">in</span> <span class="n">cycle</span><span class="p">:</span>
+                        <span class="n">cycle</span><span class="p">,</span> <span class="n">__</span><span class="p">,</span> <span class="n">_value</span> <span class="o">=</span> <span class="n">cycle</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="s1">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">cycle</span><span class="p">:</span>
+                        <span class="n">cycle</span><span class="p">,</span> <span class="n">__</span><span class="p">,</span> <span class="n">_value</span> <span class="o">=</span> <span class="n">cycle</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">_value</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="n">cycle</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">cycle</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
                     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -6249,28 +6278,70 @@
                     <span class="k">if</span> <span class="n">_value</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
                         <span class="n">_value</span> <span class="o">=</span> <span class="n">_value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">_value</span> <span class="o">=</span> <span class="n">cycle</span>
+                        <span class="n">_value</span> <span class="o">=</span> <span class="kc">None</span>
                     <span class="n">cycle</span> <span class="o">=</span> <span class="p">{</span><span class="n">cycle</span><span class="p">:</span> <span class="n">_value</span><span class="p">}</span>
                     <span class="n">source</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;cycle&#39;</span><span class="p">,</span> <span class="s1">&#39;details&#39;</span><span class="p">:</span> <span class="n">_value</span><span class="p">}</span>
+
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cycle</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="kc">False</span> <span class="ow">in</span> <span class="n">cycle</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;scheduler </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: can&#39;t add cycle with length False, check cycle assignment (obj </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2">, source </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
+                    <span class="k">return</span>
+
+                <span class="c1"># check if lib.item found an item reference for duration</span>
+                <span class="k">if</span> <span class="n">items</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Item </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1"> for scheduler </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> not found, check cycle assignment, skipping item&#39;</span><span class="p">)</span>
+                            <span class="k">continue</span>
+
+                        <span class="c1"># store item for callback</span>
+                        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cycle_items</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="p">[]):</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_cycle_items</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                            <span class="n">item</span><span class="o">.</span><span class="n">add_method_trigger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_item</span><span class="p">)</span>
+
                 <span class="k">if</span> <span class="n">cycle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">offset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># spread cycle jobs</span>
                     <span class="n">offset</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
-                <span class="c1"># change name for multi instance plugins</span>
-                <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;method&#39;</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="vm">__self__</span><span class="p">,</span> <span class="n">SmartPlugin</span><span class="p">):</span>
-                        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__self__</span><span class="o">.</span><span class="n">get_instance_name</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-                            <span class="c1">#if not (name).startswith(self._pluginname_prefix):</span>
-                            <span class="k">if</span> <span class="ow">not</span> <span class="n">from_smartplugin</span><span class="p">:</span>
-                                <span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__self__</span><span class="o">.</span><span class="n">get_instance_name</span><span class="p">()</span>
-                            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Scheduler: Name changed by adding plugin instance name to: &quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">)</span>
+
+                <span class="c1"># TODO: remove debug code later</span>
+                <span class="c1"># if cycle is not None and not isinstance(cycle, dict):</span>
+                <span class="c1">#     logger.error(f&#39;cycle not in dict format: {cycle} ({type(cycle)}) for scheduler {name}&#39;)</span>
+                <span class="c1">#     return</span>
+
                 <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;prio&#39;</span><span class="p">:</span> <span class="n">prio</span><span class="p">,</span> <span class="s1">&#39;obj&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="n">source</span><span class="p">,</span> <span class="s1">&#39;cron&#39;</span><span class="p">:</span> <span class="n">cron</span><span class="p">,</span> <span class="s1">&#39;cycle&#39;</span><span class="p">:</span> <span class="n">cycle</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;next&#39;</span><span class="p">:</span> <span class="nb">next</span><span class="p">,</span> <span class="s1">&#39;active&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
                 <span class="k">if</span> <span class="nb">next</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_next_time</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exception: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> while trying to add a new entry to scheduler&quot;</span><span class="p">)</span>
+                <span class="k">raise</span>
+                <span class="c1"># logger.error(f&quot;Exception: {e} while trying to add a new entry to scheduler&quot;)</span>
             <span class="k">finally</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not aquire lock to add a new entry to scheduler&quot;</span><span class="p">)</span></div>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Could not aquire lock to add a new entry to scheduler&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Scheduler.update_item"><a class="viewcode-back" href="../../lib/scheduler.html#lib.scheduler.Scheduler.update_item">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; provide a mechanism to handle changes of cycle item references &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cycle_items</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;item </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1"> not registered for cycle update, ignoring.&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cycle_items</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">]:</span>
+
+            <span class="n">cycle_item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;obj&#39;</span><span class="p">]</span>
+            <span class="n">cycle</span> <span class="o">=</span> <span class="n">cycle_item</span><span class="o">.</span><span class="n">get_attr_time</span><span class="p">(</span><span class="s1">&#39;cycle&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cycle</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;item </span><span class="si">{</span><span class="n">cycle_item</span><span class="si">}</span><span class="s1"> for cycle update return invalid cycle data </span><span class="si">{</span><span class="n">cycle</span><span class="si">}</span><span class="s1">, ignoring.&#39;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="n">value</span> <span class="o">=</span> <span class="n">cycle_item</span><span class="o">.</span><span class="n">get_attr_value</span><span class="p">(</span><span class="s1">&#39;cycle&#39;</span><span class="p">)</span>
+
+            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;cycle&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;cycle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cycle</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;cycle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">cycle</span><span class="p">:</span> <span class="n">value</span><span class="p">}</span>
+
+            <span class="c1"># as we don&#39;t know the last execution time, we start anew from now</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_next_time</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Scheduler.get"><a class="viewcode-back" href="../../lib/scheduler.html#lib.scheduler.Scheduler.get">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">from_smartplugin</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6307,9 +6378,7 @@
                                         <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_cron</span>
                             <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;cycle&#39;</span><span class="p">:</span>
                                 <span class="n">_cycle</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-                                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
-                                    <span class="n">_cycle</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-                                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">int</span><span class="p">):</span>
+                                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">int</span><span class="p">):</span>
                                     <span class="n">_cycle</span> <span class="o">=</span> <span class="p">{</span><span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span> <span class="kc">None</span><span class="p">}</span>
                                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
                                     <span class="n">_param</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
@@ -6360,23 +6429,37 @@
 <span class="sd">        :param offset: if a cycle attribute is present, then this value offsets the next execution time of a cycle</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-        <span class="k">if</span> <span class="kc">None</span> <span class="o">==</span> <span class="n">job</span><span class="p">[</span><span class="s1">&#39;cron&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">job</span><span class="p">[</span><span class="s1">&#39;cycle&#39;</span><span class="p">]:</span>
+
+        <span class="c1"># don&#39;t warn for logics as these get schedulers even without crontab or cycle</span>
+        <span class="k">if</span> <span class="n">job</span><span class="p">[</span><span class="s1">&#39;obj&#39;</span><span class="p">]</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">!=</span> <span class="s1">&#39;Logic&#39;</span> <span class="ow">and</span> <span class="n">job</span><span class="p">[</span><span class="s1">&#39;cron&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">job</span><span class="p">[</span><span class="s1">&#39;cycle&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;for </span><span class="si">{</span><span class="n">job</span><span class="p">[</span><span class="s2">&quot;obj&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">, neither cron or cycle is given, not setting next trigger time&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;next&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">return</span>
         <span class="n">next_time</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">now</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
-        <span class="c1">#now = now.replace(microsecond=0)</span>
         <span class="k">if</span> <span class="n">job</span><span class="p">[</span><span class="s1">&#39;cycle&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">cycle</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">job</span><span class="p">[</span><span class="s1">&#39;cycle&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="c1">#value = job[&#39;cycle&#39;][cycle]</span>
-            <span class="c1"># set value only, if it is an item scheduler</span>
+            <span class="n">cycle</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_first</span><span class="p">(</span><span class="n">job</span><span class="p">[</span><span class="s1">&#39;cycle&#39;</span><span class="p">])</span>
+
+            <span class="c1"># set value only if it is an item scheduler</span>
             <span class="k">if</span> <span class="n">job</span><span class="p">[</span><span class="s1">&#39;obj&#39;</span><span class="p">]</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;Item&#39;</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="n">job</span><span class="p">[</span><span class="s1">&#39;cycle&#39;</span><span class="p">][</span><span class="n">cycle</span><span class="p">]</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">v</span>
+
+                <span class="c1"># check if item is stored in cycle_items</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="n">job</span><span class="p">[</span><span class="s1">&#39;obj&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cycle_items</span><span class="p">:</span>
+
+                    <span class="n">cycle</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get_attr_time</span><span class="p">(</span><span class="s1">&#39;cycle&#39;</span><span class="p">)</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get_attr_value</span><span class="p">(</span><span class="s1">&#39;cycle&#39;</span><span class="p">)</span>
+
+                    <span class="c1"># update dynamic cycle value</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;cycle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cycle</span>
+
+            <span class="c1"># TODO: if offset is not None: will cycle be completely ignored?</span>
             <span class="k">if</span> <span class="n">offset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">offset</span> <span class="o">=</span> <span class="n">cycle</span>
+
             <span class="n">next_time</span> <span class="o">=</span> <span class="n">now</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
-            <span class="c1">#job[&#39;source&#39;] = &#39;cycle&#39;</span>
             <span class="n">job</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;cycle&#39;</span><span class="p">,</span> <span class="s1">&#39;details&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">cycle</span><span class="p">)}</span>
         <span class="k">if</span> <span class="n">job</span><span class="p">[</span><span class="s1">&#39;cron&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">job</span><span class="p">[</span><span class="s1">&#39;cron&#39;</span><span class="p">]:</span>
@@ -6386,7 +6469,6 @@
                 <span class="k">if</span> <span class="n">next_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">ct</span> <span class="o">&lt;</span> <span class="n">next_time</span><span class="p">:</span>
                         <span class="n">next_time</span> <span class="o">=</span> <span class="n">ct</span>
-                        <span class="c1">#job[&#39;source&#39;] = &#39;cron&#39;    # ms</span>
                         <span class="n">job</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;cron&#39;</span><span class="p">,</span> <span class="s1">&#39;details&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">entry</span><span class="p">)}</span>
                         <span class="n">value</span> <span class="o">=</span> <span class="n">job</span><span class="p">[</span><span class="s1">&#39;cron&#39;</span><span class="p">][</span><span class="n">entry</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -6398,8 +6480,6 @@
 
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> next time: </span><span class="si">{</span><span class="n">next_time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">:</span>
@@ -6434,6 +6514,7 @@
         <span class="n">threading</span><span class="o">.</span><span class="n">current_thread</span><span class="p">()</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="c1">#logger = logging.getLogger(&#39;_task.&#39; + name)</span>
 
+        <span class="c1"># logger.warning(f&#39;task {obj} ({obj.__class__.__name__}) with {value} by {by} source {source}&#39;)</span>
         <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;Logic&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_execute_logic_task</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">by</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
@@ -6442,11 +6523,24 @@
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                     <span class="n">scheduler_source</span> <span class="o">=</span> <span class="n">source</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">scheduler_source</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;source&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                    <span class="n">scheduler_source</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;source&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
                     <span class="k">if</span> <span class="n">scheduler_source</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-                        <span class="n">scheduler_source</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="n">scheduler_source</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="n">source</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;details&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">obj</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Scheduler&quot;</span><span class="o">+</span><span class="n">scheduler_source</span><span class="p">))</span>
+                        <span class="n">scheduler_source</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="n">scheduler_source</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;details&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+                <span class="n">src</span> <span class="o">=</span> <span class="s1">&#39;cycle&#39;</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;caller&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;Autotimer&#39;</span><span class="p">:</span>
+                    <span class="n">src</span> <span class="o">=</span> <span class="s1">&#39;autotimer&#39;</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_attr_value</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># re-set current item value. needs enforce_updates to work properly</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">obj</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># get current (static or evaluated) value from item itself</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_attr_value</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+
+                <span class="c1"># logger.debug(f&#39;item {obj}: src = {src}, value = {value}&#39;)</span>
+                <span class="k">if</span> <span class="n">src</span> <span class="o">==</span> <span class="s1">&#39;cycle&#39;</span><span class="p">:</span>
+                    <span class="n">src</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Scheduler</span><span class="si">{</span><span class="n">scheduler_source</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="n">obj</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="n">src</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">tasks_logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Item </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> exception: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -6487,22 +6581,22 @@
             <span class="n">source</span> <span class="o">=</span> <span class="n">src</span>
         <span class="n">trigger</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;by&#39;</span><span class="p">:</span> <span class="n">by</span><span class="p">,</span> <span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="n">source</span><span class="p">,</span> <span class="s1">&#39;source_details&#39;</span><span class="p">:</span> <span class="n">source_details</span><span class="p">,</span> <span class="s1">&#39;dest&#39;</span><span class="p">:</span> <span class="n">dest</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">value</span><span class="p">}</span>  <span class="c1"># noqa</span>
 
+        <span class="c1"># TODO: remove comment block? or move to docstring</span>
+
         <span class="c1"># following variables are assigned to be available during logic execution</span>
-        <span class="c1">#sh = self._sh  # noqa</span>
-        <span class="c1">#shtime = self.shtime</span>
-        <span class="c1">#items = self.items</span>
+        <span class="c1"># sh = self._sh  # noqa</span>
+        <span class="c1"># shtime = self.shtime</span>
+        <span class="c1"># items = self.items</span>
 
         <span class="c1"># set the logic environment here (for use within functions in logics):</span>
-        <span class="c1">#logic = obj  # noqa</span>
-        <span class="c1">#logic.sh = self._sh           # not needed (because of being set in logic_globals dict</span>
-       <span class="c1"># logic.logger = logger         # not needed (because of being set in logic_globals dict</span>
-        <span class="c1">#logic.shtime = self.shtime    # not needed (because of being set in logic_globals dict</span>
-        <span class="c1">#logic.items = self.items      # not needed (because of being set in logic_globals dict</span>
-        <span class="c1">#logic.env = lib.env           # not needed (because of being set in logic_globals dict</span>
-        <span class="c1">#logic.trigger_dict = trigger # logic.trigger has naming conflict with method logic.trigger of lib.item</span>
-                                      <span class="c1"># not needed (because of being set in logic_globals dict</span>
-
-        <span class="c1">#logics = logic._logics</span>
+        <span class="c1"># logic = obj  # noqa</span>
+        <span class="c1"># logic.sh = self._sh           # not needed (because of being set in logic_globals dict</span>
+        <span class="c1"># logic.logger = logger         # not needed (because of being set in logic_globals dict</span>
+        <span class="c1"># logic.shtime = self.shtime    # not needed (because of being set in logic_globals dict</span>
+        <span class="c1"># logic.items = self.items      # not needed (because of being set in logic_globals dict</span>
+        <span class="c1"># logic.env = lib.env           # not needed (because of being set in logic_globals dict</span>
+        <span class="c1"># logic.trigger_dict = trigger  # logic.trigger has naming conflict with method logic.trigger of lib.item</span>
+        <span class="c1"># logics = logic._logics</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">mqtt</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">_lib_modules_found</span><span class="p">:</span>
@@ -6555,8 +6649,6 @@
             <span class="c1">#logger.exception(f&quot;In der Logik ist ein Fehler aufgetreten:\n   Logik &#39;{logic.name}&#39;, Datei &#39;{tb[0]}&#39;, Zeile {tb[1]}\n   {logic_method}, Exception: &#39;{e}&#39;\n &quot;)</span>
 
         <span class="k">return</span></div>
-
-
 </pre></div>
 
            </div>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>cycle &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 28. Februar 2025, commit d4f1577) Dokumentation</title>
+  <title>cycle &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 28. Februar 2025, commit 04abbde) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -5757,52 +5757,57 @@
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">myitem</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
 <span class="w">    </span><span class="nt">cycle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10 ; 0</span>
-<span class="w">    </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;true&#39;</span>
+<span class="w">    </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
 </div>
-<p>ruft das Item alle 10 Sekunden auf und sorgt dadurch für das triggern von verknüpften Logiken und/oder Eval-Funktionen.
+<p>setzt das Item alle 10 Sekunden auf den Wert 0 und sorgt dadurch für das Triggern von verknüpften Logiken und/oder Eval-Funktionen.
 Dazu muss <code class="docutils literal notranslate"><span class="pre">enforce_updates</span></code> auf <code class="docutils literal notranslate"><span class="pre">true</span></code> stehen, damit das Triggern erfolgt, auch wenn sich der Wert des Items nicht
 ändert.</p>
-<p>Gleichzeitig wird bei jedem Aufruf von <code class="docutils literal notranslate"><span class="pre">cycle</span></code>, also hier alle 10 Sekunden, der Wert des Items auf 0 gesetzt.
-Wenn mit diesem Item Logiken und/oder Eval-Funktionen verknüpft sind, muss <code class="docutils literal notranslate"><span class="pre">enforce_updates</span></code> auf <code class="docutils literal notranslate"><span class="pre">true</span></code>
-stehen, damit das Triggern erfolgt, auch wenn sich der Wert des Items nicht ändert.</p>
 <p>Das allgemeine Format für die Angabe des <strong>cycle</strong> Attributes ist:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">myitem</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">cycle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;Dauer&gt; [; &lt;Wert&gt;]</span>
 </pre></div>
 </div>
-<p>Der Wert für <strong>Dauer</strong> kann auf folgende Weise angegeben werden:</p>
+<p>Der Wert für <em>dauer</em> kann auf folgende Weise angegeben werden:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>eine Zahl, die die Anzahl an Sekunden angibt</p></li>
+<li><p>eine Zahl gefolgt von <strong>h</strong>, gibt die Anzahl an Stunden an</p></li>
 <li><p>eine Zahl gefolgt von <strong>m</strong>, gibt die Anzahl an Minuten an</p></li>
+<li><p>eine Zahl gefolgt von <strong>s</strong>, gibt die Anzahl an Sekunden an</p></li>
+<li><p>eine Kombination der Stunden, Minuten und Sekunden Angaben (z.B.: 2h30m45s)</p></li>
 </ul>
 </div></blockquote>
-<p>Der Wert für <strong>Wert</strong> ist optional. Falls er weg gelassen wird, wird nach Ablauf der Dauer das Item auf den
-Wert gesetzt, den es zum Zeitpunkt der auslösenden Wertänderung angenommen hat.</p>
+<p>Der Wert für <strong>Wert</strong> ist optional.</p>
 <p>Der Trenner (Delimiter) zwischen <strong>Dauer</strong> und <strong>Wert</strong> ist ab SmartHomeNG v1.10 standardmäßig ein Semikolon.
 Es kann jedoch auch der alte Delimiter (das Gleichheitszeichen) verwendet werden.</p>
-<p><strong>Ab SmartHomeNG v1.10</strong> werden die Konfigurationsmöglichkeiten erweitert:</p>
-<p>Für <strong>Dauer</strong> und <strong>Wert</strong> können nun <strong>eval</strong> Ausdrücke angegeben werden. Bisher waren nur konstante Werte und
-Itemnamen (absolut oder relativ) möglich.</p>
+<p><strong>Ab SmartHomeNG v1.11</strong> werden die Konfigurationsmöglichkeiten erweitert:</p>
+<p>Für <strong>Dauer</strong> und <strong>Wert</strong> können nun <strong>eval</strong> Ausdrücke angegeben werden, die zur Laufzeit entsprechend der Itemänderungen neu evaluiert werden.
+Dabei können auch Item Properties genutzt werden.</p>
+<p>Wird der Wert des Intervalls in einem referenzierten Item geändert, beginnt das neue cycle-Intervall sofort (ein vorher länger gesetztes Intervall wird abgebrochen)</p>
+<p>Beispiel: Angenommen, aktuell ist cycle auf 1 Stunde gestellt und SHNG startet um 10:00 Uhr.
+Die nächste Ausführung des Schedulers wäre somit auf (ca.) 11:00 Uhr errechnet.
+Wird nun um 10:30 Uhr das Intervall auf 10 Minuten geändert, ist der nächste Ausführungszeitpunkt des Schedulers 10:40 Uhr.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">myitem</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
-<span class="w">    </span><span class="nt">cycle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sh.item.dauer() ; 1 + sh.item.wert()</span>
+<span class="w">    </span><span class="nt">cycle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sh.myitem.dauer() ; 1 + sh...wert()</span>
 <span class="w">    </span><span class="nt">dauer</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
 <span class="w">        </span><span class="nt">initial_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">41</span>
 <span class="w">    </span><span class="nt">wert</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
 <span class="w">        </span><span class="nt">initial_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+
+<span class="nt">myitem2</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+<span class="w">    </span><span class="nt">cycle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str(sh..interval.property.value + sh..interval2.property.value * 2) + &quot;m&quot; ; sh...wert.property.last_change</span>
+<span class="w">    </span><span class="nt">interval</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">        </span><span class="nt">initial_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">41</span>
+<span class="w">    </span><span class="nt">wert</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
 </pre></div>
 </div>
-<p>Der Wert für <em>dauer</em> kann auf folgende Weise angegeben werden:</p>
-<ol class="arabic simple">
-<li><p>eine Zahl, die die Anzahl an Sekunden angibt</p></li>
-<li><p>eine Zahl gefolgt von <strong>m</strong>, gibt die Anzahl an Minuten an</p></li>
-<li><p>eine Zahl gefolgt von <strong>s</strong>, gibt die Anzahl an Sekunden an
-(alternative Schreibweise zur Variante 1)</p></li>
-</ol>
-<p>Zu beachten ist, dass der zu setzende Wert nur bei der Initialisierung berechnet wird und für die weiteren Zyklen
-konstant ist.</p>
 </section>
 
 
