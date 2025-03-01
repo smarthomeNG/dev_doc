@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.item.item &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 28. Februar 2025, commit 04abbde) Dokumentation</title>
+  <title>lib.item.item &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 1. März 2025, commit 5e439d6) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -7549,7 +7549,7 @@
 
         <span class="n">var</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;_</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s1">_time&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">var</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;get_attr_time(</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s1">): item </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s1"> has no member _</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s1">_time. This is weird...&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;get_attr_time(</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s1">): item </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s1"> has no member _</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s1">_time.&#39;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">var</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -7582,17 +7582,22 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error on evaluation </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s1"> time &quot;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s1">&quot; for item </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Item.get_attr_value"><a class="viewcode-back" href="../../../lib/item_class_item.html#lib.item.item.Item.get_attr_value">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_attr_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="Item.get_attr_value"><a class="viewcode-back" href="../../../lib/item_class_item.html#lib.item.item.Item.get_attr_value">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_attr_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        return attribute value, possibly recalculated at call time</span>
 
 <span class="sd">        :param attr: attribute to calculate value for, e.g. cycle or autotimer</span>
 <span class="sd">        :type attr: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;cycle&#39;</span><span class="p">,</span> <span class="s1">&#39;autotimer&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">attr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;cycle&#39;</span><span class="p">,</span> <span class="s1">&#39;autotimer&#39;</span><span class="p">,</span> <span class="s1">&#39;cron&#39;</span><span class="p">):</span>
             <span class="k">return</span>
 
-        <span class="n">var</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;_</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s1">_value&#39;</span><span class="p">)</span>
+        <span class="c1"># only for cron, the value is stored in the scheduler instead of in the item</span>
+        <span class="c1"># so we just use the given value to proceed (eval)</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">var</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">var</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;_</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s1">_value&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">var</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
 
