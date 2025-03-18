@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.shtime &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 11. März 2025, commit 5f16bac) Dokumentation</title>
+  <title>lib.shtime &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 18. März 2025, commit 63036db) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -6001,7 +6001,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the actual time in GMT</span>
 
-<span class="sd">        :return: Actual time in GMT</span>
+<span class="sd">        :return: Current time in GMT</span>
 <span class="sd">        :rtype: datetime.datetime</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -6009,6 +6009,20 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_utctz</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_utctz</span> <span class="o">=</span> <span class="n">tz</span><span class="o">.</span><span class="n">gettz</span><span class="p">(</span><span class="s1">&#39;UTC&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_utctz</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Shtime.utcfromtimestamp"><a class="viewcode-back" href="../../lib/shtime.html#lib.shtime.Shtime.utcfromtimestamp">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">utcfromtimestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ts</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns UTC datetime from unix timestamp</span>
+
+<span class="sd">        :param ts: unix timestamp</span>
+<span class="sd">        :type ts: int</span>
+<span class="sd">        :return: datetime object for given timestamp</span>
+<span class="sd">        :rtype: datetime.datetime</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_utctz</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_utctz</span> <span class="o">=</span> <span class="n">tz</span><span class="o">.</span><span class="n">gettz</span><span class="p">(</span><span class="s1">&#39;UTC&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_utctz</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Shtime.utcinfo"><a class="viewcode-back" href="../../lib/shtime.html#lib.shtime.Shtime.utcinfo">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">utcinfo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -6282,7 +6296,7 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">):</span>
             <span class="n">key</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">key</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">key</span><span class="o">.</span><span class="n">day</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcfromtimestamp</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">utcfromtimestamp</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">dayfirst</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">yearfirst</span> <span class="o">=</span> <span class="kc">False</span>

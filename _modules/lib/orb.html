@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.orb &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 11. März 2025, commit 5f16bac) Dokumentation</title>
+  <title>lib.orb &mdash; Dokumentation v1.10.0.3 v1.10.0.3 develop (Stand 18. März 2025, commit 63036db) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5773,28 +5773,32 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dateutil.relativedelta</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dateutil.tz</span><span class="w"> </span><span class="kn">import</span> <span class="n">tzutc</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">lib.shtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">Shtime</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">ephem</span>
-<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="n">ephem</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># noqa</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">dateutil.relativedelta</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dateutil.tz</span><span class="w"> </span><span class="kn">import</span> <span class="n">tzutc</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">This library contains a class Orb for calculating sun or moon related events.</span>
 <span class="sd">Currently it uses ephem for calculation of the sky bound events.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+
 <div class="viewcode-block" id="Orb"><a class="viewcode-back" href="../../lib/orb.html#lib.orb.Orb">[Doku]</a><span class="k">class</span><span class="w"> </span><span class="nc">Orb</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Save an observers location and the name of a celestial body for future use</span>
-<span class="sd">    </span>
+
 <span class="sd">    The Methods internally use PyEphem for computation</span>
-<span class="sd">    </span>
+
 <span class="sd">    An `Observer` instance allows  to compute the positions of</span>
 <span class="sd">    celestial bodies as seen from a particular position on the Earth&#39;s surface.</span>
 <span class="sd">    Following attributes can be set after creation (used defaults are given):</span>
@@ -5812,7 +5816,7 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">orb</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="p">,</span> <span class="n">elev</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">neverup_delta</span><span class="o">=</span><span class="mf">0.00001</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save location and celestial body</span>
-<span class="sd">        </span>
+
 <span class="sd">        :param orb: either &#39;sun&#39; or &#39;moon&#39;</span>
 <span class="sd">        :param lon: longitude of observer in degrees</span>
 <span class="sd">        :param lat: latitude of observer in degrees</span>
@@ -5821,7 +5825,9 @@
         <span class="k">if</span> <span class="n">ephem</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Could not find/use ephem!&quot;</span><span class="p">)</span>
             <span class="k">return</span>
-        
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span> <span class="o">=</span> <span class="n">Shtime</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">orb</span> <span class="o">=</span> <span class="n">orb</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lat</span> <span class="o">=</span> <span class="n">lat</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lon</span> <span class="o">=</span> <span class="n">lon</span>
@@ -5841,8 +5847,8 @@
 
 <span class="sd">        See also this thread at `Stackoverflow &lt;https://stackoverflow.com/questions/26428904/pyephem-advances-observer-date-on-neveruperror&gt;`_</span>
 <span class="sd">        dated back to 2015 where the creator of pyephem writes:</span>
-<span class="sd">        </span>
-<span class="sd">        &gt; Second answer: As long as each thread has its own Moon and Observer objects, </span>
+
+<span class="sd">        &gt; Second answer: As long as each thread has its own Moon and Observer objects,</span>
 <span class="sd">          it should be able to do its own computations without ruining those of any other threads.</span>
 
 <span class="sd">        :return: tuple of observer and celestial body</span>
@@ -5861,8 +5867,8 @@
             <span class="n">orb</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Moon</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">light</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_light</span>
-            
-        <span class="k">return</span> <span class="n">observer</span><span class="p">,</span><span class="n">orb</span></div>
+
+        <span class="k">return</span> <span class="n">observer</span><span class="p">,</span> <span class="n">orb</span></div>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_avoid_neverup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">date_utc</span><span class="p">,</span> <span class="n">doff</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5884,7 +5890,7 @@
         <span class="c1"># Get times for noon and midnight</span>
         <span class="n">midnight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">midnight</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
         <span class="n">noon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">noon</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
-        
+
         <span class="c1"># If the altitudes are calculated from previous or next day, set the correct day for the observer query</span>
         <span class="n">noon</span> <span class="o">=</span> <span class="n">noon</span> <span class="k">if</span> <span class="n">noon</span> <span class="o">&gt;=</span> <span class="n">date_utc</span> <span class="k">else</span> \
             <span class="bp">self</span><span class="o">.</span><span class="n">noon</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">date_utc</span> <span class="o">+</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">relativedelta</span><span class="o">.</span><span class="n">relativedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
@@ -5906,7 +5912,7 @@
             <span class="n">observer</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">-</span> <span class="n">dt</span><span class="o">.</span><span class="n">utcoffset</span><span class="p">()</span> <span class="o">-</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">relativedelta</span><span class="o">.</span><span class="n">relativedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">moff</span><span class="p">)</span>
             <span class="n">date_utc</span> <span class="o">=</span> <span class="p">(</span><span class="n">observer</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">datetime</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">tzutc</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">observer</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span> <span class="o">-</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">relativedelta</span><span class="o">.</span><span class="n">relativedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">moff</span><span class="p">)</span> <span class="o">+</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">relativedelta</span><span class="o">.</span><span class="n">relativedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">observer</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span> <span class="o">-</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">relativedelta</span><span class="o">.</span><span class="n">relativedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">moff</span><span class="p">)</span> <span class="o">+</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">relativedelta</span><span class="o">.</span><span class="n">relativedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
             <span class="n">date_utc</span> <span class="o">=</span> <span class="p">(</span><span class="n">observer</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">datetime</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">tzutc</span><span class="p">())</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">doff</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">doff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_avoid_neverup</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">date_utc</span><span class="p">,</span> <span class="n">doff</span><span class="p">)</span>
@@ -5923,7 +5929,7 @@
             <span class="n">observer</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">-</span> <span class="n">dt</span><span class="o">.</span><span class="n">utcoffset</span><span class="p">()</span> <span class="o">-</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">relativedelta</span><span class="o">.</span><span class="n">relativedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">moff</span><span class="p">)</span>
             <span class="n">date_utc</span> <span class="o">=</span> <span class="p">(</span><span class="n">observer</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">datetime</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">tzutc</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">observer</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span> <span class="o">-</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">relativedelta</span><span class="o">.</span><span class="n">relativedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">moff</span><span class="p">)</span> <span class="o">+</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">relativedelta</span><span class="o">.</span><span class="n">relativedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">observer</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span> <span class="o">-</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">relativedelta</span><span class="o">.</span><span class="n">relativedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">moff</span><span class="p">)</span> <span class="o">+</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">relativedelta</span><span class="o">.</span><span class="n">relativedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
             <span class="n">date_utc</span> <span class="o">=</span> <span class="p">(</span><span class="n">observer</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">datetime</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">tzutc</span><span class="p">())</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">doff</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">doff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_avoid_neverup</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">date_utc</span><span class="p">,</span> <span class="n">doff</span><span class="p">)</span>
@@ -5949,7 +5955,7 @@
             <span class="n">observer</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">-</span> <span class="n">dt</span><span class="o">.</span><span class="n">utcoffset</span><span class="p">()</span> <span class="o">-</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">relativedelta</span><span class="o">.</span><span class="n">relativedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">moff</span><span class="p">)</span>
             <span class="n">date_utc</span> <span class="o">=</span> <span class="p">(</span><span class="n">observer</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">datetime</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">tzutc</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">observer</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span> <span class="o">-</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">relativedelta</span><span class="o">.</span><span class="n">relativedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">moff</span><span class="p">)</span> <span class="o">+</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">relativedelta</span><span class="o">.</span><span class="n">relativedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">observer</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span> <span class="o">-</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">relativedelta</span><span class="o">.</span><span class="n">relativedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">moff</span><span class="p">)</span> <span class="o">+</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">relativedelta</span><span class="o">.</span><span class="n">relativedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
             <span class="n">date_utc</span> <span class="o">=</span> <span class="p">(</span><span class="n">observer</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">datetime</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">tzutc</span><span class="p">())</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">doff</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">doff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_avoid_neverup</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">date_utc</span><span class="p">,</span> <span class="n">doff</span><span class="p">)</span>
@@ -5978,7 +5984,7 @@
             <span class="n">observer</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">-</span> <span class="n">dt</span><span class="o">.</span><span class="n">utcoffset</span><span class="p">()</span> <span class="o">-</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">relativedelta</span><span class="o">.</span><span class="n">relativedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">moff</span><span class="p">)</span>
             <span class="n">date_utc</span> <span class="o">=</span> <span class="p">(</span><span class="n">observer</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">datetime</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">tzutc</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">observer</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span> <span class="o">-</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">relativedelta</span><span class="o">.</span><span class="n">relativedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">moff</span><span class="p">)</span> <span class="o">+</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">relativedelta</span><span class="o">.</span><span class="n">relativedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">observer</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span> <span class="o">-</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">relativedelta</span><span class="o">.</span><span class="n">relativedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">moff</span><span class="p">)</span> <span class="o">+</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">relativedelta</span><span class="o">.</span><span class="n">relativedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
             <span class="n">date_utc</span> <span class="o">=</span> <span class="p">(</span><span class="n">observer</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">datetime</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">tzutc</span><span class="p">())</span>
         <span class="c1"># avoid NeverUp error</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">doff</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -6003,7 +6009,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">observer</span><span class="p">,</span> <span class="n">orb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_observer_and_orb</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+            <span class="n">date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">date</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">tzutc</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">offset</span><span class="p">:</span>
@@ -6022,7 +6028,7 @@
 <span class="sd">        :param offset: an offset given in minutes</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">observer</span><span class="p">,</span> <span class="n">orb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_observer_and_orb</span><span class="p">()</span>
-        <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">offset</span><span class="p">:</span>
             <span class="n">date</span> <span class="o">+=</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">relativedelta</span><span class="o">.</span><span class="n">relativedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
         <span class="n">observer</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">date</span>
@@ -6037,7 +6043,7 @@
 <span class="sd">        :param offset: an offset given in minutes</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">observer</span><span class="p">,</span> <span class="n">orb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_observer_and_orb</span><span class="p">()</span>
-        <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
         <span class="n">cycle</span> <span class="o">=</span> <span class="mf">29.530588861</span>
         <span class="k">if</span> <span class="n">offset</span><span class="p">:</span>
             <span class="n">date</span> <span class="o">+=</span> <span class="n">dateutil</span><span class="o">.</span><span class="n">relativedelta</span><span class="o">.</span><span class="n">relativedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
