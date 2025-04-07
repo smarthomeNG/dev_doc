@@ -5740,7 +5740,7 @@
              
   <section id="nuki">
 <h1>Nuki<a class="headerlink" href="#nuki" title="Permalink to this heading"></a></h1>
-<p>Plugin for integrating <a class="reference external" href="https://nuki.io/de/smart-lock/">Nuki Smartlock</a> into smarthome.py facilitating triggering lock actions and getting status information from it.</p>
+<p>Plugin for integrating <a class="reference external" href="https://nuki.io/de/smart-lock/">Nuki Smartlock</a> into SmartHomeNG facilitating triggering lock actions and getting status information from it.</p>
 <section id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this heading"></a></h2>
 <p>You need a <a class="reference external" href="https://nuki.io/de/bridge/">Nuki Bridge</a> which is already paired with your Nuki Smartlock(s).</p>
@@ -5756,6 +5756,22 @@
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">nuki</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">class_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Nuki</span>
 <span class="w">    </span><span class="nt">class_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">plugins.nuki</span>
+<span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span><span class="w"> </span><span class="c1"># Nuki Bridge</span>
+<span class="w">    </span><span class="nt">bridge_ip</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.1.10</span>
+<span class="w">    </span><span class="nt">bridge_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
+<span class="w">    </span><span class="nt">bridge_api_token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">q1W2e3</span>
+</pre></div>
+</div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">nuki</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">class_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Nuki</span>
+<span class="w">    </span><span class="nt">class_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">plugins.nuki</span>
+<span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w"> </span><span class="c1"># MQTT</span>
+</pre></div>
+</div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">nuki</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">class_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Nuki</span>
+<span class="w">    </span><span class="nt">class_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">plugins.nuki</span>
+<span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span><span class="w"> </span><span class="c1"># MQTT and Nuki Bridge</span>
 <span class="w">    </span><span class="nt">bridge_ip</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.1.10</span>
 <span class="w">    </span><span class="nt">bridge_port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8080</span>
 <span class="w">    </span><span class="nt">bridge_api_token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">q1W2e3</span>
@@ -5764,9 +5780,12 @@
 <section id="attributes">
 <h4>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading"></a></h4>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">bridge_ip</span></code> : IP address of the Nuki Bridge</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bridge_port</span></code> : Port number of the Nuki Bridge</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bridge_api_token</span></code> : Token for authentification of the API connection</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code> : Mode in which the plugin shall run: 1 - MQTT, 2 - Nuki Bridge, 3 - MQTT and Nuki Bridge</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bridge_ip</span></code> (optional): IP address of the Nuki Bridge</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bridge_port</span></code> (optional): Port number of the Nuki Bridge</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bridge_api_token</span></code> (optional): Token for authentification of the API connection</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">protocol</span></code> (optional): Protocol for communication with NUKE bridge. Default http.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">no_wait</span></code> (optional): Flag indicating whether or not to wait for the lock action to complete and return its result. False may lead to errors in requests to NUKI Bridge. Default: True</p></li>
 </ul>
 <p>This information can be set via the Nuki App.</p>
 <p>IMPORTANT: This plugin release (and following) uses the http module (services) extension for
@@ -5783,19 +5802,21 @@ the Nuki callback service won’t use it.</p>
 <code class="docutils literal notranslate"><span class="pre">nuki_id</span></code> and <code class="docutils literal notranslate"><span class="pre">nuki_trigger</span></code>.</p>
 <section id="nuki-id">
 <h4>nuki_id<a class="headerlink" href="#nuki-id" title="Permalink to this heading"></a></h4>
-<p>This attribute connects the related item with the corresponding Nuki Smart Lock.
-The <code class="docutils literal notranslate"><span class="pre">nuki_id</span></code> can be figured out via the REST API of the Nuki Bridge (see API documentation) or by just (re)starting
+<p>This attribute connects the related item with the corresponding Nuki Smart Lock.</p>
+<p>Nuki Bridge: <code class="docutils literal notranslate"><span class="pre">nuki_id</span></code> can be figured out via the REST API of the Nuki Bridge (see API documentation) or by just (re)starting
 SmarthomeNG with the configured Nuki plugin in the log level INFO / DEBUG. The <code class="docutils literal notranslate"><span class="pre">name</span></code> and the <code class="docutils literal notranslate"><span class="pre">nuki_id</span></code> of all paired Nuki Locks will be written to
 the log file of SmarthomeNG.</p>
-<p>Additionally, the IDs of all paired Nuki Locks are now also shown in the web interface of the plugin!</p>
+<p>Additionally, the IDs of all Nuki Locks paired via the Nuki Bridge are now also shown in the web interface of the plugin!</p>
+<p>MQTT: <code class="docutils literal notranslate"><span class="pre">nuki_id</span></code> can be figured out via a MQTT tool, such as MQTT Explorer, once MQTT has been activated in the Nuki App.</p>
 </section>
 <section id="nuki-trigger">
 <h4>nuki_trigger<a class="headerlink" href="#nuki-trigger" title="Permalink to this heading"></a></h4>
-<p>There are four types of nuki triggers, <code class="docutils literal notranslate"><span class="pre">action</span></code>, <code class="docutils literal notranslate"><span class="pre">state</span></code>, <code class="docutils literal notranslate"><span class="pre">doorstate</span></code> (only Nuki 2.0!) and <code class="docutils literal notranslate"><span class="pre">battery</span></code>. An item can only have one trigger
-attribute at once.</p>
-<section id="action">
-<h5>action<a class="headerlink" href="#action" title="Permalink to this heading"></a></h5>
-<p>If you declare an item with the attribute <code class="docutils literal notranslate"><span class="pre">nuki_trigger:</span> <span class="pre">action</span></code> you can send actions to your Nuki lock. Below you
+<p>There are four types of NUKI triggers, which are available via the Nuki Bridge API: <code class="docutils literal notranslate"><span class="pre">action</span></code>, <code class="docutils literal notranslate"><span class="pre">state</span></code>, <code class="docutils literal notranslate"><span class="pre">doorstate</span></code> (only Nuki 2.0!) and <code class="docutils literal notranslate"><span class="pre">battery</span></code>.</p>
+<p>Via MQTT there are alternative NUKI triggers:  <code class="docutils literal notranslate"><span class="pre">mqtt_state</span></code>, <code class="docutils literal notranslate"><span class="pre">mqtt_mode</span></code> (the old doorstate), <code class="docutils literal notranslate"><span class="pre">mqtt_battery_critical</span></code>, <code class="docutils literal notranslate"><span class="pre">mqtt_mqtt_battery_charge_state</span></code> and <code class="docutils literal notranslate"><span class="pre">mqtt_action</span></code>
+An item can only have one trigger attribute at once.</p>
+<section id="action-mqtt-action">
+<h5>action / mqtt_action<a class="headerlink" href="#action-mqtt-action" title="Permalink to this heading"></a></h5>
+<p>If you declare an item with the attribute <code class="docutils literal notranslate"><span class="pre">nuki_trigger:</span> <span class="pre">action</span></code> or <code class="docutils literal notranslate"><span class="pre">nuki_trigger:</span> <span class="pre">mqtt_action</span></code> you can send actions to your Nuki lock. Below you
 can find a list of possible lock actions:</p>
 <ul class="simple">
 <li><p>1     (unlock)</p></li>
@@ -5803,12 +5824,13 @@ can find a list of possible lock actions:</p>
 <li><p>3     (unlatch)</p></li>
 <li><p>4     (lock ‚n‘ go)</p></li>
 <li><p>5     (lock ‚n‘ go with unlatch)</p></li>
+<li><p>6     (full lock - MQTT only)</p></li>
 </ul>
 <p>If you set the the items value to one of this numbers, the corresponding lock action will be triggered.</p>
 </section>
-<section id="state">
-<h5>state<a class="headerlink" href="#state" title="Permalink to this heading"></a></h5>
-<p>If you declare an item with the attribute <code class="docutils literal notranslate"><span class="pre">nuki_trigger:</span> <span class="pre">state</span></code>, this item will be set to the actual lock state,
+<section id="state-mqtt-state">
+<h5>state / mqtt_state<a class="headerlink" href="#state-mqtt-state" title="Permalink to this heading"></a></h5>
+<p>If you declare an item with the attribute <code class="docutils literal notranslate"><span class="pre">nuki_trigger:</span> <span class="pre">state</span></code> or <code class="docutils literal notranslate"><span class="pre">nuki_trigger:</span> <span class="pre">mqtt_state</span></code>, this item will be set to the actual lock state,
 whenever these lock state was changed. Find the list with the possible values below:</p>
 <ul class="simple">
 <li><p>0     (uncalibrated)</p></li>
@@ -5823,9 +5845,9 @@ whenever these lock state was changed. Find the list with the possible values be
 <li><p>255   (undefined)</p></li>
 </ul>
 </section>
-<section id="doorstate">
-<h5>doorstate<a class="headerlink" href="#doorstate" title="Permalink to this heading"></a></h5>
-<p>If you declare an item with the attribute <code class="docutils literal notranslate"><span class="pre">nuki_trigger:</span> <span class="pre">doorstate</span></code>, this item will be set to the actual door state,
+<section id="doorstate-mqtt-mode-equivalent-to-doorstate">
+<h5>doorstate / mqtt_mode (equivalent to doorstate)<a class="headerlink" href="#doorstate-mqtt-mode-equivalent-to-doorstate" title="Permalink to this heading"></a></h5>
+<p>If you declare an item with the attribute <code class="docutils literal notranslate"><span class="pre">nuki_trigger:</span> <span class="pre">doorstate</span></code> or <code class="docutils literal notranslate"><span class="pre">nuki_trigger:</span> <span class="pre">mqtt_mode</span></code>, this item will be set to the actual door state,
 whenever these door state was changed (only Nuki 2.0!). Find the list with the possible values below:</p>
 <ul class="simple">
 <li><p>1     (deactivated)</p></li>
@@ -5835,20 +5857,24 @@ whenever these door state was changed (only Nuki 2.0!). Find the list with the p
 <li><p>5     (calibrating)</p></li>
 </ul>
 </section>
-<section id="battery">
-<h5>battery<a class="headerlink" href="#battery" title="Permalink to this heading"></a></h5>
-<p>If you declare an item with the attribute <code class="docutils literal notranslate"><span class="pre">nuki_trigger:</span> <span class="pre">battery</span></code>, this item holds the actual battery state of your
+<section id="battery-mqtt-battery-critical">
+<h5>battery / mqtt_battery_critical<a class="headerlink" href="#battery-mqtt-battery-critical" title="Permalink to this heading"></a></h5>
+<p>If you declare an item with the attribute <code class="docutils literal notranslate"><span class="pre">nuki_trigger:</span> <span class="pre">battery</span></code> or <code class="docutils literal notranslate"><span class="pre">nuki_trigger:</span> <span class="pre">mqtt_battery_critical</span></code>, this item holds the actual battery state of your
 Nuki lock.</p>
 <ul class="simple">
 <li><p>0     (Batteries are good. No need to replace it.)</p></li>
 <li><p>1     (Batteries are low. Please replace as soon as possible.)</p></li>
 </ul>
 </section>
+<section id="mqtt-battery-charge-state">
+<h5>mqtt_battery_charge_state<a class="headerlink" href="#mqtt-battery-charge-state" title="Permalink to this heading"></a></h5>
+<p>Charging state of the battery in percent.</p>
+</section>
 </section>
 </section>
 <section id="example">
 <h3>Example:<a class="headerlink" href="#example" title="Permalink to this heading"></a></h3>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">MyNukiLock</span><span class="p">:</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">MyNukiLockViaBridge</span><span class="p">:</span>
 
 <span class="w">    </span><span class="nt">MyLockState</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
@@ -5864,6 +5890,29 @@ Nuki lock.</p>
 <span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
 <span class="w">        </span><span class="nt">nuki_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">123456789</span>
 <span class="w">        </span><span class="nt">nuki_trigger</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">action</span>
+<span class="w">        </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;true&#39;</span>
+
+<span class="nt">MyNukiLockViaMQTT</span><span class="p">:</span>
+
+<span class="w">    </span><span class="nt">MyLockState</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">        </span><span class="nt">nuki_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">123456789</span>
+<span class="w">        </span><span class="nt">nuki_trigger</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mqtt_state</span>
+
+<span class="w">    </span><span class="nt">MyLockBattery</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">        </span><span class="nt">nuki_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">123456789</span>
+<span class="w">        </span><span class="nt">nuki_trigger</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mqtt_battery_critical</span>
+<span class="w">        </span>
+<span class="w">    </span><span class="nt">MyLockBatteryChargeState</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">        </span><span class="nt">nuki_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">123456789</span>
+<span class="w">        </span><span class="nt">nuki_trigger</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mqtt_battery_charge_state</span>
+
+<span class="w">    </span><span class="nt">MyLockAction</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">        </span><span class="nt">nuki_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">123456789</span>
+<span class="w">        </span><span class="nt">nuki_trigger</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mqtt_action</span>
 <span class="w">        </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;true&#39;</span>
 </pre></div>
 </div>
