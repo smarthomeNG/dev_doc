@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>sma_mb &mdash; Dokumentation v1.11.0.1 develop v1.11.0.1 develop (Stand 5. Juni 2025, commit 6a04657) Dokumentation</title>
+  <title>sma_mb &mdash; Dokumentation v1.11.0.1 develop v1.11.0.1 develop (Stand 9. Juni 2025, commit 6a04657) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -1744,8 +1744,8 @@
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#konfiguration">Konfiguration</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="#plugin-yaml">plugin.yaml</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#items-yaml">items.yaml</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#beispiele-fur-die-plugin-yaml">Beispiele für die plugin.yaml</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#beispiel-fur-items-yaml">Beispiel für items.yaml</a></li>
 </ul>
 </li>
 </ul>
@@ -3362,8 +3362,8 @@
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#konfiguration">Konfiguration</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="#plugin-yaml">plugin.yaml</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#items-yaml">items.yaml</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#beispiele-fur-die-plugin-yaml">Beispiele für die plugin.yaml</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#beispiel-fur-items-yaml">Beispiel für items.yaml</a></li>
 </ul>
 </li>
 </ul>
@@ -5783,7 +5783,7 @@
 <p>Dieses Plugin liest die aktuellen Werte eines SMA-Wechselrichters per SMA Speedwire Feldbus/Modbus aus.</p>
 <section id="anforderungen">
 <h2>Anforderungen<a class="headerlink" href="#anforderungen" title="Permalink to this heading"></a></h2>
-<p>Im Wechselrichter das Modbusprotokol aktivieren (ist normalerweise Standardeinstellung).</p>
+<p>Im Wechselrichter das Modbusprotokol aktivieren (ist normalerweise Standardeinstellung, der vorgegebene Port ist 502).</p>
 <p>Infos zum SMA-Modbus-Interface sind auf der
 <a class="reference external" href="https://my.sma-service.com/s/article/SMA-Modbus-Interface-SMA-SunSpec-Modbus-Interface">Herstellerseite</a>
 zu finden</p>
@@ -5807,19 +5807,36 @@ zu finden</p>
 <p>Die Konfiguration kann über die Admin GUI vorgenommen werden. (Bitte daran denken, das Plugin auf <strong>enabled</strong> zu setzen)</p>
 <p>Die Parameter und die Informationen zur Item-spezifischen Konfiguration des Plugins sind unter
 <a class="reference internal" href="../../plugins_doc/config/sma_mb.html"><span class="doc">Plugin ‚sma_mb‘ Konfiguration</span></a> beschrieben.</p>
-<section id="plugin-yaml">
-<h3>plugin.yaml<a class="headerlink" href="#plugin-yaml" title="Permalink to this heading"></a></h3>
+<section id="beispiele-fur-die-plugin-yaml">
+<h3>Beispiele für die plugin.yaml<a class="headerlink" href="#beispiele-fur-die-plugin-yaml" title="Permalink to this heading"></a></h3>
+<p>Im ersten Beispiel wird das Plugin alle 300 Sekunden also alle 5 Minuten den die Register des Wechselrichters abfragen.
+Da <strong>cycle</strong> nicht zu einem bestimmten Zeitpunkt aufgerufen wird sondern der Abstand zwischen den Abfragen
+nur entsprechend lang ist, ist auch der Zeitpunkt der Daten recht variabel.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">SMAModbus</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">plugin_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sma_mb</span>
 <span class="w">    </span><span class="c1">#instance: si44    # Name des Wechselrichters, nur bei mehreren laufenden Plugin Instanzen angeben</span>
 <span class="w">    </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;IP Adresse reinschreiben&gt;</span><span class="w">    </span><span class="c1"># z.B.: 192.168.xxx.xxx</span>
 <span class="w">    </span><span class="c1"># port: 502        # optional: Port nummer auf dem Host</span>
-<span class="w">    </span><span class="c1"># cycle: 150       # optional: Zyklus Zeit zur Abfrage in Sekunden</span>
+<span class="w">    </span><span class="c1"># cycle: 300       # optional: Zyklus Zeit zur Abfrage in Sekunden</span>
 </pre></div>
 </div>
+<p>Alternativ dazu lässt sich ein <strong>crontab</strong> für die Abfrage definieren um zu genauen Zeitpunkten eine Abfrage zu haben.
+Im nachfolgenden Beispiel wird alle 60 Sekunden eine Zählerabfrage gestartet. Dabei muß die Abfragedauer und Systemauslastung
+berücksichtigt werden sowie die Notwendigkeit von kurzen Abfragezyklen.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">SMAModbus</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">plugin_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sma_mb</span>
+<span class="w">    </span><span class="c1">#instance: si44    # Name des Wechselrichters, nur bei mehreren laufenden Plugin Instanzen angeben</span>
+<span class="w">    </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;IP Adresse reinschreiben&gt;</span><span class="w">    </span><span class="c1"># z.B.: 192.168.xxx.xxx</span>
+<span class="w">    </span><span class="c1"># port: 502        # optional: Port nummer auf dem Host</span>
+<span class="w">    </span><span class="c1"># cycle: 300       # optional: Zyklus Zeit zur Abfrage in Sekunden</span>
+<span class="w">    </span><span class="nt">update_crontab</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0 * * * * *</span>
+</pre></div>
+</div>
+<p>Es ist nicht sinnvoll sowohl crontab als auch cycle zu verwenden da sich durch die leichte Zeitverschiebung für jeden cycle
+irgendwann gleichzeitige Abfragen ergeben die zu Fehlen führen können.</p>
 </section>
-<section id="items-yaml">
-<h3>items.yaml<a class="headerlink" href="#items-yaml" title="Permalink to this heading"></a></h3>
+<section id="beispiel-fur-items-yaml">
+<h3>Beispiel für items.yaml<a class="headerlink" href="#beispiel-fur-items-yaml" title="Permalink to this heading"></a></h3>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">sb3000tl</span><span class="p">:</span>
 
 <span class="w">    </span><span class="nt">serialnumber</span><span class="p">:</span>
