@@ -168,27 +168,13 @@ Ab SmartHomeNG v1.8.2 sollte eine Installation unter **Windows** möglich sein.
 Python Versionen
 ================
 
-Minimum Python Version
-----------------------
-
-Die absolute Minimum Python Version in der SmartHomeNG startet wurde bereits mit SmartHomeNG v1.10 auf **Python 3.8**
-angehoben.
-Da auch Python 3.8 im Oktober 2024 den Status **End-of-Life** (End of security fixes) erreicht, wird empfohlen
-bei einer Neuinstallation auf einer der neueren offizell in SmartHomeNG unterstützten Python Versionen
-(3.10, 3.11 oder 3.12) aufzusetzen.
-
-Die aktuelle Version von SmartHomeNG setzt Python der **Version 3.8** oder neuer voraus. Bei Einsatz einer älteren
-Python Version, startet SmartHomeNG nicht.
-
-
 Unterstützte Python Versionen
 -----------------------------
 
-Die älteste offiziell unterstützte Python Version für SmartHomeNG Release 1.12.x ist **Python 3.11**. (Diese Version
-muss nicht mit der *Minimum Python Version* übereinstimmen.
+Die älteste offiziell unterstützte Python Version für SmartHomeNG Release 1.12.x ist **Python 3.11**. SmartHomeNG kann
+auch unter älteren Python Versionen lauffähig sein, das wird durch uns jedoch nicht (mehr) supported.
 
-Die Grundregel nach der sich der Support für Python Versionen richten
-soll ist folgende:
+Die Grundregel nach der sich der Support für Python Versionen richten soll ist folgende:
 
 **Unterstützt werden die bei Enwicklungsstart einer SmartHomeNG
 Version aktuelle Python Version und die zwei Vorgängerversionen.**
@@ -202,13 +188,13 @@ Version aktuelle Python Version und die zwei Vorgängerversionen.**
   "v1.9",            "Python 3.9",  "Python 3.7, 3.8, 3.9",    "Python 3.7"
   "v1.10",           "Python 3.10", "Python 3.8, 3.9, 3.10",   "Python 3.8"
   "v1.11",           "Python 3.12", "Python 3.10, 3.11, 3.12", "Python 3.8"
-  "v1.12",           "Python 3.13", "Python 3.11, 3.12, 3.13", "tbd"
+  "v1.12",           "Python 3.13", "Python 3.11, 3.12, 3.13", "Python 3.9"
 
 Wenn die eingesetzte Python Version nicht in den unterstützen Python Versionen aufgelistet ist, bedeutet das nicht
 automatisch, dass SmartHomeNG mit älteren/neueren Python Versionen nicht funktioniert. Die Entwicklung wird nur
 nicht (mehr) mit anderen Versionen getestet.
 
-Die minimale Python Version mit der die jewilige SmartHomeNG Version startet, ist in der Tabelle oben angegeben.
+Die **minimale Python** Version mit der die jewilige SmartHomeNG Version startet, ist in der Tabelle oben angegeben.
 Ältere Python Versionen können nicht genutzt werden, da die SmartHomeNG Version Python Features nutzt, die in
 den älteren Versionen noch nicht implementiert waren.
 
