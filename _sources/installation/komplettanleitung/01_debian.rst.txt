@@ -120,8 +120,9 @@ kann, sind folgende Operationen notwendig:
 
 Generell wird aber empfohlen, den SSH-Zugang mit Zertifikaten abzusichern und ein Einloggen mittels
 Username/Passwort zu unterbinden.
-Informationen zum `Erstellen von Zertifikaten <https://www.thomas-krenn.com/de/wiki/SSH_Key_Login>`__
-gibt es z.B. bei Thomas Krenn.
+Informationen zum Erstellen von Zertifikaten gibt es z.B. bei `Thomas Krenn <https://www.thomas-krenn.com/de/wiki/SSH_Key_Login>`__
+oder auf `Ask Ubuntu <https://askubuntu.com/questions/46930/how-can-i-set-up-password-less-ssh-login>`__
+.
 
 |
 
