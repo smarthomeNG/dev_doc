@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MQTT Broker installieren &mdash; Dokumentation v1.11.0.1 develop v1.11.0.1 develop (Stand 8. August 2025, commit 3feb99a) Dokumentation</title>
+  <title>MQTT Broker installieren &mdash; Dokumentation v1.11.0.1 develop v1.11.0.1 develop (Stand 10. August 2025, commit 296dbae) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -151,6 +151,16 @@
 <li class="toctree-l4"><a class="reference internal" href="08_shng_daemon.html#einrechten-des-dienstes">Einrechten des Dienstes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="08_shng_daemon.html#nutzung-eines-virtuellen-environments-neu">Nutzung eines virtuellen Environments <span class="redsup">neu</span></a></li>
 <li class="toctree-l4"><a class="reference internal" href="08_shng_daemon.html#starten-des-dienstes">Starten des Dienstes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="09_node_js.html">Node.js <span class="redsup">new</span></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="09_node_js.html#node-js-installation">Node.js Installation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="09_node_js.html#zigbee2mqtt-gateway-installieren">Zigbee2MQTT Gateway installieren</a></li>
+<li class="toctree-l4"><a class="reference internal" href="09_node_js.html#mobilealerts-proxy-installieren">MobileAlerts Proxy installieren</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="09_node_js.html#mobilealerts-proxy-konfigurieren">MobileAlerts Proxy konfigurieren</a></li>
+<li class="toctree-l5"><a class="reference internal" href="09_node_js.html#mobilealerts-proxy-als-dienst-einrichten">MobileAlerts Proxy als Dienst einrichten</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="10_esphome.html">ESPHome Dashboard <span class="redsup">new</span></a><ul>
@@ -5739,9 +5749,9 @@
              
   <span class="target" id="index-0"></span><section id="mqtt-broker-installieren">
 <span id="index-1"></span><h1>MQTT Broker installieren<a class="headerlink" href="#mqtt-broker-installieren" title="Permalink to this heading"></a></h1>
-<p>Ab Version 1.7 wird MQTT direkt vom Core von SmartHomeMG unterstützt. Um MQTT zu nutzen, muss ein Broker verwendet werden,
-mit dem die MQTT Clients kommunizieren. Wenn im Netzwerk noch kein Broker installiert ist, kann auf dem Rechner auf dem
-SmartHomeNG installiert wird, auch ein Broker installiert werden.</p>
+<p>Ab SmarthomeNG v1.7 wird MQTT direkt vom Core von SmartHomeMG unterstützt. Um MQTT zu nutzen, muss ein Broker verwendet
+werden, mit dem die MQTT Clients kommunizieren. Wenn im Netzwerk noch kein Broker installiert ist, kann auf dem Rechner
+auf dem SmartHomeNG installiert wird, auch ein Broker installiert werden.</p>
 <nav class="contents local" id="schritte-der-installation">
 <p class="topic-title">Schritte der Installation</p>
 <ul class="simple">
@@ -5777,9 +5787,9 @@ Mai<span class="w"> </span><span class="m">30</span><span class="w"> </span><spa
 </pre></div>
 </div>
 <p>Der Service kann dann mit den folgenden Befehlen gestartet, gestoppt und neu gestartet werden:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>systemctl<span class="w"> </span>start<span class="w"> </span>mosquitto
-systemctl<span class="w"> </span>stop<span class="w"> </span>mosquitto
-systemctl<span class="w"> </span>restart<span class="w"> </span>mosquitto
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>mosquitto
+sudo<span class="w"> </span>systemctl<span class="w"> </span>stop<span class="w"> </span>mosquitto
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>mosquitto
 </pre></div>
 </div>
 </section>
@@ -5830,14 +5840,24 @@ verhindert wird, muss die Konfiguration folgendermaßen aussehen:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>password_file /etc/mosquitto/passwd
 
 allow_anonymous false
+listener 1883
 </pre></div>
 </div>
+<p>Wird die Zeile <code class="docutils literal notranslate"><span class="pre">listener</span> <span class="pre">1883</span></code> weg gelassen, wird der Broker nur auf den localhost verbunden. Verbindungen von
+anderen Geräten/IP-Adressen sind dann nicht möglich</p>
 <p>Zusätzlich muss eine Datei <code class="docutils literal notranslate"><span class="pre">/etc/mosquitto/passwd</span></code> angelegt werden, in der die Accountinformationen hinterlegt werden.
 Informationen dazu finden sich in der Mosquitto Dokumentation. Eine hilfreiche Website ist auch
 <a class="reference external" href="http://www.steves-internet-guide.com/mqtt-username-password-example/">http://www.steves-internet-guide.com/mqtt-username-password-example/</a>.</p>
 <p>In Mosquitto Versionen ab 2.0 muss die Authentifizierung explizit konfiguriert werden. Ein anonymer Zugriff ist
 standardmäßig nicht möglich er muss (falls gewünscht) in der Konfigurationsdatei explizit konfiguriert werden:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>allow_anonymous true
+</pre></div>
+</div>
+<p>Ab einer kommenden Version von Mosquitto wird der Inhalt der passwd Datei nur eingelesen, wenn sie den Eigentümer
+mosquitto, die Gruppe mosquitto und die Permissions 600 hat. Dazu die folgenden Kommandos eingeben:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>sudo chown mosquitto /etc/mosquitto/passwd
+sudo chgrp mosquitto /etc/mosquitto/passwd
+sudo chmod 0600 /etc/mosquitto/passwd
 </pre></div>
 </div>
 </section>

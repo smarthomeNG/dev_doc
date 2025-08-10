@@ -34,5 +34,6 @@ Es bietet sich an die allererste Installation einfach in einer virtuellen Maschi
    06_onewire
    07_samba
    08_shng_daemon
+   09_node_js
    10_esphome
 

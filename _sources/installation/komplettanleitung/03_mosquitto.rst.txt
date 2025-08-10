@@ -9,9 +9,9 @@
 MQTT Broker installieren
 ========================
 
-Ab Version 1.7 wird MQTT direkt vom Core von SmartHomeMG unterstützt. Um MQTT zu nutzen, muss ein Broker verwendet werden,
-mit dem die MQTT Clients kommunizieren. Wenn im Netzwerk noch kein Broker installiert ist, kann auf dem Rechner auf dem
-SmartHomeNG installiert wird, auch ein Broker installiert werden.
+Ab SmarthomeNG v1.7 wird MQTT direkt vom Core von SmartHomeMG unterstützt. Um MQTT zu nutzen, muss ein Broker verwendet
+werden, mit dem die MQTT Clients kommunizieren. Wenn im Netzwerk noch kein Broker installiert ist, kann auf dem Rechner
+auf dem SmartHomeNG installiert wird, auch ein Broker installiert werden.
 
 .. contents:: Schritte der Installation
    :local:
@@ -59,9 +59,9 @@ Der Service kann dann mit den folgenden Befehlen gestartet, gestoppt und neu ges
 
 .. code-Block:: bash
 
-   systemctl start mosquitto
-   systemctl stop mosquitto
-   systemctl restart mosquitto
+   sudo systemctl start mosquitto
+   sudo systemctl stop mosquitto
+   sudo systemctl restart mosquitto
 
 
 Mosquitto als Service einrichten
@@ -131,6 +131,10 @@ verhindert wird, muss die Konfiguration folgendermaßen aussehen:
     password_file /etc/mosquitto/passwd
 
     allow_anonymous false
+    listener 1883
+
+Wird die Zeile ``listener 1883`` weg gelassen, wird der Broker nur auf den localhost verbunden. Verbindungen von
+anderen Geräten/IP-Adressen sind dann nicht möglich
 
 Zusätzlich muss eine Datei ``/etc/mosquitto/passwd`` angelegt werden, in der die Accountinformationen hinterlegt werden.
 Informationen dazu finden sich in der Mosquitto Dokumentation. Eine hilfreiche Website ist auch
@@ -142,5 +146,16 @@ standardmäßig nicht möglich er muss (falls gewünscht) in der Konfigurationsd
 .. code-Block:: text
 
     allow_anonymous true
+
+Ab einer kommenden Version von Mosquitto wird der Inhalt der passwd Datei nur eingelesen, wenn sie den Eigentümer
+mosquitto, die Gruppe mosquitto und die Permissions 600 hat. Dazu die folgenden Kommandos eingeben:
+
+.. code-Block:: text
+
+    sudo chown mosquitto /etc/mosquitto/passwd
+    sudo chgrp mosquitto /etc/mosquitto/passwd
+    sudo chmod 0600 /etc/mosquitto/passwd
+
+
 
 
