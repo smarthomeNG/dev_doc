@@ -69,6 +69,8 @@ zu vermeiden. Der Parameter **--no-tunnel-client-queuing** ist obsolet und sollt
 knxd testen
 ============
 
+Vor dem testen muss der Dienst im Zweifelsfall neu gestartet werden. Wie das geht, ist weiter unten beschrieben.
+
 Nachdem knxd installiert, konfiguriert und der Dienst **(neu) gestartet** ist, kann mit folgendem Kommando geprüft
 werden, ob eine funktionsfähige Verbindung zum KNX Bus besteht. Dazu das folgende Kommando eingeben:
 

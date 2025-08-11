@@ -69,7 +69,7 @@ Sobald der Python-Source-Code extrahiert wurde, zum Konfigurationsskript navigie
 .. code-block:: bash
 
     cd Python-3.10.12
-    ./configure
+    sudo ./configure
 
 Die Konfiguration kann einige Zeit dauern. Bitte warten, bis der Vorgang erfolgreich abgeschlossen wurde und
 erst dann fortfahren.

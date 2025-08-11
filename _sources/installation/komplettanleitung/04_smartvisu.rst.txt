@@ -29,6 +29,9 @@ Webserver und zusätzliche Pakete installieren
         .. code-block:: bash
 
            sudo apt-get install apache2 libawl-php php-curl php8.2-fpm php-json php-xml php-mbstring
+           # für Debian 13, welches PHP 8.4 mitbringt:
+           sudo apt install libapache2-mod-php8.4
+           # nun zur Sicherheit den apache nu starten
            sudo systemctl restart apache2
 
     .. tab:: NGINX
