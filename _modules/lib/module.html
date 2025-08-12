@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.module &mdash; Dokumentation v1.11.0.1 develop v1.11.0.1 develop (Stand 12. August 2025, commit f44d064) Dokumentation</title>
+  <title>lib.module &mdash; Dokumentation v1.11.0.1 develop v1.11.0.1 develop (Stand 12. August 2025, commit dd517ef) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5791,7 +5791,9 @@
 <span class="c1">#import threading</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">lib.config</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">lib.translation</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">translation</span>
@@ -5970,17 +5972,18 @@
 <span class="sd">        :return: loaded module</span>
 <span class="sd">        :rtype: object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;_load_module: Section </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">, Module </span><span class="si">{</span><span class="n">classname</span><span class="si">}</span><span class="s2">, classpath </span><span class="si">{</span><span class="n">classpath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1">#logger.notice(f&quot;_load_module: Section {name}, Module {classname}, classpath {classpath}&quot;)</span>
 
         <span class="n">enabled</span> <span class="o">=</span> <span class="n">Utils</span><span class="o">.</span><span class="n">strip_quotes</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;enabled&#39;</span><span class="p">,</span> <span class="s1">&#39;true&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">enabled</span> <span class="o">==</span> <span class="s1">&#39;false&#39;</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Not loading module </span><span class="si">{}</span><span class="s2"> from section &#39;</span><span class="si">{}</span><span class="s2">&#39;: Module is disabled&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">classname</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
             <span class="k">return</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading module &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;: args = &#39;</span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>  <span class="c1"># info</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading module &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;: args = &#39;</span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
         <span class="c1"># Load an instance of the module</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">exec</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;import </span><span class="si">{</span><span class="n">classpath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1">#exec(f&quot;import {classpath}&quot;)</span>
+            <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">classpath</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Module &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; (</span><span class="si">{</span><span class="n">classpath</span><span class="si">}</span><span class="s2">) exception during import of __init__.py: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
