@@ -7,9 +7,9 @@
 
 .. _Python_Version_Installieren:
 
-=========================================
-Python Version Installieren :redsup:`Neu`
-=========================================
+===========================
+Python Version Installieren
+===========================
 
 Im folgenden wird beschrieben, wie weitere Python Versionen unter Linux installiert werden. Das wird am Beispiel der
 Python Version 3.10.12 beschrieben,
