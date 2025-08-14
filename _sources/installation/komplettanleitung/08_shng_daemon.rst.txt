@@ -43,6 +43,7 @@ und folgenden Text hineinkopieren:
 
    [Service]
    Type=forking
+   # für ältere Installationen, die nicht in einem virtual Environment laufen:
    ExecStart=/usr/bin/python3 /usr/local/smarthome/bin/smarthome.py
    WorkingDirectory=/usr/local/smarthome
    User=smarthome
@@ -62,8 +63,8 @@ und folgenden Text hineinkopieren:
 
 |
 
-Nutzung eines virtuellen Environments :redsup:`neu`
-===================================================
+Nutzung eines virtuellen Environments
+=====================================
 
 Bei der Installation von SmartHomeNG v1.10 (oder neuer) wird vom postinstall-Skript ein virtuelles Python
 Environment angelegt. Wenn dieses virtuelle Environment im Zusammenhang mit dem Dienst genutzt werden soll, muss
