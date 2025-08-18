@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.network &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 17. August 2025, commit f4a900b) Dokumentation</title>
+  <title>lib.network &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 18. August 2025, commit add6313) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -4255,10 +4255,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#commands">Commands</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#klassendefinition">Klassendefinition</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#lib.model.smartdeviceplugin.SmartDevicePlugin"><code class="docutils literal notranslate"><span class="pre">SmartDevicePlugin</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#klassendefinition">Klassendefinition</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../entwicklung/plugins/kurzanleitung/plugin_metadata.html">Plugin-Metadata <span class="bluesup">update</span></a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../entwicklung/plugins/kurzanleitung/plugin_metadata.html#detaillierte-beschreibung">Detaillierte Beschreibung</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../entwicklung/plugins/kurzanleitung/plugin_metadata.html#plugin">plugin</a></li>
@@ -4379,10 +4376,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../entwicklung/core/core.html">Entwicklung des Core</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../entwicklung/core/core_shng.html">Der Core von SmartHomeNG</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../entwicklung/core/core_shng.html#smarthome-py">smarthome.py</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../entwicklung/core/core_shng.html#lib.smarthome.SmartHome"><code class="docutils literal notranslate"><span class="pre">SmartHome</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l4"><a class="reference internal" href="../../entwicklung/core/core_shng.html#smarthome-py">smarthome.py</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../entwicklung/core/core_shng.html#lib-item">lib.item</a></li>
 </ul>
 </li>
@@ -5788,7 +5782,8 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">iowait</span><span class="w"> </span><span class="kn">import</span> <span class="n">IOWait</span>
+<span class="c1">#from iowait import IOWait</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">selectors</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">struct</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
@@ -6591,8 +6586,12 @@
 <span class="sd">        Thread worker to handle receiving.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s1"> started receive thread&#39;</span><span class="p">)</span>
-        <span class="n">waitobj</span> <span class="o">=</span> <span class="n">IOWait</span><span class="p">()</span>
-        <span class="n">waitobj</span><span class="o">.</span><span class="n">watch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_socket</span><span class="p">,</span> <span class="n">read</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1">#alt</span>
+        <span class="c1">#waitobj = IOWait()</span>
+        <span class="c1">#waitobj.watch(self._socket, read=True)</span>
+        <span class="c1"># neu:</span>
+        <span class="n">selector</span> <span class="o">=</span> <span class="n">selectors</span><span class="o">.</span><span class="n">DefaultSelector</span><span class="p">()</span>
+        <span class="n">selector</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_socket</span><span class="p">,</span> <span class="n">selectors</span><span class="o">.</span><span class="n">EVENT_READ</span><span class="p">)</span>
         <span class="n">__buffer</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_receiving</span> <span class="o">=</span> <span class="kc">True</span>
@@ -6601,9 +6600,14 @@
         <span class="c1"># try to find possible &quot;hidden&quot; errors</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_connected</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__running</span><span class="p">:</span>
-                <span class="n">events</span> <span class="o">=</span> <span class="n">waitobj</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>     <span class="c1"># BMX</span>
-                <span class="k">for</span> <span class="n">fileno</span><span class="p">,</span> <span class="n">read</span><span class="p">,</span> <span class="n">write</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>  <span class="c1"># BMX</span>
-                    <span class="k">if</span> <span class="n">read</span><span class="p">:</span>
+                <span class="c1">#alt</span>
+                <span class="c1">#events = waitobj.wait(1000)     # BMX</span>
+                <span class="c1">#for fileno, read, write in events:  # BMX</span>
+
+                <span class="c1">#neu</span>
+                <span class="n">events</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># 1 Sekunde</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">mask</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">mask</span> <span class="o">&amp;</span> <span class="n">selectors</span><span class="o">.</span><span class="n">EVENT_READ</span><span class="p">:</span>
                         <span class="n">timeout</span> <span class="o">=</span> <span class="kc">False</span>
                         <span class="k">try</span><span class="p">:</span>
                             <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_socket</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
@@ -6659,7 +6663,7 @@
                                 <span class="bp">self</span><span class="o">.</span><span class="n">_is_receiving</span> <span class="o">=</span> <span class="kc">False</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">_is_connected</span> <span class="o">=</span> <span class="kc">False</span>
                                 <span class="k">try</span><span class="p">:</span>
-                                    <span class="bp">self</span><span class="o">.</span><span class="n">_socket</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">_socket</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
                                 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                                     <span class="k">pass</span>
                                 <span class="k">if</span> <span class="n">timeout</span><span class="p">:</span>
@@ -6668,7 +6672,10 @@
                                 <span class="k">else</span><span class="p">:</span>
                                     <span class="c1"># default state, peer closed connection</span>
                                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s1"> connection closed by peer&#39;</span><span class="p">)</span>
-                                <span class="n">waitobj</span><span class="o">.</span><span class="n">unwatch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_socket</span><span class="p">)</span>
+                                <span class="c1">#alt</span>
+                                <span class="c1">#waitobj.unwatch(self._socket)</span>
+                                <span class="c1">#neu</span>
+                                <span class="n">selector</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_socket</span><span class="p">)</span>
                                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disconnected_callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                                     <span class="k">try</span><span class="p">:</span>
                                         <span class="bp">self</span><span class="o">.</span><span class="n">_disconnected_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -6679,7 +6686,7 @@
                                     <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
                                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_connected</span><span class="p">:</span>
                                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s1"> set read watch on socket again&#39;</span><span class="p">)</span>
-                                    <span class="n">waitobj</span><span class="o">.</span><span class="n">watch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_socket</span><span class="p">,</span> <span class="n">read</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                                    <span class="n">selector</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_socket</span><span class="p">,</span> <span class="n">selectors</span><span class="o">.</span><span class="n">EVENT_READ</span><span class="p">)</span>
                             <span class="k">else</span><span class="p">:</span>
                                 <span class="c1"># socket shut down by self.close, no error</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_id</span><span class="si">}</span><span class="s1"> connection shut down by call to close method&#39;</span><span class="p">)</span>
