@@ -141,6 +141,18 @@ SmartHomeNG Konfiguration sichern
 Mit Hilfe der Admin GUI ein Backup der Konfiguration von SmartHomeNG erstellen.
 
 
+Kopieren privater Tools
+-----------------------
+
+...
+
+
+Kopieren privates Plugins
+-------------------------
+
+...
+
+
 Kopieren weiterer Daten
 -----------------------
 

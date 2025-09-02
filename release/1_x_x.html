@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Release 1.xx.x - xx. xxx 2025 &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 2. September 2025, commit add6313) Dokumentation</title>
+  <title>Release 1.xx.x - xx. xxx 2025 &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 2. September 2025, commit d5d8cbd) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
@@ -4041,6 +4041,8 @@
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../beispiele/umzug.html#smarthomeng-konfiguration-sichern">SmartHomeNG Konfiguration sichern</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../beispiele/umzug.html#kopieren-privater-tools">Kopieren privater Tools</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../beispiele/umzug.html#kopieren-privates-plugins">Kopieren privates Plugins</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../beispiele/umzug.html#kopieren-weiterer-daten">Kopieren weiterer Daten</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../beispiele/umzug.html#item-cache-verzeichnis-kopieren">Item cache Verzeichnis kopieren</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../beispiele/umzug.html#database-verzeichnis-kopieren">database Verzeichnis kopieren</a></li>
@@ -5641,10 +5643,10 @@
 <p>Diese Release Notes sind ein Arbeitsstand des <strong>develop</strong> Branches.</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>Berücksichtigt sind Commits im smarthome Repository bis inkl. 7. Juli 2025
-(Implemented initialization for hysteresis …)</p></li>
-<li><p>Berücksichtigt sind Commits im plugins Repository bis inkl. 6. Juli 2025
+<li><p>Berücksichtigt sind Commits im smarthome Repository bis inkl. 11. August 2025
 (…)</p></li>
+<li><p>Berücksichtigt sind Commits im plugins Repository bis inkl. 2. September 2025
+(visu_websocket: Moved plugin to plugin archive)</p></li>
 </ul>
 </div></blockquote>
 </div>
@@ -5674,9 +5676,10 @@ zu unterstützten Python Versionen)</p>
 <section id="allgmein">
 <h3>Allgmein<a class="headerlink" href="#allgmein" title="Permalink to this heading"></a></h3>
 <ul class="simple">
-<li><p>github:</p>
+<li><p>Workflows:</p>
 <ul>
-<li><p>…</p></li>
+<li><p>Unittests: Added Python 3.13 and removed Python 3.8</p></li>
+<li><p>builddevdoc: Changed to run under 3.11 instead of Python 3.9</p></li>
 </ul>
 </li>
 </ul>
@@ -5690,12 +5693,12 @@ zu unterstützten Python Versionen)</p>
 <section id="updates-in-the-core">
 <h3>Updates in the CORE<a class="headerlink" href="#updates-in-the-core" title="Permalink to this heading"></a></h3>
 <ul>
-<li><p>…</p></li>
+<li><p>Changed absolut minimum Python version to 3.9</p></li>
 <li><p>bin</p>
 <ul class="simple">
 <li><p>smarthome</p>
 <ul>
-<li><p>…</p></li>
+<li><p>Changed some loglevels</p></li>
 </ul>
 </li>
 <li><p>shngversion:</p>
@@ -5716,7 +5719,9 @@ zu unterstützten Python Versionen)</p>
 <li><p>lib.item:
 * Remove ‚eval:‘ from caller (if it exists) before calling update_item of a plugin
 * Remove ‚eval:‘ from caller (if it exists) for autotimer
-* Implemented initialization for hysteresis item and extended documentation</p></li>
+* Implemented initialization for hysteresis item and extended documentation
+* Small fix for hysteresis
+* Small fix in hysteresis_state()</p></li>
 </ul>
 </li>
 <li><p>Modules:</p>
@@ -5733,6 +5738,7 @@ zu unterstützten Python Versionen)</p>
 <li><p>tools/postinstall:</p>
 <ul>
 <li><p>Added handling for newer of Python to postinstall script</p></li>
+<li><p>Changed for Python versions (3.8 dropped, 3.14 added)</p></li>
 </ul>
 </li>
 </ul>
@@ -5770,10 +5776,21 @@ zu unterstützten Python Versionen)</p>
 <p>Für Details zu den Änderungen an den einzelnen Plugins, bitte die Dokumentation des jeweiligen Plugins unter
 <a class="reference external" href="http://www.smarthomeng.de/user/plugins_all.html">http://www.smarthomeng.de/user/plugins_all.html</a> konsultieren.</p>
 <ul class="simple">
+<li><p>avm:</p>
+<ul>
+<li><p><strong>For testing</strong>: Set lxml requirement to lxml 5.x under Python 3.13</p></li>
+</ul>
+</li>
 <li><p>enocean:</p>
 <ul>
 <li><p>Completed decoding of EEP A5_08_01 and added decoding for A5_07_01</p></li>
 <li><p>Temporary fix for unwanted plugin retrigger in combination with eval expressions</p></li>
+</ul>
+</li>
+<li><p>gpio:</p>
+<ul>
+<li><p>Update to work with Bookworm</p></li>
+<li><p>Set max Python version to 3.12 because package lgpio does not work under Python 3.13</p></li>
 </ul>
 </li>
 <li><p>hue2:</p>
@@ -5801,6 +5818,11 @@ zeroconf to resolve conflict</p></li>
 <li><p>Minor webif fix</p></li>
 </ul>
 </li>
+<li><p>piusv:</p>
+<ul>
+<li><p>Create requirements.txt</p></li>
+</ul>
+</li>
 <li><p>rtr2:</p>
 <ul>
 <li><p>Added comments to widgets</p></li>
@@ -5815,16 +5837,28 @@ zeroconf to resolve conflict</p></li>
 <ul>
 <li><p>Revert required minimum python version back to 3.8; upgraded SoCo to v0.30.9; catching exception for speakers
 with unknown ip address</p></li>
+<li><p><strong>For testing</strong>: Set lxml requirement to lxml 5.x under Python 3.13</p></li>
+</ul>
+</li>
+<li><p>uzsu:</p>
+<ul>
+<li><p>Fix issue when calculated sun event is on next day (due to offset)</p></li>
 </ul>
 </li>
 <li><p>vicare:</p>
 <ul>
 <li><p>Minor fix for online status after plugin restart; added specific log message if refresh token has expired</p></li>
+<li><p>Connected to new Vissmann API. Old one is deprecated</p></li>
 </ul>
 </li>
 <li><p>xiaomi_vac:</p>
 <ul>
 <li><p>Changed requirement for zeroconf to resolve conflict</p></li>
+</ul>
+</li>
+<li><p>yamaha:</p>
+<ul>
+<li><p><strong>For testing</strong>: Set lxml requirement to lxml 5.x under Python 3.13</p></li>
 </ul>
 </li>
 </ul>
@@ -5842,18 +5876,27 @@ with unknown ip address</p></li>
 <li><p>avm_smarthome</p></li>
 </ul>
 </li>
+<li><p>System Plugins</p>
+<ul>
+<li><p>datalog</p></li>
+<li><p>visu_smartvisu</p></li>
+<li><p>visu_websocket</p></li>
+</ul>
+</li>
+<li><p>Interface Plugins</p>
+<ul>
+<li><p>husky</p></li>
+</ul>
+</li>
 </ul>
 <p>Die folgenden Plugins wurden als veraltet (deprecated markiert und werden in einem der nächsten Releases
 aus dem Plugin-Repo entfernt und in das Archive-Repo verschoben:</p>
 <ul class="simple">
 <li><p>System Plugins</p>
 <ul>
-<li><p>datalog</p></li>
 <li><p>influxdata</p></li>
 <li><p>memlog</p></li>
 <li><p>operationlog</p></li>
-<li><p>visu_smartvisu</p></li>
-<li><p>visu_websocket</p></li>
 </ul>
 </li>
 <li><p>Gateway Plugins</p>
@@ -5863,7 +5906,7 @@ aus dem Plugin-Repo entfernt und in das Archive-Repo verschoben:</p>
 </li>
 <li><p>Interface Plugins</p>
 <ul>
-<li><p>husky</p></li>
+<li><p>…</p></li>
 </ul>
 </li>
 <li><p>Web/Cloud Plugins</p>
@@ -5901,6 +5944,11 @@ wechseln.</p>
 <ul class="simple">
 <li><p>Modified README.md to reflect, that the JetBrains licenses expired</p></li>
 <li><p>Doku Fixes für logging</p></li>
+<li><p>Small fix in hysteresis_state()</p></li>
+<li><p>Added info for ssh passwordless login</p></li>
+<li><p>Updated documentation for installation/configuration of mosquitto</p></li>
+<li><p>Added documentation for node.js and MobileAlerts to complete installation</p></li>
+<li><p>Fixes for complete installation and installing Python versions</p></li>
 </ul>
 </section>
 </section>

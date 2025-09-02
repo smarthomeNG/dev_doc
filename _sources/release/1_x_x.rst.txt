@@ -17,10 +17,10 @@ Dieses Release ist ein Feature-Release. Es gibt eine Menge neuer Features im Cor
 
         Diese Release Notes sind ein Arbeitsstand des **develop** Branches.
 
-         - Berücksichtigt sind Commits im smarthome Repository bis inkl. 7. Juli 2025
-           (Implemented initialization for hysteresis ...)
-         - Berücksichtigt sind Commits im plugins Repository bis inkl. 6. Juli 2025
+         - Berücksichtigt sind Commits im smarthome Repository bis inkl. 11. August 2025
            (...)
+         - Berücksichtigt sind Commits im plugins Repository bis inkl. 2. September 2025
+           (visu_websocket: Moved plugin to plugin archive)
 
 
 Überblick
@@ -56,9 +56,10 @@ zu unterstützten Python Versionen)
 Allgmein
 --------
 
-* github:
+* Workflows:
 
-  * ...
+  * Unittests: Added Python 3.13 and removed Python 3.8
+  * builddevdoc: Changed to run under 3.11 instead of Python 3.9
 
 
 
@@ -71,14 +72,14 @@ Bugfixes im CORE
 Updates in the CORE
 -------------------
 
-* ...
+* Changed absolut minimum Python version to 3.9
 
 
 * bin
 
   * smarthome
 
-    * ...
+    * Changed some loglevels
 
   * shngversion:
 
@@ -96,6 +97,8 @@ Updates in the CORE
     * Remove 'eval:' from caller (if it exists) before calling update_item of a plugin
     * Remove 'eval:' from caller (if it exists) for autotimer
     * Implemented initialization for hysteresis item and extended documentation
+    * Small fix for hysteresis
+    * Small fix in hysteresis_state()
 
 * Modules:
 
@@ -108,6 +111,7 @@ Updates in the CORE
   * tools/postinstall:
 
     * Added handling for newer of Python to postinstall script
+    * Changed for Python versions (3.8 dropped, 3.14 added)
 
 |
 
@@ -142,10 +146,19 @@ Plugin Updates
 Für Details zu den Änderungen an den einzelnen Plugins, bitte die Dokumentation des jeweiligen Plugins unter
 http://www.smarthomeng.de/user/plugins_all.html konsultieren.
 
+* avm:
+
+  * **For testing**: Set lxml requirement to lxml 5.x under Python 3.13
+
 * enocean:
 
   * Completed decoding of EEP A5_08_01 and added decoding for A5_07_01
   * Temporary fix for unwanted plugin retrigger in combination with eval expressions
+
+* gpio:
+
+  * Update to work with Bookworm
+  * Set max Python version to 3.12 because package lgpio does not work under Python 3.13
 
 * hue2:
 
@@ -168,6 +181,10 @@ http://www.smarthomeng.de/user/plugins_all.html konsultieren.
 
   * Minor webif fix
 
+* piusv:
+
+  * Create requirements.txt
+
 * rtr2:
 
   * Added comments to widgets
@@ -180,14 +197,24 @@ http://www.smarthomeng.de/user/plugins_all.html konsultieren.
 
   * Revert required minimum python version back to 3.8; upgraded SoCo to v0.30.9; catching exception for speakers
     with unknown ip address
+  * **For testing**: Set lxml requirement to lxml 5.x under Python 3.13
+
+* uzsu:
+
+  * Fix issue when calculated sun event is on next day (due to offset)
 
 * vicare:
 
   * Minor fix for online status after plugin restart; added specific log message if refresh token has expired
+  * Connected to new Vissmann API. Old one is deprecated
 
 * xiaomi_vac:
 
   * Changed requirement for zeroconf to resolve conflict
+
+* yamaha:
+
+  * **For testing**: Set lxml requirement to lxml 5.x under Python 3.13
 
 |
 
@@ -201,18 +228,24 @@ Die folgenden Plugins wurden in das plugin_archive Repository verschoben:
   * avdevice
   * avm_smarthome
 
+* System Plugins
+
+  * datalog
+  * visu_smartvisu
+  * visu_websocket
+
+* Interface Plugins
+
+  * husky
 
 Die folgenden Plugins wurden als veraltet (deprecated markiert und werden in einem der nächsten Releases
 aus dem Plugin-Repo entfernt und in das Archive-Repo verschoben:
 
 * System Plugins
 
-  * datalog
   * influxdata
   * memlog
   * operationlog
-  * visu_smartvisu
-  * visu_websocket
 
 * Gateway Plugins
 
@@ -220,7 +253,7 @@ aus dem Plugin-Repo entfernt und in das Archive-Repo verschoben:
 
 * Interface Plugins
 
-  * husky
+  * ...
 
 * Web/Cloud Plugins
 
@@ -253,4 +286,9 @@ Dokumentation
 
 * Modified README.md to reflect, that the JetBrains licenses expired
 * Doku Fixes für logging
+* Small fix in hysteresis_state()
+* Added info for ssh passwordless login
+* Updated documentation for installation/configuration of mosquitto
+* Added documentation for node.js and MobileAlerts to complete installation
+* Fixes for complete installation and installing Python versions
 
