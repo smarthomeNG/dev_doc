@@ -230,13 +230,13 @@ Die folgenden Plugins wurden in das plugin_archive Repository verschoben:
 
 * System Plugins
 
-  * datalog
+  * datalog*
   * visu_smartvisu
   * visu_websocket
 
 * Interface Plugins
 
-  * husky
+  * husky*
 
 Die folgenden Plugins wurden als veraltet (deprecated markiert und werden in einem der nächsten Releases
 aus dem Plugin-Repo entfernt und in das Archive-Repo verschoben:
