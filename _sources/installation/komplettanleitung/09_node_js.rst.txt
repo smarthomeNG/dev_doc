@@ -101,13 +101,13 @@ MobileAlerts Proxy installieren
 MobileAlerts Proxy konfigurieren
 --------------------------------
 
-Im Verzeichnis /opt/ms/maserver eine Datei mit dem Namen config.js anlegen und folgenden Inhalt einfügen
+Im Verzeichnis /opt/ma/maserver eine Datei mit dem Namen config.json anlegen und folgenden Inhalt einfügen
 
 .. code-block:: json
 
     {
-      "localIPv4Address": "10.0.0.142",
-      "mqtt": "mqtt://<IP-Adresse des Brokers>",
+      "localIPv4Address": "<IP-Adresse des SmarthomeNG Systems>",
+      "mqtt": "mqtt://<IP-Adresse des Brokers (des SmartHomeNG Systems)>",
       "mqtt_home": "MobileAlerts/",
       "mqtt_username": "<Username für den Broker>",
       "mqtt_password": "<Password für den Broker>",
