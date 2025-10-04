@@ -134,24 +134,40 @@ Samba
 Falls auf dem alten System weitere/andere Shares eingerichtet waren, als auf dem neuen System bisher eingerichtet sind,
 muss die Datei ``/etc/samba/smb.conf`` übertragen werden.
 
+|
 
-SmartHomeNG Konfiguration sichern
----------------------------------
+Daten vom alten System Kopieren
+-------------------------------
 
-Mit Hilfe der Admin GUI ein Backup der Konfiguration von SmartHomeNG erstellen.
-
+...
 
 Kopieren privater Tools
 -----------------------
 
-...
+Nach dem kopieren der privaten Tools noch die Tools mit dem Befehl chmod ausführbar machen:
+
+.. code-block:: bash
+
+    cd /mnt/shng_old
+    cp -r priv_tools/* /usr/local/smarthome/priv_tools
+
+    cd /usr/local/smarthome/priv_tools
+    chmod +x *
 
 
-Kopieren privates Plugins
+Kopieren privater Plugins
 -------------------------
 
-...
+.. code-block:: bash
 
+    cd /mnt/shng_old/plugins
+    cp -r priv_xxx/* /usr/local/smarthome/plugins/priv_xxx
+
+
+SmartHomeNG Konfiguration
+-------------------------
+
+Mit Hilfe der Admin GUI ein Backup der Konfiguration von SmartHomeNG erstellen.
 
 Kopieren weiterer Daten
 -----------------------
@@ -159,8 +175,26 @@ Kopieren weiterer Daten
 Im folgenden werden weitere Daten, die im ``../var`` Verzeichnis von SmartHmeNG gespeichert sind, auf das neue System
 übertragen.
 
-Für die folgen Schritte ist es **wichtig**, dass SmartHomeNG weder auf dem alten System, noch auf dem neuen System läuft.
-Falls SmartHomeNG auf einem der Systeme läuft, bitte mit ``python3 bin/smarthome.py -s`` SmartHomeNG beenden.
+Für die folgen Schritte ist es **wichtig**, dass SmartHomeNG weder auf dem alten System, noch auf dem neuen
+System läuft. Falls SmartHomeNG auf einem der Systeme läuft, bitte mit ``python3 bin/smarthome.py -s``
+SmartHomeNG beenden. Auf dem alten System den Service mit
+
+.. code-block:: bash
+
+    sudo systemctl stop smarthome
+
+beenden.
+
+Wenn die alte SmarthomeNG Installation (das Verzeichnis /usr/local/smarthome) auf dem neuen System
+als /mnt/shng_old gemountet wurde, sollten die jeweiligen Verzeichnisse unterhalb des var Verzeichnisses
+mit den folgenden Befehlen kopiert werden (hier am Beispiel des cache Verzeichnisse):
+
+.. code-block:: bash
+
+    cd /mnt/shng_old/var
+    cp -r cache/* /usr/local/smarthome/var/cache
+
+|
 
 Item cache Verzeichnis kopieren
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
