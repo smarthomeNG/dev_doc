@@ -185,6 +185,16 @@ SmartHomeNG beenden. Auf dem alten System den Service mit
 
 beenden.
 
+Im folgenden ist das kopieren des Verzeichnisse beschrieben, die fast bei jeder Installation vorhanden sind und
+kopiert werden müssen.
+
+Hinzu kommen Verzeichnisse, die von weiteren selterner genutzten Plugins
+im ``../var`` Verzeichnis angelegt wurden (z.B. **bo_netlink**, **esphome**, **panasonic_ac**). Diese
+Verzeichnisse können Unterverzeichnisse enthalten und müssen daher rekursiv kopiert werden.
+
+Nicht kopiert werden müssen die Verzeichnisse **backup** und **restore**, sowie die Dateien **pip_list.txt**
+und **systeminfo.yaml**, die direkt im ``../var`` Verzeichnis liegen.
+
 Wenn die alte SmarthomeNG Installation (das Verzeichnis /usr/local/smarthome) auf dem neuen System
 als /mnt/shng_old gemountet wurde, sollten die jeweiligen Verzeichnisse unterhalb des var Verzeichnisses
 mit den folgenden Befehlen kopiert werden (hier am Beispiel des cache Verzeichnisse):
