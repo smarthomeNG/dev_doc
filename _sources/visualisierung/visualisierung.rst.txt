@@ -1,5 +1,11 @@
 :tocdepth: 4
 
+.. role:: redsup
+.. role:: bluesup
+.. role:: darkbluesup
+.. role:: greensup
+.. role:: blacksup
+
 .. index:: Visualisierung mit smartVISU
 .. index:: smartVISU; Visualisierung mit smartVISU
 
@@ -51,9 +57,9 @@ Zusätzlich bietet das neue Plugin folgende Funktionalitäten:
     - structure definition file ...
 
 
-===========================
-Generierung der Visu Seiten
-===========================
+==============================================
+Generierung der Visu Seiten :greensup:`Update`
+==============================================
 
 Die Generierung der Visu Seiten erfolgt (wenn sie konfiguriert ist) beim Start von SmartHomeNG durch ein Plugin.
 Mit der Version 1.8 von SmartHomeNG gibt es hier einige Neuerungen.
@@ -69,7 +75,7 @@ Mit der Version 1.8 von SmartHomeNG gibt es hier einige Neuerungen.
    :titlesonly:
 
    changes_in_1.8
-   automatic_generation
+   automatic_generation/automatic_generation
    item_attributes
    beispiel
    install_widgets
