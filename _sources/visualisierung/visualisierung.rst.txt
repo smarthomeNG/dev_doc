@@ -76,6 +76,8 @@ Mit der Version 1.8 von SmartHomeNG gibt es hier einige Neuerungen.
 
    changes_in_1.8
    automatic_generation/automatic_generation
+   deprecated_widgets
+   top_navigation
    item_attributes
    beispiel
    install_widgets
