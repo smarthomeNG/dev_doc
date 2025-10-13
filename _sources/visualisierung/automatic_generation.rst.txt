@@ -1,4 +1,11 @@
 
+
+.. role:: redsup
+.. role:: bluesup
+.. role:: darkbluesup
+.. role:: greensup
+.. role:: blacksup
+
 .. index:: smartVISU; Automatische Generierung
 
 ========================
@@ -464,7 +471,77 @@ Die Struktur der Datei ist folgende:
 
         ...
 
+|
 
+Top Navigation auf Visu Seiten :redsup:`Neu`
+============================================
+
+Ab SmartHomeNG v1.11.1 / smartvisu Plugin v1.9 können Seiten mit einer Navigation oben auf der Seite
+(Top Navigation) generiert werden. Im folgenden ist anhand eines Beispiels beschrieben, wie eine Top Navigation
+konfiguriert wird.
+
+Der Kopf der Beispiel Visu Seite ohne Top Navigation sieht so aus:
+
+.. figure:: assets/topnav_wo.jpg
+   :alt: Seite ohne Top Navigation
+
+und ist folgendermaßen konfiguriert:
+
+.. code-block:: yaml
+
+    kochen:
+        sv_page: room
+        name: Kochen
+        sv_img: scene_cooking.svg
+
+        visu_szenen:
+            name: Szenen Beleuchtung
+            sv_widget: ...
+        visu_fenster:
+            name: Fenster Status
+            sv_widget: ...
+
+Jetzt soll eine Top Navigation bestehend aus 3 Buttons hinzugefügt werden. Die Buttons sollen "Standard",
+"Erweitert" und "Konfiguration" sein. Für jeden dieser drei Einträge muss eine eigene Seite definiert werden
+und auf jeder dieser Seiten müssen die Buttons über das Attribut ``sv_heading_buttons`` definiert werden.
+
+Die bisherige Seite **Kochen** wird folgendermaßen erweitert:
+
+.. code-block:: yaml
+
+    kochen:
+        sv_page: room
+        name: Kochen
+        sv_img: scene_cooking.svg
+        sv_heading_buttons:
+          - ['Standard', 'Erweitert', 'Konfiguration']
+          - ['Kochen', 'Kochen_Adv', 'Kochen_Cfg']
+
+        visu_szenen:
+            name: Szenen Beleuchtung
+            sv_widget: ...
+        visu_fenster:
+            name: Fenster Status
+            sv_widget: ...
+
+``sv_heding_buttons`` ist eine Liste, die 2 Listen enthält, wobei jede dieser Listen soviel Einträge haben muss,
+wie Buttons definiert werden sollen. Die erste Liste enthält die Beschriftungen der Buttons. Die zweite Liste
+enthält den Namen von den jeweiligen Items, die die Seiten definieren.
+
+Das Ergebnis sieht dann folgendermaßen aus:
+
+.. figure:: assets/topnav_std.jpg
+   :alt: Seite mit Top Navigation
+
+Da der erste Eintrag **Kochen** dem Namensattribut der Seite entspricht, ist der erste Button ausgewählt.
+Ein Klick auf diesen Button führt zur angezeigten Seite. Ein Klick auf einen der beiden anderen Buttons führt
+zu einem Seiten Ladefehler, da diese Seiten noch nicht definiert sind.
+
+|
+
+...
+
+|
 
 Seiten aus mehreren Sub-Trees
 =============================
