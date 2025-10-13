@@ -8,9 +8,9 @@
 
 .. index:: smartVISU; Automatische Generierung
 
-========================
-Automatische Generierung
-========================
+===========================================
+Automatische Generierung :greensup:`Update`
+===========================================
 
 Im Vergleich zum **visu_smartvisu** Plugin der vorhergehenden SmartHomeNG Releases, wurden die
 Möglichkeiten zur automatischen Generierung von Seiten für die smartVISU erweitert. Die
@@ -538,7 +538,7 @@ Da der erste Eintrag **Kochen** dem Namensattribut der Seite entspricht, ist der
 Ein Klick auf diesen Button führt zur angezeigten Seite. Ein Klick auf einen der beiden anderen Buttons führt
 zu einem Seiten Ladefehler, da diese Seiten noch nicht definiert sind.
 
-Im Attribut ``sv_heding_buttons`` ist definiert, dass die beiden anderen Seiten **Kochen_Adv** und **Kochen_Cfg**
+Im Attribut ``sv_heading_buttons`` ist definiert, dass die beiden anderen Seiten **Kochen_Adv** und **Kochen_Cfg**
 heißen. Wenn jetzt die Seite für 'Erweitert' definiert wird, sieht die Konfiguration folgendermaßen aus:
 
 .. code-block:: yaml
@@ -591,7 +591,7 @@ Dann sieht das in der Navi so aus:
    :alt: Seite 'Erweitert' mit Top Navigation
 
 Um zu verhindern, dass in der Überschrift **Kochen_Adv** erscheint, kann das Attribut ``sv_display_name``
-gesetzt werden. Wenn dieses auf **Koche** gesetzt wird, sieht das in der Visu so aus:
+gesetzt werden. Wenn dieses auf **Kochen** gesetzt wird, sieht das in der Visu so aus:
 
 .. figure:: assets/topnav_adv3.jpg
    :alt: Seite 'Erweitert' mit Top Navigation
@@ -673,8 +673,8 @@ sieht die Seite folgendermaßen aus:
 .. figure:: assets/topnav_std2.jpg
    :alt: Seite mit Icons in der Top Navigation
 
-Die Erweiterung des Attributs ``sv_heading_buttons`` muss natürlich auf allen drei Seiten vorgenommen
-werden.
+Die Erweiterung des Attributs ``sv_heading_buttons`` muss natürlich in der Konfiguration von allen drei
+Seiten vorgenommen werden.
 
 |
 
