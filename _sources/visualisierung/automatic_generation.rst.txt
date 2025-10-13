@@ -525,7 +525,7 @@ Die bisherige Seite **Kochen** wird folgendermaßen erweitert:
             name: Fenster Status
             sv_widget: ...
 
-``sv_heding_buttons`` ist eine Liste, die 2 Listen enthält, wobei jede dieser Listen soviel Einträge haben muss,
+``sv_heading_buttons`` ist eine Liste, die 2 Listen enthält, wobei jede dieser Listen soviel Einträge haben muss,
 wie Buttons definiert werden sollen. Die erste Liste enthält die Beschriftungen der Buttons. Die zweite Liste
 enthält den Namen von den jeweiligen Items, die die Seiten definieren.
 
@@ -539,7 +539,7 @@ Ein Klick auf diesen Button führt zur angezeigten Seite. Ein Klick auf einen de
 zu einem Seiten Ladefehler, da diese Seiten noch nicht definiert sind.
 
 Im Attribut ``sv_heding_buttons`` ist definiert, dass die beiden anderen Seiten **Kochen_Adv** und **Kochen_Cfg**
-heissen. Wenn jetzt die Seite für 'Erweitert' definiert wird, sieht die Konfiguration folgendermaßen aus:
+heißen. Wenn jetzt die Seite für 'Erweitert' definiert wird, sieht die Konfiguration folgendermaßen aus:
 
 .. code-block:: yaml
 
@@ -586,16 +586,19 @@ sondern **Kochen_Adv** ist.
 erscheint. Dazu wird ``sv_page_in_navi`` auf ``False`` gesetzt.
 
 Dann sieht das in der Navi so aus:
+
 .. figure:: assets/topnav_adv2.jpg
    :alt: Seite 'Erweitert' mit Top Navigation
 
 Um zu verhindern, dass in der Überschrift **Kochen_Adv** erscheint, kann das Attribut ``sv_display_name``
 gesetzt werden. Wenn dieses auf **Koche** gesetzt wird, sieht das in der Visu so aus:
+
 .. figure:: assets/topnav_adv3.jpg
    :alt: Seite 'Erweitert' mit Top Navigation
 
 Analog zur Seite 'Erweitert' kann nun noch die Seite 'Konfiguration' definiert werden.
 Die Konfiguration sieht nun folgendermaßen aus:
+
 .. code-block:: yaml
 
     kochen:
@@ -657,6 +660,7 @@ Attribut ``sv_heading_buttons`` um eine dritte Liste ergänzt. Die Einträge die
 Icons ohne Extension, aso ohne '.svg'.
 
 Wenn das Attribut  ``sv_heading_buttons`` folgendermaßen ergänzt wird
+
 .. code-block:: yaml
 
         sv_heading_buttons:

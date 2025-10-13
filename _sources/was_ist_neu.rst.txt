@@ -1,6 +1,6 @@
 :tocdepth: 2
 
-Neuerungen im Release v1.11
+Neuerungen im Release v1.12
 ===========================
 
 Hier ist eine Kurzübersicht über größere Neuerungen im aktuellen Release. Eine vollständige Übersicht der Änderungen in
@@ -8,28 +8,20 @@ diesem und den vorangegangenen Releases ist den :doc:`Release Notes </release/re
 
   - **Plugins**:
 
-    - **Asyncio**: Die SmartPlugin Klasse unterstützt nun asyncio.
-      Python Packages zur Ansteuerung von Peripherie werden zunehmend unter Verwendung von asyncio erstellt.
-      Um diese Packages in Plugins nutzen zu können, muss das jeweilige Plugin asyncio unterstützen.
-      Mit der Unterstützung von asyncio in der SmartPlugin Klasse wird es erheblich einfacher Plugins zu erstellen, die
-      asyncio-basierte Packages nutzen.
-      (Siehe auch :doc:`Plugins/Asyncio Support </referenz/plugins/asyncio_support>`)
-
-  - **Tools**:
-
-    - **ESPHome**: Im Release sind Tools zur Installation und Verwaltung von ESPHome enthalten.
-      Wenn ESPHome Devices durch Plugins angesteuert werden sollen kann es hilfreich sein, das ESPHome Dashboard
-      zur Verwaltung der ESPHome Devices zu nutzen.
-      (Siehe auch :doc:`ESPHome Dashboard </installation/komplettanleitung/09_esphome>`)
+    - **smartvisu**: Im smartvisu Plugin wurde die Generierung erweitert.
+      Nun können in generierten Seiten Buttons als Top Navigation eingerichtet werden. Damit ist es möglich
+      Seiten zu generieren, die sich unterhalb der Top Navigation mit unterschiedlichen Inhalten füllen
+      lassen.
+      (Siehe auch :doc:`Visualisierung/Automatische Generierung <visualisierung/automatic_generation.html#top-navigation-auf-visu-seiten-neu>`)
 
 |
 
 .. comment
 
-    Neuerungen im Release v1.11.x
+    Neuerungen im Release v1.12.x
     -----------------------------
 
-    *Hier kommen die Neuerungen des Releases v1.11.1 hin.*
+    *Hier kommen die Neuerungen des Releases v1.12.1 hin.*
 
     ...
 

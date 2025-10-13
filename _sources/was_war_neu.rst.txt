@@ -5,6 +5,30 @@ Neuerungen der letzten Releases
 
 Hier sind die wichtigsten Neuerungen aus den Letzten Releases:
 
+Neuerungen im Release v1.11
+===========================
+
+Hier ist eine Kurzübersicht über größere Neuerungen im aktuellen Release. Eine vollständige Übersicht der Änderungen in
+diesem und den vorangegangenen Releases ist den :doc:`Release Notes </release/release>` zu finden.
+
+  - **Plugins**:
+
+    - **Asyncio**: Die SmartPlugin Klasse unterstützt nun asyncio.
+      Python Packages zur Ansteuerung von Peripherie werden zunehmend unter Verwendung von asyncio erstellt.
+      Um diese Packages in Plugins nutzen zu können, muss das jeweilige Plugin asyncio unterstützen.
+      Mit der Unterstützung von asyncio in der SmartPlugin Klasse wird es erheblich einfacher Plugins zu erstellen, die
+      asyncio-basierte Packages nutzen.
+      (Siehe auch :doc:`Plugins/Asyncio Support </referenz/plugins/asyncio_support>`)
+
+  - **Tools**:
+
+    - **ESPHome**: Im Release sind Tools zur Installation und Verwaltung von ESPHome enthalten.
+      Wenn ESPHome Devices durch Plugins angesteuert werden sollen kann es hilfreich sein, das ESPHome Dashboard
+      zur Verwaltung der ESPHome Devices zu nutzen.
+      (Siehe auch :doc:`ESPHome Dashboard </installation/komplettanleitung/09_esphome>`)
+
+|
+
 Neuerungen im Release v1.10
 ===========================
 
