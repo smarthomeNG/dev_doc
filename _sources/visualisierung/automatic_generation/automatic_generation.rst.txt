@@ -54,7 +54,7 @@ Das folgende Beispiel zeigt die Möglichkeiten zur Anzeige von zusätzlichen Inf
 Es können zwei Zeilen angezeigt werden. Im Beispiel wird in der ersten Zeile die aktuelle Raumtemperatur angezeigt
 und in der zweiten Zeile werden Icons angezeigt, die den Zustand von Geräten in dem Raum anzeigen.
 
-.. figure:: assets/navigation.jpg
+.. figure:: ../assets/navigation.jpg
    :alt: Navigation Zusatzinfos
 
    Navigation Zusatzinfos
@@ -118,7 +118,7 @@ Das folgende Beispiel zeigt die Möglichkeiten zum generieren einer
 Kategorie Navigation. Die Kategorie Navigation wird durch anklicken des
 Hand-Symbols in der Titelzeile der smartVISU aktiviert.
 
-.. figure:: assets/category_nav.jpg
+.. figure:: ../assets/category_nav.jpg
    :alt: Kategorie Navigation
 
    Kategorie Navigation
@@ -166,7 +166,7 @@ in der Navigation. Zwischen den Navigationseinträgen können mehrere
 Trenner angezeigt werden. Das Beispiel zeigt nicht die Raum-Navigation,
 sondern die Navigation auf der Konfigurationsseite.
 
-.. figure:: assets/divider.jpg
+.. figure:: ../assets/divider.jpg
    :alt: Navigation Trenner
 
    Navigation Trenner
@@ -217,7 +217,7 @@ für smartVISU generierten Seiten.
 
 Bisher wurden Blöcke generiert, die so aussahen (Style \‘Standard\’):
 
-.. figure:: assets/style_std.jpg
+.. figure:: ../assets/style_std.jpg
    :alt: Style Standard
 
    Style Standard
@@ -225,7 +225,7 @@ Bisher wurden Blöcke generiert, die so aussahen (Style \‘Standard\’):
 In der aktuellen Version ist es möglich, die Blöcke in folgender Optik
 generieren zu lassen (Style ‘Black’):
 
-.. figure:: assets/style_blk.jpg
+.. figure:: ../assets/style_blk.jpg
    :alt: Style Black
 
    Style Black
@@ -236,7 +236,7 @@ oder ``visu_style: blk`` eingetragen werden.
 
 Eine vollständige Seite im Style **Black** sieht z.B. folgendermaßen aus:
 
-.. figure:: assets/style_blk_visu.jpg
+.. figure:: ../assets/style_blk_visu.jpg
    :alt: Visu Black
 
    Visu Black
@@ -304,12 +304,12 @@ Seitengenerierung verwendet werden.
 
 Hier ein Beispiel, wie ein solcher DualBlock aussehen kann:
 
-.. figure:: assets/blocktype_dual_1.jpg
+.. figure:: ../assets/blocktype_dual_1.jpg
    :alt: Dual-Block
 
    Dual-Block
 
-.. figure:: assets/blocktype_dual_2.jpg
+.. figure:: ../assets/blocktype_dual_2.jpg
    :alt: Dual-Block 2
 
    Dual-Block 2
@@ -322,7 +322,7 @@ Blockgrößen <https://github.com/smarthomeNG/smarthome/wiki/visu_smartvisu_auto
 
 Hier ist ein Beispiel auf einer Visu Seite:
 
-.. figure:: assets/blocktype_dual_visu.jpg
+.. figure:: ../assets/blocktype_dual_visu.jpg
    :alt: Navigation Trenner
 
    Navigation Trenner
@@ -341,7 +341,7 @@ Normalerweise werden durch das Plugin alle notwendigen Seiten für smartVISU gen
 
 Diese Seiten werden in smartVISU dann folgendermaßen ausgewählt:
 
-.. figure:: assets/config_fullauto.jpg
+.. figure:: ../assets/config_fullauto.jpg
    :alt: Vollständige Autogenerierung
 
 
@@ -350,7 +350,7 @@ smartVISU bietet jedoch eine Möglichkeit um manuell erstellte Seiten und automa
 Dazu muss man in smartVISU einen ordner unter **pages** anlegen und die manuell erstellten Seiten dort hineinkopieren.
 Anschließend muss man in smartVISU dann zur Darstellung diesen Bereich auswählen:
 
-.. figure:: assets/config_partlyauto.jpg
+.. figure:: ../assets/config_partlyauto.jpg
    :alt: Teil-Autogenerierung
 
 
@@ -375,7 +375,7 @@ die gewünschten Modifikationen vornehmen.
 |
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 5
    :hidden:
    :titlesonly:
 
