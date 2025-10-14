@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.smarthome &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 13. Oktober 2025, commit e83b8f6) Dokumentation</title>
+  <title>lib.smarthome &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 14. Oktober 2025, commit 3f42c58) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -4956,6 +4956,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../lib/network.html#lib.network.Connections.monitor"><code class="docutils literal notranslate"><span class="pre">Connections.monitor()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/network.html#lib.network.Connections.unmonitor"><code class="docutils literal notranslate"><span class="pre">Connections.unmonitor()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/network.html#lib.network.Connections.check"><code class="docutils literal notranslate"><span class="pre">Connections.check()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/network.html#lib.network.Connections.close"><code class="docutils literal notranslate"><span class="pre">Connections.close()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../lib/network.html#lib.network.Http"><code class="docutils literal notranslate"><span class="pre">Http</span></code></a><ul>
@@ -5725,7 +5726,6 @@
 <span class="c1"># Import SmartHomeNG Modules</span>
 <span class="c1">#####################################################################</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">lib.config</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">lib.connection</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">lib.daemon</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">lib.item</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">lib.log</span>
@@ -6366,9 +6366,7 @@
         <span class="c1">#############################################################</span>
         <span class="c1"># Init Connections</span>
         <span class="c1">#############################################################</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">connections</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">Connections</span><span class="p">()</span>
-        <span class="c1"># self.connections = lib.network.Connections()</span>
-        <span class="c1"># switch on removing lib.connection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connections</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">network</span><span class="o">.</span><span class="n">Connections</span><span class="p">()</span>
 
         <span class="c1">#############################################################</span>
         <span class="c1"># Init and start loadable Modules</span>
@@ -6430,10 +6428,6 @@
         <span class="c1">#############################################################</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scenes</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">Scenes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-        <span class="c1">#############################################################</span>
-        <span class="c1"># Start Connections - remove with lib.connection</span>
-        <span class="c1">#############################################################</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;sh.connections&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">check</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_export_threadinfo</span><span class="p">()</span>
 
         <span class="c1">#############################################################</span>
@@ -6445,9 +6439,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">plugin_start_complete</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="c1">#############################################################</span>
-        <span class="c1"># Start connection monitoring - enable on removing lib.connection</span>
+        <span class="c1"># Start connection monitoring</span>
         <span class="c1">#############################################################</span>
-        <span class="c1"># self.scheduler.add(&#39;sh.connection_monitor&#39;, self.connections.check, cycle=10, offset=0)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;sh.connection_monitor&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">check</span><span class="p">,</span> <span class="n">cycle</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
         <span class="c1">#############################################################</span>
         <span class="c1"># Execute Maintenance Method</span>
@@ -6462,14 +6456,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">shng_status</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;Running&#39;</span><span class="p">}</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">!=</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--------------------   SmartHomeNG initialization finished   --------------------&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logger_main</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="s2">&quot;--------------------   SmartHomeNG initialization finished   --------------------&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger_main</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="s2">&quot;--------------------   SmartHomeNG initialization finished   --------------------&quot;</span><span class="p">)</span></div>
 
-        <span class="c1"># modify/replace on removing lib.connection</span>
-        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">alive</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connection polling failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+        <span class="c1"># disabled on switching from lib.connection to lib.network</span>
+        <span class="c1"># as of today, no plugin using sh.connections seems to rely on poll()</span>
+        <span class="c1"># while self.alive:</span>
+            <span class="c1"># need to &quot;do&quot; anything here&quot;</span>
+            <span class="c1"># pass</span>
+            <span class="c1"># try:</span>
+            <span class="c1">#     self.connections.poll()</span>
+            <span class="c1"># except Exception as e:</span>
+            <span class="c1">#     self._logger.exception(f&quot;Connection polling failed: {e}&quot;)</span>
 
 
 <div class="viewcode-block" id="SmartHome.stop"><a class="viewcode-back" href="../../entwicklung/core/core_shng.html#lib.smarthome.SmartHome.stop">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signum</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
