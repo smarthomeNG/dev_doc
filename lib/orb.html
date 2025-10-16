@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.orb &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 15. Oktober 2025, commit 3f42c58) Dokumentation</title>
+  <title>lib.orb &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 16. Oktober 2025, commit bd71172) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
@@ -5017,12 +5017,15 @@
 </li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">lib.orb</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#lib.orb.Orb"><code class="docutils literal notranslate"><span class="pre">Orb</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#lib.orb.Orb.aware_datetime_to_utc"><code class="docutils literal notranslate"><span class="pre">Orb.aware_datetime_to_utc()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib.orb.Orb.get_observer_and_orb"><code class="docutils literal notranslate"><span class="pre">Orb.get_observer_and_orb()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib.orb.Orb.midnight"><code class="docutils literal notranslate"><span class="pre">Orb.midnight()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib.orb.Orb.noon"><code class="docutils literal notranslate"><span class="pre">Orb.noon()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib.orb.Orb.pos"><code class="docutils literal notranslate"><span class="pre">Orb.pos()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib.orb.Orb.rise"><code class="docutils literal notranslate"><span class="pre">Orb.rise()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib.orb.Orb.set"><code class="docutils literal notranslate"><span class="pre">Orb.set()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#lib.orb.Orb.unaware_datetime_to_utc"><code class="docutils literal notranslate"><span class="pre">Orb.unaware_datetime_to_utc()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#lib.orb.Orb.utc_to_local"><code class="docutils literal notranslate"><span class="pre">Orb.utc_to_local()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -5671,6 +5674,28 @@ Following attributes can be set after creation (used defaults are given):</p>
 <cite>temp</cite> - 15 degrees Celsius
 <cite>pressure</cite> - 1010 mBar</p>
 </div></blockquote>
+<p>All calculations by ephem will be based on utc time.
+Changelog of pypehem:
+&gt; Version 4.1.1 (2021 November 27)
+&gt; When you provide PyEphem with a Python datetime that has a time zone attached,
+&gt; PyEphem now detects the time zone and converts the date and time to UTC automatically.</p>
+<p>To prevent side effects by this behaviour every datetime object given to any function in class Orb
+will be converted to utc.
+In case the given datetime is
+- naive (no timezone attached) –&gt; the current timezone of SmartHomeNG will be used and the datetime will be converted to utc
+- has a timezone other than utc –&gt; dt will be converted to utc
+- has utc timezone –&gt; dt will not be changed and has always an offset of 0:00</p>
+<p>TODO:
+It can be that datetime conversion from and to utc is ambigous:
+Imagine October 27th, in 2024, at 2:30 in the night.
+dt = datetime(2024, 10, 27, 2, 30, tzinfo=berlin)
+This is ambigous because it could well be summertime having still utc+2 hours or wintertime with utc+1 hours
+This ambiguity is not handled right now</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.orb.Orb.aware_datetime_to_utc">
+<span class="sig-name descname"><span class="pre">aware_datetime_to_utc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aware_dt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/orb.html#Orb.aware_datetime_to_utc"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.orb.Orb.aware_datetime_to_utc" title="Link zu dieser Definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="lib.orb.Orb.get_observer_and_orb">
 <span class="sig-name descname"><span class="pre">get_observer_and_orb</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/orb.html#Orb.get_observer_and_orb"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.orb.Orb.get_observer_and_orb" title="Link zu dieser Definition"></a></dt>
@@ -5693,12 +5718,44 @@ dated back to 2015 where the creator of pyephem writes:</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="lib.orb.Orb.midnight">
 <span class="sig-name descname"><span class="pre">midnight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/orb.html#Orb.midnight"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.orb.Orb.midnight" title="Link zu dieser Definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calculate the time of next antitransit starting with dt. If dt is None the the time of this function call will be used</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameter<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doff</strong> (<em>float</em><em>, </em><em>optional</em>) – degrees offset, defaults to 0</p></li>
+<li><p><strong>moff</strong> (<em>float</em><em>, </em><em>optional</em>) – minutes offset, defaults to 0</p></li>
+<li><p><strong>dt</strong> (<em>datetime</em><em>, </em><em>optional</em>) – datetime object to start calculation with, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Rückgabe<span class="colon">:</span></dt>
+<dd class="field-even"><p>datetime of next antitransit</p>
+</dd>
+<dt class="field-odd">Rückgabetyp<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lib.orb.Orb.noon">
 <span class="sig-name descname"><span class="pre">noon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">doff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/orb.html#Orb.noon"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.orb.Orb.noon" title="Link zu dieser Definition"></a></dt>
-<dd></dd></dl>
+<dd><p>calculate the time of next transit starting with dt. If dt is None the the time of this function call will be used</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameter<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doff</strong> (<em>float</em><em>, </em><em>optional</em>) – degrees offset, defaults to 0</p></li>
+<li><p><strong>moff</strong> (<em>float</em><em>, </em><em>optional</em>) – minutes offset, defaults to 0</p></li>
+<li><p><strong>dt</strong> (<em>datetime</em><em>, </em><em>optional</em>) – datetime object to start calculation with, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Rückgabe<span class="colon">:</span></dt>
+<dd class="field-even"><p>datetime of next transit</p>
+</dd>
+<dt class="field-odd">Rückgabetyp<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lib.orb.Orb.pos">
@@ -5725,7 +5782,7 @@ dated back to 2015 where the creator of pyephem writes:</p>
 :param center:  if True then the centerpoint of either sun or moon will be considered to make the transit otherwise the upper limb will be considered
 :type dt: 
 :param dt:      start time for the search for a rise, if not given the current time will be used
-:return:</p>
+:return: datetime of next rising in utc timezone</p>
 </dd></dl>
 
 <dl class="py method">
@@ -5740,8 +5797,18 @@ dated back to 2015 where the creator of pyephem writes:</p>
 :param center:  if True then the centerpoint of either sun or moon will be considered to make the transit otherwise the upper limb will be considered
 :type dt: 
 :param dt:      start time for the search for a setting, if not given the current time will be used
-:return:</p>
+:return: datetime of next setting in utc timezone</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.orb.Orb.unaware_datetime_to_utc">
+<span class="sig-name descname"><span class="pre">unaware_datetime_to_utc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">naive_dt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/orb.html#Orb.unaware_datetime_to_utc"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.orb.Orb.unaware_datetime_to_utc" title="Link zu dieser Definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.orb.Orb.utc_to_local">
+<span class="sig-name descname"><span class="pre">utc_to_local</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">utc_dt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/orb.html#Orb.utc_to_local"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.orb.Orb.utc_to_local" title="Link zu dieser Definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
