@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.log &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 16. Oktober 2025, commit bd71172) Dokumentation</title>
+  <title>lib.log &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 17. Oktober 2025, commit dcb9589) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -4331,6 +4331,7 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../lib/log.html">lib.log</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.DateTimeRotatingFileHandler"><code class="docutils literal notranslate"><span class="pre">DateTimeRotatingFileHandler</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.EnglishLocale"><code class="docutils literal notranslate"><span class="pre">EnglishLocale</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.Log"><code class="docutils literal notranslate"><span class="pre">Log</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.Logs"><code class="docutils literal notranslate"><span class="pre">Logs</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.ShngMemLogHandler"><code class="docutils literal notranslate"><span class="pre">ShngMemLogHandler</span></code></a></li>
@@ -4575,7 +4576,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../referenz/logging/logging_formatter.html">Logging Formatter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../referenz/logging/logging_formatter.html">Logging Formatter <span class="bluesup">Update</span></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../referenz/logging/logging_filter.html">Logging Filter</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../referenz/logging/logging_filter.html#cherrypyfilter">CherryPyFilter</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../referenz/logging/logging_filter.html#benutzung-des-filters">Benutzung des Filters</a></li>
@@ -5679,6 +5680,9 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytz</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">babel.dates</span><span class="w"> </span><span class="kn">import</span> <span class="n">format_datetime</span><span class="p">,</span> <span class="n">get_timezone_name</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
@@ -6312,6 +6316,71 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">In the following part of the code, logging handlers are defined</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnglishLocale"><a class="viewcode-back" href="../../lib/log.html#lib.log.EnglishLocale">[Doku]</a><span class="k">class</span><span class="w"> </span><span class="nc">EnglishLocale</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Use English month names for logging</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">datefmt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s1">&#39;%&#39;</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span> <span class="n">datefmt</span><span class="o">=</span><span class="n">datefmt</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="n">style</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tzinfo</span> <span class="o">=</span> <span class="n">tzinfo</span>  <span class="c1"># Optional: pytz-compatible timezone info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_strftime_format</span> <span class="o">=</span> <span class="n">datefmt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_babel_format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_strftime_to_babel</span><span class="p">(</span><span class="n">datefmt</span><span class="p">)</span> <span class="k">if</span> <span class="n">datefmt</span> <span class="k">else</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="EnglishLocale.formatTime"><a class="viewcode-back" href="../../lib/log.html#lib.log.EnglishLocale.formatTime">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">formatTime</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">datefmt</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">datefmt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strftime_format</span> <span class="ow">or</span> <span class="n">datefmt</span>
+        <span class="n">babel_fmt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_babel_format</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_strftime_to_babel</span><span class="p">(</span><span class="n">datefmt</span><span class="p">)</span>
+
+        <span class="c1"># Ensure that we get a timezone-aware datetime</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tzinfo</span><span class="p">:</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">created</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">tzinfo</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">created</span><span class="p">)</span>
+
+        <span class="c1"># Only add timezone info if %Z or %z is in the format</span>
+        <span class="n">babel_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="n">babel_fmt</span><span class="p">,</span>
+            <span class="s1">&#39;locale&#39;</span><span class="p">:</span> <span class="s1">&#39;en_US&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;tzinfo&#39;</span><span class="p">:</span> <span class="kc">None</span>  <span class="c1"># Start with None for tzinfo</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Use pytz to ensure the correct label</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tzinfo</span><span class="p">)</span>
+        <span class="n">babel_kwargs</span><span class="p">[</span><span class="s1">&#39;tzinfo&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">tzinfo</span>
+
+        <span class="n">formatted</span> <span class="o">=</span> <span class="n">format_datetime</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="o">**</span><span class="n">babel_kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Manually handle week numbers and day-of-year (unsupported by Babel)</span>
+        <span class="k">if</span> <span class="s1">&#39;%U&#39;</span> <span class="ow">in</span> <span class="n">datefmt</span><span class="p">:</span>
+            <span class="n">formatted</span> <span class="o">=</span> <span class="n">formatted</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%%</span><span class="s1">U&#39;</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%U&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="s1">&#39;%W&#39;</span> <span class="ow">in</span> <span class="n">datefmt</span><span class="p">:</span>
+            <span class="n">formatted</span> <span class="o">=</span> <span class="n">formatted</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%%</span><span class="s1">W&#39;</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%W&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="s1">&#39;%j&#39;</span> <span class="ow">in</span> <span class="n">datefmt</span><span class="p">:</span>
+            <span class="n">formatted</span> <span class="o">=</span> <span class="n">formatted</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%%</span><span class="s1">j&#39;</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%j&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="s1">&#39;%Z&#39;</span> <span class="ow">in</span> <span class="n">datefmt</span><span class="p">:</span>
+            <span class="n">formatted</span> <span class="o">=</span> <span class="n">formatted</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%%</span><span class="s1">Z&#39;</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Z&#39;</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">formatted</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_convert_strftime_to_babel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;</span><span class="si">%a</span><span class="s1">&#39;</span><span class="p">:</span> <span class="s1">&#39;EEE&#39;</span><span class="p">,</span> <span class="s1">&#39;%A&#39;</span><span class="p">:</span> <span class="s1">&#39;EEEE&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;%w&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">:</span> <span class="s1">&#39;dd&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;%b&#39;</span><span class="p">:</span> <span class="s1">&#39;MMM&#39;</span><span class="p">,</span> <span class="s1">&#39;%B&#39;</span><span class="p">:</span> <span class="s1">&#39;MMMM&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;%m&#39;</span><span class="p">:</span> <span class="s1">&#39;MM&#39;</span><span class="p">,</span> <span class="s1">&#39;%y&#39;</span><span class="p">:</span> <span class="s1">&#39;yy&#39;</span><span class="p">,</span> <span class="s1">&#39;%Y&#39;</span><span class="p">:</span> <span class="s1">&#39;yyyy&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;%H&#39;</span><span class="p">:</span> <span class="s1">&#39;HH&#39;</span><span class="p">,</span> <span class="s1">&#39;%I&#39;</span><span class="p">:</span> <span class="s1">&#39;hh&#39;</span><span class="p">,</span> <span class="s1">&#39;%p&#39;</span><span class="p">:</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;%M&#39;</span><span class="p">:</span> <span class="s1">&#39;mm&#39;</span><span class="p">,</span> <span class="s1">&#39;%S&#39;</span><span class="p">:</span> <span class="s1">&#39;ss&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%f</span><span class="s1">&#39;</span><span class="p">:</span> <span class="s1">&#39;SSSSSS&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;%z&#39;</span><span class="p">:</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;%Z&#39;</span><span class="p">:</span> <span class="s2">&quot;&#39;</span><span class="si">%%</span><span class="s2">Z&#39;&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="si">%c</span><span class="s1">&#39;</span><span class="p">:</span> <span class="s1">&#39;medium&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%x</span><span class="s1">&#39;</span><span class="p">:</span> <span class="s1">&#39;short&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%X</span><span class="s1">&#39;</span><span class="p">:</span> <span class="s1">&#39;medium&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="si">%%</span><span class="s1">&#39;</span><span class="p">:</span> <span class="s1">&#39;%&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;%U&#39;</span><span class="p">:</span> <span class="s2">&quot;&#39;</span><span class="si">%%</span><span class="s2">U&#39;&quot;</span><span class="p">,</span> <span class="s1">&#39;%W&#39;</span><span class="p">:</span> <span class="s2">&quot;&#39;</span><span class="si">%%</span><span class="s2">W&#39;&quot;</span><span class="p">,</span> <span class="s1">&#39;%j&#39;</span><span class="p">:</span> <span class="s2">&quot;&#39;</span><span class="si">%%</span><span class="s2">j&#39;&quot;</span>  <span class="c1"># handled manually</span>
+        <span class="p">}</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">replacer</span><span class="p">(</span><span class="n">match</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%[a-zA-Z%]&#39;</span><span class="p">,</span> <span class="n">replacer</span><span class="p">,</span> <span class="n">fmt</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="ShngTimedRotatingFileHandler"><a class="viewcode-back" href="../../lib/log.html#lib.log.ShngTimedRotatingFileHandler">[Doku]</a><span class="k">class</span><span class="w"> </span><span class="nc">ShngTimedRotatingFileHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">TimedRotatingFileHandler</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
