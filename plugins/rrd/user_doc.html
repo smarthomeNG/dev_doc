@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>rrd &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 22. November 2025, commit 9f8012e) Dokumentation</title>
+  <title>rrd &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 6. Dezember 2025, commit 9f8012e) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -647,7 +647,7 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">rrd</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#anforderungen">Anforderungen</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#notwendige-software">Notwendige Software</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#vergleich-zwischen-datenbank-plugin-und-rrdtool">Vergleich zwischen Datenbank-Plugin und rrdtool:</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#vergleich-zwischen-datenbank-plugin-influxdb-und-rrdtool">Vergleich zwischen Datenbank-Plugin, InfluxDB und rrdtool:</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#konfiguration">Konfiguration</a><ul>
@@ -3152,7 +3152,7 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">rrd</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#anforderungen">Anforderungen</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#notwendige-software">Notwendige Software</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#vergleich-zwischen-datenbank-plugin-und-rrdtool">Vergleich zwischen Datenbank-Plugin und rrdtool:</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#vergleich-zwischen-datenbank-plugin-influxdb-und-rrdtool">Vergleich zwischen Datenbank-Plugin, InfluxDB und rrdtool:</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#konfiguration">Konfiguration</a><ul>
@@ -5640,43 +5640,66 @@
              
   <span class="target" id="index-0"></span><section id="rrd">
 <span id="index-1"></span><h1>rrd<a class="headerlink" href="#rrd" title="Permalink to this heading"></a></h1>
+<a class="reference internal image-reference" href="../../_images/rrdtool-logo-dark.png"><img alt="plugin logo" class="align-left" src="../../_images/rrdtool-logo-dark.png" style="width: 150.0px; height: 150.0px;" /></a>
 <p>Das <a class="reference external" href="https://oss.oetiker.ch/rrdtool/">RRDTool</a>  ist ein weitverbreitetes Tool um Zeitreihen von Messdaten aufzuzeichnen.
 Dieses Plugin stellt die Möglichkeit bereit Itemwerte an das RRDTool weiterzugeben.</p>
 <section id="anforderungen">
 <h2>Anforderungen<a class="headerlink" href="#anforderungen" title="Permalink to this heading"></a></h2>
 <section id="notwendige-software">
 <h3>Notwendige Software<a class="headerlink" href="#notwendige-software" title="Permalink to this heading"></a></h3>
-<p>Das Paket Rrdtool und die entsprechenden Python Libraries müssen installiert sein.</p>
+<p>Das Python Paket <code class="docutils literal notranslate"><span class="pre">rrdtool</span></code> und die entsprechenden Libraries für das Betriebssystem müssen installiert sein.
+Letzteres muss manuell erfolgen:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>librrd-dev<span class="w"> </span>libpython3-dev
 </pre></div>
 </div>
+<p>Das Python Paket wird über die <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> automatisch beim Start installiert.</p>
 </section>
-<section id="vergleich-zwischen-datenbank-plugin-und-rrdtool">
-<h3>Vergleich zwischen Datenbank-Plugin und rrdtool:<a class="headerlink" href="#vergleich-zwischen-datenbank-plugin-und-rrdtool" title="Permalink to this heading"></a></h3>
-<p>Das RRD-Plugin und das Datenbank-Plugin können nicht zusammen für ein einzelnes Element verwendet werden.</p>
+<section id="vergleich-zwischen-datenbank-plugin-influxdb-und-rrdtool">
+<h3>Vergleich zwischen Datenbank-Plugin, InfluxDB und rrdtool:<a class="headerlink" href="#vergleich-zwischen-datenbank-plugin-influxdb-und-rrdtool" title="Permalink to this heading"></a></h3>
 <p>RRD
 + ein stabiles, zuverlässiges Werkzeug
 + wird in vielen Datenprotokollierungs- und Grafiktools verwendet
-- Die Entwicklung hat in den letzten Jahren nicht stattgefunden</p>
+- zähe Weiterentwicklung in den letzten Jahren
+- Werte werden nur in bestimmten Abständen aufgezeichnet und nicht dann, wenn eine Änderung eintritt</p>
 <p>Datenbank-Plugin
 + Unterstützung für viele verschiedene Datenbanken wie SQLite, MySQL/MariaDB usw.
 + genaue Protokollierung der Änderungszeiten
-+ mehr Analysefunktionalität</p>
++ mehr Analysefunktionalität
++ im SmartHomeNG Kern gut integriert
+- keine einstellbare Datenreduktion, nur Zeitbegrenzung der Aufzeichnung</p>
+<p>InfluxDB-Plugin
++ Unterstützung für Influx Datenbank
++ speziell entwickelt für Zeitreihen
++ genaue Protokollierung der Änderungszeiten
++ unter Verwendung von Grafana sehr gute Analysefunktionalität
++ Datenreduktion voreinstellbar</p>
+<p>Das RRD-Plugin und das Datenbank-Plugin können nur dann zusammen für ein Item verwendet werden,
+wenn beim RRD Plugin die Bereitstellung der Series Funktion unterdrückt wird.</p>
 </section>
 </section>
 <section id="konfiguration">
 <h2>Konfiguration<a class="headerlink" href="#konfiguration" title="Permalink to this heading"></a></h2>
 <p>Die Plugin Parameter und die Informationen zur Item-spezifischen Konfiguration des Plugins sind
 unter <a class="reference internal" href="../../plugins_doc/config/rrd.html"><span class="doc">Plugin ‚rrd‘ Konfiguration</span></a> beschrieben.</p>
+<p>Der Plugin Parameter <code class="docutils literal notranslate"><span class="pre">step</span></code> bestimmt den Zyklus mit dem alle Itemwerte aufgezeichnet werden.
+Werteänderungen von Items zwischen den <code class="docutils literal notranslate"><span class="pre">step</span></code> werden <strong>nicht</strong> berücksichtigt.</p>
+<div class="admonition important">
+<p class="admonition-title">Wichtig</p>
+<p>Änderung gewünscht?
+Soll das noch geänderte werden das die Items auf jeden Fall aufgezeichnet und im Zeitbereich eines
+Step in die Datenbank geschrieben werden?
+Funktioniert das mit der lib.rrdtool?</p>
+</div>
 <section id="funktionen">
 <h3>Funktionen<a class="headerlink" href="#funktionen" title="Permalink to this heading"></a></h3>
 <p>Das Plugin stellt für jedes Item das für die Verwendung mit dem Plugin konfiguriert wurde eine Datenbankfunktion bereit.</p>
 <p><code class="docutils literal notranslate"><span class="pre">sh.item.db(function,</span> <span class="pre">start,</span> <span class="pre">end='now')</span></code></p>
 <p>Diese Funktion liefert Werte unter Berücksichtigung der nachfolgend erläuterten Funktion und dem Zeitrahmen <code class="docutils literal notranslate"><span class="pre">start</span></code> und <code class="docutils literal notranslate"><span class="pre">end</span></code>.</p>
-<p>Unterstützte Funktionen für die Datenaufbereitung sind:</p>
+<p>Derzeit unterstützte Funktionen für die Datenaufbereitung sind:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><cite>avg</cite>: Durchschnittswert</p></li>
+<li><p>‚raw‘: wie Durchschnittswert, aufgenommen um den Parameter <code class="docutils literal notranslate"><span class="pre">raw</span></code> bei der SmartVISU nicht ändern zu müssen</p></li>
 <li><p><cite>max</cite>: Maximalwert</p></li>
 <li><p><cite>min</cite>: Minimalwert</p></li>
 <li><p><cite>last</cite>: Letzter eingetragener Wert</p></li>
@@ -5730,7 +5753,7 @@ Für die Intervalleinheit können folgende Kennzeichnungen verwendet werden:</p>
 </section>
 <section id="web-interface">
 <h2>Web Interface<a class="headerlink" href="#web-interface" title="Permalink to this heading"></a></h2>
-<p>Aktuell hat das Plugin kein Webinterface</p>
+<p>Aktuell hat das Plugin ein Webinterface zur Anzeige der Konfiguration der Items und des aktuellen Wertes.</p>
 </section>
 </section>
 
