@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sonstiges &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 13. Januar 2026, commit 4dd160f) Dokumentation</title>
+  <title>Sonstiges &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 21. Januar 2026, commit 4dd160f) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -798,6 +798,7 @@
 <li class="toctree-l5"><a class="reference internal" href="#neukonfiguration-der-hierarchie">Neukonfiguration der Hierarchie</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#auflosen-von-zustanden">Auflösen von Zuständen</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#zustandsnamen">Zustandsnamen</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#ignorieren-von-bedingungen">Ignorieren von Bedingungen</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#cli">CLI</a></li>
 </ul>
 </li>
@@ -3529,6 +3530,7 @@
 <li class="toctree-l5"><a class="reference internal" href="#neukonfiguration-der-hierarchie">Neukonfiguration der Hierarchie</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#auflosen-von-zustanden">Auflösen von Zuständen</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#zustandsnamen">Zustandsnamen</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#ignorieren-von-bedingungen">Ignorieren von Bedingungen</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#cli">CLI</a></li>
 </ul>
 </li>
@@ -5753,6 +5755,37 @@ Dies kann beispielsweise nützlich sein, um den Namen abhängig von einer Beding
 zu ändern. Ist also z.B. der Zustand auf Grund der Temperatur eingenommen worden,
 könnte der Name auf „Zustand (Temp)“ geändert werden. Ist der Zustand aufgrund
 der Helligkeitsbedingung aktiv, könnte der Name auf „Zustand (Hell)“ geändert werden.</p>
+</section>
+<section id="ignorieren-von-bedingungen">
+<h2>Ignorieren von Bedingungen<a class="headerlink" href="#ignorieren-von-bedingungen" title="Permalink to this heading"></a></h2>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">default</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">regen_test</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">enter</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">se_value_temperatur</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">item:markisen.stateengine.settings.regen.min_temperatur_hysterese</span>
+<span class="w">            </span><span class="nt">se_max_helligkeit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
+<span class="w">            </span><span class="nt">se_min_helligkeit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="nt">markise1</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">automatik</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">rules</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">regen_test</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">se_use</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default.regen_test</span>
+
+<span class="nt">markise2</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">automatik</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">rules</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">regen_test</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">se_use</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default.regen_test</span>
+
+<span class="w">                </span><span class="nt">enter</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">se_ignore_helligkeit</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+</pre></div>
+</div>
+<p>Die gesamte Bedingung (Minimum, Maximum und Wert) wird ignoriert.
+Für das Attribut wird der Datentyp Boolean verwendet,
+zulässige Werte sind „true“, „yes“, „on“ bzw. „false“, „no“, „off“.
+Der Einsatz von „ignore“ macht beispielsweise Sinn, wenn mittels struct
+oder se_use Zustände oder Bedingungen für mehrere Items geladen werden sollen,
+einzelne Teile bei gewissen Items aber keine Rolle spielen.</p>
 </section>
 <section id="cli">
 <h2>CLI<a class="headerlink" href="#cli" title="Permalink to this heading"></a></h2>
