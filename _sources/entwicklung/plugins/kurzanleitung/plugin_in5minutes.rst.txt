@@ -132,7 +132,7 @@ werden.
 
 
 .. literalinclude:: /dev/sample_plugin/user_doc.rst
-    :caption: user_doc.rst des Sampe Plugins
+    :caption: user_doc.rst des Sample Plugins
 
 |
 
@@ -513,11 +513,13 @@ können diese mit ``**kwargs`` übergeben werden (siehe weiter unten in der Besc
 
 `cron`
 ^^^^^^
-…
 
+Der Parameter für cron ist ein String im SmartHomeNG spezifischen crontab Format. Siehe Dokumentation zu :doc:`crontab`
+Damit wird der Scheduler angewiesen, die Funktion ``obj`` entsprechend oft aufzurufen.
 
 `cycle=int`
 ^^^^^^^^^^^
+
 ``cycle`` ist eine Ganzzahl in Sekunden. Damit wird der Scheduler angewiesen,
 die Funktion ``obj`` alle ``cycle`` Sekunden aufzurufen.
 Wenn das Intervall auf 60 gesetzt wird, ruft der Scheduler die Funktion alle 60 Sekunden auf, so lange SmartHomeNG läuft.
@@ -537,7 +539,8 @@ Das Argument ist ein ``dateobject``, das z.B. mit ``datetime`` erstellt werden k
 
 `value`
 ^^^^^^^
-Mit dem Parameter ``value`` können Argumente an die Funktion ``obj`` übergeben werden, wenn der Scheduler sie aufruft. Dies ist eine List von `keyword=value`-Wertpaaren. Diese können wie folgt definiert werden:
+
+Mit dem Parameter ``value`` können Argumente an die Funktion ``obj`` übergeben werden, wenn der Scheduler sie aufruft. Dies ist eine Liste von `keyword=value`-Wertpaaren. Diese können wie folgt definiert werden:
 
 .. code-block:: python
 
