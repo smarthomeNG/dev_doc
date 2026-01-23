@@ -511,10 +511,10 @@ Diese Funktion wird vom Scheduler aufgerufen. Wenn die Funktion Parameter benöt
 können diese mit ``**kwargs`` übergeben werden (siehe weiter unten in der Beschreibung der Parameter).
 
 
-`cron`
-^^^^^^
+`cron=string`
+^^^^^^^^^^^^^
 
-Der Parameter für cron ist ein String im SmartHomeNG spezifischen crontab Format. Siehe Dokumentation zu :doc:`crontab`
+Der Parameter für ``cron`` ist ein String im SmartHomeNG spezifischen crontab Format. Siehe :ref:`Dokumentation zu Crontab<crontab>`
 Damit wird der Scheduler angewiesen, die Funktion ``obj`` entsprechend oft aufzurufen.
 
 `cycle=int`

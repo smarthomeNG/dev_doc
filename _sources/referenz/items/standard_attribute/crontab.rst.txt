@@ -3,6 +3,8 @@
 
 .. role:: bluesup
 
+.. _crontab:
+
 crontab
 =======
 
@@ -94,8 +96,9 @@ Es gibt drei verschiedene Parametersätze für ein crontab Attribut:
           crontab: 'sunset'
 
 
-Sämtliche Optionen können in einer ``*.yaml`` durch Listenbildung erstellt werden. 
-Im Admin Interface können die einzelnen Parametersätze durch ``|`` getrennt werden.
+Für einen crontab können mehrere Parametersätze definiert werden.
+Sie können in einer ``*.yaml`` durch Listenbildung erstellt und im 
+Admin Interface durch ``|`` getrennt werden.
 
 Durch Anhängen eines ``= value`` wird der entsprechende Wert ``value`` mitgesendet. 
 Das Beispiel setzt den Wert des Items täglich um Mitternacht auf ``20``:
