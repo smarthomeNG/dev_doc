@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.smarthome &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 24. Januar 2026, commit 8e4c327) Dokumentation</title>
+  <title>lib.smarthome &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 29. Januar 2026, commit 0ad6355) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5785,7 +5785,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__event_listeners</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__all_listeners</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">modules</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__children</span> <span class="o">=</span> <span class="p">[]</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__children</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_etc</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 
 <div class="viewcode-block" id="SmartHome.initialize_dir_vars"><a class="viewcode-back" href="../../entwicklung/core/core_shng.html#lib.smarthome.SmartHome.initialize_dir_vars">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize_dir_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -5828,16 +5830,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_logic_conf_basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_etc_dir</span><span class="p">,</span> <span class="n">BASE_LOGIC</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_env_logic_conf_basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_env_dir</span><span class="p">,</span> <span class="n">BASE_LOGIC</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="SmartHome.create_directories"><a class="viewcode-back" href="../../entwicklung/core/core_shng.html#lib.smarthome.SmartHome.create_directories">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_directories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartHome.create_conf_directories"><a class="viewcode-back" href="../../entwicklung/core/core_shng.html#lib.smarthome.SmartHome.create_conf_directories">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_conf_directories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create directories used by SmartHomeNG if they don&#39;t exist</span>
+<span class="sd">        Create directories for config files if they don&#39;t exist</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="mo">0o775</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scenes_dir</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="mo">0o775</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_functions_dir</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="mo">0o775</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_structs_dir</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="mo">0o775</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logics_dir</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="mo">0o775</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="SmartHome.create_directories"><a class="viewcode-back" href="../../entwicklung/core/core_shng.html#lib.smarthome.SmartHome.create_directories">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_directories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create directories used by SmartHomeNG if they don&#39;t exist</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_var_dir</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="mo">0o775</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="mo">0o775</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_var_dir</span><span class="p">,</span> <span class="s1">&#39;backup&#39;</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="mo">0o775</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -5866,7 +5872,6 @@
         <span class="c1"># keep for checking on restart command</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">MODE</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_config_etc</span> <span class="o">=</span> <span class="n">config_etc</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_extern_conf_dir</span> <span class="o">=</span> <span class="n">BASE</span>
         <span class="k">if</span> <span class="n">extern_conf_dir</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_extern_conf_dir</span> <span class="o">=</span> <span class="n">extern_conf_dir</span>
@@ -5921,6 +5926,20 @@
             <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_module_paths&#39;</span><span class="p">):</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_module_paths</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_module_paths</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span> <span class="k">else</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_module_paths</span><span class="p">])</span>
+
+        <span class="c1">#############################################################</span>
+        <span class="c1"># check / set config_etc option from cmdline or config file</span>
+        <span class="c1"># re-check / re-set affected directories</span>
+        <span class="k">if</span> <span class="n">config_etc</span><span class="p">:</span>
+            <span class="c1"># manual set from cmdline overrides config file setting</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config_etc</span> <span class="o">=</span> <span class="n">config_etc</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_config_etc&#39;</span><span class="p">):</span>
+            <span class="c1"># set by smarthome.yaml</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config_etc</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">Utils</span><span class="o">.</span><span class="n">to_bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config_etc</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># at this point is of type bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_dir_vars</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_conf_directories</span><span class="p">()</span>
 
         <span class="c1">#############################################################</span>
         <span class="c1"># Setting (local) tz if set in smarthome.yaml</span>

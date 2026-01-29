@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Allgemeines zur Konfiguration &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 24. Januar 2026, commit 8e4c327) Dokumentation</title>
+  <title>Allgemeines zur Konfiguration &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 29. Januar 2026, commit 0ad6355) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
@@ -5761,14 +5761,17 @@ In diesen Dateien befindet sich die Konfiguration des Grundsystems</p></td>
 </tbody>
 </table>
 <p>Mit (*) gekennzeichnete Verzeichnisse enthalten die vom Benutzer zu erstellenden/zu ändernden Daten (Konfiguration).</p>
-<p>Durch Verwenden der Konfigurationsoption <code class="docutils literal notranslate"><span class="pre">-e</span></code> bzw. <code class="docutils literal notranslate"><span class="pre">--config_etc</span></code> wird SmartHomeNG angewiesen, diese Verzeichnisse nicht im Hauptverzeichnis
+<p>Durch Setzen der Konfigurationsoption <code class="docutils literal notranslate"><span class="pre">config_etc:</span> <span class="pre">true</span></code> in der <cite>etc/smarthome.yaml</cite> wird SmartHomeNG angewiesen, diese Verzeichnisse nicht im Hauptverzeichnis
 von SmartHomeNG (z.B. <cite>/usr/local/smarthome/</cite>) zu suchen, sondern im Unterverzeichnis <cite>etc</cite>. So wären Item-Dateien beispielsweise nicht in
 <cite>/usr/local/smarthome/items/</cite>, sondern in <cite>/usr/local/smarthome/etc/items/</cite> abzulegen.</p>
-<p>Der Vorteil ist, dass sich alle vom Benutzer zu ändernden Daten innerhalb eines Verzeichnisses (mit Unterverzeichnissen) befinden (<cite>etc/</cite>) und
+<p>Der Vorteil der Option ist, dass sich alle vom Benutzer zu ändernden Daten innerhalb eines Verzeichnisses (mit Unterverzeichnissen) befinden (<cite>etc/</cite>) und
 dieses damit einfach nach eigenen Wünschen verwaltet werden kann. Weiterhin wird mit dieser Option die Nutzung der Verzeichnisstruktur stärker
 an die im Unix-Bereich übliche Aufteilung angepasst - in <cite>etc/</cite> befinden sich Konfigurationsdateien (die der Benutzer ändert), in <cite>var/</cite>
 befinden sich Dateien, die durch SmartHomeNG geändert werden, und die restlichen Dateien sind statisch, d.h. im Programmablauf unverändert.</p>
 <p>Da bestehende Referenzen aber auf die seit Beginn von SmartHomeNG festgelegten Pfade verweisen, ist diese Konfiguration optional und kein Standard.</p>
+<p>Durch Setzen der Kommandozeilenoption <code class="docutils literal notranslate"><span class="pre">-e</span></code> bzw. <code class="docutils literal notranslate"><span class="pre">--config_etc</span></code> kann das gleiche Verhalten erzwungen werden, auch wenn die Konfiguration in <cite>etc/smarthome.yaml</cite> nicht gesetzt ist.
+Wenn dies von der Kommandozeile aus aktiviert wird, versucht SmartHomeNG zusätzliche, vorhandene  Konfigurationen in den oben mit (*) gekennzeichneten Verzeichnissen in die entsprechenden Ordner unterhalb von <cite>etc</cite> zu verschieben. Wenn dies gelingt, werden die ursprünglichen (leeren) Verzeichnisse gelöscht und SmartHomeNG startet normal.
+Wenn dabei Fehler auftauchen, wird eine entsprechende Meldung ausgegeben, und da die Konfiguration möglicherweise nicht korrekt übernommen wurde, wird der Start abgebrochen.</p>
 <section id="dateien-im-verzeichnis-etc">
 <h3>Dateien im Verzeichnis <em>../etc</em><a class="headerlink" href="#dateien-im-verzeichnis-etc" title="Permalink to this heading"></a></h3>
 <p>Während der Installation sind im Unterverzeichnis <strong>etc</strong> bereits drei Dateien erstellt worden:
