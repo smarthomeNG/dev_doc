@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.config &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 5. Februar 2026, commit 4d51142) Dokumentation</title>
+  <title>lib.config &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 5. Februar 2026, commit 49e8113) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -4283,7 +4283,6 @@
 <li class="toctree-l5"><a class="reference internal" href="../../lib/config.html#lib.config.nested_put"><code class="docutils literal notranslate"><span class="pre">nested_put()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/config.html#lib.config.parse"><code class="docutils literal notranslate"><span class="pre">parse()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/config.html#lib.config.parse_basename"><code class="docutils literal notranslate"><span class="pre">parse_basename()</span></code></a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../lib/config.html#lib.config.parse_conf"><code class="docutils literal notranslate"><span class="pre">parse_conf()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/config.html#lib.config.parse_itemsdir"><code class="docutils literal notranslate"><span class="pre">parse_itemsdir()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/config.html#lib.config.parse_yaml"><code class="docutils literal notranslate"><span class="pre">parse_yaml()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/config.html#lib.config.remove_comments"><code class="docutils literal notranslate"><span class="pre">remove_comments()</span></code></a></li>
@@ -5674,7 +5673,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">lib.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Utils</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">lib.shyaml</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">shyaml</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">lib.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">YAML_FILE</span><span class="p">,</span> <span class="n">CONF_FILE</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lib.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">YAML_FILE</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">valid_item_chars</span> <span class="o">=</span> <span class="s1">&#39;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_&#39;</span>
@@ -5702,8 +5701,6 @@
 <span class="sd">    :rtype: OrderedDict</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">basename</span> <span class="o">+</span> <span class="n">YAML_FILE</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">config</span> <span class="o">==</span> <span class="p">{}:</span>
-        <span class="n">config</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">basename</span> <span class="o">+</span> <span class="n">CONF_FILE</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">config</span> <span class="o">==</span> <span class="p">{}:</span>
         <span class="k">if</span> <span class="n">configtype</span> <span class="o">==</span> <span class="s1">&#39;module&#39;</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No valid file &#39;</span><span class="si">{</span><span class="n">basename</span><span class="si">}{</span><span class="n">YAML_FILE</span><span class="si">}</span><span class="s2">&#39; found with </span><span class="si">{</span><span class="n">configtype</span><span class="si">}</span><span class="s2"> configuration&quot;</span><span class="p">)</span>
@@ -5734,7 +5731,7 @@
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;parse_itemsdir: Beginning to parse items directory </span><span class="si">{</span><span class="n">itemsdir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">item_file</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">itemsdir</span><span class="p">)):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">item_file</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">item_file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">CONF_FILE</span><span class="p">)</span> <span class="ow">or</span> <span class="n">item_file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">YAML_FILE</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">item_file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">YAML_FILE</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">item_file</span> <span class="o">==</span> <span class="s1">&#39;logic&#39;</span> <span class="o">+</span> <span class="n">YAML_FILE</span> <span class="ow">and</span> <span class="n">itemsdir</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;lib&#39;</span><span class="p">,</span> <span class="s1">&#39;env&#39;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;parse_itemsdir: skipping logic definition file = </span><span class="si">{</span><span class="n">itemsdir</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">item_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -5762,11 +5759,10 @@
 <span class="sd">    :return: The resulting merged OrderedDict tree</span>
 <span class="sd">    :rtype: OrderedDict</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">YAML_FILE</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">parse_yaml</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">addfilenames</span><span class="p">,</span> <span class="n">parseitems</span><span class="p">,</span> <span class="n">struct_dict</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">CONF_FILE</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">parse_conf</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">YAML_FILE</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">parse_yaml</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">addfilenames</span><span class="p">,</span> <span class="n">parseitems</span><span class="p">,</span> <span class="n">struct_dict</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">{}</span></div>
 
 
@@ -5953,8 +5949,6 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">merge</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">source_name</span><span class="p">,</span> <span class="n">dest_name</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># if struct_merging_active:</span>
-                <span class="c1"># logger.warning(f&quot;merge: - value={value}, destination.get(key, None)={destination.get(key, None)}&quot;)</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">destination</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="nb">list</span><span class="p">):</span>
                     <span class="k">if</span> <span class="n">destination</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">destination</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
@@ -5965,16 +5959,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># convert to string and remove newlines from multiline attributes</span>
                     <span class="n">destination</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-                    <span class="c1"># if destination.get(key, None) is None:</span>
-                    <span class="c1">#     destination[key] = str(value).replace(&#39;\n&#39;, &#39;&#39;)</span>
 
-                <span class="c1"># if type(value).__name__ == &#39;list&#39;:</span>
-                <span class="c1">#     destination[key] = value</span>
-                <span class="c1"># else:</span>
-                <span class="c1">#     # convert to string and remove newlines from multiline attributes</span>
-                <span class="c1">#     destination[key] = str(value).replace(&#39;\n&#39;,&#39;&#39;)</span>
-                <span class="c1"># if struct_merging_active:</span>
-                <span class="c1">#     logger.warning(f&quot;merge: - destination={dict(destination)}&quot;)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem merging subtrees (key=</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">), probably invalid YAML file &#39;</span><span class="si">{</span><span class="n">source_name</span><span class="si">}</span><span class="s2">&#39; with entry &#39;</span><span class="si">{</span><span class="n">destination</span><span class="si">}</span><span class="s2">&#39;. Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -6150,7 +6135,6 @@
         <span class="c1"># no struct/template with this name</span>
         <span class="n">nf</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
         <span class="n">nf</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ERROR: struct &#39;&quot;</span> <span class="o">+</span> <span class="n">struct_name</span> <span class="o">+</span> <span class="s2">&quot;&#39; not found!&quot;</span>
-        <span class="c1"># nf[&#39;value&#39;] = nf[&#39;name&#39;]</span>
         <span class="n">nested_put</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">nf</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;add_struct_to_item_template: Struct definition for &#39;</span><span class="si">{</span><span class="n">struct_name</span><span class="si">}</span><span class="s2">&#39; not found (referenced in item </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -6322,136 +6306,6 @@
                 <span class="k">if</span> <span class="n">string</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">string</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># if they are the only one</span>
                     <span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># remove them</span>
     <span class="k">return</span> <span class="n">string</span></div>
-
-
-<div class="viewcode-block" id="parse_conf"><a class="viewcode-back" href="../../lib/config.html#lib.config.parse_conf">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">parse_conf</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Load and parse a configuration file which is in the old .conf format of smarthome.py</span>
-<span class="sd">    and merge it to the configuration tree</span>
-
-<span class="sd">    :param filename: Name of the configuration file</span>
-<span class="sd">    :param config: Optional OrderedDict tree, into which the configuration should be merged</span>
-<span class="sd">    :type filename: str</span>
-<span class="sd">    :type config: bool</span>
-
-<span class="sd">    :return: The resulting merged OrderedDict tree</span>
-<span class="sd">    :rtype: OrderedDict</span>
-
-
-<span class="sd">    The config file should stick to the following setup:</span>
-
-<span class="sd">    .. code-block:: ini</span>
-
-<span class="sd">       [firstlevel]</span>
-<span class="sd">           attribute1 = xyz</span>
-<span class="sd">           attribute2 = foo</span>
-<span class="sd">           attribute3 = bar</span>
-
-<span class="sd">           [[secondlevel]]</span>
-<span class="sd">               attribute1 = abc</span>
-<span class="sd">               attribute2 = bar</span>
-<span class="sd">               attribute3 = foo</span>
-
-<span class="sd">               [[[thirdlevel]]]</span>
-<span class="sd">                   attribute1 = def</span>
-<span class="sd">                   attribute2 = barfoo</span>
-<span class="sd">                   attribute3 = foobar</span>
-
-<span class="sd">           [[anothersecondlevel]]</span>
-<span class="sd">               attribute1 = and so on</span>
-
-<span class="sd">    where firstlevel, secondlevel, thirdlevel and anothersecondlevel are defined as items and attribute are their respective attribute - value pairs</span>
-
-<span class="sd">    Valid characters for the items are a-z and A-Z plus any digit and underscore as second or further characters.</span>
-<span class="sd">    Valid characters for the attributes are the same as for an item plus @ and *</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">valid_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">valid_attr_chars</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">config</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
-    <span class="n">item</span> <span class="o">=</span> <span class="n">config</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;UTF-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">linenu</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">parent</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
-        <span class="n">lines</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
-        <span class="k">for</span> <span class="n">raw</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
-            <span class="n">linenu</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\ufeff</span><span class="s1">&#39;</span><span class="p">)</span>  <span class="c1"># remove BOM</span>
-            <span class="k">while</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">):</span>
-                <span class="n">linenu</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nb">next</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-                <span class="k">continue</span>
-            <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;[&#39;</span><span class="p">:</span>  <span class="c1"># item</span>
-                <span class="n">brackets</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="n">level</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="n">closing</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)):</span>
-                    <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;[&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">closing</span><span class="p">:</span>
-                        <span class="n">brackets</span> <span class="o">+=</span> <span class="mi">1</span>
-                        <span class="n">level</span> <span class="o">+=</span> <span class="mi">1</span>
-                    <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;]&#39;</span><span class="p">:</span>
-                        <span class="n">closing</span> <span class="o">=</span> <span class="kc">True</span>
-                        <span class="n">brackets</span> <span class="o">-=</span> <span class="mi">1</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">closing</span> <span class="o">=</span> <span class="kc">True</span>
-                        <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_item_chars</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">:</span>
-                            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem parsing &#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39; invalid character in line </span><span class="si">{</span><span class="n">linenu</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s2">. Valid characters are: </span><span class="si">{</span><span class="n">valid_item_chars</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                            <span class="k">return</span> <span class="n">config</span>
-                <span class="k">if</span> <span class="n">brackets</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem parsing &#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39; unbalanced brackets in line </span><span class="si">{</span><span class="n">linenu</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="n">config</span>
-                <span class="n">name</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;[]&quot;</span><span class="p">)</span>
-                <span class="n">name</span> <span class="o">=</span> <span class="n">strip_quotes</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem parsing &#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39; tried to use an empty item name in line </span><span class="si">{</span><span class="n">linenu</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="n">config</span>
-                <span class="k">elif</span> <span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">digits</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem parsing &#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39;: item starts with digit &#39;</span><span class="si">{</span><span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; in line </span><span class="si">{</span><span class="n">linenu</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="n">config</span>
-                <span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">reserved</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem parsing &#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39;: item using reserved word set/get in line </span><span class="si">{</span><span class="n">linenu</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="n">config</span>
-                <span class="k">elif</span> <span class="n">keyword</span><span class="o">.</span><span class="n">iskeyword</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem parsing &#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39;: item using reserved Python keyword </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> in line </span><span class="si">{</span><span class="n">linenu</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="k">return</span> <span class="n">config</span>
-
-                <span class="k">if</span> <span class="n">level</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-                        <span class="n">config</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
-                    <span class="n">item</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-                    <span class="n">parents</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
-                    <span class="n">parents</span><span class="p">[</span><span class="n">level</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">level</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parents</span><span class="p">:</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem parsing &#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39; no parent item defined for item in line </span><span class="si">{</span><span class="n">linenu</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                        <span class="k">return</span> <span class="n">config</span>
-                    <span class="n">parent</span> <span class="o">=</span> <span class="n">parents</span><span class="p">[</span><span class="n">level</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
-                    <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parent</span><span class="p">:</span>
-                        <span class="n">parent</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
-                    <span class="n">item</span> <span class="o">=</span> <span class="n">parent</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-                    <span class="n">parents</span><span class="p">[</span><span class="n">level</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
-
-            <span class="k">else</span><span class="p">:</span>  <span class="c1"># attribute</span>
-                <span class="n">attr</span><span class="p">,</span> <span class="n">__</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
-                    <span class="k">continue</span>
-                <span class="n">attr</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">valid_set</span><span class="p">):</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem parsing &#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39; invalid character in line </span><span class="si">{</span><span class="n">linenu</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">. Valid characters are: </span><span class="si">{</span><span class="n">valid_attr_chars</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                    <span class="k">continue</span>
-
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">attr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">digits</span><span class="p">:</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem parsing &#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39; attrib starts with a digit &#39;</span><span class="si">{</span><span class="n">attr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; in line </span><span class="si">{</span><span class="n">linenu</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">attr</span><span class="w"> </span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-                        <span class="k">continue</span>
-                <span class="k">if</span> <span class="s1">&#39;|&#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
-                    <span class="n">item</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">strip_quotes</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">item</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">strip_quotes</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">config</span></div>
 </pre></div>
 
            </div>
