@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plugins &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 5. Februar 2026, commit da7051f) Dokumentation</title>
+  <title>Plugins &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 7. Februar 2026, commit e06b735) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
@@ -242,12 +242,7 @@
 <li class="toctree-l4"><a class="reference internal" href="konfigurationsdateien/konfigdateien.html#verzeichnis-scenes">Verzeichnis <em>../scenes</em></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="konfigurationsdateien/konfigdateien.html#aufbau-der-konfigurationsdateien">Aufbau der Konfigurationsdateien</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="konfigurationsdateien/konfigdateien.html#neues-dateiformat-yaml-dateien">Neues Dateiformat - .yaml Dateien</a></li>
-<li class="toctree-l4"><a class="reference internal" href="konfigurationsdateien/konfigdateien.html#vorteile-von-yaml">Vorteile von YAML</a></li>
-<li class="toctree-l4"><a class="reference internal" href="konfigurationsdateien/konfigdateien.html#altes-dateiformat-conf-dateien">Altes Dateiformat - .conf Dateien</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="konfigurationsdateien/konfigdateien.html#aufbau-der-konfigurationsdateien">Aufbau der Konfigurationsdateien</a></li>
 <li class="toctree-l3"><a class="reference internal" href="konfigurationsdateien/konfigdateien.html#yaml-syntax">YAML Syntax</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="konfigurationsdateien/konfigdateien.html#grundlegende-yaml-regeln">Grundlegende YAML Regeln</a></li>
 <li class="toctree-l4"><a class="reference internal" href="konfigurationsdateien/konfigdateien.html#basis-datatypen-in-yaml">Basis DataTypen in YAML</a></li>
@@ -5657,19 +5652,6 @@ für das gewünschte Plugin in der Datei <strong>etc/plugin.yaml</strong> erstel
 <span class="w">    </span><span class="nt">date_ga</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8/0/1</span>
 </pre></div>
 </div>
-<p>bzw. im alten Format:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># etc/plugin.conf</span>
-<span class="p">[</span><span class="n">knx</span><span class="p">]</span>
-   <span class="n">plugin_name</span> <span class="o">=</span> <span class="n">knx</span>
-<span class="c1">#   instance = knx_1</span>
-<span class="c1">#   host = 127.0.0.1</span>
-<span class="c1">#   port = 6720</span>
-<span class="c1">#   webif_pagelength = 0</span>
-   <span class="n">send_time</span> <span class="o">=</span> <span class="mi">600</span> <span class="c1"># update date/time every 600 seconds, default none</span>
-   <span class="n">time_ga</span> <span class="o">=</span> <span class="mi">8</span><span class="o">/</span><span class="mi">0</span><span class="o">/</span><span class="mi">0</span>
-   <span class="n">date_ga</span> <span class="o">=</span> <span class="mi">8</span><span class="o">/</span><span class="mi">0</span><span class="o">/</span><span class="mi">1</span>
-</pre></div>
-</div>
 <p>Dabei kann der Name der <strong>Plugin-Instanz</strong> (Name des Abschnitts) frei gewählt werden. Es muss
 nur darauf geachtet werden, dass er eindeutig ist, also nur einmal vorkommt. Der Name der Instanz
 sollte auch so gewählt werden, dass es zu keiner Namensgleichheit mit Top-Level Items kommt.</p>
@@ -5711,14 +5693,21 @@ geladen werden. Dazu muss die Versionsnummer des Plugins angegeben werden.
 (z.B.  <strong>plugin_version: 1.4.9</strong>)</p></td>
 </tr>
 <tr class="row-odd"><td><p>instance</p></td>
-<td><p>Optional: Dieser Parameter muss nur verwendet werden, wenn mehrere Instanzen des
-selben Plugins geladen werden sollen. Das Plugin selbst muss dazu <strong>Multiinstance</strong>
-fähig sein. Damit die Items der richtigen Plugin-Instanz zugeordnet werden, muss
-in der jeweiligen Item Definition der Name des Plugin-spezifische Attributes um
-die Angabe der Instanz ergänzt werden. Also z.B.: Statt <strong>avm_data_type: uptime</strong>
-muss <strong>avm_data_type&#64;&lt;instance&gt;: uptime</strong> geschrieben werden.</p></td>
+<td><p><strong>DEPRECATED</strong> Optional: Dieser Parameter muss nur verwendet werden, wenn mehrere
+Instanzen des selben Plugins geladen werden sollen. Das Plugin selbst muss dazu
+<strong>Multiinstance</strong>-fähig sein. Damit die Items der richtigen Plugin-Instanz
+izugeordnet werden, muss in der jeweiligen Item Definition der Name des Plugin-
+spezifische Attributes um die Angabe der Instanz ergänzt werden. Also z.B.: Statt
+<strong>avm_data_type: uptime</strong> muss <strong>avm_data_type&#64;&lt;instance&gt;: uptime</strong> geschrieben
+werden.
+Zukünftig wird bei mehrfacher Einbindung desselben Plugins der Bezeichner des
+Abschnitts in der <strong>plugin.yaml</strong> als Instanzbezeichner verwendet werden.</p></td>
 </tr>
-<tr class="row-even"><td><p>webif_pagelength</p></td>
+<tr class="row-even"><td><p>default_instance</p></td>
+<td><p>Optional: Kann zukünftig festlegen, welche Instanz von mehreren den leeren Instanz-
+bezeichner erhält (für Item-Attribute ohne Instanzangabe)</p></td>
+</tr>
+<tr class="row-odd"><td><p>webif_pagelength</p></td>
 <td><p>Optional: Anzahl an Tabellenreihen, die im Plugin Webinterface standardmäßig
 pro Seite angezeigt werden sollen. Bei <strong>-1</strong> werden alle Einträge auf einer Seite
 gezeigt, bei <strong>0</strong> so viele, dass sie genau auf die Seite ohne Scrolling passen.
@@ -5728,6 +5717,11 @@ definierten globalen Wert.</p></td>
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="admonition-title">Bemerkung</p>
+<p>Die zukünftigen Konfigurationsmöglichkeiten für Multiinstanz-Plugins können jetzt schon aktiviert
+werden, wenn in der <strong>etc/smarthome.yaml</strong> der Eintrag <strong>legacy_instances: false</strong> angegeben wird.</p>
+</div>
 <p>Die weiteren Einträge sind Plugin spezifisch. Welche Parameter ein Plugin kennt ist auch der
 plugin.yaml Datei bzw. Doku des Plugins zu entnehmen. Je nach Plugin können sie verpflichtend oder
 optional sein. Im obigen Beispiel sind sie alle (außer plugin_name) optional. Diese Parameter werden

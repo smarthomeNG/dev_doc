@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Konfiguration über Dateien &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 5. Februar 2026, commit da7051f) Dokumentation</title>
+  <title>Konfiguration über Dateien &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 7. Februar 2026, commit e06b735) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -242,12 +242,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#verzeichnis-scenes">Verzeichnis <em>../scenes</em></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#aufbau-der-konfigurationsdateien">Aufbau der Konfigurationsdateien</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#neues-dateiformat-yaml-dateien">Neues Dateiformat - .yaml Dateien</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#vorteile-von-yaml">Vorteile von YAML</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#altes-dateiformat-conf-dateien">Altes Dateiformat - .conf Dateien</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#aufbau-der-konfigurationsdateien">Aufbau der Konfigurationsdateien</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yaml-syntax">YAML Syntax</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#grundlegende-yaml-regeln">Grundlegende YAML Regeln</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#basis-datatypen-in-yaml">Basis DataTypen in YAML</a></li>
@@ -5644,18 +5639,6 @@
 In diesen Verzeichnissen wird die Konfiguration gespeichert und gepflegt. Im folgenden sind
 die Konfigurationsdateien beschrieben, die in diesen Verzeichnissen gespeichert werdeen.</p>
 <p>Die Konfiguration erfolgt im weit verbreiteten <a class="reference external" href="https://en.wikipedia.org/wiki/YAML">yaml</a> Format.</p>
-<p>Ältere Versionen von smarthome.py und SmartHomeNG benutzten das <a class="reference external" href="http://www.voidspace.org.uk/python/articles/configobj.shtml">configobj</a>
-Dateiformat, welches ähnlich zum bekannten <a class="reference external" href="https://en.wikipedia.org/wiki/INI_file">ini-file</a> Format
-ist, jedoch die Möglichkeit hat, Abschnitte mit Unterstrukturen in Multilevel Strukturen anzulegen.
-Dieses Dateiformat ist von SmartHomeNG noch unterstützt. Es ist jedoch veraltet und wird nur für Umsteiger aus
-älteren Versionen beschrieben. Dieses Dateiformat wird in zukünftigen Versionen von SmartHomeNG
-nicht mehr unterstützt werden. Ab welcher Version die Unterstützung entfallen wird, ist noch nicht festgelegt.</p>
-<p>Wenn das Backend-Plugin konfiguriert ist, können damit Abschnitte des alten .conf Dateiformats in das yaml Format
-überführt werden.</p>
-<p>Es gibt außerdem ein Service Tool im Verzeichnis <strong>*../tools*</strong>, welches dazu dient, die gesamte Konfiguration zu
-konvertieren. Hierbei kann gewählt werden, ob die Inhalte des <strong>*../etc*</strong> Verzeichnisses, des <strong>*../items*</strong> Verzeichnisses
-oder beide konvertiert werden sollen.</p>
-<p>Genaueres bitte unter <a class="reference internal" href="../../tools/tools.html"><span class="doc">Tools</span></a> nachlesen.</p>
 <section id="verzeichnisse">
 <h2>Verzeichnisse<a class="headerlink" href="#verzeichnisse" title="Permalink to this heading"></a></h2>
 <p>Im folgenden sind die Verzeichnisse beschrieben, in denen Konfigurationsdateien abgelegt werden.</p>
@@ -5710,35 +5693,6 @@ jeweils eigenen Konfigurationsdateien vorgenommen.</p>
 Konfigurationsdateien. Für die vollständigen
 Konfigurationsmöglichkeiten, bitte auf den jeweiligen Wiki Seiten
 nachsehen.</p>
-<p>Seit dem Release 1.3 von SmartHomeNG können zur Konfiguration von
-<strong>Items</strong>, <strong>Logiken</strong> und <strong>Plugins</strong> auch Dateien im YAML Format
-eingesetzt werden. Dieses ist das ab Release 1.5 das Standardformat. Das
-Format der YAML Dateien (Endung <strong>.yaml</strong>) wird im folgenden
-beschrieben.</p>
-<p>Bisher erfolgt die Konfiguration in <strong>.conf</strong> Dateien in einem
-smarthome-spezifischen Format. Das <strong>.conf</strong> Format wird noch weiterhin
-unterstützt. Dokumentiert wird jedoch nur noch das <strong>yaml</strong> Format. Das
-<strong>.conf</strong> Format wird ab einem späteren Release (voraussichtlich v2.0)
-nicht mehr unterstützt werden.</p>
-<p>Ganz neu war die Nutzung des YAML Formats für SmartHomeNG im Release 1.3
-nicht. Seit dem Übergang von smarthome.py zu SmartHomeNG wird bereits
-dass Logging in einer YAML Datei konfiguriert.</p>
-<p>Zur Konvertierung von <strong>.conf</strong> in <strong>.yaml</strong> Dateien, ist ab Release 1.3
-von SmartHomeNG ein Tool beigefügt, welches diese Konvertierung für die
-Item Dateien durchführt.</p>
-<p><strong>.conf</strong> und <strong>.yaml</strong> Dateien können gemischt eingesetzt werden. Es
-ist dabei unbedingt darauf zu achten, dass keine Konfiguration doppelt
-(1 mal in .conf und 1 mal in .yaml) vorgenommen wird bzw. von
-SmartHomeNG eingelesen werden kann. Es darf für Plugins und Logiken also
-nur entweder eine .conf oder .yaml Datei geben. Sollte doch eine .conf
-und eine .yaml Datei für Plugins oder Logiken im /etc Verzeichnis
-liegen, so wird die .conf Datei ignoriert und die Konfiguration aus der
-.yaml Datei gelesen. Im Items-Verzeichnis können beide Dateitypen
-gleichzeitig vorkommen. Hier ist bei der Umstellung nur darauf zu
-achten, dass nicht aus Versehen ein Item sowohl in einer .conf <strong>und</strong>
-einer .yaml Datei definiert ist.</p>
-<section id="neues-dateiformat-yaml-dateien">
-<h3>Neues Dateiformat - .yaml Dateien<a class="headerlink" href="#neues-dateiformat-yaml-dateien" title="Permalink to this heading"></a></h3>
 <p>Das YAML Format wird seit SmartHomeNG <strong>Release 1.3</strong> unterstützt.</p>
 <p>Dieser Abschnitt beschäftigt sich nur mit den Teilen der
 Markup-Language, die für SmartHomeNG relevant sind. Bei einem
@@ -5775,8 +5729,6 @@ Klammern um den Sektions(Item)-Namen bestimmt wird, wird die Struktur
 einer YAML Datei durch Einrückungen bestimmt. - Der Doppelpunkt, der
 einem Sektions-/Key-Namen folgt, kann direkt nach diesem Namen folgen.
 Er <strong>muss</strong> jedoch von einem Leerzeichen gefolgt werden</p>
-<section id="formate-von-values-in-yaml-dateien">
-<h4>Formate von Values in YAML Dateien<a class="headerlink" href="#formate-von-values-in-yaml-dateien" title="Permalink to this heading"></a></h4>
 <p>Values können in YAML Dateien alles, von einfachen Werten über binäre
 Daten bis hin zu Python Objekten sein. Für die Konfigurationsdateien
 werden folgende Value-Typen unterstützt:</p>
@@ -5785,8 +5737,6 @@ werden folgende Value-Typen unterstützt:</p>
 <li><p>Strings</p></li>
 <li><p>Listen</p></li>
 </ul>
-<section id="besonderheiten-boolscher-werte">
-<h5>Besonderheiten boolscher Werte<a class="headerlink" href="#besonderheiten-boolscher-werte" title="Permalink to this heading"></a></h5>
 <p>SmartHomeNG verarbeitet, wie schon smarthome.py, die Values als Strings.
 Dies gilt insbesondere bei der Übergabe von Werten an Plugins. Das ist
 besonders bei der Angabe boolscher Werte zu beachten. Da der YAML Parser
@@ -5798,9 +5748,6 @@ folgendermaßen: <strong>``boolwert: ‚true‘``</strong>.</p>
 boolsche Werte. Deshalb müssen auch diese Werte in Quotes eingeschlossen
 werden. Es ist empfehlenswert nur <strong>true</strong> und <strong>false</strong> für boolsche
 Werte zu verwenden.</p>
-</section>
-<section id="besonderheiten-bei-der-angabe-von-wertelisten">
-<h5>Besonderheiten bei der Angabe von Wertelisten<a class="headerlink" href="#besonderheiten-bei-der-angabe-von-wertelisten" title="Permalink to this heading"></a></h5>
 <p>Im Gegensatz zu den bisherigen .conf Dateien, in denen Wertelisten auf
 einer Zeile spezifiziert wurden und die Werte durch ein ‘|’-Zeichen
 getrennt wurden, ist die Spezifikation in einer YAML Datei vorzugsweise
@@ -5817,9 +5764,6 @@ mehrzeilig.</p>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">value2</span>
 </pre></div>
 </div>
-</section>
-<section id="beispiel-von-item-definitionen-in-yaml">
-<h5>Beispiel von Item Definitionen in YAML<a class="headerlink" href="#beispiel-von-item-definitionen-in-yaml" title="Permalink to this heading"></a></h5>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># items.yaml</span>
 <span class="nt">wohnung</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">kochen</span><span class="p">:</span>
@@ -5886,93 +5830,8 @@ Doppel-Quotes escaped werden.</p>
 </pre></div>
 </div>
 </section>
-</section>
-<section id="konvertierung-von-conf-dateien-in-das-yaml-format">
-<h4>Konvertierung von .conf Dateien in das YAML Format<a class="headerlink" href="#konvertierung-von-conf-dateien-in-das-yaml-format" title="Permalink to this heading"></a></h4>
-<p>Im Verzeichnis <strong>../tools</strong> von SmartHomeNG liegt ein Tool
-(conf_to_yaml_converter.py) zur Konvertierung der .conf Dateien in YAML
-Dateien.</p>
-<p>Der Konverter konvertiert sowohl die .conf Dateien im <strong>../items</strong>
-Verzeichnis, als auch die .conf Dateien im <strong>../etc</strong> Verzeichnis. Nach
-dem Start des Konverters fragt er für jedes der beiden Verzeichnisse ab,
-ob die Dateien in dem Verzeichnis konvertiert werden sollen. Wichtig:
-Der Konverter muss vom Verzeichnis tools gestartet werden.</p>
-<blockquote>
-<div><p>Wenn in den .conf Dateien Blöcke auskommentiert sind, so werden diese
-als Kommentare übernommen und nicht konvertiert. Falls es gewünscht
-ist diese Blöcke zu konvertieren, so muss die Auskommentierung der
-Zeilen vor der Konvertierung entfernt werden und nach der
-Konvertierung wieder hinzugefügt werden.</p>
-</div></blockquote>
-<p>Die ursprünglichen .conf Dateien bleiben bei der Konvertierung
-unverändert in den Verzeichnissen liegen.</p>
-<section id="nacharbeiten">
-<h5>Nacharbeiten<a class="headerlink" href="#nacharbeiten" title="Permalink to this heading"></a></h5>
-<p><strong>../items</strong>-Verzeichnis: Als Nacharbeiten <strong>müssen</strong> die .conf Dateien
-aus dem <strong>../items</strong> Verzeichnis heraus bewegt werden, da SmartHomeNG im
-<strong>../items</strong> Verzeichnis alle .conf und alle .yaml Dateien einliest.
-Dabei würden die Definitionen der Items zweimal eingelesen (einmal aus
-der .conf Datei und einmal aus der .yaml Datei).</p>
-<p><strong>../etc</strong>-Verzeichnis: Als Nacharbeiten sollten die .conf Dateien aus
-dem <strong>../etc</strong> Verzeichnis heraus bewegt werden, um Verwirrungen zu
-vermeiden. Das herausbewegen ist nicht unbedingt notwendig, da die
-SmartHomeNG beim Einlesen der Konfigurationsdateien nur eine Version
-einliest. Ist eine .yaml Datei vorhanden, wird diese eingelesen. Nur
-wenn keine .yaml Datei vorhanden ist, wird die .conf Datei gelesen.</p>
-</section>
-</section>
-</section>
-<section id="vorteile-von-yaml">
-<h3>Vorteile von YAML<a class="headerlink" href="#vorteile-von-yaml" title="Permalink to this heading"></a></h3>
-<ul class="simple">
-<li><p>Standard Dateiformat</p></li>
-<li><p>bessere Lesbarkeit</p></li>
-<li><p>Tools zur formalen Prüfung der YAML-Konformität von Dateien verfügbar</p></li>
-<li><p>leichtere Editierbarkeit:</p>
-<ul>
-<li><p>Sytax Highlighting mit diversen Editoren möglich</p></li>
-<li><p>Code-Faltung zur besser Übersicht in großen Dateien mit diversen
-Editoren möglich</p></li>
-<li><p>Ein- und Ausrücken von Items (bzw. Item-Strukturen) mit diversen
-einfach möglich, ohne Notwendigkeit weiterer Anpassungen (Anzahl
-eckiger Klammern bei jedem bewegtem Item)</p></li>
-</ul>
-</li>
-<li><p>Neue Features von SmartHomeNG werden zum Teil nur bei Verwendung von
-YAML Dateien verfügbar sein.</p></li>
-</ul>
-</section>
-<section id="altes-dateiformat-conf-dateien">
-<h3>Altes Dateiformat - .conf Dateien<a class="headerlink" href="#altes-dateiformat-conf-dateien" title="Permalink to this heading"></a></h3>
-<p>Die .conf Dateien bestehen aus einer Reihe von Sektionen (Plugin- bzw.
-Logikdefinitionen), die Key/Value-Listen enthalten. Für Plugins und
-Logiken sind Sektionen nur auf der obersten Ebene zulässig.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">section1</span><span class="p">]</span>
-    <span class="n">key1</span> <span class="o">=</span> <span class="n">value1</span>
-    <span class="n">key2</span> <span class="o">=</span> <span class="n">value2</span>
-
-<span class="p">[</span><span class="n">section2</span><span class="p">]</span>
-    <span class="n">key3</span> <span class="o">=</span> <span class="n">value3</span>
-    <span class="n">key4</span> <span class="o">=</span> <span class="n">value4</span>
-</pre></div>
-</div>
-<p>Für Items können Sektionen (Itemdefinitionen) weitere Unter-Sektionen
-(weitere Itemdefinitionen) enthalten.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">section</span><span class="p">]</span>
-    <span class="n">key1</span> <span class="o">=</span> <span class="n">value1</span>
-    <span class="n">key2</span> <span class="o">=</span> <span class="n">value2</span>
-
-    <span class="p">[[</span><span class="n">subsection</span><span class="p">]]</span>
-        <span class="n">key3</span> <span class="o">=</span> <span class="n">value3</span>
-
-        <span class="p">[[[</span><span class="n">sub_subsection</span><span class="p">]]]</span>
-            <span class="n">key4</span> <span class="o">=</span> <span class="n">value4</span>
-</pre></div>
-</div>
-</section>
-</section>
 <section id="yaml-syntax">
-<span id="index-0"></span><span id="id1"></span><h2>YAML Syntax<a class="headerlink" href="#yaml-syntax" title="Permalink to this heading"></a></h2>
+<h2>YAML Syntax<a class="headerlink" href="#yaml-syntax" title="Permalink to this heading"></a></h2>
 <p>YAML steht für „YAML Ain’t Markup Language“ und wird in SmartHomeNG für Konfigurationsdateien
 verwendet.</p>
 <p>YAML ist im Grunde ein lesbares strukturiertes Datenformat. Es ist weniger komplex und unhandlich
