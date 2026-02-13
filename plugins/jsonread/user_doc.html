@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>jsonread &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 12. Februar 2026, commit b22fbdf) Dokumentation</title>
+  <title>jsonread &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 13. Februar 2026, commit b22fbdf) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5651,12 +5651,10 @@
 <span id="index-1"></span><h1>jsonread<a class="headerlink" href="#jsonread" title="Permalink to this heading"></a></h1>
 <a class="reference internal image-reference" href="../../_images/plugin_logo5.svg"><img alt="plugin logo" class="align-left" height="150px" src="../../_images/plugin_logo5.svg" width="150px" /></a>
 <p>Das vorliegende Plugin ist in der Lage aus einer Datei oder von einer
-URL JSON Daten zu lesen
-und anhand einer Abfrageanweisung einen Datenpunkt an ein Item zu übergeben.</p>
+URL JSON Daten zu lesen und anhand einer Abfrageanweisung einen
+Datenpunkt an ein Item zu übergeben.</p>
 <section id="anforderungen">
 <h2>Anforderungen<a class="headerlink" href="#anforderungen" title="Permalink to this heading"></a></h2>
-<p>Für die Auswertung des JSON Datensatzes wird der flexible JSON Prozessor
-<a class="reference external" href="https://stedolan.github.io/jq/">JQ</a> verwendet.</p>
 <p>Jede Webseite, die JSON formatierte Daten liefern kann oder
 jede Datei die JSON formatierte
 Daten enthält, kann als Datenquelle für das Plugin verwendet werden.</p>
@@ -5785,20 +5783,13 @@ erweitert werden mit <code class="docutils literal notranslate"><span class="pre
 <span class="w">      </span><span class="nt">jsonread_filter@cairns</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.main.temp</span>
 </pre></div>
 </div>
-<p>Der Attributwert für <code class="docutils literal notranslate"><span class="pre">jsonread_filter</span></code> wird direkt an jq weitergegeben.
-Auf diese Art und Weise ist es möglich
-recht komplexe Filter zu erstellen und für die Itembefüllung zu verwenden.
+<p>Der Attributwert für <code class="docutils literal notranslate"><span class="pre">jsonread_filter</span></code> wird direkt gefiltert und für die Itembefüllung verwendet.
 Dabei muss darauf geachtet werden, dass nur ein einzelner Wert
-zurückgegeben werden darf.
-Für komplexe JSON Strukturen kann es recht kompliziert sein,
-entsprechende Filter zu definieren, daher
-könnte es einfacher sein, diese Filter auf der Kommandozeile zu entwickeln:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>https://json.server.org/data.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.object&#39;</span>
-</pre></div>
-</div>
+zurückgegeben werden darf.</p>
 <p>Es lohnt ein Blick ins
 <a class="reference external" href="https://jqlang.github.io/jq/tutorial/">Tutorial für jq</a>
-um für die Verwendung der Filter einen Eindruck zu bekommen.</p>
+um für die Verwendung der Filter einen Eindruck zu bekommen.
+Allerdings kann sein, dass das Plugin nicht mit allen Filtern klarkommt!</p>
 </section>
 <section id="beispiel-batteriedaten">
 <h4>Beispiel Batteriedaten<a class="headerlink" href="#beispiel-batteriedaten" title="Permalink to this heading"></a></h4>
@@ -5840,10 +5831,6 @@ die Instanz <code class="docutils literal notranslate"><span class="pre">myreser
 <span class="w">    </span><span class="nt">i</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
 <span class="w">        </span><span class="nt">jsonread_filter@myreserve</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.FData.IBat</span>
-<span class="w">    </span><span class="nt">power</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">remark: etwas einfache Mathematik kann verwendet werden</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
-<span class="w">        </span><span class="nt">jsonread_filter@myreserve</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">(.FData.VBat * .FData.IBat * -1)</span>
 </pre></div>
 </div>
 </section>
@@ -5860,18 +5847,19 @@ die Instanz <code class="docutils literal notranslate"><span class="pre">myreser
 <p>Die Abfrage der URL liefert ein ziemliche großes JSON Datenpaket mit mehr als
 4500 Zeilen. Ein Auszug ist im folgenden dargestellt:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="nt">&quot;result&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;result&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;guid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:your-inverter-guid&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;tagValues&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">&quot;PowerACOut&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2419</span><span class="p">,</span>
-<span class="w">                    </span><span class="nt">&quot;tagName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PowerACOut&quot;</span>
-<span class="w">                </span><span class="p">}</span>
-<span class="w">            </span><span class="p">}</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;guid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;urn:your-inverter-guid&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;tagValues&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;PowerACOut&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2419</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;tagName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PowerACOut&quot;</span>
+<span class="w">          </span><span class="p">}</span>
 <span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -5883,21 +5871,19 @@ wird folgendes Item mit einem komplexen Filter definiert:</p>
 </pre></div>
 </div>
 <p>Auswählen des Arrays <code class="docutils literal notranslate"><span class="pre">.result.items</span></code>,
-dann auswählen des Zweiges, bei dem das Element <code class="docutils literal notranslate"><span class="pre">guid</span></code> mit dem eigenen
+dann Auswählen des Zweiges, bei dem das Element <code class="docutils literal notranslate"><span class="pre">guid</span></code> mit dem eigenen
 <code class="docutils literal notranslate"><span class="pre">your-inverter-guid</span></code> übereinstimmt, und im Zweig weitergehen
 und den Wert von <code class="docutils literal notranslate"><span class="pre">.tagValues.PowerACOut.value</span></code>
 abfragen und ins Item schreiben.</p>
 <p>Das <code class="docutils literal notranslate"><span class="pre">jsonread_filter</span></code> Attribut kann mit Hilfe des
 <a class="reference external" href="https://yaml-multiline.info/">Blockstils für mehrzeilige Strings</a>
-eben auf mehrere Zeilen aufgeteilt werden.
-So ist folgende komplexe Berechnung über einen Filter möglich:</p>
+eben auf mehrere Zeilen aufgeteilt werden. Arithmetische Berechnungen
+sind nur in der älteren Pluginversion möglich.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">grid</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
 <span class="w">    </span><span class="nt">jsonread_filter@swem</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;</span>
 <span class="w">        </span><span class="no">(.result.items[] |</span>
-<span class="w">        </span><span class="no">select(.deviceModel[].deviceClass == &quot;com.kiwigrid.devices.solarwatt.MyReservePowermeter&quot;).tagValues.PowerOut.value) -</span>
-<span class="w">        </span><span class="no">(.result.items[] |</span>
-<span class="w">        </span><span class="no">select(.deviceModel[].deviceClass == &quot;com.kiwigrid.devices.solarwatt.MyReservePowermeter&quot;).tagValues.PowerIn.value)</span>
+<span class="w">        </span><span class="no">select(.deviceModel[].deviceClass == &quot;com.kiwigrid.devices.solarwatt.MyReservePowermeter&quot;).tagValues.PowerOut.value)</span>
 </pre></div>
 </div>
 </section>
