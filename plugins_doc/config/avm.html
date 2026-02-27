@@ -4,10 +4,11 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plugin ‚avm‘ Konfiguration &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 13. Februar 2026, commit b22fbdf) Dokumentation</title>
+  <title>Plugin ‚avm‘ Konfiguration &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 27. Februar 2026, commit 9bd379a) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/treeview.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
 
   
@@ -23,6 +24,7 @@
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
         <script src="../../_static/translations.js"></script>
+        <script src="../../_static/treeview.js"></script>
         <script src="../../_static/design-tabs.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Stichwortverzeichnis" href="../../genindex.html" />
@@ -242,7 +244,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#verzeichnis-scenes">Verzeichnis <em>../scenes</em></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#aufbau-der-konfigurationsdateien">Aufbau der Konfigurationsdateien</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#aufbau-der-konfigurationsdateien">Aufbau der Konfigurationsdateien</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#formate-von-values-in-yaml-dateien">Formate von Values in YAML Dateien</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#yaml-syntax">YAML Syntax</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#grundlegende-yaml-regeln">Grundlegende YAML Regeln</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#basis-datatypen-in-yaml">Basis DataTypen in YAML</a></li>
@@ -372,8 +377,11 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../konfiguration/item_structs.html">structs (Item Strukturen)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#uberblick">Überblick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../konfiguration/item_structs.html">structs (Item Strukturen) <span class="greensup">Update</span></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#uberblick">Überblick</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../konfiguration/item_structs.html#vererbte-attribute-new">Vererbte Attribute <span class="redsup">new</span></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#struct-templates-in-plugins">struct-Templates in Plugins</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/item_structs.html#anwendung">Anwendung</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/item_structs.html#multi-instance-unterstutzung">Multi-Instance Unterstützung</a></li>
@@ -5648,7 +5656,7 @@
 <a class="reference internal image-reference" href="../../_images/plugin_logo7.png" id="index-0"><img alt="plugin logo" class="align-left" id="index-0" src="../../_images/plugin_logo7.png" style="width: 150.0px; height: 150.0px;" /></a>
 <p>Im folgenden sind etwaige Anforderungen und unterstützte Hardware beschrieben. Danach folgt die               Beschreibung, wie das Plugin <strong>avm</strong> konfiguriert wird. Außerdem ist im folgenden               beschrieben, wie das Plugin in den Item Definitionen genutzt werden kann. <a class="footnote-reference brackets" href="#f1" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p>
 <p>Es handelt sich bei diesem Plugin um ein <strong>interface Plugin</strong>.</p>
-<p><strong>ACHTUNG</strong>: Dieses Plugin ist als develop gekennzeichnet. Es kann daher sein, dass es                  noch nicht Feature-Complete oder noch fehlerhaft ist.</p>
+<p><strong>ACHTUNG</strong>: Dieses Plugin ist als develop gekennzeichnet. Es kann daher sein, dass es                  noch nicht sämtliche Funktionen unterstützt oder noch fehlerhaft ist.</p>
 <section id="beschreibung">
 <h2>Beschreibung<a class="headerlink" href="#beschreibung" title="Permalink to this heading"></a></h2>
 <p>Ansteuerung von AVM FRITZ!Boxen, WLAN-Repeatern, DECT Steckdosen, etc.</p>
@@ -6042,6 +6050,381 @@
 </div></blockquote>
 </section>
 </section>
+<section id="item-structs">
+<h1>Item-Structs<a class="headerlink" href="#item-structs" title="Permalink to this heading"></a></h1>
+<p>Das Plugin stellt die folgenden Item-Structs zur Verfügung. Diese Informationen sind aus der <cite>plugin.yaml</cite> entnommen und möglicherweise nicht vollständig.</p>
+<section id="aha-alert">
+<h2>aha_alert<a class="headerlink" href="#aha-alert" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>aha_alert</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>state</strong> (<cite>bool</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="aha-blind">
+<h2>aha_blind<a class="headerlink" href="#aha-blind" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>aha_blind</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>blind_mode</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>endpositionsset</strong> (<cite>bool</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="aha-button">
+<h2>aha_button<a class="headerlink" href="#aha-button" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>aha_button</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>battery_low</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>battery_level</strong> (<cite>num</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="aha-color">
+<h2>aha_color<a class="headerlink" href="#aha-color" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>aha_color</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>color_mode</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>supported_color_mode</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>fullcolorsupport</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>mapped</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>hue</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>saturation</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>unmapped_hue</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>unmapped_saturation</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>colortemperature</strong> (<cite>num</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="aha-general">
+<h2>aha_general<a class="headerlink" href="#aha-general" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>aha_general</strong> (<cite>foo</cite>, OrderedDict([(‚type‘, ‚str‘), (<a class="reference external" href="mailto:'avm_data_type&#37;&#52;&#48;instance">‚avm_data_type<span>&#64;</span>instance</a>‘, ‚device_name‘), (<a class="reference external" href="mailto:'avm_data_cycle&#37;&#52;&#48;instance">‚avm_data_cycle<span>&#64;</span>instance</a>‘, 0)]))</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>name</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>identifier</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>productname</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>manufacturer</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>firmware_version</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>present</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>functions</strong> (<cite>list</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="aha-humidity-sensor">
+<h2>aha_humidity_sensor<a class="headerlink" href="#aha-humidity-sensor" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>aha_humidity_sensor</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>humidity</strong> (<cite>num</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="aha-level">
+<h2>aha_level<a class="headerlink" href="#aha-level" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>aha_level</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>level</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>level_percentage</strong> (<cite>num</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="aha-on-off">
+<h2>aha_on_off<a class="headerlink" href="#aha-on-off" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>aha_on_off</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>on_off</strong> (<cite>bool</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="aha-powermeter">
+<h2>aha_powermeter<a class="headerlink" href="#aha-powermeter" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>aha_powermeter</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>power</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>energy</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>voltage</strong> (<cite>num</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="aha-switch">
+<h2>aha_switch<a class="headerlink" href="#aha-switch" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>aha_switch</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>switch_state</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>switch_mode</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>switch_toggle</strong> (<cite>bool</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="aha-temperature-sensor">
+<h2>aha_temperature_sensor<a class="headerlink" href="#aha-temperature-sensor" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>aha_temperature_sensor</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>current_temperature</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>temperature_offset</strong> (<cite>num</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="aha-thermostat">
+<h2>aha_thermostat<a class="headerlink" href="#aha-thermostat" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>aha_thermostat</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>target_temperature</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>comfort_temperature</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>eco_temperature</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>battery_low</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>battery_level</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>window_open</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>windowopenactiveendtime</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>summer_active</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>holiday_active</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>errorcode</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>hkr_boost</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>boostactiveendtime</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>lock</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>device_lock</strong> (<cite>bool</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="deflection">
+<h2>deflection<a class="headerlink" href="#deflection" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>deflection</strong> (<cite>bool</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>deflection_type</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>deflection_number</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>deflection_to_number</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>deflection_mode</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>deflection_outgoing</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>deflection_phonebook_id</strong> (<cite>num</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="device">
+<h2>device<a class="headerlink" href="#device" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>device</strong> (<cite>bool</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>ip</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>connection_type</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>hostname</strong> (<cite>str</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="info">
+<h2>info<a class="headerlink" href="#info" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>info</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>uptime</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>serial_number</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>firmware</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>hardware_version</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>myfritz</strong> (<cite>bool</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="monitor">
+<h2>monitor<a class="headerlink" href="#monitor" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>monitor</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>trigger</strong> (<cite>bool</cite>, —)</p></li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>incoming</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>is_call_incoming</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>duration</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>last_caller</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>last_calling_number</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>last_called_number</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>last_call_date</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>event</strong> (<cite>str</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>outgoing</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>is_call_outgoing</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>duration</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>last_caller</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>last_calling_number</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>last_called_number</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>last_call_date</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>event</strong> (<cite>str</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>newest</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>direction</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>event</strong> (<cite>str</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="tam">
+<h2>tam<a class="headerlink" href="#tam" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>tam</strong> (<cite>bool</cite>, OrderedDict([(‚type‘, ‚str‘), (‚visu_acl‘, ‚ro‘), (<a class="reference external" href="mailto:'avm_data_type&#37;&#52;&#48;instance">‚avm_data_type<span>&#64;</span>instance</a>‘, ‚tam_name‘)]))</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>name</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>message_number_old</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>message_number_new</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>message_number_total</strong> (<cite>num</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="wan">
+<h2>wan<a class="headerlink" href="#wan" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>wan</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>connection_status</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>connection_error</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>is_connected</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>uptime</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>upstream</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>downstream</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>total_packets_sent</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>total_packets_received</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>total_bytes_sent</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>total_bytes_received</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>current_bytes_sent</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>current_bytes_receive</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>link</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>reconnect</strong> (<cite>bool</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="wlan">
+<h2>wlan<a class="headerlink" href="#wlan" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>wlan</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>wlan_1</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>wlan_1_ssid</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>wlan_1_associates</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>wlan_2</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>wlan_2_ssid</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>wlan_2_associates</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>wlan_gast</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>wlan_gast_ssid</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>wlan_gast_associates</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>wlan_gast_tr</strong> (<cite>num</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+</section>
 <section id="logik-parameter">
 <h1>Logik Parameter<a class="headerlink" href="#logik-parameter" title="Permalink to this heading"></a></h1>
 <p>Das Plugin verfügt über folgende Parameter, die in der Datei <code class="docutils literal notranslate"><span class="pre">../etc/logic.yaml</span></code> konfiguriert werden:</p>
@@ -6076,17 +6459,99 @@
 <li><p>Ergebnistyp der Funktion: <strong>list(dict(str))</strong></p></li>
 </ul>
 </div></blockquote>
-<section id="filter-incoming">
-<h3>filter_incoming<a class="headerlink" href="#filter-incoming" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>filter_incoming</dt><dd><ul class="simple">
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
 <p>Filter, um nur die Anrufe zu erhalten, die zu einer bestimmten angerufenen Nummer gehÃƒÂ¶ren.</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>str</strong></p></li>
 </ul>
 </div></blockquote>
-</section>
-<section id="phonebook-id">
-<h3>phonebook_id<a class="headerlink" href="#phonebook-id" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>phonebook_id</dt><dd><ul class="simple">
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
 <p>ID des Telefonbuchs, in dem nachgeschlagen werden soll.</p>
 <blockquote>
 <div><ul class="simple">
@@ -6094,7 +6559,6 @@
 <li><p>Standardwert: <strong>0</strong></p></li>
 </ul>
 </div></blockquote>
-</section>
 </section>
 <section id="get-contact-name-by-phone-number-phone-number-phonebook-id-0">
 <h2>get_contact_name_by_phone_number(phone_number, phonebook_id=0)<a class="headerlink" href="#get-contact-name-by-phone-number-phone-number-phonebook-id-0" title="Permalink to this heading"></a></h2>
@@ -6104,17 +6568,90 @@
 <li><p>Ergebnistyp der Funktion: <strong>str</strong></p></li>
 </ul>
 </div></blockquote>
-<section id="phone-number">
-<h3>phone_number<a class="headerlink" href="#phone-number" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>phone_number</dt><dd><ul class="simple">
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
 <p>Vollständige Telefonnummer</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>str</strong></p></li>
 </ul>
 </div></blockquote>
-</section>
-<section id="id2">
-<h3>phonebook_id<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>phonebook_id</dt><dd><ul class="simple">
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
 <p>ID des Telefonbuchs, in dem nachgeschlagen werden soll.</p>
 <blockquote>
 <div><ul class="simple">
@@ -6122,7 +6659,6 @@
 <li><p>Standardwert: <strong>0</strong></p></li>
 </ul>
 </div></blockquote>
-</section>
 </section>
 <section id="get-deflection-deflection-id">
 <h2>get_deflection(deflection_id)<a class="headerlink" href="#get-deflection-deflection-id" title="Permalink to this heading"></a></h2>
@@ -6132,15 +6668,54 @@
 <li><p>Ergebnistyp der Funktion: <strong>bool</strong></p></li>
 </ul>
 </div></blockquote>
-<section id="deflection-id">
-<h3>deflection_id<a class="headerlink" href="#deflection-id" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>deflection_id</dt><dd><ul class="simple">
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
 <p>Identifikator der abzufragenden Rufumleitung.</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>int</strong></p></li>
 </ul>
 </div></blockquote>
-</section>
 </section>
 <section id="get-deflections">
 <h2>get_deflections()<a class="headerlink" href="#get-deflections" title="Permalink to this heading"></a></h2>
@@ -6177,15 +6752,30 @@
 <li><p>Ergebnistyp der Funktion: <strong>dict(str)</strong></p></li>
 </ul>
 </div></blockquote>
-<section id="index">
-<h3>index<a class="headerlink" href="#index" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>index</dt><dd><ul class="simple">
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
 <p>Index</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>int</strong></p></li>
 </ul>
 </div></blockquote>
-</section>
 </section>
 <section id="get-hosts-only-active">
 <h2>get_hosts(only_active)<a class="headerlink" href="#get-hosts-only-active" title="Permalink to this heading"></a></h2>
@@ -6195,15 +6785,48 @@
 <li><p>Ergebnistyp der Funktion: <strong>list(dict(str))</strong></p></li>
 </ul>
 </div></blockquote>
-<section id="only-active">
-<h3>only_active<a class="headerlink" href="#only-active" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>only_active</dt><dd><ul class="simple">
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
 <p>True, wenn nur aktuell aktive Hosts zurückgegeben werden sollen.</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>bool</strong></p></li>
 </ul>
 </div></blockquote>
-</section>
 </section>
 <section id="get-hosts-dict-only-active">
 <h2>get_hosts_dict(only_active)<a class="headerlink" href="#get-hosts-dict-only-active" title="Permalink to this heading"></a></h2>
@@ -6213,15 +6836,48 @@
 <li><p>Ergebnistyp der Funktion: <strong>dict</strong></p></li>
 </ul>
 </div></blockquote>
-<section id="id3">
-<h3>only_active<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>only_active</dt><dd><ul class="simple">
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
 <p>True, wenn nur aktuell aktive Hosts zurückgegeben werden sollen.</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>bool</strong></p></li>
 </ul>
 </div></blockquote>
-</section>
 </section>
 <section id="get-hosts-list-identifier-list-filter-dict">
 <h2>get_hosts_list(identifier_list, filter_dict)<a class="headerlink" href="#get-hosts-list-identifier-list-filter-dict" title="Permalink to this heading"></a></h2>
@@ -6231,24 +6887,102 @@
 <li><p>Ergebnistyp der Funktion: <strong>list(dict)</strong></p></li>
 </ul>
 </div></blockquote>
-<section id="identifier-list">
-<h3>identifier_list<a class="headerlink" href="#identifier-list" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>identifier_list</dt><dd><ul class="simple">
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
 <p>Liste von Identifiers des Hosts, die zurückgegeben werden sollen; (möglich: ‚Index‘, ‚IPAddress‘, ‚MACAddress‘, ‚HostName‘, ‚FriendyName‘)</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>list</strong></p></li>
 </ul>
 </div></blockquote>
-</section>
-<section id="filter-dict">
-<h3>filter_dict<a class="headerlink" href="#filter-dict" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>filter_dict</dt><dd><ul class="simple">
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
 <p>Dict von Filtern, für welche die Host-Identifier zurückgegeben werden sollen (bspw: filter={‚Active‘: False} gibt alle nicht-aktiven Host zurück)</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>dict</strong></p></li>
 </ul>
 </div></blockquote>
-</section>
 </section>
 <section id="get-mesh-topology">
 <h2>get_mesh_topology()<a class="headerlink" href="#get-mesh-topology" title="Permalink to this heading"></a></h2>
@@ -6276,15 +7010,30 @@
 <li><p>Ergebnistyp der Funktion: <strong>str</strong></p></li>
 </ul>
 </div></blockquote>
-<section id="id4">
-<h3>index<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>index</dt><dd><ul class="simple">
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
 <p>Index</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>int</strong></p></li>
 </ul>
 </div></blockquote>
-</section>
 </section>
 <section id="get-phone-numbers-by-name-name-phonebook-id-0">
 <h2>get_phone_numbers_by_name(name, phonebook_id=0)<a class="headerlink" href="#get-phone-numbers-by-name-name-phonebook-id-0" title="Permalink to this heading"></a></h2>
@@ -6294,17 +7043,66 @@
 <li><p>Ergebnistyp der Funktion: <strong>dict(dict(str))</strong></p></li>
 </ul>
 </div></blockquote>
-<section id="name">
-<h3>name<a class="headerlink" href="#name" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>name</dt><dd><ul class="simple">
+<li><ul>
+<li><ul>
+<li><ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
 <p>Anteiliger oder vollständiger Name des Kontakts.</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>str</strong></p></li>
 </ul>
 </div></blockquote>
-</section>
-<section id="id5">
-<h3>phonebook_id<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>phonebook_id</dt><dd><ul class="simple">
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
 <p>ID des Telefonbuchs, in dem nachgeschlagen werden soll.</p>
 <blockquote>
 <div><ul class="simple">
@@ -6312,7 +7110,6 @@
 <li><p>Standardwert: <strong>0</strong></p></li>
 </ul>
 </div></blockquote>
-</section>
 </section>
 <section id="is-host-active-mac-address">
 <h2>is_host_active(mac_address)<a class="headerlink" href="#is-host-active-mac-address" title="Permalink to this heading"></a></h2>
@@ -6322,15 +7119,48 @@
 <li><p>Ergebnistyp der Funktion: <strong>bool</strong></p></li>
 </ul>
 </div></blockquote>
-<section id="mac-address">
-<h3>mac_address<a class="headerlink" href="#mac-address" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>mac_address</dt><dd><ul class="simple">
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
 <p>MAC Adresse</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>mac</strong></p></li>
 </ul>
 </div></blockquote>
-</section>
 </section>
 <section id="reboot">
 <h2>reboot()<a class="headerlink" href="#reboot" title="Permalink to this heading"></a></h2>
@@ -6358,15 +7188,45 @@
 <li><p>Die Funktion liefert kein Ergebnis</p></li>
 </ul>
 </div></blockquote>
-<section id="phone-name">
-<h3>phone_name<a class="headerlink" href="#phone-name" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>phone_name</dt><dd><ul class="simple">
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
 <p>Identifikator des Telefons, dass als ‚call origin‘ gesetzt werden soll. bspw. zwei Sterne gefolgt von ‚610‘ für ein internes Gerät.</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>mac</strong></p></li>
 </ul>
 </div></blockquote>
-</section>
 </section>
 <section id="set-deflection-enable-deflection-id-enable">
 <h2>set_deflection_enable(deflection_id, enable)<a class="headerlink" href="#set-deflection-enable-deflection-id-enable" title="Permalink to this heading"></a></h2>
@@ -6376,24 +7236,81 @@
 <li><p>Ergebnistyp der Funktion: <strong>bool</strong></p></li>
 </ul>
 </div></blockquote>
-<section id="id6">
-<h3>deflection_id<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>deflection_id</dt><dd><ul class="simple">
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
 <p>Identifikator der abzufragenden Rufumleitung.</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>int</strong></p></li>
 </ul>
 </div></blockquote>
-</section>
-<section id="enable">
-<h3>enable<a class="headerlink" href="#enable" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>enable</dt><dd><ul class="simple">
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
 <p>An / Aus</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>bool</strong></p></li>
 </ul>
 </div></blockquote>
-</section>
 </section>
 <section id="start-call-phone-number">
 <h2>start_call(phone_number)<a class="headerlink" href="#start-call-phone-number" title="Permalink to this heading"></a></h2>
@@ -6403,15 +7320,51 @@
 <li><p>Die Funktion liefert kein Ergebnis</p></li>
 </ul>
 </div></blockquote>
-<section id="id7">
-<h3>phone_number<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>phone_number</dt><dd><ul class="simple">
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
 <p>Vollständige Telefonnummer, die angerufen werden soll.</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>str</strong></p></li>
 </ul>
 </div></blockquote>
-</section>
 </section>
 <section id="wol-mac-address">
 <h2>wol(mac_address)<a class="headerlink" href="#wol-mac-address" title="Permalink to this heading"></a></h2>
@@ -6421,8 +7374,42 @@
 <li><p>Die Funktion liefert kein Ergebnis</p></li>
 </ul>
 </div></blockquote>
-<section id="id8">
-<h3>mac_address<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>mac_address</dt><dd><ul class="simple">
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li><ul>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
 <p>MAC Adresse</p>
 <blockquote>
 <div><ul class="simple">
@@ -6435,7 +7422,6 @@
 <p>Diese Seite wurde aus den Metadaten des Plugins erzeugt.</p>
 </aside>
 </aside>
-</section>
 </section>
 </section>
 

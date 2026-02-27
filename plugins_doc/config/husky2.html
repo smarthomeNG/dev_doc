@@ -4,10 +4,11 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plugin ‚husky2‘ Konfiguration &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 13. Februar 2026, commit b22fbdf) Dokumentation</title>
+  <title>Plugin ‚husky2‘ Konfiguration &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 27. Februar 2026, commit 9bd379a) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/treeview.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
 
   
@@ -23,6 +24,7 @@
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
         <script src="../../_static/translations.js"></script>
+        <script src="../../_static/treeview.js"></script>
         <script src="../../_static/design-tabs.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Stichwortverzeichnis" href="../../genindex.html" />
@@ -242,7 +244,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#verzeichnis-scenes">Verzeichnis <em>../scenes</em></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#aufbau-der-konfigurationsdateien">Aufbau der Konfigurationsdateien</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#aufbau-der-konfigurationsdateien">Aufbau der Konfigurationsdateien</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#formate-von-values-in-yaml-dateien">Formate von Values in YAML Dateien</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#yaml-syntax">YAML Syntax</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#grundlegende-yaml-regeln">Grundlegende YAML Regeln</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#basis-datatypen-in-yaml">Basis DataTypen in YAML</a></li>
@@ -372,8 +377,11 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../konfiguration/item_structs.html">structs (Item Strukturen)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#uberblick">Überblick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../konfiguration/item_structs.html">structs (Item Strukturen) <span class="greensup">Update</span></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#uberblick">Überblick</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../konfiguration/item_structs.html#vererbte-attribute-new">Vererbte Attribute <span class="redsup">new</span></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#struct-templates-in-plugins">struct-Templates in Plugins</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/item_structs.html#anwendung">Anwendung</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/item_structs.html#multi-instance-unterstutzung">Multi-Instance Unterstützung</a></li>
@@ -5648,7 +5656,7 @@
 <a class="reference internal image-reference" href="../../_images/plugin_logo63.png" id="index-0"><img alt="plugin logo" class="align-left" id="index-0" src="../../_images/plugin_logo63.png" style="width: 150.0px; height: 150.0px;" /></a>
 <p>Im folgenden sind etwaige Anforderungen und unterstützte Hardware beschrieben. Danach folgt die               Beschreibung, wie das Plugin <strong>husky2</strong> konfiguriert wird. Außerdem ist im folgenden               beschrieben, wie das Plugin in den Item Definitionen genutzt werden kann. <a class="footnote-reference brackets" href="#f1" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p>
 <p>Es handelt sich bei diesem Plugin um ein <strong>interface Plugin</strong>.</p>
-<p><strong>ACHTUNG</strong>: Dieses Plugin ist als develop gekennzeichnet. Es kann daher sein, dass es                  noch nicht Feature-Complete oder noch fehlerhaft ist.</p>
+<p><strong>ACHTUNG</strong>: Dieses Plugin ist als develop gekennzeichnet. Es kann daher sein, dass es                  noch nicht sämtliche Funktionen unterstützt oder noch fehlerhaft ist.</p>
 <section id="beschreibung">
 <h2>Beschreibung<a class="headerlink" href="#beschreibung" title="Permalink to this heading"></a></h2>
 <p>Husqvarna Automower Plugin (unterstützt das neue API)</p>
@@ -5781,6 +5789,65 @@
 </li>
 </ul>
 </div></blockquote>
+</section>
+</section>
+<section id="item-structs">
+<h1>Item-Structs<a class="headerlink" href="#item-structs" title="Permalink to this heading"></a></h1>
+<p>Das Plugin stellt die folgenden Item-Structs zur Verfügung. Diese Informationen sind aus der <cite>plugin.yaml</cite> entnommen und möglicherweise nicht vollständig.</p>
+<section id="basic">
+<h2>basic<a class="headerlink" href="#basic" title="Permalink to this heading"></a></h2>
+<p>Default Mower Template</p>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>basic</strong> (<cite>foo</cite>, Default Mower Template)</dt><dd><ul>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>info</strong> (<cite>foo</cite>, Mower information)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>device</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>model</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>id</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>serial</strong> (<cite>num</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>state</strong> (<cite>foo</cite>, State information)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>connection</strong> (<cite>bool</cite>, mower connection state)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>activity</strong> (<cite>str</cite>, activity [ UNKNOWN, NOT_APPLICABLE, MOWING, GOING_HOME, CHARGING, LEAVING, PARKED_IN_CS, STOPPED_IN_GARDEN ])</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>errormessage</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>message</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>mode</strong> (<cite>str</cite>, mode [ MAIN_AREA, SECONDARY_AREA, HOME, DEMO, UNKNOWN ])</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>state</strong> (<cite>str</cite>, state [ UNKNOWN, NOT_APPLICABLE, PAUSED, IN_OPERATION, WAIT_UPDATING, WAIT_POWER_UP, RESTRICTED, OFF, STOPPED, ERROR, FATAL_ERROR, ERROR_AT_POWER_UP ])</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>batterypercent</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>battery255</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>longitude</strong> (<cite>num</cite>, mower gps longitude)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>latitude</strong> (<cite>num</cite>, mower gps latitude)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>gpspoints</strong> (<cite>list</cite>, mower last gps points)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>control</strong> (<cite>foo</cite>, Control commands)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>start3H</strong> (<cite>num</cite>, Start)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>resume</strong> (<cite>bool</cite>, Start)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>stop</strong> (<cite>bool</cite>, Stop)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>park3H</strong> (<cite>num</cite>, Park)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>parkPermantent</strong> (<cite>bool</cite>, Park)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>parkUntilNext</strong> (<cite>bool</cite>, Park)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>cuttingHeight</strong> (<cite>num</cite>, cutting height [1, 2, 3, 4, 5, 6, 7, 8, 9])</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>headLight</strong> (<cite>str</cite>, headLight settings [ ALWAYS_ON, ALWAYS_OFF, EVENING_ONLY, EVENING_AND_NIGHT ])</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
 </section>
 </section>
 <section id="logik-parameter">

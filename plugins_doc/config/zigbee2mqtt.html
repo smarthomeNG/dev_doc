@@ -4,10 +4,11 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plugin ‚zigbee2mqtt‘ Konfiguration &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 13. Februar 2026, commit b22fbdf) Dokumentation</title>
+  <title>Plugin ‚zigbee2mqtt‘ Konfiguration &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 27. Februar 2026, commit 9bd379a) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/treeview.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
 
   
@@ -23,6 +24,7 @@
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
         <script src="../../_static/translations.js"></script>
+        <script src="../../_static/treeview.js"></script>
         <script src="../../_static/design-tabs.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Stichwortverzeichnis" href="../../genindex.html" />
@@ -242,7 +244,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#verzeichnis-scenes">Verzeichnis <em>../scenes</em></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#aufbau-der-konfigurationsdateien">Aufbau der Konfigurationsdateien</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#aufbau-der-konfigurationsdateien">Aufbau der Konfigurationsdateien</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#formate-von-values-in-yaml-dateien">Formate von Values in YAML Dateien</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#yaml-syntax">YAML Syntax</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#grundlegende-yaml-regeln">Grundlegende YAML Regeln</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#basis-datatypen-in-yaml">Basis DataTypen in YAML</a></li>
@@ -372,8 +377,11 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../konfiguration/item_structs.html">structs (Item Strukturen)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#uberblick">Überblick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../konfiguration/item_structs.html">structs (Item Strukturen) <span class="greensup">Update</span></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#uberblick">Überblick</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../konfiguration/item_structs.html#vererbte-attribute-new">Vererbte Attribute <span class="redsup">new</span></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#struct-templates-in-plugins">struct-Templates in Plugins</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/item_structs.html#anwendung">Anwendung</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/item_structs.html#multi-instance-unterstutzung">Multi-Instance Unterstützung</a></li>
@@ -5648,7 +5656,7 @@
 <a class="reference internal image-reference" href="../../_images/plugin_logo79.png" id="index-0"><img alt="plugin logo" class="align-left" id="index-0" src="../../_images/plugin_logo79.png" style="width: 150.0px; height: 150.0px;" /></a>
 <p>Im folgenden sind etwaige Anforderungen und unterstützte Hardware beschrieben. Danach folgt die               Beschreibung, wie das Plugin <strong>zigbee2mqtt</strong> konfiguriert wird. Außerdem ist im folgenden               beschrieben, wie das Plugin in den Item Definitionen genutzt werden kann. <a class="footnote-reference brackets" href="#f1" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p>
 <p>Es handelt sich bei diesem Plugin um ein <strong>gateway Plugin</strong>.</p>
-<p><strong>ACHTUNG</strong>: Dieses Plugin ist als develop gekennzeichnet. Es kann daher sein, dass es                  noch nicht Feature-Complete oder noch fehlerhaft ist.</p>
+<p><strong>ACHTUNG</strong>: Dieses Plugin ist als develop gekennzeichnet. Es kann daher sein, dass es                  noch nicht sämtliche Funktionen unterstützt oder noch fehlerhaft ist.</p>
 <section id="beschreibung">
 <h2>Beschreibung<a class="headerlink" href="#beschreibung" title="Permalink to this heading"></a></h2>
 <p>Plugin zur Steuerung von Geräten, die mit einem Zigbee Gateway mit der Zigbee2MQTT Firmware versehen sind. Die Kommunikation erfolgt über das MQTT Module von SmartHomeNG.</p>
@@ -5769,6 +5777,271 @@
 <li><p>Datentyp: <strong>bool</strong></p></li>
 </ul>
 </div></blockquote>
+</section>
+</section>
+<section id="item-structs">
+<h1>Item-Structs<a class="headerlink" href="#item-structs" title="Permalink to this heading"></a></h1>
+<p>Das Plugin stellt die folgenden Item-Structs zur Verfügung. Diese Informationen sind aus der <cite>plugin.yaml</cite> entnommen und möglicherweise nicht vollständig.</p>
+<section id="bridge">
+<h2>bridge<a class="headerlink" href="#bridge" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>bridge</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>online</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>config</strong> (<cite>dict</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>coordinator</strong> (<cite>dict</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>config_schema</strong> (<cite>dict</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>network</strong> (<cite>dict</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>permit_join</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>restart</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>version</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>devices</strong> (<cite>list</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>groups</strong> (<cite>list</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="dimmer">
+<h2>dimmer<a class="headerlink" href="#dimmer" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>dimmer</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>action</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>battery</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>duration</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>last_seen</strong> (<cite>foo</cite>, —)</p></li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>on</strong> (<cite>bool</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>hold</strong> (<cite>bool</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>off</strong> (<cite>bool</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>hold</strong> (<cite>bool</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>up</strong> (<cite>bool</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>hold</strong> (<cite>bool</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>down</strong> (<cite>bool</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>hold</strong> (<cite>bool</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="doorsensor-generic">
+<h2>doorsensor_generic<a class="headerlink" href="#doorsensor-generic" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>doorsensor_generic</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>contact</strong> (<cite>bool</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="doorsensor-tuya">
+<h2>doorsensor_tuya<a class="headerlink" href="#doorsensor-tuya" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>doorsensor_tuya</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>battery</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>low_battery</strong> (<cite>bool</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="light-rgb">
+<h2>light_rgb<a class="headerlink" href="#light-rgb" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>light_rgb</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>update</strong> (<cite>dict</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>installed_version</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>latest_version</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>state</strong> (<cite>str</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="light-rgb-group">
+<h2>light_rgb_group<a class="headerlink" href="#light-rgb-group" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>light_rgb_group</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>color</strong> (<cite>dict</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>r</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>g</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>b</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>rgb</strong> (<cite>str</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>color_startup</strong> (<cite>dict</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="light-white-ambient">
+<h2>light_white_ambient<a class="headerlink" href="#light-white-ambient" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>light_white_ambient</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>update</strong> (<cite>dict</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>installed_version</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>latest_version</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>state</strong> (<cite>str</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="light-white-ambient-group">
+<h2>light_white_ambient_group<a class="headerlink" href="#light-white-ambient-group" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>light_white_ambient_group</strong> (<cite>bool</cite>, —)</dt><dd><ul>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>brightness</strong> (<cite>num</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>percent</strong> (<cite>num</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>color_temp</strong> (<cite>num</cite>, 153..454, coolest, cool, neutral, warm, warmest)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>kelvin</strong> (<cite>num</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>color_mode</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>scene</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>scenes</strong> (<cite>list</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>color_startup</strong> (<cite>num</cite>, 153..454, coolest, cool, neutral, warm, warmest, previous)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>last_seen</strong> (<cite>foo</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="lightsensor-xiaomi">
+<h2>lightsensor_xiaomi<a class="headerlink" href="#lightsensor-xiaomi" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>lightsensor_xiaomi</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>illuminance</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>illuminance_lux</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>detection_period</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>device_temperature</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>power_outage_count</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>voltage</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>state</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>battery</strong> (<cite>num</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="lqi">
+<h2>lqi<a class="headerlink" href="#lqi" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>lqi</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>linkquality</strong> (<cite>num</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="socket-generic">
+<h2>socket_generic<a class="headerlink" href="#socket-generic" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>socket_generic</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>state</strong> (<cite>bool</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="socket-tuya">
+<h2>socket_tuya<a class="headerlink" href="#socket-tuya" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>socket_tuya</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>power</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>energy</strong> (<cite>num</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
 </section>
 </section>
 <section id="logik-parameter">

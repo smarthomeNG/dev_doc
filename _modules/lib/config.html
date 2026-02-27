@@ -3,10 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.config &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 13. Februar 2026, commit b22fbdf) Dokumentation</title>
+  <title>lib.config &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 27. Februar 2026, commit 9bd379a) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/treeview.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
 
   
@@ -22,6 +23,7 @@
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
         <script src="../../_static/translations.js"></script>
+        <script src="../../_static/treeview.js"></script>
         <script src="../../_static/design-tabs.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Stichwortverzeichnis" href="../../genindex.html" />
@@ -241,7 +243,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#verzeichnis-scenes">Verzeichnis <em>../scenes</em></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#aufbau-der-konfigurationsdateien">Aufbau der Konfigurationsdateien</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#aufbau-der-konfigurationsdateien">Aufbau der Konfigurationsdateien</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#formate-von-values-in-yaml-dateien">Formate von Values in YAML Dateien</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#yaml-syntax">YAML Syntax</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#grundlegende-yaml-regeln">Grundlegende YAML Regeln</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#basis-datatypen-in-yaml">Basis DataTypen in YAML</a></li>
@@ -371,8 +376,11 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../konfiguration/item_structs.html">structs (Item Strukturen)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#uberblick">Überblick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../konfiguration/item_structs.html">structs (Item Strukturen) <span class="greensup">Update</span></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#uberblick">Überblick</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../konfiguration/item_structs.html#vererbte-attribute-new">Vererbte Attribute <span class="redsup">new</span></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#struct-templates-in-plugins">struct-Templates in Plugins</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/item_structs.html#anwendung">Anwendung</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/item_structs.html#multi-instance-unterstutzung">Multi-Instance Unterstützung</a></li>
@@ -5920,14 +5928,18 @@
         <span class="k">return</span> <span class="n">l1</span> <span class="o">+</span> <span class="n">l2</span></div>
 
 
-<div class="viewcode-block" id="merge"><a class="viewcode-back" href="../../lib/config.html#lib.config.merge">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">merge</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">source_name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">dest_name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="merge"><a class="viewcode-back" href="../../lib/config.html#lib.config.merge">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">merge</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">source_name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">dest_name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Merges an OrderedDict Tree into another one</span>
 
 <span class="sd">    :param source: source tree to merge into another one</span>
 <span class="sd">    :param destination: destination tree to merge into</span>
+<span class="sd">    :param add: Data to insert into every node</span>
+<span class="sd">    :param top: don&#39;t add &lt;add&gt; if at top of tree</span>
 <span class="sd">    :type source: OrderedDict</span>
 <span class="sd">    :type destination: OrderedDict</span>
+<span class="sd">    :type add: OrderedDict|None</span>
+<span class="sd">    :type top: bool</span>
 
 <span class="sd">    :return: Merged configuration tree</span>
 <span class="sd">    :rtype: OrderedDict</span>
@@ -5955,7 +5967,7 @@
                 <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="s1">&#39;None&#39;</span><span class="p">:</span>
                     <span class="n">destination</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">merge</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">source_name</span><span class="p">,</span> <span class="n">dest_name</span><span class="p">)</span>
+                    <span class="n">merge</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">source_name</span><span class="p">,</span> <span class="n">dest_name</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="n">add</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">destination</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="nb">list</span><span class="p">):</span>
                     <span class="k">if</span> <span class="n">destination</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -5967,7 +5979,9 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># convert to string and remove newlines from multiline attributes</span>
                     <span class="n">destination</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-
+            <span class="c1"># if &quot;add&quot; dict is supplied, insert into every node, overwriting existing values</span>
+            <span class="k">if</span> <span class="n">add</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">top</span><span class="p">:</span>
+                <span class="n">destination</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">add</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem merging subtrees (key=</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">), probably invalid YAML file &#39;</span><span class="si">{</span><span class="n">source_name</span><span class="si">}</span><span class="s2">&#39; with entry &#39;</span><span class="si">{</span><span class="n">destination</span><span class="si">}</span><span class="s2">&#39;. Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -5989,12 +6003,14 @@
     <span class="k">return</span> <span class="n">internal_dict_value</span></div>
 
 
-<div class="viewcode-block" id="nested_put"><a class="viewcode-back" href="../../lib/config.html#lib.config.nested_put">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">nested_put</span><span class="p">(</span><span class="n">output_dict</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="nested_put"><a class="viewcode-back" href="../../lib/config.html#lib.config.nested_put">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">nested_put</span><span class="p">(</span><span class="n">output_dict</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    :param output_dict: dict structure to write to</span>
 <span class="sd">    :param path: path to write to</span>
 <span class="sd">    :param value: value to write to the nested key</span>
+<span class="sd">    :param add: data to insert into every node</span>
+<span class="sd">    :param top: at top of tree, don&#39;t add &lt;add&gt; here</span>
 <span class="sd">    :return:</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">internal_dict_value</span> <span class="o">=</span> <span class="n">output_dict</span>
@@ -6020,7 +6036,7 @@
         <span class="c1">#     logger.warning(f&quot;nested_put: - merge struct = {dict(value)}&quot;)</span>
 
         <span class="c1"># internal_last_dict_value[nested_key[len(nested_key)-1]] = value</span>
-        <span class="n">merge</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">internal_last_dict_value</span><span class="p">[</span><span class="n">nested_key</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">nested_key</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]],</span> <span class="s1">&#39;struct-tree&#39;</span><span class="p">,</span> <span class="s1">&#39;sub-tree&#39;</span><span class="p">)</span>
+        <span class="n">merge</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">internal_last_dict_value</span><span class="p">[</span><span class="n">nested_key</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">nested_key</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]],</span> <span class="s1">&#39;struct-tree&#39;</span><span class="p">,</span> <span class="s1">&#39;sub-tree&#39;</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="n">add</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># if struct_merging_active:</span>
         <span class="c1">#     logger.warning(f&quot;nested_put: - dest result  = {dict(internal_last_dict_value[nested_key[len(nested_key)-1]])}&quot;)</span>
@@ -6045,6 +6061,10 @@
 <span class="sd">    :return: True, if a struct attribute was expanded</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">first</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; return first item of iterable &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">source_name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;test_struct&#39;</span><span class="p">):</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;search_for_struct_in_items: items.keys()=</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">items</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">, source_name=</span><span class="si">{</span><span class="n">source_name</span><span class="si">}</span><span class="s2">, parent=</span><span class="si">{</span><span class="n">parent</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -6058,7 +6078,31 @@
 
         <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;struct&#39;</span><span class="p">:</span>
             <span class="c1"># item is a struct</span>
-            <span class="n">struct_names</span> <span class="o">=</span> <span class="n">value</span>
+
+            <span class="n">struct_attr_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">value</span><span class="p">):</span>
+
+                <span class="c1"># we have a list of dicts</span>
+                <span class="n">struct_attr_list</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="c1"># do a thorough conversion if we have a mix of strs and dicts</span>
+                <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+                    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                        <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;while processing </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1"> of </span><span class="si">{</span><span class="n">items</span><span class="si">}</span><span class="s1">, list element </span><span class="si">{</span><span class="n">entry</span><span class="si">}</span><span class="s1"> could not be processed&#39;</span><span class="p">)</span>
+                <span class="n">struct_names</span> <span class="o">=</span> <span class="n">s</span>  <span class="c1"># [k for k,v in value.items()]</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+
+                <span class="c1"># we have a single dict</span>
+                <span class="n">struct_attr_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">value</span><span class="p">)]</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;found struct attrs as dict in </span><span class="si">{</span><span class="n">parent</span><span class="si">}</span><span class="s1">, tell developer&#39;</span><span class="p">)</span>
+                <span class="n">struct_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">struct_names</span> <span class="o">=</span> <span class="n">value</span>
             <span class="c1"># ensure, struct_names is a list</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">struct_names</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                 <span class="n">struct_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">struct_names</span><span class="p">]</span>
@@ -6066,14 +6110,28 @@
             <span class="n">instance</span> <span class="o">=</span> <span class="n">items</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;instance&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
             <span class="n">template</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
 
+            <span class="c1"># we need a joined OrderedDict()...</span>
+            <span class="n">struct_attrs</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">struct_attr_list</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">s_name</span> <span class="o">=</span> <span class="n">first</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                    <span class="n">struct_attrs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">s_name</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">())</span>
+                    <span class="k">for</span> <span class="n">subitem</span> <span class="ow">in</span> <span class="n">item</span><span class="p">[</span><span class="n">s_name</span><span class="p">]:</span>
+                        <span class="n">struct_attrs</span><span class="p">[</span><span class="n">s_name</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">subitem</span><span class="p">)</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="c1"># this shouldn&#39;t happen, just log something on debug.</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Problem joining struct attr data from </span><span class="si">{</span><span class="n">struct_attr_list</span><span class="si">}</span><span class="s1"> for </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
             <span class="k">global</span> <span class="n">struct_merging_active</span>
             <span class="n">struct_merging_active</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">for</span> <span class="n">struct_name</span> <span class="ow">in</span> <span class="n">struct_names</span><span class="p">:</span>
                 <span class="n">wrk</span> <span class="o">=</span> <span class="n">struct_name</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">wrk</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-                    <span class="n">add_struct_to_item_template</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">struct_name</span><span class="p">[:</span><span class="n">wrk</span><span class="p">],</span> <span class="n">template</span><span class="p">,</span> <span class="n">struct_dict</span><span class="p">,</span> <span class="n">struct_name</span><span class="p">[</span><span class="n">wrk</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:])</span>
+                    <span class="n">add_struct_to_item_template</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">struct_name</span><span class="p">[:</span><span class="n">wrk</span><span class="p">],</span> <span class="n">template</span><span class="p">,</span> <span class="n">struct_dict</span><span class="p">,</span> <span class="n">struct_name</span><span class="p">[</span><span class="n">wrk</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:],</span> <span class="n">struct_attrs</span><span class="o">=</span><span class="n">struct_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">struct_name</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">add_struct_to_item_template</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">struct_name</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">struct_dict</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
+                    <span class="n">add_struct_to_item_template</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">struct_name</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">struct_dict</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">struct_attrs</span><span class="o">=</span><span class="n">struct_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">struct_name</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">template</span> <span class="o">!=</span> <span class="p">{}:</span>
                 <span class="n">config</span> <span class="o">=</span> <span class="n">merge</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">source_name</span><span class="p">,</span> <span class="s1">&#39;Item-Tree&#39;</span><span class="p">)</span>
             <span class="n">struct_merging_active</span> <span class="o">=</span> <span class="kc">False</span>
@@ -6125,7 +6183,7 @@
     <span class="k">return</span></div>
 
 
-<div class="viewcode-block" id="add_struct_to_item_template"><a class="viewcode-back" href="../../lib/config.html#lib.config.add_struct_to_item_template">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">add_struct_to_item_template</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">struct_name</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">struct_dict</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+<div class="viewcode-block" id="add_struct_to_item_template"><a class="viewcode-back" href="../../lib/config.html#lib.config.add_struct_to_item_template">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">add_struct_to_item_template</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">struct_name</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">struct_dict</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">struct_attrs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add the referenced struct to the items_template subtree</span>
 
@@ -6134,6 +6192,7 @@
 <span class="sd">    :param template: Template dict to be merged into the item tree</span>
 <span class="sd">    :param struct_dict: dict with all defined structs (from /etc/structs.yaml and from loaded plugins)</span>
 <span class="sd">    :param instance: For multi instance plugins: instance for which the items work (is derived from item with struct attribute)</span>
+<span class="sd">    :param struct_attrs: OrderedDict with attributes to set for every item</span>
 
 <span class="sd">    :return:</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -6158,7 +6217,7 @@
             <span class="k">if</span> <span class="n">Utils</span><span class="o">.</span><span class="n">to_bool</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">_sh</span><span class="p">,</span> <span class="s1">&#39;_struct_strip_name&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)):</span>
                 <span class="k">del</span> <span class="n">tmp_struct</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;removed &quot;name&quot; attribute from struct </span><span class="si">{</span><span class="n">struct_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">nested_put</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">tmp_struct</span><span class="p">)</span>
+        <span class="n">nested_put</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">tmp_struct</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="n">struct_attrs</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">instance</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span> <span class="kc">True</span><span class="p">:</span>
             <span class="c1"># add instance to items added by template struct</span>

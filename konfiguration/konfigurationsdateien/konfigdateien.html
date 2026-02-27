@@ -4,10 +4,11 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Konfiguration über Dateien &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 13. Februar 2026, commit b22fbdf) Dokumentation</title>
+  <title>Konfiguration über Dateien &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 27. Februar 2026, commit 9bd379a) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/treeview.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
 
   
@@ -23,6 +24,7 @@
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
         <script src="../../_static/translations.js"></script>
+        <script src="../../_static/treeview.js"></script>
         <script src="../../_static/design-tabs.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Stichwortverzeichnis" href="../../genindex.html" />
@@ -244,7 +246,10 @@
 <li class="toctree-l4"><a class="reference internal" href="#verzeichnis-scenes">Verzeichnis <em>../scenes</em></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#aufbau-der-konfigurationsdateien">Aufbau der Konfigurationsdateien</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aufbau-der-konfigurationsdateien">Aufbau der Konfigurationsdateien</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#formate-von-values-in-yaml-dateien">Formate von Values in YAML Dateien</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#yaml-syntax">YAML Syntax</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#grundlegende-yaml-regeln">Grundlegende YAML Regeln</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#basis-datatypen-in-yaml">Basis DataTypen in YAML</a></li>
@@ -374,8 +379,11 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../item_structs.html">structs (Item Strukturen)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../item_structs.html#uberblick">Überblick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../item_structs.html">structs (Item Strukturen) <span class="greensup">Update</span></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../item_structs.html#uberblick">Überblick</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../item_structs.html#vererbte-attribute-new">Vererbte Attribute <span class="redsup">new</span></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../item_structs.html#struct-templates-in-plugins">struct-Templates in Plugins</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../item_structs.html#anwendung">Anwendung</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../item_structs.html#multi-instance-unterstutzung">Multi-Instance Unterstützung</a></li>
@@ -5742,6 +5750,8 @@ Klammern um den Sektions(Item)-Namen bestimmt wird, wird die Struktur
 einer YAML Datei durch Einrückungen bestimmt. - Der Doppelpunkt, der
 einem Sektions-/Key-Namen folgt, kann direkt nach diesem Namen folgen.
 Er <strong>muss</strong> jedoch von einem Leerzeichen gefolgt werden</p>
+<section id="formate-von-values-in-yaml-dateien">
+<h3>Formate von Values in YAML Dateien<a class="headerlink" href="#formate-von-values-in-yaml-dateien" title="Permalink to this heading"></a></h3>
 <p>Values können in YAML Dateien alles, von einfachen Werten über binäre
 Daten bis hin zu Python Objekten sein. Für die Konfigurationsdateien
 werden folgende Value-Typen unterstützt:</p>
@@ -5750,6 +5760,8 @@ werden folgende Value-Typen unterstützt:</p>
 <li><p>Strings</p></li>
 <li><p>Listen</p></li>
 </ul>
+<section id="besonderheiten-boolscher-werte">
+<h4>Besonderheiten boolscher Werte<a class="headerlink" href="#besonderheiten-boolscher-werte" title="Permalink to this heading"></a></h4>
 <p>SmartHomeNG verarbeitet, wie schon smarthome.py, die Values als Strings.
 Dies gilt insbesondere bei der Übergabe von Werten an Plugins. Das ist
 besonders bei der Angabe boolscher Werte zu beachten. Da der YAML Parser
@@ -5761,6 +5773,9 @@ folgendermaßen: <strong>``boolwert: ‚true‘``</strong>.</p>
 boolsche Werte. Deshalb müssen auch diese Werte in Quotes eingeschlossen
 werden. Es ist empfehlenswert nur <strong>true</strong> und <strong>false</strong> für boolsche
 Werte zu verwenden.</p>
+</section>
+<section id="besonderheiten-bei-der-angabe-von-wertelisten">
+<h4>Besonderheiten bei der Angabe von Wertelisten<a class="headerlink" href="#besonderheiten-bei-der-angabe-von-wertelisten" title="Permalink to this heading"></a></h4>
 <p>Im Gegensatz zu den bisherigen .conf Dateien, in denen Wertelisten auf
 einer Zeile spezifiziert wurden und die Werte durch ein ‘|’-Zeichen
 getrennt wurden, ist die Spezifikation in einer YAML Datei vorzugsweise
@@ -5777,6 +5792,9 @@ mehrzeilig.</p>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">value2</span>
 </pre></div>
 </div>
+</section>
+<section id="beispiel-von-item-definitionen">
+<h4>Beispiel von Item Definitionen<a class="headerlink" href="#beispiel-von-item-definitionen" title="Permalink to this heading"></a></h4>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># items.yaml</span>
 <span class="nt">wohnung</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">kochen</span><span class="p">:</span>
@@ -5842,6 +5860,8 @@ Doppel-Quotes escaped werden.</p>
 <span class="w">            </span><span class="nt">sv_widget</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{{</span><span class="nv"> </span><span class="s">device.dimmer(&#39;wohnung.kochen.dl_aussen&#39;,</span><span class="nv"> </span><span class="s">&#39;Äußere</span><span class="nv"> </span><span class="s">Downlights&#39;,</span><span class="nv"> </span><span class="s">&#39;wohnung.kochen.dl_aussen&#39;,</span><span class="nv"> </span><span class="s">&#39;wohnung.kochen.dl_aussen.level&#39;)</span><span class="nv"> </span><span class="s">}}&quot;</span>
 </pre></div>
 </div>
+</section>
+</section>
 </section>
 <section id="yaml-syntax">
 <h2>YAML Syntax<a class="headerlink" href="#yaml-syntax" title="Permalink to this heading"></a></h2>

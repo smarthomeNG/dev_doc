@@ -4,10 +4,11 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plugin ‚kodi‘ Konfiguration &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 13. Februar 2026, commit b22fbdf) Dokumentation</title>
+  <title>Plugin ‚kodi‘ Konfiguration &mdash; Dokumentation v1.11.0.2 v1.11.0.2 develop (Stand 27. Februar 2026, commit 9bd379a) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/treeview.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.5ea377869091fd0449014c60fc090103.min.css" />
 
   
@@ -23,6 +24,7 @@
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
         <script src="../../_static/translations.js"></script>
+        <script src="../../_static/treeview.js"></script>
         <script src="../../_static/design-tabs.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Stichwortverzeichnis" href="../../genindex.html" />
@@ -242,7 +244,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#verzeichnis-scenes">Verzeichnis <em>../scenes</em></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#aufbau-der-konfigurationsdateien">Aufbau der Konfigurationsdateien</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#aufbau-der-konfigurationsdateien">Aufbau der Konfigurationsdateien</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#formate-von-values-in-yaml-dateien">Formate von Values in YAML Dateien</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#yaml-syntax">YAML Syntax</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#grundlegende-yaml-regeln">Grundlegende YAML Regeln</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/konfigurationsdateien/konfigdateien.html#basis-datatypen-in-yaml">Basis DataTypen in YAML</a></li>
@@ -372,8 +377,11 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../konfiguration/item_structs.html">structs (Item Strukturen)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#uberblick">Überblick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../konfiguration/item_structs.html">structs (Item Strukturen) <span class="greensup">Update</span></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#uberblick">Überblick</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../konfiguration/item_structs.html#vererbte-attribute-new">Vererbte Attribute <span class="redsup">new</span></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#struct-templates-in-plugins">struct-Templates in Plugins</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/item_structs.html#anwendung">Anwendung</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../konfiguration/item_structs.html#multi-instance-unterstutzung">Multi-Instance Unterstützung</a></li>
@@ -5648,7 +5656,7 @@
 <a class="reference internal image-reference" href="../../_images/plugin_logo64.png" id="index-0"><img alt="plugin logo" class="align-left" id="index-0" src="../../_images/plugin_logo64.png" style="width: 150.0px; height: 150.0px;" /></a>
 <p>Im folgenden sind etwaige Anforderungen und unterstützte Hardware beschrieben. Danach folgt die               Beschreibung, wie das Plugin <strong>kodi</strong> konfiguriert wird. Außerdem ist im folgenden               beschrieben, wie das Plugin in den Item Definitionen genutzt werden kann. <a class="footnote-reference brackets" href="#f1" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p>
 <p>Es handelt sich bei diesem Plugin um ein <strong>interface Plugin</strong>.</p>
-<p><strong>ACHTUNG</strong>: Dieses Plugin ist als develop gekennzeichnet. Es kann daher sein, dass es                  noch nicht Feature-Complete oder noch fehlerhaft ist.</p>
+<p><strong>ACHTUNG</strong>: Dieses Plugin ist als develop gekennzeichnet. Es kann daher sein, dass es                  noch nicht sämtliche Funktionen unterstützt oder noch fehlerhaft ist.</p>
 <section id="beschreibung">
 <h2>Beschreibung<a class="headerlink" href="#beschreibung" title="Permalink to this heading"></a></h2>
 </section>
@@ -5880,6 +5888,203 @@
 <li><p>Datentyp: <strong>bool</strong></p></li>
 </ul>
 </div></blockquote>
+</section>
+</section>
+<section id="item-structs">
+<h1>Item-Structs<a class="headerlink" href="#item-structs" title="Permalink to this heading"></a></h1>
+<p>Das Plugin stellt die folgenden Item-Structs zur Verfügung. Diese Informationen sind aus der <cite>plugin.yaml</cite> entnommen und möglicherweise nicht vollständig.</p>
+<section id="all">
+<h2>ALL<a class="headerlink" href="#all" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>ALL</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>read</strong> (<cite>bool</cite>, —)</p></li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>info</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>read</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>player</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>state</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>media</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>title</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>streams</strong> (<cite>list</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>subtitles</strong> (<cite>list</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>macro</strong> (<cite>bool</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>status</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>read</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>update</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>ping</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>get_status_au</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>get_actplayer</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>get_settings</strong> (<cite>dict</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>get_status_play</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>get_item</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>get_favourites</strong> (<cite>bool</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>control</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>read</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>playpause</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>seek</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>audio</strong> (<cite>foo</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>speed</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>subtitle</strong> (<cite>foo</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>stop</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>goto</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>power</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>quit</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>mute</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>volume</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>action</strong> (<cite>str</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="control">
+<h2>control<a class="headerlink" href="#control" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>control</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>read</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>playpause</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>seek</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>audio</strong> (<cite>foo</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>speed</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>subtitle</strong> (<cite>foo</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>stop</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>goto</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>power</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>quit</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>mute</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>volume</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>action</strong> (<cite>str</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="info">
+<h2>info<a class="headerlink" href="#info" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>info</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>read</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>player</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>state</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>media</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>title</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>streams</strong> (<cite>list</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>subtitles</strong> (<cite>list</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>macro</strong> (<cite>bool</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="old-control">
+<h2>old_control<a class="headerlink" href="#old-control" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>old_control</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>update</strong> (<cite>bool</cite>, —)</p></li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>play</strong> (<cite>bool</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>play_cmd</strong> (<cite>bool</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>pause</strong> (<cite>bool</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>pause_cmd</strong> (<cite>bool</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>stop</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>playpause</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>previous</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>next</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>seek</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>speed</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>volume</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>mute</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>macro</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>on_off</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>input</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>get_favourites</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>audiostream</strong> (<cite>foo</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>subtitle</strong> (<cite>foo</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="old-info">
+<h2>old_info<a class="headerlink" href="#old-info" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>old_info</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>read</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>player</strong> (<cite>num</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>state</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>media</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>title</strong> (<cite>str</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>audiostreams</strong> (<cite>list</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>subtitles</strong> (<cite>list</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="status">
+<h2>status<a class="headerlink" href="#status" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>status</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>read</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>update</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>ping</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>get_status_au</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>get_actplayer</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>get_settings</strong> (<cite>dict</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>get_status_play</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>get_item</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>get_favourites</strong> (<cite>bool</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
 </section>
 </section>
 <section id="logik-parameter">
