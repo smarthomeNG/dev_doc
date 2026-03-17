@@ -13,6 +13,7 @@ Es gibt drei verschiedene Parametersätze für ein crontab Attribut:
 .. tab-set::
 
     .. tab-item:: init
+    
         Das Item wird zum Start von SmarthomeNG aktualisiert und triggert
         dadurch unter Umständen eine zugewiesene Logik:
 
