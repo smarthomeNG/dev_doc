@@ -205,6 +205,20 @@ installieren sein aber sicher ist sicher.
         Nach einem Neustart passt sich nun bspw. bei Verwendung einer GUI die
         Auflösung dynamisch an.
 
+
+    .. tab-item:: QEMU Gast Agent (Proxmox etc.)
+
+        Wird die Virtuelle Maschine z.B. unter Proxmox ausgeführt
+        müssen die passenden Erweiterungen installiert werden mit:
+
+        .. code-block:: bash
+
+           sudo apt install qemu-guest-agent -y
+           sudo systemctl enable qemu-guest-agent --now
+
+        Nach einem Neustart passt sich nun bspw. bei Verwendung einer GUI die
+        Auflösung dynamisch an.
+
 |
 
 Restarbeiten am System

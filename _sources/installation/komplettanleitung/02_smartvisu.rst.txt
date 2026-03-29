@@ -28,10 +28,10 @@ Webserver und zusätzliche Pakete installieren
 
         .. code-block:: bash
 
-           sudo apt-get install apache2 libawl-php php-curl php8.2-fpm php-json php-xml php-mbstring
+           sudo apt-get install apache2 libawl-php php-curl php8.2-fpm php-json php-xml php-mbstring php-zip
            # für Debian 13, welches PHP 8.4 mitbringt:
            sudo apt install libapache2-mod-php8.4
-           # nun zur Sicherheit den apache nu starten
+           # nun zur Sicherheit den apache neu starten
            sudo systemctl restart apache2
 
     .. tab-item:: NGINX
@@ -111,10 +111,12 @@ das für den Webserver zugänglich ist:
 
 Bitte auf den **Punkt** am Ende des **git clone** Kommandos achten!
 
-Eine Besonderheit des Apache Webservers ist sein spezieller Umgang mit einem Ordner namens "icons" im Root-Verzeichnis. Da smartVISU einen solchen Ordner verwendet, sollte sie immer wie oben angegeben in einem Unterverzeichnis angelegt werden, damit keine Konflikte entstehen. Dies gilt auch für Docker-Umgebungen.
+Eine Besonderheit des Apache Webservers ist sein spezieller Umgang mit einem Ordner namens "icons" im Root-Verzeichnis.
+Da smartVISU einen solchen Ordner verwendet, sollte sie immer wie oben angegeben in einem Unterverzeichnis angelegt werden, damit keine Konflikte entstehen.
+Dies gilt auch für Docker-Umgebungen.
 
-Für den ordnungsgemäßen Betrieb braucht die SmartVISU noch das SmartHomeNG Plugin **smartvisu** und das **Websocket-Modul** (oder
-"visu_websocket", das aber seit v1.8 deprecated ist). Beide sind in der **plugin.yaml.default** und **module.yaml.default** bereits vorkonfiguriert
+Für den ordnungsgemäßen Betrieb braucht die SmartVISU noch das SmartHomeNG Plugin **smartvisu** und das **Websocket-Modul**.
+Beide sind in der **plugin.yaml.default** und **module.yaml.default** bereits vorkonfiguriert
 und werden beim ersten Start nach einer frischen Installation in die Einstellungen
 übernommen.
 
@@ -166,10 +168,12 @@ für SmartHomeNG und JavaScript Code der in der HTML Seite eingebunden wird. Der
 aufgrund der via Websocket übermittelten Daten von Items in SmartHomeNG dynamisch den Inhalt der Webseite (DOM).
 
 
-Nachinstallation der Kurzanleitung
-==================================
+SmartVISU Kurzanleitung
+=======================
 
-Um die aktuelle Version 2.0 der Kurzanleitung nachzuinstallieren, sind folgende Kommandos auszuführen:
+Die SmartVISU 3.7 bringt die Kurzanleitung im Unterordner pages bereits mit. 
+Für alle älteren SmartVISU Installationen <= 3.6 muß die Kurzanleitung manuell nachinstalliert werden.
+Dazu sind folgende Kommandos auszuführen:
 
 .. code-block:: bash
 

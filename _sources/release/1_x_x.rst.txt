@@ -1,5 +1,5 @@
 =============================
-Release 1.xx.x - xx. xxx 2025
+Release 1.xx.x - xx. xxx 2026
 =============================
 
 .. only: comment
