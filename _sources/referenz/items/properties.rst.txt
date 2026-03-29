@@ -12,9 +12,7 @@ Jedes definierte Item bietet die folgenden Properties an, die unter anderem in *
 genutzt werden können. Alle Properties sind zumindest lesend (r/o) zugreifbar. Einige Properties können
 auch beschrieben (r/w) werden.
 
-Properties sind **ab SmartHomeNG v1.6** verfügbar.
-Die Properties ``last/prev_trigger(_by/_age)`` sind **ab SmartHomeNG v1.9.1** verfügbar.
-Die Property ``remark`` ist **ab SmartHomeNG v12** verfügbar.
+Die Property ``remark`` ist **ab SmartHomeNG v12.0** verfügbar.
 
 
 Properties werden in Logiken und eval-Ausdrücken folgendermaßen abgerufen:

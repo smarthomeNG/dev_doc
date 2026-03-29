@@ -6,7 +6,7 @@
 Konfiguration über Dateien
 ==========================
 
-Für die Konfiguration sind die Verzeichnisse ***../etc***, ***../items***, ***../scenes*** und ***../logics*** wichtig.
+Für die Konfiguration sind die Verzeichnisse ``etc``, ``etc/items``, ``etc/scenes`` und ``etc/logics`` wichtig.
 In diesen Verzeichnissen wird die Konfiguration gespeichert und gepflegt. Im folgenden sind
 die Konfigurationsdateien beschrieben, die in diesen Verzeichnissen gespeichert werdeen.
 
@@ -18,8 +18,8 @@ Verzeichnisse
 Im folgenden sind die Verzeichnisse beschrieben, in denen Konfigurationsdateien abgelegt werden.
 
 
-Verzeichnis *../etc*
---------------------
+Verzeichnis *etc*
+-----------------
 
 In diesem Verzeichnis werden die allgemeineren Konfigurationsdateien abgelegt. Im einzelnen sind das folgende
 Dateien:
@@ -33,18 +33,18 @@ Dateien:
 - struct.yaml
 
 
-Verzeichnis *../items*
-----------------------
+Verzeichnis *etc/items*
+-----------------------
 
 In diesem Verzeichnis werden eine oder mehrere Dateien abgelegt, welche die Item Definitionen enthalten. Der
-Name der Dateien ist dabei beliebig. Sie müssen nur gültige YAML Dateien sein und die Endung **.yaml**
+Name der Dateien ist dabei beliebig. Sie müssen nur gültige YAML Dateien sein und die Endung ``.yaml``
 tragen.
 
 - \*.yaml
 
 
-Verzeichnis *../logics*
------------------------
+Verzeichnis *etc/logics*
+------------------------
 
 In diesem Verzeichnis werden die Python Code Dateien der Logiken abgelegt. Zusätzlich legt das Blockly Plugin
 hier auch die Blockly Definitionen ab, die von dem Plugin in Python Code übersetzt werden.
@@ -53,8 +53,8 @@ hier auch die Blockly Definitionen ab, die von dem Plugin in Python Code überse
 - \*.blockly
 
 
-Verzeichnis *../scenes*
------------------------
+Verzeichnis *etc/scenes*
+------------------------
 
 In diesem Verzeichnis werden Szenen Definitionen gespeichert. Außerdem legt SmartHomeNG hier für Szenen, bei
 denen das Lernen von Werten erlaubt ist, eine Datei mit den gelernten Werten zu der Szenendefinition ab.
@@ -74,8 +74,6 @@ Diese Seite beschäftigt sich mit dem grundlegenden Format der
 Konfigurationsdateien. Für die vollständigen
 Konfigurationsmöglichkeiten, bitte auf den jeweiligen Wiki Seiten
 nachsehen.
-
-Das YAML Format wird seit SmartHomeNG **Release 1.3** unterstützt.
 
 Dieser Abschnitt beschäftigt sich nur mit den Teilen der
 Markup-Language, die für SmartHomeNG relevant sind. Bei einem
@@ -111,10 +109,8 @@ Und die Beschreibungen für **Items** sehen so aus:
                key4: value4
 
 Wichtig ist dabei folgendes: - In YAML Dateien sind keine TABs erlaubt.
-Es müssen Leerzeichen verwendet werden. - Im Gegensatz zu
-Item\ **.conf** Dateien, bei denen die Struktur durch die Anzahl eckiger
-Klammern um den Sektions(Item)-Namen bestimmt wird, wird die Struktur
-einer YAML Datei durch Einrückungen bestimmt. - Der Doppelpunkt, der
+Es müssen Leerzeichen verwendet werden, die Struktur
+einer YAML Datei wird durch Einrückungen bestimmt. Der Doppelpunkt, der
 einem Sektions-/Key-Namen folgt, kann direkt nach diesem Namen folgen.
 Er **muss** jedoch von einem Leerzeichen gefolgt werden
 

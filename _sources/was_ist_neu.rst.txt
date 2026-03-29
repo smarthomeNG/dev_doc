@@ -10,31 +10,31 @@ diesem und den vorangegangenen Releases ist den :doc:`Release Notes </release/re
 
     - **Backup der Konfiguration**: Das Sichern und Wiederherstellen der Konfiguration wurde erweitert.
       Beim sichern der Konfiguration werden nun, falls vorhanden, die privaten Plugins (Plugins, deren
-      Name mit **priv_** beginnt) und die privaten Tools (das Verzeichnis priv_tools) mit gesichert und
+      Name mit ``priv_`` beginnt) und die privaten Tools (das Verzeichnis priv_tools) mit gesichert und
       beim Wiederherstellen aus der Zip Datei zurück kopiert.
 
       Dadurch steht jetzt eine einfache Möglichkeit der Sicherung dieser Dateien, die nicht in git
       gesichert werden, zur Verfügung.
 
     - **Konfiguration unterhalb von etc mit Migration**: Wenn SmartHomeNG mit der Kommandozeilenoption **-e** gestartet
-      wird, sucht es die Konfigurationsverzeichnisse `items, `structs`, `logics`, `uf` und `scenes`
-      nicht mehr im Stammverzeichnis, sondern unterhalb von `etc`. Dies ist auch durch die Option
-      **config_etc: true** in der `etc/smarthome.yaml` möglich.
+      wird, sucht es die Konfigurationsverzeichnisse ``items``, ``structs``, ``logics``, ``uf`` und ``scenes``
+      nicht mehr im Stammverzeichnis, sondern unterhalb von ``etc``. Dies ist auch durch die Option
+      **config_etc: true** in der ``etc/smarthome.yaml`` möglich.
 
-      Gleichzeitig wird versucht, vorhandene Konfigurationsdateien nach `etc/<Verzeichnis>`` zu verschieben und -
-      beim Aufruf mit **-e** - den Eintrag **config_etc: true** in der `etc/smarthome.yaml` einzutragen, da nach
+      Gleichzeitig wird versucht, vorhandene Konfigurationsdateien nach ``etc/<Verzeichnis>`` zu verschieben und -
+      beim Aufruf mit **-e** - den Eintrag **config_etc: true** in der ``etc/smarthome.yaml`` einzutragen, da nach
       der Migration der Konfigurationsdateien der bisherige Aufruf nicht mehr funktionieren würde.
 
-      Die Konfiguration unterhalb von `etc` soll in zukünftigen Releases Standard werden.
+      Die Konfiguration unterhalb von ``etc`` soll in zukünftigen Releases Standard werden.
 
     - **Anpassung der Plugin-Instanzbenennung**: Bisher wurde der Instanzname eines Plugins aus der Angabe
-      **instance: <name>** in der `etc/plugin.yaml` ermittelt. Im - derzeit optional verfügbaren - neuen
-      System wird stattdessen der Name des entsprechenden Abschnitts in der `etc/plugin.yaml` verwendet.
+      **instance: <name>** in der ``etc/plugin.yaml`` ermittelt. Im - derzeit optional verfügbaren - neuen
+      System wird stattdessen der Name des entsprechenden Abschnitts in der ``etc/plugin.yaml`` verwendet.
       Damit erhält standardmäßig jedes Plugin, das mehrfach eingebunden wird, einen Instanzbezeichner. Wenn
       das für einzelne Instanzen nicht gewollt ist, kann mit **default_instance: true** für einzelne Plugins
       weiterhin der leere Instanzname verwendet werden.
 
-      Um dieses System jetzt schon zu aktivieren, muss in der `etc/smarthome.yaml` die Option
+      Um dieses System jetzt schon zu aktivieren, muss in der ``etc/smarthome.yaml`` die Option
       **legacy_instances: false** gesetzt werden.
 
       Diese Methode der Instanzbenennung soll in zukünftigen Releases Standard werden.
@@ -54,6 +54,19 @@ diesem und den vorangegangenen Releases ist den :doc:`Release Notes </release/re
     - **alexa**, **influxdata**, **memlog**, **operationlog**, **raumfeld**, **sml**, **sqlite_visu2_8**, **wunderground**:
       Diese Plugins waren als `deprecated` markiert und wurden entfernt. Sie sind
       bei Bedarf im Repo `smarthomeNG/plugins-archive` verfügbar.
+
+  - **Dokumentation**:
+
+    - **Ordner/Dateien**: Vor dem Hintergrund, dass die Konfiguration zukünftig vollständig unterhalb von
+      ``etc`` abgelegt werden soll (Option **-e**/**--config-etc**), werden alle Datei- und Pfadnamen von
+      Konfigurationsdateien unterhalb von ``etc`` angegeben. In Ausnahmefällen können z.B. in Beispielen
+      nur lokale Dateinamen angegeben werden.
+
+    - **Verweise auf ältere SmartHomeNG-Versionen**: In der Beschreibung von Konfiguration oder Syntax wird
+      nur noch der aktuell gültige Stand angegeben. Beschreibungen, wie etwas in früheren Versionen
+      angegeben werden musste, oder seit welcher Version ein bestimmtes Feature implementiert ist, entfallen.
+      Nach Möglichkeit werden Dokumentationen von früheren Versionen von SmartHomeNG parallel als Archiv
+      bereitgestellt.
 
 |
 

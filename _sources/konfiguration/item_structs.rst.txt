@@ -14,7 +14,7 @@ structs (Item Strukturen) :greensup:`Update`
 Überblick :greensup:`Update`
 ============================
 
-Seit SmartHomeNG v1.6 werden Item-Struktur-Templates unterstützt, mit denen sich wiederholende Itemstrukturen einfach realisieren lassen.
+SmartHomeNG unterstützt Item-Struktur-Templates, mit denen sich wiederholende Itemstrukturen einfach realisieren lassen.
 Die Anwendung erfolgt mit Hilfe des **struct**-Attributes mit dem jeweiligen Namen des Item-Templates. Dies wird bei dem Item definiert,
 unter dem die definierte Struktur (Teil-Item-Baum) eingefügt werden soll.
 
@@ -25,25 +25,15 @@ Prinzipiell gibt es 2 Anwendungsfälle:
 
 Demzufolge können die Item-Struktur-Templates an zwei verschiedenen Stellen definiert werden:
 
- - der Nutzer kann die Strukturen in der Konfigurationsdatei ../structs/global_structs.yaml definieren
+ - der Nutzer kann die Strukturen in Dateien im Verzeichnis ``etc/structs`` in beliebigen Dateien definieren
  - Autoren von Plugins können die Strukturen in den Metadaten des Plugins definieren. Beim Start von SmartHomeNG stehen
    die dann die Strukturen aller konfigurierten Plugins zur Verfügung.
 
-.. note::
-
-    Ab SmartHomeNG v1.9 können Item-Struktur-Template Definitionen auf mehrere Dateien verteilt werden.
-
-    Ab SmartHomeNG v1.10 werden die Item-Struktur-Template Definitionen nicht mehr in ../etc gespeichert sondern
-    in dem neu hinzugekommenen Verzeichnis ../structs.
-
-    Außer der Datei **global_structs.yaml** (die der bisherigen Datei **struct.yaml** im Verzeichnis ../etc entspricht)
-    können weitere Dateien angelegt werden. Im ../etc Verzeichnis musste deren Name muss mit **struct_** beginnen.
-    Das ist im ../structs Verzeichnis nicht mehr der Fall) Der Dateiname wird dabei der struct Namen als Prefix
-    vorangestellt, um Namensdopplungen vorzubeugen.
 
 Um eine doppelte Namensvergabe zu vermeiden, wird bei der Nutzung den structs, die in Plugins definiert wurden, der
-Name des Plugins vorangestellt. Wenn z.B. die struct **weather** genutzt werden soll, die im Plugin **darksky**
-definiert wurde, so muss als Referenz **darksky.weather** angegeben werden.
+Name des Plugins vorangestellt; bei structs, die vom Nutzer definiert wurden, wird "my." und der Name der Datei vorangestellt. Wenn z.B. die struct **weather** genutzt werden soll, die im Plugin **darksky**
+definiert wurde, so muss als Referenz **darksky.weather** angegeben werden. Für die struct **weather*, die vom Nutzer in der Datei ``etc/structs/lightsky.yaml`` definiert wurde, muss **my.lightsky.weather** als Referenz
+angegeben werden.
 
 Eine Übersicht der zur Verfügung stehenden structs kann in der Admin GUI unter **Items/Struktur** Templates eingesehen werden.
 
@@ -208,14 +198,14 @@ selbst definierte struct-Templates
 Anwendung
 ---------
 
-Eigens definierte Item-Struktur-Templates werden in der Konfigurationsdatei **../structs/global_structs.yaml** abgelegt.
+Eigens definierte Item-Struktur-Templates werden in der Konfigurationsdatei ``etc/structs/global_structs.yaml`` abgelegt.
 
 Hierbei gibt die oberste Ebene den Namen der Templates an. Darunter können Item-Strukturen definiert werden, wie man es
 auch in der Item Definition in den items.yaml Dateien machen würde. Das folgende Beispiel zeigt die Definition von zwei
 Strukturen (**individual_struct_01** und **individual_struct_02**):
 
 .. code-block:: yaml
-    :caption: structs/global_structs.yaml
+    :caption: etc/structs/global_structs.yaml
 
     individual_struct_01:
         name: Name der erste eigenen Item Struktur
@@ -250,7 +240,7 @@ Strukturen (**individual_struct_01** und **individual_struct_02**):
 Wenn jetzt in der Item Definition diese Strukturen referenziert werden:
 
 .. code-block:: yaml
-    :caption: items/items.yaml
+    :caption: etc/items/items.yaml
 
     my_tree:
         my_complex_data:
@@ -266,7 +256,7 @@ Wenn jetzt in der Item Definition diese Strukturen referenziert werden:
 entsteht im Item-Tree die selbe Struktur, als wenn man folgendes direkt in die item.yaml eingetragen hätte:
 
 .. code-block:: yaml
-    :caption: items/items.yaml
+    :caption: etc/items/items.yaml
 
     my_tree:
         my_complex_data:
@@ -301,10 +291,9 @@ Das **individual_item** wird an die Struktur des Templates angefügt.
 Verschachtelte struct Definitionen (nested structs)
 ---------------------------------------------------
 
-Ab SmartHomeNG v1.10 können Strukturdefinitionen beliebig verschachtelt werden. Wie Items, die mithilfe des Attributs
+Strukturdefinitionen können beliebig verschachtelt werden. Wie Items, die mithilfe des Attributs
 **struct:** auf eine Strukturdefinition verweisen, können dies auch Strukturen selbst tun. Dabei kann das **struct*:**
-Attribut an beliebiger Stelle einer struct eingefügt werden, nicht nur auf der obersten Ebene (wie dieses bereits ab
-SmartHomeNG v1.7 möglich war).
+Attribut an beliebiger Stelle einer struct eingefügt werden.
 
 SmartHomeNG löst alle Unterstrukturreferenzen vor dem Laden des Item Trees auf, um das Laden der Item Definitionen
 zu beschleunigen.
@@ -382,21 +371,21 @@ Attributdefinitionen eingelesen werden.
 Verwendung mehrerer Definitionsdateien
 ======================================
 
-Wenn structs in der Datei **../structs/global_structs.yaml** definiert werden, ist der Name der geladenen struct
+Wenn structs in der Datei ``etc/structs/global_structs.yaml`` definiert werden, ist der Name der geladenen struct
 zur Laufzeit identisch mit dem Namen, der in der Datei definiert wurde.
 
-Wenn eine Datei in einer Datei nach dem Namensschema **../structs/\<name\>.yaml** definiert wird, wird dem Namen
+Wenn eine Datei in einer Datei nach dem Namensschema ``etc/structs/\<name\>.yaml`` definiert wird, wird dem Namen
 der struct ein Präfix vorangestellt, um Namensdoppelungen zu vermeiden. Der Präfix ist der Dateiname. Wenn also eine
 struct mit dem Namem **individual_struct** in der Datei mit dem Namen
-../structs/**test**.yaml definiert wird, wird als Präfix für die Herkunft **test** vorangestellt. Der struct Name wäre
+``etc/structs/test.yaml`` definiert wird, wird als Präfix für die Herkunft **test** vorangestellt. Der struct Name wäre
 also **test.individual_struct**.
 
 Das könnte jedoch zu Namenskonflikten führen, falls hierbei der Name eines Plugins verwendet wird.
-Falls z.B. eine struct in einer Datei ../structs/**stateengine**.yaml definiert wird, könnte es zu Namenskonflikten mit
+Falls z.B. eine struct in einer Datei ``etc/structs/stateengine.yaml`` definiert wird, könnte es zu Namenskonflikten mit
 den structs kommen, die durch das **stateengine Plugin** definiert sind. Deshalb wird ein weiterer Präfix **my** dem
 struct Namen vorangestellt, um Namenskonflikte mit structs aus Plugins auszuschließen.
 
-Die struct **individual_struct** in der Datei mit dem Namen ../structs/**test**.yaml definiert wurde,
+Die struct **individual_struct** in der Datei mit dem Namen ``etc/structs/test.yaml`` definiert wurde,
 trägt zur Laufzeit also den Namen **my.test.individual_struct**. Unter diesem Namen wird sie in der Admin GUI
 angezeigt und muss auch so in Item Definitionen referenziert werden.
 

@@ -41,9 +41,9 @@ Schritte größer-gleich 10 und kleiner als 20 identifizieren Schritte innerhalb
 
 Das smarthome Objekt wird erzeugt und initialisiert. Dazu werden die grundlegenden Variablen initialisiert.
 Anschließend wird geprüft ob die benötigten Konfigurationsdateien existieren. Falls nicht, werden die
-entsprechenden **<name>.yaml.default** Dateien umkopiert.
+entsprechenden ``<name>.yaml.default`` Dateien umkopiert.
 
-Es werden die Konfigurationsdateienb **smarthome.yaml** und **logging.yaml** eingelesen und das Logging wird
+Es werden die Konfigurationsdateienb ``smarthome.yaml`` und ``logging.yaml`` eingelesen und das Logging wird
 initialisiert.
 
 

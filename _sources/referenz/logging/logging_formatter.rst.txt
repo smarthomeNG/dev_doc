@@ -6,15 +6,15 @@
 .. role:: redsup
 
 
-===================================
-Logging Formatter :bluesup:`Update`
-===================================
+=================
+Logging Formatter
+=================
 
 Mit **Logging Formattern** wird festgelegt, wie die Informationen aufbereitet werden sollen, wenn sie in ein
 Log geschrieben werden.
 
 Der standardmäßig in SmartHomeNG verwendete Logger ist **shng_simple** und in der Konfigurationsdatei
-``../etc/logging.yaml`` definiert. Dieser Logger sollte für das Warnings-Log (und möglichst auch für die weitern
+``etc/logging.yaml`` definiert. Dieser Logger sollte für das Warnings-Log (und möglichst auch für die weitern
 Logs) verwendet werden. Er bietet einen guten Kompromiss zwischen Übersichtlichkeit/Lesbarkeit und Detailreichtum.
 Die Ausgaben mit diesem Formatter helfen besonders bei Supportanfragen.
 

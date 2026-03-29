@@ -3,9 +3,9 @@ Plugins
 =======
 
 Das Grundsystem von SmartHomeNG kann durch den Einsatz von Plugins erweitert werden. Ein Plugin
-ist ein Zusatzmodul in einem Unterverzeichnis unterhalb des Verzeichnisses **../plugins**.
+ist ein Zusatzmodul in einem Unterverzeichnis unterhalb des Verzeichnisses ``plugins``.
 Um ein Plugin in SmartHomeNG zu verwenden (eine Instanz des Plugins zu laden) muss eine Sektion
-für das gewünschte Plugin in der Datei **etc/plugin.yaml** erstellt werden.
+für das gewünschte Plugin in der Datei ``etc/plugin.yaml`` erstellt werden.
 
 Für das oft benutzte KNX-Plugin sieht das z.B. so aus:
 
@@ -33,7 +33,7 @@ Es gibt folgende allgemeine Parameter im Abschnitt eines Plugins:
 | Parameter        | Bedeutung                                                                           |
 +==================+=====================================================================================+
 | plugin_name      | Der Kurzname des Plugins, das eingebunden werden soll (Name des Verzeichnisses      |
-|                  | im **../plugins** Verzeichnis). Statt des Parameters **plugin_name** konnten bisher |
+|                  | im ``../plugins`` Verzeichnis). Statt des Parameters **plugin_name** konnten bisher |
 |                  | auch die Parameter **class_name** und **class_path** angegeben werden.              |
 |                  |                                                                                     |
 |                  | **WICHTIG**: Bitte darauf achten, dass der Plugin Name Case-sensitive ist und der   |
@@ -64,7 +64,7 @@ Es gibt folgende allgemeine Parameter im Abschnitt eines Plugins:
 |                  | **avm_data_type: uptime** muss **avm_data_type@<instance>: uptime** geschrieben     |
 |                  | werden.                                                                             |
 |                  | Zukünftig wird bei mehrfacher Einbindung desselben Plugins der Bezeichner des       |
-|                  | Abschnitts in der **plugin.yaml** als Instanzbezeichner verwendet werden.           |
+|                  | Abschnitts in der ``plugin.yaml`` als Instanzbezeichner verwendet werden.           |
 +------------------+-------------------------------------------------------------------------------------+
 | default_instance | Optional: Kann zukünftig festlegen, welche Instanz von mehreren den leeren Instanz- |
 |                  | bezeichner erhält (für Item-Attribute ohne Instanzangabe)                           |
@@ -73,7 +73,7 @@ Es gibt folgende allgemeine Parameter im Abschnitt eines Plugins:
 |                  | pro Seite angezeigt werden sollen. Bei **-1** werden alle Einträge auf einer Seite  |
 |                  | gezeigt, bei **0** so viele, dass sie genau auf die Seite ohne Scrolling passen.    |
 |                  | Weitere mögliche Werte sind 25, 50, 100. Der hier angegebene Wert überschreibt den  |
-|                  | für das **http Modul** im /etc/module.yaml File über den gleichnamigen Parameter    |
+|                  | für das **http Modul** im ``/etc/module.yaml`` File über den gleichnamigen Parameter|
 |                  | definierten globalen Wert.                                                          |
 +------------------+-------------------------------------------------------------------------------------+
 
@@ -81,7 +81,7 @@ Es gibt folgende allgemeine Parameter im Abschnitt eines Plugins:
 .. note::
 
     Die zukünftigen Konfigurationsmöglichkeiten für Multiinstanz-Plugins können jetzt schon aktiviert
-    werden, wenn in der **etc/smarthome.yaml** der Eintrag **legacy_instances: false** angegeben wird.
+    werden, wenn in der ``etc/smarthome.yaml`` der Eintrag **legacy_instances: false** angegeben wird.
 
 
 Die weiteren Einträge sind Plugin spezifisch. Welche Parameter ein Plugin kennt ist auch der
@@ -104,7 +104,7 @@ beachten. Dann wird ein solches Plugin konfiguriert wie alle andern Plugins auch
 
 Wenn mehrere Instanzen eines Plugins konfiguriert werden, muss in der Konfiguration der Items
 eine Information hinterlegt werden, auf welche Instanz des Plugins sich das Item bezieht. Dazu
-**muss** jeder Instanz ein eindeutiger Name gegeben werden. Das erfolgt in der **../etc/plugin.yaml**
+**muss** jeder Instanz ein eindeutiger Name gegeben werden. Das erfolgt in der ``etc/plugin.yaml``
 dadurch, dass jeder Instanz ein Parameter **instance** hinzugefügt wird:
 
 .. code:: yaml

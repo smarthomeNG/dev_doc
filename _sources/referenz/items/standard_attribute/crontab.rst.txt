@@ -104,9 +104,7 @@ Admin Interface durch ``|`` getrennt werden.
 Durch Anhängen eines ``= value`` wird der entsprechende Wert ``value`` mitgesendet.
 Das Beispiel setzt den Wert des Items täglich um Mitternacht auf ``20``:
 
-**Ab SmartHomeNG v1.11** werden die Konfigurationsmöglichkeiten erweitert: :redsup:`neu`
-
-Für den **Wert** kann nun ein **eval** Ausdruck angegeben werden, der zur Laufzeit entsprechend neu evaluiert wird.
+Für den **Wert** kann auch ein **eval** Ausdruck angegeben werden, der zur Laufzeit entsprechend neu evaluiert wird.
 Dabei können auch Item Properties genutzt werden.
 
 .. code-block:: yaml

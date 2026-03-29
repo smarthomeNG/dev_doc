@@ -32,179 +32,88 @@ Zunächst müssen einige zusätzliche Pakete installiert werden:
 SmartHomeNG Quellcode laden
 ===========================
 
-.. tab-set::
+  SmartHomeNG Dateien vom github holen:
 
-    .. tab-item:: SmartHomeNG ab v1.10
+  Die folgenden Kommandos mit dem User Account (smarthome) durchführen
+  unter dem später SmartHomeNG laufen soll, **nicht als root**.
 
-        SmartHomeNG Dateien vom github holen:
+  .. important::
 
-        Die folgenden Kommandos mit dem User Account (smarthome) durchführen
-        unter dem später SmartHomeNG laufen soll, **nicht als root**.
+      **WICHTIG**: Das Skript ``tools/postinstall`` setzt die Dateiberechtigungen. Anschließend prüft es, welche
+      Python Version(en) auf dem System installiert sind und erstellt mit einer geeigneten Python Version ein
+      virtuelles Environment in dem SmartHomeNG später laufen soll.
 
-        .. important::
+  .. code-block:: bash
 
-            **WICHTIG**: Das Skript ``tools/postinstall`` setzt die Dateiberechtigungen. Anschließend prüft es, welche
-            Python Version(en) auf dem System installiert sind und erstellt mit einer geeigneten Python Version ein
-            virtuelles Environment in dem SmartHomeNG später laufen soll.
+     cd /usr/local
+     sudo mkdir smarthome
+     sudo chown -R smarthome:smarthome /usr/local/smarthome
 
-        .. code-block:: bash
+     cd smarthome
+     git clone https://github.com/smarthomeNG/smarthome.git .
+     git clone https://github.com/smarthomeNG/plugins.git plugins
 
-           cd /usr/local
-           sudo mkdir smarthome
-           sudo chown -R smarthome:smarthome /usr/local/smarthome
+     bash tools/postinstall
 
-           cd smarthome
-           git clone https://github.com/smarthomeNG/smarthome.git .
-           git clone https://github.com/smarthomeNG/plugins.git plugins
+  .. important::
 
-           bash tools/postinstall
+      bash tools/postinstall **NICHT** mit sudo aufrufen
 
-        .. important::
+  Bitte auf den **Punkt** am Ende des ersten **git clone** Kommandos achten!
 
-            bash tools/postinstall **NICHT** mit sudo aufrufen
+  Das Skript postinstall erzeugt ein virtuelles Environment **py_shng**.
 
-        Bitte auf den **Punkt** am Ende des ersten **git clone** Kommandos achten!
+  Nach dem Aufruf des postinstall Skripts bitte **ausloggen** und **erneut einloggen**. Damit wird die Umgebung
+  für den User richtig gesetzt und das virtuelle Python Environment wird aktiviert.
 
-        Das Skript postinstall erzeugt ein virtuelles Environment **py_shng**.
-
-        Nach dem Aufruf des postinstall Skripts bitte **ausloggen** und **erneut einloggen**. Damit wird die Umgebung
-        für den User richtig gesetzt und das virtuelle Python Environment wird aktiviert.
-
-        Ausführlichere Informationen zu den virtuellen Python Environments sind im Abschnitt Referenz unter
-        :doc:`Python Environment/Virtuelle Python Environments </referenz/python/virtual_environments>` zu finden.
-
-
-        .. attention::
-
-            Bei der Installation von debian 12 (bookworm) wird Python 3.11 installiert. SmartHomeNG v1.10 ist zwar
-            prinzipiell unter Python 3.11 lauffähig, es sind jedoch nicht alle Plugins unter Python 3.11 getetet,
-            weshalb SmartHomeNG v1.10 offiziell nur Python Versionen bis 3.10 unterstützt.
-
-            Soll eine andere Python Version als 3.11 genutzt werden, sollte diese Python Version vor dem Aufruf des
-            Skripts tools/postinstall installiert werden, damit das Standard Virtual Environment, welches beim Start
-            des Rechners aktiviert wird, für die gewünschte Python Version erstellt wird.
-
-            Eine Beschreibung, wie zusätzliche Python Versionen installiert werden, ist unter
-            :doc:`Python Environment/Python Version Installieren </referenz/python/python_installation>` zu finden.
-
-
-
-    .. tab-item:: SmartHomeNG vor v1.10
-
-        SmartHomeNG Dateien vom github holen:
-
-        Die folgenden Kommandos mit dem User Account (smarthome) durchführen
-        unter dem später SmartHomeNG laufen soll, **nicht als root**.
-
-        .. code-block:: bash
-
-           cd /usr/local
-           sudo mkdir smarthome
-           sudo chown -R smarthome:smarthome /usr/local/smarthome
-
-           cd smarthome
-           git clone https://github.com/smarthomeNG/smarthome.git .
-           git clone https://github.com/smarthomeNG/plugins.git plugins
-
-           bash tools/setpermissions
-
-        Bitte auf den **Punkt** am Ende des ersten **git clone** Kommandos achten!
+  Ausführlichere Informationen zu den virtuellen Python Environments sind im Abschnitt Referenz unter
+  :doc:`Python Environment/Virtuelle Python Environments </referenz/python/virtual_environments>` zu finden.
 
 |
 
 Weitere Python Bibliotheken installieren
 ========================================
 
-.. tab-set::
+SmartHomeNG installiert benötigte Pakete selbst.
 
-   .. tab-item:: SmartHomeNG ab v1.7
+Wenn SmartHomeNG in einer Python Umgebung gestartet wird, in der nicht der minimale Set an Packages installiert ist,
+wird dieser installiert und die Informationen werden auf der Konsole ausgegeben (da das Logging dann noch nicht
+konfiguriert werden kann). Anschließend startet SmartHomeNG neu. Das sieht folgendermaßen aus.
 
-      SmartHomeNG kann benötigte Pakete selbst nachinstallieren.
+.. code-block:: bash
 
-      Wenn SmartHomeNG in einer Python Umgebung gestartet wird, in der nicht der minimale Set an Packages installiert ist,
-      wird dieser installiert und die Informationen werden auf der Konsole ausgegeben (da das Logging dann noch nicht
-      konfiguriert werden kann). Anschließend startet SmartHomeNG neu. Das sieht folgendermaßen aus.
+   $ python3 bin/smarthome.py
 
-      .. code-block:: bash
+   test_requirements: 'ephem' not installed. Minimum v3.7 needed
+   test_requirements: 'holidays' not installed. Minimum v0.9.11 needed
+   test_requirements: 'psutil' not installed, any version needed
+   test_requirements: 'python-dateutil' not installed. Minimum v2.5.3 needed
+   test_requirements: 'requests' not installed. Minimum v2.20.0 needed
+   test_requirements: 'ruamel.yaml' not installed. Minimum v0.13.7 needed
 
-         $ python3 bin/smarthome.py
+   Installing core requirements for the current user, please wait...
+   Running in a virtualenv environment,
+   installing core requirements only to current virtualenv, please wait...
 
-         test_requirements: 'ephem' not installed. Minimum v3.7 needed
-         test_requirements: 'holidays' not installed. Minimum v0.9.11 needed
-         test_requirements: 'psutil' not installed, any version needed
-         test_requirements: 'python-dateutil' not installed. Minimum v2.5.3 needed
-         test_requirements: 'requests' not installed. Minimum v2.20.0 needed
-         test_requirements: 'ruamel.yaml' not installed. Minimum v0.13.7 needed
+   core requirements installed
 
-         Installing core requirements for the current user, please wait...
-         Running in a virtualenv environment,
-         installing core requirements only to current virtualenv, please wait...
+   Starting SmartHomeNG again...
+   Daemon PID 4024
 
-         core requirements installed
+   $
 
-         Starting SmartHomeNG again...
-         Daemon PID 4024
+Danach kann der Core von SmartHomeNG vollständig initialisiert werden und Ausgaben erfolgen in smarthome-warnings.log
 
-         $
+Anschließend prüft SmartHomeNG, ob die benötigten Pakete für die ladbaren Module und für die konfigurierten Plugins
+installiert sind. Falls nicht, werden diese jeweils installiert und SmartHomeNG startet sich erneut.
 
-      Danach kann der Core von SmartHomeNG vollständig initialisiert werden und Ausgaben erfolgen in smarthome-warnings.log
+.. note::
 
-      Anschließend prüft SmartHomeNG, ob die benötigten Pakete für die ladbaren Module und für die konfigurierten Plugins
-      installiert sind. Falls nicht, werden diese jeweils installiert und SmartHomeNG startet sich erneut.
+   Dieser Mechanismus sorgt auch dafür, dass Pakete die von später konfigurierten Plugins benötigt werden,
+   automatisch nachinstalliert werden.
 
-      .. note::
-
-         Dieser Mechanismus sorgt auch dafür, dass Pakete die von später konfigurierten Plugins benötigt werden,
-         automatisch nachinstalliert werden.
-
-      Nach der Installation der benötigten Pakete dauert es noch einige Zeit, bis SmartHomeNG reagiert, da beim ersten
-      Start die CPU Geschwindigkeit des Rechners bestimmt wird.
-
-
-   .. tab-item:: SmartHomeNG vor v1.7
-
-      Für den ersten Start müssen noch einige Python Packages nachgeladen werden.
-      Im Unterordner ``requirements`` befindet sich dafür eine Datei ``base.txt``.
-      In dieser Datei stehen die von SmartHomeNG grundlegend benötigten Bibliotheken.
-      Diese können wie folgt installiert werden:
-
-      .. code-block:: bash
-
-         cd /usr/local/smarthome
-         python3 -m pip install -r requirements/base.txt --user
-
-      .. attention::
-
-          In früheren Beschreibungen wurde die globale Installation von Python Packages mit dem **sudo** Kommando
-          beschrieben:
-
-             sudo pip3 install -r requirements/base.txt
-
-          Dieses funktioniert unter Debian Buster **NICHT** mehr. Zumindest unter Buster **muss** die Installation
-          für den entsprechenden User mit **--user** erfolgen (wie oben beschrieben).
-
-
-      .. note::
-
-          Falls mehrere Python3 Versionen installiert sind, kann es zu Problemen kommen, da pip die Bibliotheken immer nur
-          in eine der installierten Python 3 Versionen installiert.
-
-          Um sicherzustellen, dass die Bibliotheken in die Python3 Version installiert werden, muss pip aus genau dieser
-          Python3 Umgebung aufgerufen werden.
-
-          Um das sicherzustellen, ist statt
-
-          .. code-block:: bash
-
-              pip3 install -r requirements/base.txt --user
-
-          der folgende Befehl auszuführen:
-
-          .. code-block:: bash
-
-              <python used to start SmartHomeNG> -m pip3 install -r requirements/base.txt --user
-
-      Jetzt ist SmartHomeNG installiert und kann konfiguriert werden.
+Nach der Installation der benötigten Pakete dauert es noch einige Zeit, bis SmartHomeNG reagiert, da beim ersten
+Start die CPU Geschwindigkeit des Rechners bestimmt wird.
 
 
 Erstmaliger Start von SmartHomeNG
@@ -246,7 +155,7 @@ Es sollte eine Zeile ausgegeben werden, die etwa so aussieht:
     smartho+ 28373     1  1 12:45 ?        00:00:02 python3 bin/smarthome.py
 
 Die Zeile zeigt an, dass unter dem User **smarthome** (hier zu smartho+ abgekürzt) unter der PID **28373** seit **12:45**
-Uhr SmartHomeNG (**python3 bin/smarthome.py**) ausgeführt wird.
+Uhr SmartHomeNG (``python3 bin/smarthome.py``) ausgeführt wird.
 
 Erfolgt keine Ausgabe, so läuft SmartHomeNG nicht. In diesem Fall bitte den Angaben im Abschnitt :doc:`../../fehlersuche`
 nachlesen.
@@ -311,20 +220,20 @@ Anpassung der Konfigurationsdateien vorgenommen werden. Dieses ist hier im folge
 Beschreibung findet sich im Abschnitt :doc:`../../konfiguration/konfiguration` .
 
 Mit der Grundinstallation werden einige Konfigurationsdateien mitgeliefert die den gleichen Namen tragen wie die
-benötigten Dateien aber zusätzlich noch die Endung **.default**. Wenn SmartHomeNG beim Start eine benötigte
-Konfigurationsdatei sucht, aber noch keine vorhanden ist, so wird eine Kopie von der mitgelieferten **.default**
+benötigten Dateien aber zusätzlich noch die Endung ``.default``. Wenn SmartHomeNG beim Start eine benötigte
+Konfigurationsdatei sucht, aber noch keine vorhanden ist, so wird eine Kopie von der mitgelieferten ``.default``
 Datei erstellt und diese weiter verwendet. Gelingt dies nicht, so bricht SmartHomeNG beim Start ab.
 
 Es werden für einen Systemstart folgende Konfigurationsdateien benötigt:
 
-- **smarthome.yaml**
-- **holidays.yaml**
-- **plugin.yaml**
-- **logging.yaml**
-- **logic.yaml**
-- **module.yaml**
+- ``smarthome.yaml``
+- ``holidays.yaml``
+- ``plugin.yaml``
+- ``logging.yaml``
+- ``logic.yaml``
+- ``module.yaml``
 
-Der Inhalt von **.yaml** Dateien ist speziell formatierter Text und sollte nur mit einem Editor
+Der Inhalt von ``.yaml`` Dateien ist speziell formatierter Text und sollte nur mit einem Editor
 bearbeitet werden, der Dateien im UTF-8 Format (ohne BOM) schreiben kann.
 (z.B. **nano**, **Notepad++**)
 
@@ -335,7 +244,7 @@ und bestimmten die Position eines Elementes in der Objekthierarchie.
 
    Damit die Änderungen, die mit einem Editor durchgeführt wurden, wirksam werden, muss SmartHomeNG
    unbedingt neu gestartet werden.
-   (Eine Ausnahme bildet hier nur die **logic.yaml**, da es möglich ist, mit
+   (Eine Ausnahme bildet hier nur die ``logic.yaml``, da es möglich ist, mit
    dem Logikeditor im Admin Interface diese Logiken zur Laufzeit neu
    zu laden.)
 
@@ -344,7 +253,7 @@ Im folgenden werden diese Dateien und deren Inhalt genauer beschrieben.
 smarthome.yaml
 --------------
 
-In der **smarthome.yaml** stehen die allgemeinen Konfigurationseinstellungen der SmartHomeNG Installation, wie z.B. die
+In der ``smarthome.yaml`` stehen die allgemeinen Konfigurationseinstellungen der SmartHomeNG Installation, wie z.B. die
 Koordinaten des Standortes. Die Koordinaten werden benötigt, um unter anderem Sonnenaufgang und Sonnenuntergang zu berechnen.
 Die Koordinaten für einen Standort kann man z.B. auf http://www.mapcoordinates.net/de ermitteln.
 
@@ -381,7 +290,7 @@ anzupassen. Alternativ kann diese Anpassung später über das Admin Interface du
 logging.yaml
 ------------
 
-In der **logging.yaml** finden sich die Anweisungen wie Ereignisse, die während des Programmablaufes von
+In der ``logging.yaml`` finden sich die Anweisungen wie Ereignisse, die während des Programmablaufes von
 SmartHomeNG auftreten und geloggt also notiert werden sollen.
 
 Diese recht umfangreiche Datei sollte zunächst nicht geändert werden. Später kann sie angepasst werden, um
@@ -417,9 +326,9 @@ melden und sich beenden.
    Wichtig ist es nach CRITICAL, ERROR und WARNING zu schauen und zu versuchen, diese zu vermeiden.
    Meldungen der Level INFO und DEBUG sind normal und brauchen erstmal nicht weiter beachtet zu werden.
 
-   Deshalb schreibt SmartHomeNG standardmäßig zwei Logs (**smarthome-warnings.log** und **smarthome-details.log**).
+   Deshalb schreibt SmartHomeNG standardmäßig zwei Logs (``smarthome-warnings.log`` und ``smarthome-details.log``).
    Das erste Log ist so konfiguriert, dass es aus allen konfigurierten Logs nur die Einträge folgender Log-Level
-   enthält: CRITICAL, ERROR und WARNING. **smarthome-details.log** enthält dem gegenüber Log Einträge bis zum Level DEBUG.
+   enthält: CRITICAL, ERROR und WARNING. ``smarthome-details.log`` enthält dem gegenüber Log Einträge bis zum Level DEBUG.
 
 
 In der zweiten Datei finden sich zusätzliche Informationen, die für die Erstkonfiguration, die hier beschrieben wird, nicht
@@ -432,9 +341,9 @@ anzupassen.
 plugin.yaml
 -----------
 
-In der **plugin.yaml** stehen die Plugins, die verwendet werden sollen, sowie ihre Konfigurationsparameter.
+In der ``plugin.yaml`` stehen die Plugins, die verwendet werden sollen, sowie ihre Konfigurationsparameter.
 
-Wenn keine Datei **plugin.yaml** existiert, wird beim ersten Start von SmartHomeNG die mitgelieferte Datei **plugin.yaml.default**
+Wenn keine Datei ``plugin.yaml`` existiert, wird beim ersten Start von SmartHomeNG die mitgelieferte Datei ``plugin.yaml.default``
 kopiert. In dieser Datei ist ein minimaler Set von Plugins konfiguriert, so dass z.B. per Browser oder mit der smartVISU auf die
 SmartHomeNG Instanz zugegriffen werden kann.
 
@@ -482,7 +391,7 @@ Jedes Plugin kann weitere Abhängigkeiten von Bibliotheken mit sich bringen. Die
 
 .. note::
 
-   Beim Start von SmartHomeNG wird die Datei **requirements/all.txt** erstellt.
+   Beim Start von SmartHomeNG wird die Datei ``requirements/all.txt`` erstellt.
 
    Es kann allerdings dann zu einem Abbruch des Starts von SmartHomeNG kommen, da beim Start automatisch nur die beiden
    Requirements-Dateien erstellt werden. Die benötigten Python Packages werden dabei nicht automatisch installiert.
@@ -495,7 +404,7 @@ logic.yaml
 ----------
 
 SmartHomeNG kann benutzerdefinierte Python-Anweisungen ausführen.
-Diese werden in eigenen Python Dateien im Verzeichnis **logics** abgelegt.
+Diese werden in eigenen Python Dateien im Verzeichnis ``etc/logics`` abgelegt.
 In der Konfigurationsdatei ist beispielsweise beschrieben welche Skriptdateien für
 SmartHomeNG bekannt sein sollen,
 wann sie ausgeführt werden sollen und ob sie aktiv sind oder nicht.

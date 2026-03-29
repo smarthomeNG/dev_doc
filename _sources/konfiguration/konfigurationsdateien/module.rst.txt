@@ -12,7 +12,7 @@ Programmcode des Cores aufgenommen worden, sondern als ladbare Module ausgeführ
 es möglich SmartHomeNG auch auf leistungsschwachen Systemen einzusetzen. Man muss nur auf den
 Einsatz der ladbaren Module verzichten.
 
-Die ladbaren Module werden in der Datei **../etc/module.yaml** konfiguriert.
+Die ladbaren Module werden in der Datei ``etc/module.yaml`` konfiguriert.
 
 Die Datei sollte folgendermaßen aussehen:
 

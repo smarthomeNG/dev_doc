@@ -36,7 +36,7 @@ knxd konfigurieren
 
 Als nächstes muss die Konfiguration des knxd für die zu verwendende
 Schnittstelle angepasst werden. Dazu wird bei Systemen mit systemd die
-Datei **/etc/knxd.conf** bearbeitet:
+Datei ``/etc/knxd.conf`` bearbeitet:
 
 .. code-block:: bash
 
@@ -179,7 +179,7 @@ SmartHomeNG Plugin konfigurieren
 ================================
 
 Damit das KNX-Plugin von SmartHomeNG genutzt werden kann, muss in der
-**../etc/plugin.yaml** noch folgendes eingefügt werden:
+``etc/plugin.yaml`` noch folgendes eingefügt werden:
 
 .. code-block:: yaml
 

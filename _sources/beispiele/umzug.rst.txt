@@ -202,7 +202,7 @@ Mit Hilfe der Admin GUI ein Backup der Konfiguration von SmartHomeNG erstellen.
 Kopieren weiterer Daten
 -----------------------
 
-Im folgenden werden weitere Daten, die im ``../var`` Verzeichnis von SmartHmeNG gespeichert sind, auf das neue System
+Im folgenden werden weitere Daten, die im ``var`` Verzeichnis von SmartHmeNG gespeichert sind, auf das neue System
 übertragen.
 
 Für die folgen Schritte ist es **wichtig**, dass SmartHomeNG weder auf dem alten System, noch auf dem neuen
@@ -219,13 +219,13 @@ Im folgenden ist das kopieren des Verzeichnisse beschrieben, die fast bei jeder 
 kopiert werden müssen.
 
 Hinzu kommen Verzeichnisse, die von weiteren selterner genutzten Plugins
-im ``../var`` Verzeichnis angelegt wurden (z.B. **bo_netlink**, **esphome**, **panasonic_ac**). Diese
+im ``var`` Verzeichnis angelegt wurden (z.B. ``bo_netlink``, ``esphome``, ``panasonic_ac``). Diese
 Verzeichnisse können Unterverzeichnisse enthalten und müssen daher rekursiv kopiert werden.
 
-Nicht kopiert werden müssen die Verzeichnisse **backup** und **restore**, sowie die Dateien **pip_list.txt**
-und **systeminfo.yaml**, die direkt im ``../var`` Verzeichnis liegen.
+Nicht kopiert werden müssen die Verzeichnisse ``backup`` und ``restore``, sowie die Dateien ``pip_list.txt``
+und ``systeminfo.yaml``, die direkt im ``var`` Verzeichnis liegen.
 
-Wenn die alte SmarthomeNG Installation (das Verzeichnis /usr/local/smarthome) auf dem neuen System
+Wenn die alte SmarthomeNG Installation (das Verzeichnis ``/usr/local/smarthome``) auf dem neuen System
 als /mnt/shng_old gemountet wurde, sollten die jeweiligen Verzeichnisse unterhalb des var Verzeichnisses
 mit den folgenden Befehlen kopiert werden (hier am Beispiel des cache Verzeichnisse):
 

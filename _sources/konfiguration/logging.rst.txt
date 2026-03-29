@@ -85,17 +85,17 @@ Konfiguration des Loggings
 Auf der Seite `Python Logging <https://docs.python.org/3.6/library/logging.html#module-logging>`_
 sind die Konfigurationsmöglichkeiten detailliert beschrieben.
 
-SmartHomeNG lädt beim Start die Konfiguration des Logging aus der Datei **etc/logging.yaml**. Ist diese Datei nicht vorhanden,
-so versucht SmartHomeNG, die Datei **etc/logging.yaml.default** nach **etc/logging.yaml** zu kopieren und dann daraus
+SmartHomeNG lädt beim Start die Konfiguration des Logging aus der Datei ``etc/logging.yaml``. Ist diese Datei nicht vorhanden,
+so versucht SmartHomeNG, die Datei ``etc/logging.yaml.default`` nach ``etc/logging.yaml`` zu kopieren und dann daraus
 die Konfiguration des Loggings zu laden.
 
-Wenn bei der Konfiguration des Loggings etwas schief geht, kann also jederzeit die Datei **etc/logging.yaml** gelöscht oder
-besser umbenannt werden und wird dann beim nächsten Neustart durch den Inhalt der **etc/logging.yaml.default** frisch bereitgestellt.
+Wenn bei der Konfiguration des Loggings etwas schief geht, kann also jederzeit die Datei ``etc/logging.yaml`` gelöscht oder
+besser umbenannt werden und wird dann beim nächsten Neustart durch den Inhalt der ``etc/logging.yaml.default`` frisch bereitgestellt.
 
-Ein Beispiel für **etc/logging.yaml.default** im Folgenden:
+Ein Beispiel für ``etc/logging.yaml.default`` im Folgenden:
 
 .. literalinclude:: ../../../../templates/logging.yaml.default
-   :caption: ../etc/logging.yaml
+   :caption: etc/logging.yaml
    :language: yaml
 
 
@@ -109,7 +109,7 @@ Die einzelnen Konfigurationseinträge haben die folgende Bedeutung:
 +=================+====================================================================================================+
 | **formatters:** | Definiert das Ausgabeformat der einzelnen Loggingeinträge. Mehrere unterschiedliche                |
 |                 | **formatter** können dazu verwendet werden, um unterschiedlich aussehende Logdateien               |
-|                 | zu erzeugen. In der Konfigurationsdatei **etc/logging.yaml** sind ua. die Formatter                |
+|                 | zu erzeugen. In der Konfigurationsdatei ``etc/logging.yaml`` sind ua. die Formatter                |
 |                 | **`simple`** und **`detail`** vorkonfiguriert. Weitere Formatter können bei Bedarf                 |
 |                 | hinzugefügt werden.                                                                                |
 |                 | Weitere Infos sind unter :doc:`Logging Formatter </referenz/logging/logging_formatter>` zu finden. |
@@ -117,7 +117,7 @@ Die einzelnen Konfigurationseinträge haben die folgende Bedeutung:
 | **handlers:**   | Handler definieren die Log-Behandlungsroutinen/Ausgabekanäle die verwendet werden.                 |
 |                 | In Python gibt es bereits mehrere vorimplementierte und mächtige Handler-Typen, die in der         |
 |                 | `Python Doku <https://docs.python.org/3.4/library/logging.handlers.html#module-logging.handlers>`_ |
-|                 | beschrieben sind. Als eigentliche Handler sind in der Konfigurationsdatei **etc/logging.yaml**     |
+|                 | beschrieben sind. Als eigentliche Handler sind in der Konfigurationsdatei ``etc/logging.yaml``     |
 |                 | die Handler **`console`** und **`file`** vordefiniert. Wenn Log-Einträge z.B. in eine andere       |
 |                 | Datei geschrieben werden sollen, muss ein weiterer Handler definiert werden.                       |
 |                 | Sollen Filter angewendet werden, so sind diese im entsprechenden Handler durch                     |
@@ -164,7 +164,7 @@ Logging Handler und Filter
 ==========================
 
 Zusätzlich zu den Logging Handlern, die im Standard Logging Modul von Python definiert sind, bringt
-SmartHomeNG weitere Handler und Filter mit, die bei der Konfiguration in ../etc/logging.yaml verwendet werden
+SmartHomeNG weitere Handler und Filter mit, die bei der Konfiguration in etc/logging.yaml verwendet werden
 können.
 
 Die Beschreibung dieser Handler und Filter ist im Referenz Abschnitt unter Logging zu finden:
@@ -211,7 +211,7 @@ muss in der config auch dieser Name verwendet werden. Ohne `plugin.` oder `logic
 
 
 .. code-block:: yaml
-   :caption: ../etc/logging.yaml
+   :caption: etc/logging.yaml
 
    loggers:
        DWD:

@@ -82,11 +82,11 @@ Dazu gibt es im Prinzip drei Wege, das Plugin zu installieren:
         **Gewünschtes Plugin installieren:**
 
         Um zum Beispiel ein Plugin mit dem Namen **xyz** aus dem develop Branch zu installieren, sollte (falls es existiert)
-        zuerst das Verzeichnis **xyz_dev** im ``plugins`` Verzeichnis gelöscht werden, damit keine Seiteneffekte durch
+        zuerst das Verzeichnis ``xyz_dev`` im ``plugins`` Verzeichnis gelöscht werden, damit keine Seiteneffekte durch
         bestehende Dateien auftreten.
 
-        Anschließend kann das Verzeichnis **xyz** (mit allen Bestandteilen/Unterordnern) aus dem beim Entpacken entstandenen
-        Verzeichnis ``plugins-develop`` in das ``plugins`` Verzeichnis der SmartHomeNG Installation unter dem Namen **xyz_dev**
+        Anschließend kann das Verzeichnis ``xyz`` (mit allen Bestandteilen/Unterordnern) aus dem beim Entpacken entstandenen
+        Verzeichnis ``plugins-develop`` in das ``plugins`` Verzeichnis der SmartHomeNG Installation unter dem Namen ``xyz_dev``
         kopiert werden.
 
         Nun kann das Archiv ``develop.zip`` und das Verzeichnis ``plugins-develop`` gelöscht werden.

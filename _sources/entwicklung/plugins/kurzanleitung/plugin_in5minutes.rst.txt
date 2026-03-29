@@ -8,7 +8,7 @@ Plugins sind Erweiterungen von SmartHomeNG mit zusätzlichen Funktionen. Sie sin
 Um ein neues Plugin hinzuzufügen, wird der Plugin-Code und ein entsprechender Eintrag in der Konfigurationsdatei ``plugin.yaml`` benötigt.
 
 Eine gute Basis für ein eigenes Plugin ist das Beispielplugin, welches komplett
-mit allen notwendigen Dateien auf github unter https://github.com/smarthomeng/smarthome im ``/dev``-Ordner zur Verfügung steht.
+mit allen notwendigen Dateien auf github unter https://github.com/smarthomeng/smarthome im ``dev``-Ordner zur Verfügung steht.
 
 
 Beschreibung des Plugins
@@ -17,7 +17,7 @@ Beschreibung des Plugins
 Übersicht
 ---------
 
-Das Plugin wird in einem eigenen Ordner unterhalb des ``/plugins``-Ordner abgelegt. Der Name des Ordners entspricht dem Namen des Plugins in **Kleinschreibung**.
+Das Plugin wird in einem eigenen Ordner unterhalb des ``plugins``-Ordner abgelegt. Der Name des Ordners entspricht dem Namen des Plugins in **Kleinschreibung**.
 
 Derzeit besteht ein Plugin mindestens aus drei Dateien, die alle im Plugin Ordner liegen. Dies sind:
 

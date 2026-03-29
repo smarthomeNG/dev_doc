@@ -33,7 +33,7 @@ Folgende mögliche Datentypen sind für Items definiert:
 |          | aufnehmen                                                                            |
 +----------+--------------------------------------------------------------------------------------+
 | scene    | Eine Szene - Die eigentliche Konfiguration der Szene für das jeweilige Item wird in  |
-|          | einer eigenen Datei im Verzeichnis **../scenes** von SmartHomeNG gespeichert. Dort   |
+|          | einer eigenen Datei im Verzeichnis ``etc/scenes`` von SmartHomeNG gespeichert. Dort  |
 |          | muss es für jede Szene (jedes Item vom Typ *scene* eine eigene Konfigurationsdatei   |
 |          | mit dem Namen des Item-Pfades geben. Genaueres ist dem Abschnitt                     |
 |          | **Konfiguration / Szenen** dieser Dokumentation zu entnehmen.                        |

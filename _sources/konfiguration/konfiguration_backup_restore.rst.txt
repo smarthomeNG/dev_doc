@@ -20,12 +20,12 @@ Die Konfiguration von SmartHomeNG kann in ein zip-Archiv gesichert werden und au
 werden. Dieses kann sowohl von der Kommandozeile aus, als auch über das Administrationsinterface erfolgen.
 
 Von der Kommandozeile wird ein Backup erstellt, indem SmartHomeNG mit der Option **-cb** bzw. **--create_backup**
-gestartet wird. Das zip-Archiv mit dem Backup wird im Verzeichnis **/var/backup** abgelegt und hat den Namen
-**shng_config_backup.zip**.
+gestartet wird. Das zip-Archiv mit dem Backup wird im Verzeichnis ``/var/backup`` abgelegt und hat den Namen
+``shng_config_backup.zip``.
 
 Wenn beim Backup der Dateiname den Zeitpunkt des Backups enthalten soll, muss SmartHomeNG mit der Option **-cbt** bzw.
 **--create_backup_t** aufgerufen werden. Dann wird der Dateiname um Datum und Zeit der Erstellung des Backups ergänzt.
-Der Dateiname hat dann die Form **shng_config_backup_YYYY-MM-TT_hh-mm-ss.zip**.
+Der Dateiname hat dann die Form ``shng_config_backup_YYYY-MM-TT_hh-mm-ss.zip``.
 
 Die Sicherung von der Kommandozeile aus kann durchgeführt werden, während eine Instanz von SmartHomeNG läuft. Es ist
 nicht notwendig ein laufendes SmartHomeNG vorher zu beenden.
@@ -34,7 +34,7 @@ nicht notwendig ein laufendes SmartHomeNG vorher zu beenden.
 
    Es werden keine Konfigurationsdateien des alten .CONF Formats gesichert, sondern ausschließlich YAML Dateien.
 
-Ab SmartHomeNG v1.12 werden nun, falls vorhanden, die privaten Plugins (Plugins, deren Name mit **priv_** beginnt)
+Ab SmartHomeNG v1.12 werden nun, falls vorhanden, die privaten Plugins (Plugins, deren Name mit ``priv_`` beginnt)
 und die privaten Tools (das Verzeichnis priv_tools) mit gesichert und beim Wiederherstellen aus der Zip Datei zurück
 kopiert.
 
@@ -50,7 +50,7 @@ Wiederherstellen
 ----------------
 
 Zum Wiederherstellen eines Konfigurations-Backups von der Kommandozeile, muss das Backup-Archiv in das Verzeichnis
-**/var/restore** gelegt werden. Es darf einen beliebigen Namen tragen und muss die einzige Datei in diesem Verzeichnis
+``/var/restore`` gelegt werden. Es darf einen beliebigen Namen tragen und muss die einzige Datei in diesem Verzeichnis
 sein. Anschließend muss SmartHomeNG mit der Option **-rb** bzw. **--restore_backup** gestartet werden.
 
 Die Wiederherstellung von der Kommandozeile aus kann durchgeführt werden, während eine Instanz von SmartHomeNG läuft.

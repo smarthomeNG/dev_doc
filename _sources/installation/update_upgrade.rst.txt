@@ -231,7 +231,7 @@ von der Kommandozeile aus machen:
 
 
 Jetzt heißt es genau zu schauen, was an **WARNING** oder **ERROR** gemeldet wird. Logfiles findet man im
-Verzeichnis ``../var/log`` (in der Standardinstallation unter ``/usr/local/smarthome/var/log``).
+Verzeichnis ``var/log`` (in der Standardinstallation unter ``/usr/local/smarthome/var/log``).
 Von da aus kann man sie mit einem Editor in Ruhe anschauen und auf Fehler durchsuchen.
 
 Wenn dann die Konfiguration stimmt, kann man natürlich den automatischen
@@ -296,48 +296,74 @@ geschaut werden.
 Eine falsche Konfiguration kann nach dem Neustart auch via Admin Interface angepasst werden.
 Wenn keine weiteren Fehler auftreten können die Items übernommen werden.
 
-Items
-~~~~~~
+Konfiguration
+~~~~~~~~~~~~~
 
-Die empfohlene Vorgehensweise für die Übernahme der Items besteht aus den Schritten
+Je nach Struktur der Konfiguration ist deren Übernahme etwas mehr oder weniger aufwändig.
 
-- kopieren der Dateien mit den Definitionen der Items aus der alten Installation ``/usr/local/smarthome.old/items/``
-  in das Verzeichnis ``/usr/local/smarthome/items/`` der neuen Installation.
-- starten des Konvertierungstools:
+Wenn schon die Konfiguration mit **-e**, **--config-etc** oder der Einstellung **config_etc: true** in der ``etc/smarthome.yaml`` vorgenommen wurde, ist es simpel. Ansonsten muss etwas mehr Aufwand getrieben werden.
 
-  .. code-block:: bash
+.. tab-set::
 
-      /usr/local/smarthome$ python3 tools/conf_to_yaml_converter.py
+   .. tab-item:: Konfiguration in `etc`
 
-  Bei erfolgreichem Durchlauf des Konverters ist jetzt für jede ``*.conf`` Datei eine passende ``*.yaml`` Datei erstellt worden.
-  Wenn das überprüft wurde können die ``*.conf`` Dateien nun aus ``/usr/local/smarthome/items/`` gelöscht werden.
+      Das alte ``etc``-Verzeichnis kann im Normalfall 1:1 in den neuen Verzeichnisbaum übernommen
+      werden. Da von SmartHomeNG dort keine Dateien mehr mitgeliefert werden, können auch alte
+      Backup- und Default-Dateien (z.B. ``etc/smarthome.yaml.default`` und ``etc/smarthome.yaml.bak``)
+      bedenkenlos gelöscht werden.
 
-Nun sollte wiederum ein Neustart von SmartHomeNG durchgeführt und die Logdateien auf Fehler kontrolliert werden.
-Das kann entweder über das Admin Interface geschehen oder es muss in
-``/usr/local/smarthome/var/log/smarthome-warnings.log`` geschaut werden.
+      Es empfiehlt sich, eine Kopie des gesamten ``etc``-Verzeichnisses samt Unterverzeichnissen aufzuheben, bis die neue Installation fehlerfrei läuft.
 
-Logiken
-~~~~~~~~
+      Sofern noch einzelne Konfigurationen im alten **conf**-Format vorliegen, sollte das Konvertertool
+      gestartet werden (siehe Anleitung im nächsten Abschnitt).
 
-Die empfohlene Vorgehensweise für die Übernahme der Logiken besteht aus den Schritten
+   .. tab-item:: Konfiguration in einzelnen Verzeichnissen
 
-- kopieren der Dateien mit den Definitionen der Logiken aus der alten Installation ``/usr/local/smarthome.old/logics/``
-  in das Verzeichnis ``/usr/local/smarthome/logics/`` der neuen Installation.
+      **Items**
+      
+      Die empfohlene Vorgehensweise für die Übernahme der Items besteht aus den Schritten
 
-- über das Admin Interface unter Dienste --> CONF-YAML Konverter den Inhalt der ``/usr/local/smarthome.old/etc/logics.conf``
-  in yaml Format umwandeln und das Ergebnis an die Datei ``/usr/local/smarthome/etc/logics.yaml`` anhängen bzw. einarbeiten.
-  Dabei muss natürlich selbst auf Doppelungen und die Einrückebene geachtet werden.
+      - kopieren der Dateien mit den Definitionen der Items aus der alten Installation ``/usr/local/smarthome.old/items/``
+        in das Verzeichnis ``/usr/local/smarthome/items/`` der neuen Installation.
+      - starten des Konvertierungstools:
 
-Nun sollte wiederum ein Neustart von SmartHomeNG durchgeführt und die Logdateien auf Fehler kontrolliert werden.
-Das kann entweder über das Admin Interface geschehen oder es muss in ``/usr/local/smarthome/var/log/smarthome-warnings.log``
-geschaut werden.
+        .. code-block:: bash
+
+            /usr/local/smarthome$ python3 tools/conf_to_yaml_converter.py
+
+        Bei erfolgreichem Durchlauf des Konverters ist jetzt für jede ``*.conf`` Datei eine passende ``*.yaml`` Datei erstellt worden.
+        Wenn das überprüft wurde können die ``*.conf`` Dateien nun aus ``/usr/local/smarthome/items/`` gelöscht werden.
+
+      Nun sollte wiederum ein Neustart von SmartHomeNG durchgeführt und die Logdateien auf Fehler kontrolliert werden.
+      Das kann entweder über das Admin Interface geschehen oder es muss in
+      ``/usr/local/smarthome/var/log/smarthome-warnings.log`` geschaut werden.
+
+      **Logiken**
+
+      Die empfohlene Vorgehensweise für die Übernahme der Logiken besteht aus den Schritten
+
+      - kopieren der Dateien mit den Definitionen der Logiken aus der alten Installation ``/usr/local/smarthome.old/logics/``
+        in das Verzeichnis ``/usr/local/smarthome/logics/`` der neuen Installation.
+
+      - über das Admin Interface unter Dienste --> CONF-YAML Konverter den Inhalt der ``/usr/local/smarthome.old/etc/logics.conf``
+        in yaml Format umwandeln und das Ergebnis an die Datei ``/usr/local/smarthome/etc/logics.yaml`` anhängen bzw. einarbeiten.
+        Dabei muss natürlich selbst auf Doppelungen und die Einrückebene geachtet werden.
+
+      Nun sollte wiederum ein Neustart von SmartHomeNG durchgeführt und die Logdateien auf Fehler kontrolliert werden.
+      Das kann entweder über das Admin Interface geschehen oder es muss in ``/usr/local/smarthome/var/log/smarthome-warnings.log``
+      geschaut werden.
+
+      **Szenen, Userfunctions und Strukturen**
+
+      Analog zu den Logiken werden auch die Verzeichnisse ``scenes``, ``functions`` und ``structs`` migriert.
+
 
 Konvertierung von \*.conf-Dateien
 ==================================
 
 Möchte man vom alten ``*.conf`` Format der Konfigurationsdateien
-(die ab Version 2.0 nicht weiter unterstützt werden) auf das neue
-``*.yaml`` Format umschwenken, so kann der im Verzeichnis ``../tools``
+(die ab Version 1.12 nicht weiter unterstützt werden) auf das neue
+``*.yaml`` Format umschwenken, so kann der im Verzeichnis ``tools``
 bereitgestellte Konverter ``conf_to_yaml_converter.py`` genutzt werden
 um das automatisch zu tun.
 

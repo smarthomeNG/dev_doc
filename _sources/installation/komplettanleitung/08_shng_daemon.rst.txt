@@ -66,7 +66,7 @@ und folgenden Text hineinkopieren:
 Nutzung eines virtuellen Environments
 =====================================
 
-Bei der Installation von SmartHomeNG v1.10 (oder neuer) wird vom postinstall-Skript ein virtuelles Python
+Bei der Installation von SmartHomeNG wird vom postinstall-Skript ein virtuelles Python
 Environment angelegt. Wenn dieses virtuelle Environment im Zusammenhang mit dem Dienst genutzt werden soll, muss
 der Python Interpreter aus diesem virtuellen Environment genutzt werden um SmartHomeNG zu betreiben.
 Dazu muss der folgende Text in die Datei /etc/systemd/system/smarthome.service eingefügt werden:

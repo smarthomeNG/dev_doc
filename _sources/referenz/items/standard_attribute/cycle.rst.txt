@@ -44,12 +44,9 @@ Der Wert für **Wert** ist optional.
   Wenn die Angabe des Wertes weg gelassen wird, wird als zu setzender Wert der Wert angenommen, den das Item zum
   Zeitpunkt der auslösenden Wertänderung hat.
 
-Der Trenner (Delimiter) zwischen **Dauer** und **Wert** ist ab SmartHomeNG v1.10 standardmäßig ein Semikolon.
-Es kann jedoch auch der alte Delimiter (das Gleichheitszeichen) verwendet werden.
+Der Trenner (Delimiter) zwischen **Dauer** und **Wert** ist standardmäßig ein Semikolon. Aus Gründen der Rückwärtskompatibilität kann jedoch auch der alte Delimiter (das Gleichheitszeichen) verwendet werden.
 
-**Ab SmartHomeNG v1.11** werden die Konfigurationsmöglichkeiten erweitert:
-
-Für **Dauer** und **Wert** können nun **eval** Ausdrücke angegeben werden, die zur Laufzeit entsprechend der Itemänderungen neu evaluiert werden.
+Für **Dauer** und **Wert** können auch **eval** Ausdrücke angegeben werden, die zur Laufzeit entsprechend der Itemänderungen neu evaluiert werden.
 Dabei können auch Item Properties genutzt werden.
 
 .. hint:

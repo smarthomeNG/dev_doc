@@ -1,4 +1,3 @@
-
 .. role:: redsup
 .. role:: bluesup
 .. role:: darkbluesup
@@ -8,12 +7,12 @@
 Navigation Structure Definition
 ===============================
 
-Bisher wurde die Navigation der smartVISU ausschließlich in der Reihenfolge erzeugt, in der die Items
-beim Start von SmartHomeNG eingelesen werden. Seit SmartHomeNG v1.8 ist es möglich, diese Navigations-Struktur
+Die Navigation der smartVISU wird in der Reihenfolge erzeugt, in der die Items 
+beim Start von SmartHomeNG eingelesen werden. Es ist möglich, diese Navigations-Struktur
 (inclusive Icons und Sidebar Infos) in einer zentralen Datei zu konfigurieren und damit die Reihenfolge aus
 den Item-Definitionen zu übersteuern.
 
-In der Datei ``../etc/visu.yaml`` können auch die Einstellungen für die Attribute **sv_img**, **sv_nav_aside**
+In der Datei ``etc/visu.yaml`` können auch die Einstellungen für die Attribute **sv_img**, **sv_nav_aside**
 und **sv_nav_aside2** übersteuert und die Position von Trennern in der Navigation festgelegt werden.
 
 Die Struktur der Datei ist folgende:

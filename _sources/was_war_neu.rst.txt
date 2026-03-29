@@ -62,8 +62,8 @@ diesem und den vorangegangenen Releases ist den :doc:`Release Notes </release/re
       auf Unterebenen einer stuct eingebunden werden.
     - **relative Referenzen**: Bei der Einbindung von Sub-Structs aus der selben Datei können jetzt relative
       Angaben gemacht werden.
-    - **structs Verzeichnis**: Dateien mit struct Definitionen werden jetzt im Verzeichnis ``../structs`` abgelegt.
-      Bestehende Definitionsdateien werden automatisch aus dem ``../etc`` Verzeichnis in das ``../structs`` Verzeichnis
+    - **structs Verzeichnis**: Dateien mit struct Definitionen werden jetzt im Verzeichnis ``etc/structs`` abgelegt.
+      Bestehende Definitionsdateien werden automatisch aus dem ``etc`` Verzeichnis in das ``etc/structs`` Verzeichnis
       migriert.
   - **Plugins**:
 

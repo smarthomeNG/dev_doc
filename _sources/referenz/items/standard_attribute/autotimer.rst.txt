@@ -25,8 +25,7 @@ Das allgemeine Format für die Angabe des **autotimer** Attributes ist:
    myitem:
        autotimer: <Dauer> [; <Wert>]
 
-**Ab SmartHomeNG v1.10** sind die möglichen Angaben für die Dauer erweitert. Der Wert für **Dauer** kann auf folgende
-Weise angegeben werden:
+Weitere Möglichkeiten sind:
 
     - eine Zahl, die die Anzahl an Sekunden angibt
 
@@ -39,14 +38,10 @@ Der Wert für **Wert** ist optional. Falls er weg gelassen wird, wird nach Ablau
 
 Falls der Wert None ist, wird ebenfalls der zum Zeitpunkt des Triggers aktuelle Itemwert erneut gesetzt.
 
-Der Trenner (Delimiter) zwischen **Dauer** und **Wert** ist ab SmartHomeNG v1.10 standardmäßig ein Semikolon.
-Es kann jedoch auch der alte Delimiter (das Gleichheitszeichen) verwendet werden.
+Der Trenner (Delimiter) zwischen **Dauer** und **Wert** ist standardmäßig ein Semikolon.
+Aus Gründen der Rückwärtskompatibilität kann jedoch auch der alte Delimiter (das Gleichheitszeichen) verwendet werden.
 
-
-**Ab SmartHomeNG v1.11** werden die Konfigurationsmöglichkeiten erweitert: :redsup:`neu`
-
-
-Für **Dauer** und **Wert** können nun **eval** Ausdrücke angegeben werden, die zur Laufzeit entsprechend der Itemänderungen neu evaluiert werden.
+Für **Dauer** und **Wert** können auch **eval** Ausdrücke angegeben werden, die zur Laufzeit entsprechend der Itemänderungen neu evaluiert werden.
 Dabei können auch Item Properties genutzt werden.
 
 .. code-block:: yaml

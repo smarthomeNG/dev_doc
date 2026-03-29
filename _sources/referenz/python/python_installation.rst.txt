@@ -41,7 +41,7 @@ Download des Source Codes
 
 Auf der website **python.org** unter **Downloads/Source Code** die gewünschte Version suchen und die das entsprechende
 Archiv (XZ compressed source tarball) herunter laden. Die Datei träget den Namen **Python-3.10.12.tar.xz**.
-Anschließend diese Datei auf dem SmartHomeNG-System in das Verzeichnis **/usr/local/src** kopieren. (Aufgrund der
+Anschließend diese Datei auf dem SmartHomeNG-System in das Verzeichnis ``/usr/local/src`` kopieren. (Aufgrund der
 Verzeichnisrechte muss das evtl. mit sudo geschehen)
 
 |
@@ -49,7 +49,7 @@ Verzeichnisrechte muss das evtl. mit sudo geschehen)
 Das Archiv auspacken
 ====================
 
-Zum auspacken des Archivs in das Verzeichnis **/usr/local/src** wechseln und anschließend mit **tar** das Archiv
+Zum auspacken des Archivs in das Verzeichnis ``/usr/local/src`` wechseln und anschließend mit **tar** das Archiv
 auspacken.
 
 .. code-block:: bash
@@ -87,7 +87,7 @@ Der Build-Prozess wird mit
 
 gestartet.
 
-Wenn der Build Prozess erfolgreich war, wird die Python Version in das Verzeichnis **/usr/local/bin** installiert.
+Wenn der Build Prozess erfolgreich war, wird die Python Version in das Verzeichnis ``/usr/local/bin`` installiert.
 
 Dieses kann mit
 

@@ -9,9 +9,9 @@
 .. index:: Visualisierung mit smartVISU
 .. index:: smartVISU; Visualisierung mit smartVISU
 
-###############################################
-Visualisierung mit smartVISU :greensup:`Update`
-###############################################
+############################
+Visualisierung mit smartVISU
+############################
 
 
 =========
@@ -57,9 +57,9 @@ Zusätzlich bietet das neue Plugin folgende Funktionalitäten:
     - structure definition file ...
 
 
-==============================================
-Generierung der Visu Seiten :greensup:`Update`
-==============================================
+===========================
+Generierung der Visu Seiten
+===========================
 
 Die Generierung der Visu Seiten erfolgt (wenn sie konfiguriert ist) beim Start von SmartHomeNG durch ein Plugin.
 Mit der Version 1.8 von SmartHomeNG gibt es hier einige Neuerungen.

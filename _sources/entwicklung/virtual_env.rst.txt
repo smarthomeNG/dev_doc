@@ -20,7 +20,7 @@ Danach werden aktuell (Stand November 2020) empfohlen:
 
 .. hint::
 
-    Seit SmartHomeNG v1.10 wird der Betrieb von SmartHomeNG in virtuellen standardmäßig unterstützt und empfohlen
+    Der Betrieb von SmartHomeNG in virtuellen Environments wird unterstützt und standardmäßig empfohlen
     (siehe auch :doc:`Komplettanleitung </installation/komplettanleitung/03_smarthomeng>`).
 
     Eine ausführlichere Beschreibung zur Unterstützung virtueller Environments in SmartHomeNG ist in der

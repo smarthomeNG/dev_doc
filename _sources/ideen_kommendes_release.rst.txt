@@ -1,6 +1,6 @@
-=========================
-Ideen für das Release 1.9
-=========================
+===========================
+Ideen für das Release 1.13+
+===========================
 
 
 .. contents:: Inhaltsübersicht
@@ -15,39 +15,10 @@ Ideen für neue Funktionalitäten im Core
 
 |
 
-Struct Nesting
---------------
-
-Möglichkeiten des Nesting von structs erweitern.
-
-|
-
-lib.network
------------
-
-|
-
-daemonize überarbeiten
-----------------------
-
-die Systemlogik für "daemonize" bzw. "im Vordergrund bleiben" ist kaputt.
-Spätestens die Methoden stop und restart können damit so nicht umgehen.
-Dazu hatte ich (Morg) schon ein issue aufgemacht.
-(Besonders "spaßig": smarthome mit -f oder -i starten und im AdminUI auf Restart Core klicken... hrhr)
-
-|
-
 Logiken: Zusätzlichen Trigger „shutdown“
 ----------------------------------------
 
 Zusätzlichen Trigger, um Logiken beim herunterfahren von SmartHomeNG triggern zu können.
-
-|
-
-Items: User Attribute implementieren
-------------------------------------
-
-Attribute, die User nutzen wollen, die aber in keinem Plugin definiert sind.
 
 |
 
@@ -98,7 +69,7 @@ lib.color
 ---------
 
 Library zur Umrechnung zwischen Farbräumen. Zur Nutzung in Logiken und evals z.B.
-bei Nutzung von Hue.
+bei Nutzung von Hue. Ggf. auf vorhandene Methoden aus Plugin zigbee2mqtt zurückgreifen.
 
 |
 
@@ -121,7 +92,7 @@ neue Version von SmartHomeNG installiert wird.
 * Nach erfolgtem Lauf ein Flag in eine Datei speichern (dass die Daten dem Release … entsprechen)
 * Mehrere Routinen nacheinander aufrufen, falls jemand beim Update Versionen überspringt
 * Neustart nach jeder Routine notwendig?
-* Routinen könnten in ../lib/update abgelegt werden
+* Routinen könnten in ``lib/update`` abgelegt werden
 * Wo sollten die Flags gespeichert werden?
 
 |
@@ -138,6 +109,15 @@ Admin GUI
 =========
 
 Ideen für neue Funktionalitäten in der Admin GUI
+
+|
+
+Plugins live laden, entladen, neu laden
+---------------------------------------
+
+* Die Methoden sind im Core schon vorbereitet und können mit kompatiblen
+  Plugins genutzt werden. Die "Ansteuerung" über das AdminUI muss implementiert
+  werden.
 
 |
 
