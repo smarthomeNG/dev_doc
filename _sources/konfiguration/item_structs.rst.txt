@@ -11,8 +11,8 @@ structs (Item Strukturen) :greensup:`Update`
 ============================================
 
 
-Überblick
-=========
+Überblick :greensup:`Update`
+============================
 
 Seit SmartHomeNG v1.6 werden Item-Struktur-Templates unterstützt, mit denen sich wiederholende Itemstrukturen einfach realisieren lassen.
 Die Anwendung erfolgt mit Hilfe des **struct**-Attributes mit dem jeweiligen Namen des Item-Templates. Dies wird bei dem Item definiert,

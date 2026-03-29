@@ -29,10 +29,8 @@
    :hidden:
 
    /plugins/README.md
-   /plugins/alexa/nginx.md
    /plugins/buderus/URLs.md
-   /plugins/wunderground/README_OLD.md
-
+   
 .. toctree::
    :maxdepth: 2
    :glob:

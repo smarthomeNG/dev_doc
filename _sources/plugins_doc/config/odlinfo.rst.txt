@@ -28,7 +28,7 @@ Es handelt sich bei diesem Plugin um ein **web Plugin**.
 Beschreibung
 ============
 
-
+Dieses Plugin liefert die Gamma-Ortsdosisleistung (ODL) in µSv/h  von mehreren Stationen in Deutschland (zur Verfügung gestellt durch das Bundesamt für Strahlenschutz). Mehr Informationen unter https://odlinfo.bfs.de. Nutzungsbedingungen siehe https://www.imis.bfs.de/geoportal/resources/sitepolicy.html.
 
 
 Anforderungen
@@ -58,7 +58,7 @@ cycle
 =====
 
 
-
+(optional) Zeit zwischen zwei Updateläufen. Default ist 3600 Sekunden.
 
  - Datentyp: **int**
  - Standardwert: **1800**
@@ -68,7 +68,7 @@ verify
 ======
 
 
-
+Schaltet die Prüfung der Zertifikate des odlinfo Endpunkts ab.
 
  - Datentyp: **bool**
  - Standardwert: **True**
@@ -86,7 +86,7 @@ odl_data_type
 =============
 
 
-
+Daten, die dem Item zugeordnet werden sollen.
 
  - Datentyp: **str**
 
@@ -101,7 +101,7 @@ odl_station
 ===========
 
 
-
+Internationale ID oder ODL Messstellenkennung der Station.
 
  - Datentyp: **str**
 
@@ -136,7 +136,7 @@ get_station_for_id(odlinfo_id)
 ==============================
 
 
-
+Gibt ein DICT mit Infos zur einer Messstation zurück. Keys: 'id', 'kenn', 'plz', 'name', 'site_status', 'site_status_text', 'kid', 'height_above_sea', 'start_measure', 'end_measure', 'value', 'value_cosmic', 'value_terrestrial', 'unit', 'validated', 'nuclide', 'duration'.
 
  - Ergebnistyp der Funktion: **dict**
 
@@ -144,7 +144,7 @@ get_station_for_id(odlinfo_id)
 odlinfo_id
  -  -  -  -  -  -  -  -  -  - 
 
-
+Array der IDs ('id' oder 'kenn') der Messstationen. Siehe Web-Interface des Plugins oder https://odlinfo.bfs.de/ODL/DE/service/datenschnittstelle/datenschnittstelle_node.html.
 
  - Datentyp: **str**
 
@@ -153,7 +153,7 @@ get_stations()
 ==============
 
 
-
+Gibt ein Array of DICTs mit allen verfügbaren Messstationen zurück. Keys eines DICTs:<br/><br/> <strong>id:</strong> Die internationale ID der Messstelle.<br/> <strong>kenn:</strong> Die Messstellenkennung, wie sie auch auf ODL-Info verwendet wird.<br/> <strong>plz:</strong> Die Postleitzahl der Messstelle.<br/> <strong>name:</strong> Der Name bzw. Ortsname der Messstelle.<br/> <strong>site_status:</strong> Der Status der Messstelle als Zahl. (1 = in Betrieb, 2 = Defekt, 3 = Testbetrieb)<br/> <strong>site_status_text:</strong> Der Status der Messstelle als Text.<br/> <strong>kid:</strong> ID des Messnetzknotens, dem die Messstelle zugeordnet ist. (1 = Freiburg, 2 = Berlin, 3 = München, 4 = Bonn, 5 = Salzgitter, 6 = Rendsburg)<br/> <strong>height_above_sea:</strong> Höhe der Messstelle über NN.<br/> <strong>start_measure:</strong> Startzeitpunkt der Messperiode für den gegebenen Messwert.<br/> <strong>end_measure:</strong> Endzeitpunkt der Messperiode für den gegebenen Messwert.<br/> <strong>value:</strong> Der Messwert.<br/> <strong>value_cosmic:</strong> Kosmischer Anteil des Messwertes.<br/> <strong>value_terrestrial:</strong> Terrestrischer Anteil des Messwertes.<br/> <strong>unit:</strong> Einheit zu dem Messwert.<br/> <strong>validated:</strong> Prüfstatus des Messwertes. (1 = geprüft, 2 = ungeprüft)<br/> <strong>nuclide:</strong> Bezeichnung der Messgröße.<br/> <strong>duration:</strong> Dauer der Messperiode.
 
  - Ergebnistyp der Funktion: **list(dict)**
 
@@ -162,7 +162,7 @@ get_stations_for_ids(odlinfo_ids)
 =================================
 
 
-
+Gibt ein Array von DICTs mit Infos zu Messstationen zurück. Keys: 'id', 'kenn', 'plz', 'name', 'site_status', 'site_status_text', 'kid', 'height_above_sea', 'start_measure', 'end_measure', 'value', 'value_cosmic', 'value_terrestrial', 'unit', 'validated', 'nuclide', 'duration'.
 
  - Ergebnistyp der Funktion: **list(dict)**
 
@@ -170,7 +170,7 @@ get_stations_for_ids(odlinfo_ids)
 odlinfo_ids
  -  -  -  -  -  -  -  -  -  -  - 
 
-
+Array der IDs ('id' oder 'kenn') der Messstationen. Siehe Web-Interface des Plugins oder https://odlinfo.bfs.de/ODL/DE/service/datenschnittstelle/datenschnittstelle_node.html.
 
  - Datentyp: **list(str)**
 
@@ -179,7 +179,7 @@ get_update_timestamp()
 ======================
 
 
-
+Gibt das datetime Objekt zurück, wann die intern im Plugin gecachten Daten zuletzt aktualisiert wurden.
 
  - Ergebnistyp der Funktion: **foo**
 

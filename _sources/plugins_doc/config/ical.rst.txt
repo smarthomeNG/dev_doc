@@ -28,7 +28,8 @@ Es handelt sich bei diesem Plugin um ein **web Plugin**.
 Beschreibung
 ============
 
-
+Ermöglicht die Verwendung von Kalendern (ICS)
+Es können sowohl Dateien als auch Onlinefeeds eingebunden werden. 
 
 
 Anforderungen
@@ -58,7 +59,7 @@ calendars
 =========
 
 
-
+Liste von Kalendern die automatisch aktualisiert und via `sh.ical()` Funktion abgerufen werden kann. Konfiguriert optional einen Alias und die URI des Kalenders, die sowohl auf ein lokales File als auch einen Onlinefeed mit `https://` verweisen kann. Onlinekalender werden in den Ordner var/ical gespeichert und je nach cycle-Angabe aktualisiert.  Beispiel: holidays:http://cal.server/holidays.ics
 
  - Datentyp: **list(str)**
 
@@ -67,7 +68,7 @@ cycle
 =====
 
 
-
+Definiert in Sekunden das Intervall, in dem der Kalender aktualisert werden soll.
 
  - Datentyp: **int**
  - Standardwert: **3600**
@@ -77,7 +78,7 @@ directory
 =========
 
 
-
+Definiert den Unterordner im var-Pfad, in dem die Kalenderdateien gespeichert werden sollen.
 
  - Datentyp: **str**
  - Standardwert: **ics**
@@ -87,7 +88,7 @@ handle_login
 ============
 
 
-
+Umgang mit Login-Daten (http://user:pass@domain.tld/path) in Kalender-URIs in Logs. 'mask' ersetzt die Login-Daten durch Sternchen, 'show' gibt sie ins Log aus und 'strip' löscht den jeweiligen Teil der URI vor Ausgabe ins Log.
 
  - Datentyp: **str**
  - Standardwert: **mask**
@@ -103,7 +104,7 @@ timeout
 =======
 
 
-
+Wartezeit in Sekunden auf eine Antwort vom Server beim Download eines Onlinekalenders.
 
  - Datentyp: **int**
  - Standardwert: **10**
@@ -121,7 +122,7 @@ ical_calendar
 =============
 
 
-
+Dieses Attribut konfiguriert eine Verbindung zwischen Item und entsprechendem Kalender, der entweder als Dateinamen (die Datei muss in var/ical vom smarthomeNG Verzeichnis liegen), URI oder als Kalender Alias (im etc/plugin.yaml definiert) angegeben wird. Der konfigurierte Kalender wird automatisch zum internen Kalender-Zwischenspeicher hinzugefügt und aktualisiert.    Das Item wird auf Wahr gesetzt, sobald ein Event im Moment stattfindet. Ansonsten ist es falsch.    Das Aktualisierungsintervall ist derzeit auf eine Minute festgelegt. Das beduetet, jede Minute wird der Kalender auf Events geprüft und das Item bei Bedarf aud Wahr geschaltet. 
 
  - Datentyp: **str**
 
@@ -156,7 +157,7 @@ ical(ics= 'None', delta=1, offset=0, prio=1, verify=True)
 =========================================================
 
 
-
+Es wird ein dictionary mit einem datetime.date Objekt als Key und folgenden Arraywerten zurückgeliefert:  die Event Startzeit, die Event Endzeit, die Eventkategorie (z.B. privat), die Eventzusammenfassung (z.B. die Notizen)  Start- und Endzeit werden durch das Plugin von der im Kalender verwendeten Zeitzone in die lokale smarthomeNG Zeitzone konvertiert.    Wenn ein Kalender öfters verwendet werden soll, wird empfohlen, diesen in der etc/plugin.yaml zu konfigurieren. 
 
  - Ergebnistyp der Funktion: **dict**
 
@@ -164,7 +165,7 @@ ical(ics= 'None', delta=1, offset=0, prio=1, verify=True)
 ics
  -  -  - 
 
-
+eine lokale Datei, eine mit http://  startende URL oder ein Kalender-Alias aus der Pluginkonfiguration
 
  - Datentyp: **str**
  - Standardwert: **None**
@@ -173,7 +174,7 @@ ics
 delta
  -  -  -  -  - 
 
-
+wieviele zusätzliche Tage analysiert werden sollen.
 
  - Datentyp: **int**
  - Standardwert: **1**
@@ -182,7 +183,7 @@ delta
 offset
  -  -  -  -  -  - 
 
-
+wann der zu analysierende Zeitrahmen starten soll.
 
  - Datentyp: **int**
  - Standardwert: **0**
@@ -191,7 +192,7 @@ offset
 prio
  -  -  -  - 
 
-
+Falls in einem Kalendereintrag Felder mehrfach vorkommen, kann hier bestimmt werden, das wievielte Feld priorisiert werden soll.
 
  - Datentyp: **int**
  - Standardwert: **1**
@@ -200,7 +201,7 @@ prio
 verify
  -  -  -  -  -  - 
 
-
+Bestimmt, ob eine https URL per SSL verifiziert werden soll oder nicht.
 
  - Datentyp: **bool**
  - Standardwert: **True**

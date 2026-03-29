@@ -28,7 +28,7 @@ Es handelt sich bei diesem Plugin um ein **system Plugin**.
 Beschreibung
 ============
 
-
+Database plugin, mit Unterstützung für SQLite 3 und MySQL
 
 
 Anforderungen
@@ -58,7 +58,7 @@ connect
 =======
 
 
-
+Spezifiziert die Verbindungsparameter, welche genutzt werden, um die connect() Funktion des DB API 2 aufzurufen.
 
  - Datentyp: **list(str)**
 
@@ -67,7 +67,7 @@ copy_database
 =============
 
 
-
+Nur für SQLite3: Auf True setzen, um beim Start von SmartHomeNG eine Kopie der Datenbank Datei zu erzeugen
 
  - Datentyp: **bool**
  - Standardwert: **False**
@@ -77,7 +77,7 @@ copy_database_name
 ==================
 
 
-
+Nur für SQLite3: Pfad/Name der Datenbank Kopie
 
  - Datentyp: **str**
 
@@ -86,7 +86,7 @@ count_logentries
 ================
 
 
-
+Auf True setzen, um für das Web Interface die Anzahl der Logeinträge für jedes Item zu zählen und als extra Spalte anzuzeigen
 
  - Datentyp: **bool**
  - Standardwert: **False**
@@ -96,7 +96,7 @@ cycle
 =====
 
 
-
+Dump Cycle bestimmt wie oft die Daten auf Platte geschrieben werden (in Sekunden).
 
  - Datentyp: **int**
  - Standardwert: **60**
@@ -106,7 +106,7 @@ default_maxage
 ==============
 
 
-
+Falls dieser Parameter einen Wert größer 0 enthält: Standard maxage für Items, die kein maxage gesetzt haben
 
  - Datentyp: **int**
  - Standardwert: **0**
@@ -117,7 +117,7 @@ driver
 ======
 
 
-
+Spezifiziert das DB-API2 Treiber Modul
 
  - Datentyp: **str**
  - Standardwert: **sqlite3**
@@ -127,7 +127,7 @@ max_delete_logentries
 =====================
 
 
-
+Maximal auf einmal zu löschende Anzahl an Log Einträgen mit dem database_maxage Attribut, reduziert die Belastung der Datenbank bei alten Datenbeständen
 
  - Datentyp: **int**
  - Standardwert: **20000**
@@ -138,7 +138,7 @@ max_reassign_logentries
 =======================
 
 
-
+Maximal auf einmal neu zuzuweisende Anzahl an Log Einträgen, reduziert die Belastung der Datenbank bei großen Datenbeständen
 
  - Datentyp: **int**
  - Standardwert: **20**
@@ -149,7 +149,7 @@ precision
 =========
 
 
-
+Genauigkeit der aus der Datenbank ausgelesenen Werte (Nachkommastellen).
 
  - Datentyp: **int**
  - Standardwert: **2**
@@ -159,7 +159,7 @@ prefix
 ======
 
 
-
+Enthält ein Prefix welches vor die Datenbanktabellen des Plugins geschrieben wird
 
  - Datentyp: **str**
 
@@ -168,7 +168,7 @@ removeold_cycle
 ===============
 
 
-
+Remove old Cycle bestimmt wie oft die Prüfung auf veraltete Daten gestartet werden soll (in Sekunden).
 
  - Datentyp: **int**
  - Standardwert: **91**
@@ -178,7 +178,7 @@ time_precision
 ==============
 
 
-
+Genauigkeit der aus der Datenbank ausgelesenen Zeitwerte (Nachkommastellen (für Sekunden)).
 
  - Datentyp: **int**
  - Standardwert: **3**
@@ -198,7 +198,7 @@ database
 ========
 
 
-
+Wenn auf 'yes' oder 'true' gesetzt, werden die Werte des Items in die Datenbank geschrieben. Wenn auf 'init' gesetzt, wird zusätzlich beim Start von SmartHomeNG der Wert des Items aus der Datenbank gelesen.
 
  - Datentyp: **str**
 
@@ -207,7 +207,7 @@ database_acl
 ============
 
 
-
+Muss normalerweise nicht konfiguriert werden, dann wird der Standard 'rw' genutzt. Es kann nützlich sein Werte als 'ro' zu deklarieren, falls die Datenbank Daten aus anderen Quellen enthält, die durch SmartNomeNG nicht verändert werden sollen.
 
  - Datentyp: **str**
  - Standardwert: **rw**
@@ -217,7 +217,7 @@ database_maxage
 ===============
 
 
-
+Maximales Alter (in Tagen) der Logeinträge, die für dieses Item gespeichert werden sollen. Falls nicht angegeben, werden die Werte unbegrenzt gespeichert.
 
  - Datentyp: **num**
 
@@ -227,7 +227,7 @@ database_write_on_shutdown
 ==========================
 
 
-
+Muss normalerweise nicht konfiguriert werden, dann wird der Standard 'True' genutzt. Das bedeutet, dass das item vor dem Beenden von smarthomeNG nochmal in die DB geschrieben wird (auch wenn keine echte Aenderung statt fand). Wird das Attribut auf 'False' gesetzt, wird das Schreiben beim Beenden unterdrueckt.
 
  - Datentyp: **bool**
  - Standardwert: **True**
@@ -263,7 +263,7 @@ cleanup()
 =========
 
 
-
+Datenbank aufräumen (löscht ungenutzte Item/Log Einträge aus der Datenbank)   Diese Methode entfernt alle Elemente und Logs aus der Datenbank der Elemente, welche derzeit nicht für die Protokollierung in der Datenbank konfiguriert sind. Vorsicht vor dieser Verwendung in einem Setup mit mehreren Plugin Instanzen, da eine Instanz die Items der anderen Instanz nicht kennt! 
 
  - Die Funktion liefert kein Ergebnis
 
@@ -272,7 +272,7 @@ db()
 ====
 
 
-
+Liefert das Lowlevel Datenbank-Objekt zurück
 
  - Ergebnistyp der Funktion: **foo**
 
@@ -281,7 +281,7 @@ deleteItem(id)
 ==============
 
 
-
+Löschen eines Item-Datenbankeintrags und von dessen Log Daten
 
  - Die Funktion liefert kein Ergebnis
 
@@ -289,7 +289,7 @@ deleteItem(id)
 id
  -  - 
 
-
+Datenbank-ID des Items für das der Eintrag gelöscht werden soll
 
  - Datentyp: **int**
 
@@ -298,7 +298,7 @@ deleteLog(id, time, time_start, time_end, changed, changed_start, changed_end, c
 ===================================================================================
 
 
-
+Log-Datenbankeinträge für angegebene Datenbank-ID löschen
 
  - Die Funktion liefert kein Ergebnis
 
@@ -306,7 +306,7 @@ deleteLog(id, time, time_start, time_end, changed, changed_start, changed_end, c
 id
  -  - 
 
-
+Datenbank-ID für die Einträge gelöscht werden sollen
 
  - Datentyp: **int**
 
@@ -314,7 +314,7 @@ id
 time
  -  -  -  - 
 
-
+Löschen auf angegebene Zeit eingeschränken (optional)
 
  - Datentyp: **int**
 
@@ -322,7 +322,7 @@ time
 time_start
  -  -  -  -  -  -  -  -  -  - 
 
-
+Löschen auf angegebene Startzeit eingeschränken eingeschränken (optional)
 
  - Datentyp: **int**
 
@@ -330,7 +330,7 @@ time_start
 time_end
  -  -  -  -  -  -  -  - 
 
-
+Löschen auf angegebene Endzeit eingeschränken eingeschränken (optional)
 
  - Datentyp: **int**
 
@@ -338,7 +338,7 @@ time_end
 changed
  -  -  -  -  -  -  - 
 
-
+Löschen auf angegebene Änderungszeit eingeschränken (optional)
 
  - Datentyp: **int**
 
@@ -346,7 +346,7 @@ changed
 changed_start
  -  -  -  -  -  -  -  -  -  -  -  -  - 
 
-
+Löschen auf angegebene Start der Änderungszeit eingeschränken eingeschränken (optional)
 
  - Datentyp: **int**
 
@@ -354,7 +354,7 @@ changed_start
 changed_end
  -  -  -  -  -  -  -  -  -  -  - 
 
-
+Löschen auf angegebene Ende der Änderungszeit eingeschränken eingeschränken (optional)
 
  - Datentyp: **int**
 
@@ -362,7 +362,7 @@ changed_end
 cur
  -  -  - 
 
-
+Ein Datenbankcursor Objekt, falls vorhanden (optional)
 
  - Datentyp: **foo**
 
@@ -371,7 +371,7 @@ dump(dumpfile, id, time, time_start, time_end, changed, changed_start, changed_e
 ========================================================================================
 
 
-
+Erzeugt einen Datenbank-Dump für angegebene Kriterien
 
  - Die Funktion liefert kein Ergebnis
 
@@ -379,7 +379,7 @@ dump(dumpfile, id, time, time_start, time_end, changed, changed_start, changed_e
 dumpfile
  -  -  -  -  -  -  -  - 
 
-
+Dateiname in die der Dump geschrieben werden soll
 
  - Datentyp: **str**
 
@@ -387,7 +387,7 @@ dumpfile
 id
  -  - 
 
-
+Dump auf angegebene Item-ID eingeschränken (optional)
 
  - Datentyp: **int**
 
@@ -395,7 +395,7 @@ id
 time
  -  -  -  - 
 
-
+Dump auf die angegebene Zeit eingeschränken (optional)
 
  - Datentyp: **int**
 
@@ -403,7 +403,7 @@ time
 time_start
  -  -  -  -  -  -  -  -  -  - 
 
-
+Dump auf die Startzeit eingeschränken (optional)
 
  - Datentyp: **int**
 
@@ -411,7 +411,7 @@ time_start
 time_end
  -  -  -  -  -  -  -  - 
 
-
+Dump auf die Endzeit eingeschränken (optional)
 
  - Datentyp: **int**
 
@@ -419,7 +419,7 @@ time_end
 changed
  -  -  -  -  -  -  - 
 
-
+Dump auf die angegebene Zeit einer Änderung eingeschränken (optional)
 
  - Datentyp: **int**
 
@@ -427,7 +427,7 @@ changed
 changed_start
  -  -  -  -  -  -  -  -  -  -  -  -  - 
 
-
+Dump auf die angegebene Startzeit von Änderungen eingeschränken (optional)
 
  - Datentyp: **int**
 
@@ -435,7 +435,7 @@ changed_start
 changed_end
  -  -  -  -  -  -  -  -  -  -  - 
 
-
+Dump auf die angegebene Endzeit von Änderungen eingeschränken (optional)
 
  - Datentyp: **int**
 
@@ -443,7 +443,7 @@ changed_end
 cur
  -  -  - 
 
-
+Ein Datenbankcursor Objekt, falls vorhanden (optional)
 
  - Datentyp: **foo**
 
@@ -452,7 +452,7 @@ id(item)
 ========
 
 
-
+Liefert für das angegebene Item die Datenbank-ID zurück
 
  - Ergebnistyp der Funktion: **int**
 
@@ -460,7 +460,7 @@ id(item)
 item
  -  -  -  - 
 
-
+Das Item-Objekt
 
  - Datentyp: **foo**
 
@@ -469,7 +469,7 @@ insertItem(name, cur)
 =====================
 
 
-
+Item-Datenbankeintrag für angegebene Datenbank-ID anlegen
 
  - Ergebnistyp der Funktion: **int**
 
@@ -477,7 +477,7 @@ insertItem(name, cur)
 name
  -  -  -  - 
 
-
+Name des Items für das ein Eintrag angelegt werden soll
 
  - Datentyp: **str**
 
@@ -485,7 +485,7 @@ name
 cur
  -  -  - 
 
-
+Ein Datenbankcursor Objekt, falls vorhanden (optional)
 
  - Datentyp: **foo**
 
@@ -494,7 +494,7 @@ insertLog(id, time, duration, val, it, changed, cur)
 ====================================================
 
 
-
+Log-Datenbankeintrag für angegebene Datenbank-ID anlegen
 
  - Die Funktion liefert kein Ergebnis
 
@@ -502,7 +502,7 @@ insertLog(id, time, duration, val, it, changed, cur)
 id
  -  - 
 
-
+Datenbank-ID des Items für das ein Eintrag angelegt werden soll
 
  - Datentyp: **int**
 
@@ -510,7 +510,7 @@ id
 time
  -  -  -  - 
 
-
+Zeitpunkt an dem der Wert aktiv war
 
  - Datentyp: **int**
 
@@ -518,7 +518,7 @@ time
 duration
  -  -  -  -  -  -  -  - 
 
-
+Zeitintervall für den der Wert aktiv war
 
  - Datentyp: **int**
 
@@ -526,7 +526,7 @@ duration
 val
  -  -  - 
 
-
+Der Wert der in die Datenbank geschrieben werden soll
 
  - Datentyp: **str**
 
@@ -534,7 +534,7 @@ val
 it
  -  - 
 
-
+Der Item-Typ des Wertes ('str', 'num', 'bool')
 
  - Datentyp: **str**
 
@@ -542,7 +542,7 @@ it
 changed
  -  -  -  -  -  -  - 
 
-
+Zeitstempel der Änderung
 
  - Datentyp: **int**
 
@@ -550,7 +550,7 @@ changed
 cur
  -  -  - 
 
-
+Ein Datenbankcursor Objekt, falls vorhanden (optional)
 
  - Datentyp: **foo**
 
@@ -559,7 +559,7 @@ readItem(id, cur)
 =================
 
 
-
+Item-Datenbankeintrag für angegebene Datenbank-ID auslesen   Diese Methode liest die Item-Daten einschließlich aller Felder. Wenn der ID Parameter ein String ist, wird angenommen, dass das Element über den Item Namen ausgewählt werden soll und nicht die Item-ID. 
 
  - Ergebnistyp der Funktion: **foo**
 
@@ -567,7 +567,7 @@ readItem(id, cur)
 id
  -  - 
 
-
+Datenbank-ID des Items für das der Eintrag ausgelesen werden soll
 
  - Datentyp: **int/str**
 
@@ -575,7 +575,7 @@ id
 cur
  -  -  - 
 
-
+Ein Datenbankcursor Objekt, falls vorhanden (optional)
 
  - Datentyp: **foo**
 
@@ -584,7 +584,7 @@ readItems(cur)
 ==============
 
 
-
+Alle Item-Datenbankeinträge incl. aller Felder auslesen
 
  - Ergebnistyp der Funktion: **foo**
 
@@ -592,7 +592,7 @@ readItems(cur)
 cur
  -  -  - 
 
-
+Ein Datenbankcursor Objekt, falls vorhanden (optional)
 
  - Datentyp: **foo**
 
@@ -601,7 +601,7 @@ readLog(id, time)
 =================
 
 
-
+Log-Datenbankeintrag für angegebene Datenbank-ID auslesen
 
  - Ergebnistyp der Funktion: **foo**
 
@@ -609,7 +609,7 @@ readLog(id, time)
 id
  -  - 
 
-
+Datenbank-ID des Logs für das der Eintrag gelesen werden soll
 
  - Datentyp: **int**
 
@@ -617,7 +617,7 @@ id
 time
  -  -  -  - 
 
-
+Zeitpunkt an dem der Wert aktiv war
 
  - Datentyp: **int**
 
@@ -626,7 +626,7 @@ readLogs(id, time, time_start, time_end, changed, changed_start, changed_end, cu
 ==================================================================================
 
 
-
+Log-Datenbankeinträge für angegebene Datenbank-ID auslesen
 
  - Ergebnistyp der Funktion: **foo**
 
@@ -634,7 +634,7 @@ readLogs(id, time, time_start, time_end, changed, changed_start, changed_end, cu
 id
  -  - 
 
-
+Datenbank-ID des Logs für das der Eintrag aktualisiert werden soll
 
  - Datentyp: **int**
 
@@ -642,7 +642,7 @@ id
 time
  -  -  -  - 
 
-
+Auslesen auf angegebene Zeit eingeschränken (optional)
 
  - Datentyp: **int**
 
@@ -650,7 +650,7 @@ time
 time_start
  -  -  -  -  -  -  -  -  -  - 
 
-
+Auslesen auf angegebene Startzeit eingeschränken eingeschränken (optional)
 
  - Datentyp: **int**
 
@@ -658,7 +658,7 @@ time_start
 time_end
  -  -  -  -  -  -  -  - 
 
-
+Auslesen auf angegebene Endzeit eingeschränken eingeschränken (optional)
 
  - Datentyp: **int**
 
@@ -666,7 +666,7 @@ time_end
 changed
  -  -  -  -  -  -  - 
 
-
+Auslesen auf angegebene Änderungszeit eingeschränken (optional)
 
  - Datentyp: **int**
 
@@ -674,7 +674,7 @@ changed
 changed_start
  -  -  -  -  -  -  -  -  -  -  -  -  - 
 
-
+Auslesen auf angegebene Start der Änderungszeit eingeschränken eingeschränken (optional)
 
  - Datentyp: **int**
 
@@ -682,7 +682,7 @@ changed_start
 changed_end
  -  -  -  -  -  -  -  -  -  -  - 
 
-
+Auslesen auf angegebene Ende der Änderungszeit eingeschränken eingeschränken (optional)
 
  - Datentyp: **int**
 
@@ -690,7 +690,7 @@ changed_end
 cur
  -  -  - 
 
-
+Ein Datenbankcursor Objekt, falls vorhanden (optional)
 
  - Datentyp: **foo**
 
@@ -699,7 +699,7 @@ updateItem(id, time, duration, val, it, changed, cur)
 =====================================================
 
 
-
+Item-Datenbankeintrag für angegebene Datenbank-ID aktualisieren
 
  - Die Funktion liefert kein Ergebnis
 
@@ -707,7 +707,7 @@ updateItem(id, time, duration, val, it, changed, cur)
 id
  -  - 
 
-
+Datenbank-ID des Items für das der Eintrag aktualisiert werden soll
 
  - Datentyp: **int**
 
@@ -715,7 +715,7 @@ id
 time
  -  -  -  - 
 
-
+Zeitpunkt an dem der Wert aktiv war
 
  - Datentyp: **int**
 
@@ -723,7 +723,7 @@ time
 duration
  -  -  -  -  -  -  -  - 
 
-
+Zeitintervall für den der Wert aktiv war
 
  - Datentyp: **int**
 
@@ -731,7 +731,7 @@ duration
 val
  -  -  - 
 
-
+Der Wert der in die Datenbank geschrieben werden soll
 
  - Datentyp: **str**
 
@@ -739,7 +739,7 @@ val
 it
  -  - 
 
-
+Der Item-Typ des Wertes ('str', 'num', 'bool')
 
  - Datentyp: **str**
 
@@ -747,7 +747,7 @@ it
 changed
  -  -  -  -  -  -  - 
 
-
+Zeitstempel der Änderung
 
  - Datentyp: **int**
 
@@ -755,7 +755,7 @@ changed
 cur
  -  -  - 
 
-
+Ein Datenbankcursor Objekt, falls vorhanden (optional)
 
  - Datentyp: **foo**
 
@@ -764,7 +764,7 @@ updateLog(id, time, duration, val, it, changed, cur)
 ====================================================
 
 
-
+Log-Datenbankeintrag für angegebene Datenbank-ID aktualisieren
 
  - Die Funktion liefert kein Ergebnis
 
@@ -772,7 +772,7 @@ updateLog(id, time, duration, val, it, changed, cur)
 id
  -  - 
 
-
+Datenbank-ID des Items für das der Eintrag aktualisiert werden soll
 
  - Datentyp: **int**
 
@@ -780,7 +780,7 @@ id
 time
  -  -  -  - 
 
-
+Zeitpunkt an dem der Wert aktiv war
 
  - Datentyp: **int**
 
@@ -788,7 +788,7 @@ time
 duration
  -  -  -  -  -  -  -  - 
 
-
+Zeitintervall für den der Wert aktiv war
 
  - Datentyp: **int**
 
@@ -796,7 +796,7 @@ duration
 val
  -  -  - 
 
-
+Der Wert der in die Datenbank geschrieben werden soll
 
  - Datentyp: **str**
 
@@ -804,7 +804,7 @@ val
 it
  -  - 
 
-
+Der Item-Typ des Wertes ('str', 'num', 'bool')
 
  - Datentyp: **str**
 
@@ -812,7 +812,7 @@ it
 changed
  -  -  -  -  -  -  - 
 
-
+Zeitstempel der Änderung
 
  - Datentyp: **int**
 
@@ -820,7 +820,7 @@ changed
 cur
  -  -  - 
 
-
+Ein Datenbankcursor Objekt, falls vorhanden (optional)
 
  - Datentyp: **foo**
 

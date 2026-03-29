@@ -108,7 +108,7 @@ Template für eine neue Logik
 Eine neue Logik sollte möglichst auf der folgenden Vorlage ``logic.tpl`` aufbauen.
 Die Template Datei ist im Verzeichnis ``templates/`` abgelegt:
 
-.. literalinclude:: /templates/logic.tpl
+.. literalinclude:: ../../../../../templates/logic.tpl
    :caption: /templates/logic.tpl
    :language: python
 

@@ -30,7 +30,7 @@ Es handelt sich bei diesem Plugin um ein **web Plugin**.
 Beschreibung
 ============
 
-
+Plugin zur Steuerung von Amazon Echo Geräten Zugriff via Web-Browser API und Cookie
 
 
 Anforderungen
@@ -60,7 +60,9 @@ alexa_credentials
 =================
 
 
-
+Die Zugangsdaten können entweder über der Web Interface kodiert werden oder direkt über eine Python-Konsole mit den zwei Zeilen
+import base64
+base64.b64encode("user.test@gmail.com:your_pwd".encode("utf-8"))
 
  - Datentyp: **str**
 
@@ -69,7 +71,7 @@ cookiefile
 ==========
 
 
-
+Cookiefile mit komplettem Pfad
 
  - Datentyp: **str**
 
@@ -78,7 +80,7 @@ host
 ====
 
 
-
+Amazon-Host z.b. alexa.amazon.de ohne Protokoll (https)
 
  - Datentyp: **str**
  - Standardwert: **alexa.amazon.de**
@@ -88,7 +90,9 @@ item_2_enable_alexa_rc
 ======================
 
 
-
+Item, das beispielsweise durch eine Zeitschaltuhr oder etwas anderem geschaltet wird, um die Kommunikation mit Alexa-Amazon-Geräten zu ermöglichen.
+Ist der Wert leer oder nicht angegeben, ist die Kommunikation jederzeit rund um die Uhr aktiviert.
+Dieses Item wird nur während update_item in smarthomeNG überprüft. Wenn die API direkt von einer Logik oder über die Benutzeroberfläche verwendet wird, wird das Item nicht überprüft.
 
  - Datentyp: **str**
 
@@ -97,7 +101,7 @@ login_update_cycle
 ==================
 
 
-
+Sekunden bis zum automatischen refreshen des Cookie-files
 
  - Datentyp: **num**
  - Standardwert: **432000**
@@ -107,7 +111,7 @@ mfa_secret
 ==========
 
 
-
+Das OTP MFA Secret welches auf der Amazon-Login-Seite angegben wird
 
  - Datentyp: **str**
 
@@ -151,7 +155,7 @@ get_last_alexa()
 ================
 
 
-
+Liefert die Geräte-ID des zuletzt verwendeten Alexa-Gerätes zurück
 
  - Ergebnistyp der Funktion: **str**
 
@@ -160,7 +164,7 @@ get_list(type)
 ==============
 
 
-
+Liefert die Alexa-Shopping-Liste als dict-zurück
 
  - Ergebnistyp der Funktion: **str**
 
@@ -168,7 +172,7 @@ get_list(type)
 type
  -  -  -  - 
 
-
+Art der Liste 'SHOPPING_LIST' oder 'TO_DO'
 
  - Datentyp: **str**
 
@@ -182,7 +186,7 @@ send_cmd(dvName, cmdName, mValue)
 =================================
 
 
-
+Sendet einen Befehl an Alexa. Es können auch Platzhalter genutzt werden. Das Resultat wird der HTTP Status des Requests als String sein.
 
  - Ergebnistyp der Funktion: **str**
 
@@ -190,7 +194,7 @@ send_cmd(dvName, cmdName, mValue)
 dvName
  -  -  -  -  -  - 
 
-
+Name des Alexa Devices.
 
  - Datentyp: **str**
 
@@ -198,7 +202,7 @@ dvName
 cmdName
  -  -  -  -  -  -  - 
 
-
+Name des Befehls, z.b. Text2Speech.
 
  - Datentyp: **str**
 
@@ -206,7 +210,7 @@ cmdName
 mValue
  -  -  -  -  -  - 
 
-
+Wert, der gesendet werden soll, numerische Werte ohne Hochkomma als Zahl
 
  - Datentyp: **str**
 

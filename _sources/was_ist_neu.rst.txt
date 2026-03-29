@@ -51,6 +51,10 @@ diesem und den vorangegangenen Releases ist den :doc:`Release Notes </release/re
       lassen.
       (Siehe auch :doc:`Generierung der Visu Seiten/Top Navigation </visualisierung/top_navigation>`)
 
+    - **alexa**, **influxdata**, **memlog**, **operationlog**, **raumfeld**, **sml**, **sqlite_visu2_8**, **wunderground**:
+      Diese Plugins waren als `deprecated` markiert und wurden entfernt. Sie sind
+      bei Bedarf im Repo `smarthomeNG/plugins-archive` verfügbar.
+
 |
 
 .. comment
