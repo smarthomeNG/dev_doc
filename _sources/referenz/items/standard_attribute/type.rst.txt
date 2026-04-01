@@ -1,11 +1,13 @@
 .. index:: Standard-Attribute; type
 .. index:: type
 
+.. role:: bluesup
+
 .. index:: Items; Datentypen
 .. index:: Datentypen
 
-`type`
-------
+`type` :bluesup:`Update`
+------------------------
 
 Das Attribut **type** legt den Datentyp des Items fest. Dadurch wird bestimmt, was für Daten in
 dem Item gespeichert werden können und wie das Item verwendet werden kann.
@@ -38,4 +40,14 @@ Folgende mögliche Datentypen sind für Items definiert:
 |          | mit dem Namen des Item-Pfades geben. Genaueres ist dem Abschnitt                     |
 |          | **Konfiguration / Szenen** dieser Dokumentation zu entnehmen.                        |
 +----------+--------------------------------------------------------------------------------------+
-
+| datetime | Datums-/Zeittyp - Items dieses Typs geben ein `datetime.datetime`-Objekt zurück und  |
+|          | haben zusätzliche Methoden `item.as_ts()` und `item.as_str(format)`. Diese geben den |
+|          | Itemwert als POSIX-Timestamp bzw. als String zurück. Der Parameter `format` ist      |
+|          | optional. Ohne den Parameter wird das ISO-Format ausgegeben.                         |          
++----------+--------------------------------------------------------------------------------------+
+| timestamp| Zeitstempel. Intern als float definiert, können Datums-/Zeitwerte als POSIX-Timestamp|
+|          | gespeichert werden. Items dieses Typs haben die zusätzlichen Methoden `item.as_dt()` |
+|          | und `item.as_str(format)`. Diese geben den Itemwert als `datetime.datetime`-Objekt   |
+|          | bzw. als String zurück. Der Parameter `format` ist optional. Ohne den Parameter wird |
+|          | das ISO-Format zurückgegeben.                                                        |
++----------+--------------------------------------------------------------------------------------+

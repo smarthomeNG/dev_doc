@@ -8,6 +8,10 @@ diesem und den vorangegangenen Releases ist den :doc:`Release Notes </release/re
 
   - **Core**:
 
+    - **Itemtypen**: Für Items gibt es jetzt die beiden Typen **datetime** und **timestamp**. Der Typ `datetime`
+      entspricht dem `datetime.datetime`-Objekt, der Typ `timestamp` entspricht einem POSIX-timestamp als `float`.
+      Beide Typen haben zusätzliche Methoden, um die Ausgabe im `datetime`-, `timestamp`- oder Textformat auszugeben.
+
     - **Backup der Konfiguration**: Das Sichern und Wiederherstellen der Konfiguration wurde erweitert.
       Beim sichern der Konfiguration werden nun, falls vorhanden, die privaten Plugins (Plugins, deren
       Name mit ``priv_`` beginnt) und die privaten Tools (das Verzeichnis priv_tools) mit gesichert und
