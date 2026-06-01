@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.log &mdash; Dokumentation v1.12.0.1 develop v1.12.0.1 develop (Stand 1. Juni 2026, commit 72180c3) Dokumentation</title>
+  <title>lib.log &mdash; Dokumentation v1.12.0.1 develop v1.12.0.1 develop (Stand 1. Juni 2026, commit 552515f) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5910,6 +5910,41 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">save_logging_config</span><span class="p">(</span><span class="n">logging_config</span><span class="p">,</span> <span class="n">create_backup</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">logging_config</span></div>
+
+
+<div class="viewcode-block" id="Logs.reload_logging_config"><a class="viewcode-back" href="../../lib/log.html#lib.log.Logs.reload_logging_config">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reload_logging_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reload logging configuration from logging.yaml at runtime without restarting.</span>
+<span class="sd">        Called after the advanced configuration editor saves changes.</span>
+
+<span class="sd">        :return: True on success, False on error</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">config_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_logging_config</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">config_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;reload_logging_config: failed to load logging config from disk&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">config_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_all_handlers_logger</span><span class="p">(</span><span class="n">config_dict</span><span class="p">)</span>
+
+        <span class="c1"># Remove existing MemLog handler from root before dictConfig to avoid duplicates</span>
+        <span class="n">root_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">root_logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">ShngMemLogHandler</span><span class="p">):</span>
+                <span class="n">root_logger</span><span class="o">.</span><span class="n">removeHandler</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dictConfig</span><span class="p">(</span><span class="n">config_dict</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;reload_logging_config: dictConfig failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Invalidate handler object cache — dictConfig created new handler instances</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_all_handlers</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">initMemLog</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="s2">&quot;Logging configuration reloaded from logging.yaml&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="Logs.add_all_handlers_logger"><a class="viewcode-back" href="../../lib/log.html#lib.log.Logs.add_all_handlers_logger">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_all_handlers_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logging_config</span><span class="p">):</span>

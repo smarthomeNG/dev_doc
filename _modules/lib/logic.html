@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.logic &mdash; Dokumentation v1.12.0.1 develop v1.12.0.1 develop (Stand 1. Juni 2026, commit 72180c3) Dokumentation</title>
+  <title>lib.logic &mdash; Dokumentation v1.12.0.1 develop v1.12.0.1 develop (Stand 1. Juni 2026, commit 552515f) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5677,7 +5677,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">lib.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Utils</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">lib.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLUGIN_PARSE_LOGIC</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">lib.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">YAML_FILE</span><span class="p">,</span> <span class="n">DIR_LOGICS</span><span class="p">,</span> <span class="n">DIR_ETC</span><span class="p">,</span> <span class="n">BASE_LOGIC</span><span class="p">,</span> <span class="n">BASE_ADMIN</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lib.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">YAML_FILE</span><span class="p">,</span> <span class="n">DIR_LOGICS</span><span class="p">,</span> <span class="n">DIR_ETC</span><span class="p">,</span> <span class="n">BASE_LOGIC</span><span class="p">,</span> <span class="n">BASE_ADMIN</span><span class="p">,</span> <span class="n">BASE_LOGIC_GROUPS</span><span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">lib.item</span><span class="w"> </span><span class="kn">import</span> <span class="n">Items</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">lib.plugin</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plugins</span>
@@ -5744,22 +5744,138 @@
             <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;_groups&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_load_logic</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">_config</span><span class="p">)</span>
 
-        <span class="c1"># load /etc/admin.yaml</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_groups</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cleanup_stale_group_refs</span><span class="p">()</span>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cleanup_stale_group_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Startup self-healing: remove any ``logic_groupname`` values in</span>
+<span class="sd">        ``logic.yaml`` that reference a group not present in</span>
+<span class="sd">        ``logic_groups.yaml`` (i.e. not in ``self._groups``).</span>
+
+<span class="sd">        This fixes corrupted state left by an earlier ``delete_group()`` call</span>
+<span class="sd">        that did not clean up ``logic.yaml``, and ensures that deleted groups</span>
+<span class="sd">        never re-appear as &quot;unknown groups&quot; after a restart.</span>
+
+<span class="sd">        The method also updates the in-memory ``Logic`` objects so that the</span>
+<span class="sd">        corrected membership is visible immediately without a second restart.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">known_groups</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">logic_conf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logic_conf</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">logic_conf</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">changed</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># Strip legacy _groups section — group definitions belong in logic_groups.yaml only</span>
+        <span class="k">if</span> <span class="s1">&#39;_groups&#39;</span> <span class="ow">in</span> <span class="n">logic_conf</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">logic_conf</span><span class="p">[</span><span class="s1">&#39;_groups&#39;</span><span class="p">]</span>
+            <span class="n">changed</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Logics._cleanup_stale_group_refs: removed legacy &#39;_groups&#39; section from logic.yaml&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">logicname</span><span class="p">,</span> <span class="n">sect</span> <span class="ow">in</span> <span class="n">logic_conf</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sect</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">raw</span> <span class="o">=</span> <span class="n">sect</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;logic_groupname&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">raw</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">current</span> <span class="o">=</span> <span class="p">[</span><span class="n">raw</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">current</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+
+            <span class="n">cleaned</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">current</span> <span class="k">if</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">known_groups</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">cleaned</span> <span class="o">==</span> <span class="n">current</span><span class="p">:</span>
+                <span class="k">continue</span>  <span class="c1"># nothing stale here</span>
+
+            <span class="n">stale</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">current</span> <span class="k">if</span> <span class="n">g</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">known_groups</span><span class="p">]</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Logics._cleanup_stale_group_refs: removing stale group(s) &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stale</span><span class="si">}</span><span class="s2"> from logic &#39;</span><span class="si">{</span><span class="n">logicname</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">cleaned</span><span class="p">:</span>
+                <span class="n">sect</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;logic_groupname&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">cleaned</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">sect</span><span class="p">[</span><span class="s1">&#39;logic_groupname&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cleaned</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sect</span><span class="p">[</span><span class="s1">&#39;logic_groupname&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cleaned</span>
+
+            <span class="c1"># Sync the in-memory Logic object if it is loaded</span>
+            <span class="n">running</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_logic</span><span class="p">(</span><span class="n">logicname</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">running</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">running</span><span class="o">.</span><span class="n">groupnames</span> <span class="o">=</span> <span class="n">cleaned</span> <span class="k">if</span> <span class="n">cleaned</span> <span class="k">else</span> <span class="p">[]</span>
+
+            <span class="n">changed</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">changed</span><span class="p">:</span>
+            <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_save_roundtrip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_logic_conf</span><span class="p">,</span> <span class="n">logic_conf</span><span class="p">,</span> <span class="n">create_backup</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Logics._cleanup_stale_group_refs: logic.yaml updated&quot;</span><span class="p">)</span>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load logic group definitions from etc/logic_groups.yaml.</span>
+<span class="sd">        If that file does not yet exist, migrate the group definitions from</span>
+<span class="sd">        etc/admin.yaml (legacy location) and write logic_groups.yaml so the</span>
+<span class="sd">        migration only happens once.</span>
+
+<span class="sd">        After a successful migration, admin.yaml is renamed to admin.yaml.bak</span>
+<span class="sd">        (overwriting any pre-existing backup) so that the migration can never</span>
+<span class="sd">        re-run and accidentally clobber groups that were added afterwards.</span>
+<span class="sd">        admin.yaml is the ONLY reader of that file; renaming it is safe.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">groups_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_config_file</span><span class="p">(</span><span class="n">BASE_LOGIC_GROUPS</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">groups_filename</span><span class="p">):</span>
+            <span class="n">groups_conf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="n">groups_filename</span><span class="p">)</span>
+            <span class="c1"># If admin.yaml still exists alongside logic_groups.yaml, retire it</span>
+            <span class="c1"># now so it can never re-seed a future migration and clobber groups.</span>
+            <span class="n">admconf_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_config_file</span><span class="p">(</span><span class="n">BASE_ADMIN</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">admconf_filename</span><span class="p">):</span>
+                <span class="n">bak_filename</span> <span class="o">=</span> <span class="n">admconf_filename</span> <span class="o">+</span> <span class="s1">&#39;.bak&#39;</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">admconf_filename</span><span class="p">,</span> <span class="n">bak_filename</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Logics._load_groups: retired stale etc/admin.yaml → etc/admin.yaml.bak&quot;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Logics._load_groups: could not rename stale admin.yaml: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">groups_conf</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">{}</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">groups_conf</span><span class="p">)</span>
+
+        <span class="c1"># --- first-run migration from admin.yaml ---</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Logics._load_groups: logic_groups.yaml not found – migrating from admin.yaml&quot;</span><span class="p">)</span>
         <span class="n">admconf_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_config_file</span><span class="p">(</span><span class="n">BASE_ADMIN</span><span class="p">)</span>
-        <span class="n">_admin_conf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="n">admconf_filename</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">_admin_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;logics&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span> <span class="o">=</span> <span class="n">_admin_conf</span><span class="p">[</span><span class="s1">&#39;logics&#39;</span><span class="p">][</span><span class="s1">&#39;groups&#39;</span><span class="p">]</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_admin_conf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="n">admconf_filename</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">_admin_conf</span> <span class="ow">and</span> <span class="n">_admin_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;logics&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">_admin_conf</span><span class="p">[</span><span class="s1">&#39;logics&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;groups&#39;</span><span class="p">):</span>
+                <span class="n">groups</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">_admin_conf</span><span class="p">[</span><span class="s1">&#39;logics&#39;</span><span class="p">][</span><span class="s1">&#39;groups&#39;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Logics._load_groups: could not read admin.yaml during migration: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_save_roundtrip</span><span class="p">(</span><span class="n">groups_filename</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">create_backup</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Logics._load_groups: migrated </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span><span class="si">}</span><span class="s2"> group(s) to logic_groups.yaml&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Retire admin.yaml so this migration path can never re-run.</span>
+        <span class="c1"># os.replace() is atomic and overwrites an existing destination.</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">admconf_filename</span><span class="p">):</span>
+            <span class="n">bak_filename</span> <span class="o">=</span> <span class="n">admconf_filename</span> <span class="o">+</span> <span class="s1">&#39;.bak&#39;</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">admconf_filename</span><span class="p">,</span> <span class="n">bak_filename</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Logics._load_groups: renamed etc/admin.yaml → etc/admin.yaml.bak&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Logics._load_groups: could not rename admin.yaml: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> – &quot;</span>
+                               <span class="s2">&quot;migration may repeat on next start&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">groups</span>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_save_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
-        <span class="c1"># load /etc/admin.yaml</span>
-        <span class="n">admconf_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_config_file</span><span class="p">(</span><span class="n">BASE_ADMIN</span><span class="p">)</span>
-        <span class="n">_admin_conf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="n">admconf_filename</span><span class="p">)</span>
-        <span class="n">_admin_conf</span><span class="p">[</span><span class="s1">&#39;logics&#39;</span><span class="p">][</span><span class="s1">&#39;groups&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span>
-        <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_save_roundtrip</span><span class="p">(</span><span class="n">admconf_filename</span><span class="p">,</span> <span class="n">_admin_conf</span><span class="p">,</span> <span class="n">create_backup</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">groups_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_config_file</span><span class="p">(</span><span class="n">BASE_LOGIC_GROUPS</span><span class="p">)</span>
+        <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_save_roundtrip</span><span class="p">(</span><span class="n">groups_filename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_groups</span><span class="p">,</span> <span class="n">create_backup</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_read_logics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">directory</span><span class="p">):</span>
@@ -6485,6 +6601,8 @@
                     <span class="n">conf</span><span class="p">[</span><span class="n">section</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
                     <span class="k">if</span> <span class="n">comment</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
                         <span class="n">conf</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">yaml_add_eol_comment</span><span class="p">(</span><span class="n">comment</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">pass</span>  <span class="c1"># list values are written below in the `if active: if isinstance(value, list)` block</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;update_config_section: unsupported datatype for key &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
 

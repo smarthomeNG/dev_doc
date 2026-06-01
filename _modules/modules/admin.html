@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>modules.admin &mdash; Dokumentation v1.12.0.1 develop v1.12.0.1 develop (Stand 1. Juni 2026, commit 72180c3) Dokumentation</title>
+  <title>modules.admin &mdash; Dokumentation v1.12.0.1 develop v1.12.0.1 develop (Stand 1. Juni 2026, commit 552515f) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5674,13 +5674,11 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.api_plugin</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 <span class="c1">#from .api_plginst import *</span>
 
-
 <span class="n">suburl</span> <span class="o">=</span> <span class="s1">&#39;admin&#39;</span>
-<span class="n">suburl2</span> <span class="o">=</span> <span class="s1">&#39;admin2&#39;</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">Admin</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
-    <span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;1.8.2&#39;</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;1.9.0&#39;</span>
     <span class="n">longname</span> <span class="o">=</span> <span class="s1">&#39;Admin module for SmartHomeNG&#39;</span>
     <span class="n">_port</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -5724,8 +5722,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">pypi_timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;pypi_timeout&#39;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">itemtree_fullpath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;itemtree_fullpath&#39;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">itemtree_searchstart</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;itemtree_searchstart&#39;</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">websocket_host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;websocket_host&#39;</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">websocket_port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;websocket_port&#39;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_chunksize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;log_chunksize&#39;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">developer_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;developer_mode&#39;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rest_dispatch_force_exception</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;rest_dispatch_force_exception&#39;</span><span class="p">]</span>
@@ -5736,20 +5732,40 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_init_complete</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">return</span>
 
+        <span class="c1"># Deprecation: websocket_host/websocket_port belong to the websocket module,</span>
+        <span class="c1"># not to the admin module.  Warn users who still have them in admin config.</span>
+        <span class="n">_dep_host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;websocket_host&#39;</span><span class="p">)</span>
+        <span class="n">_dep_port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;websocket_port&#39;</span><span class="p">)</span>
+        <span class="n">_default_ws_port</span> <span class="o">=</span> <span class="mi">2424</span>
+        <span class="k">if</span> <span class="n">_dep_host</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Module &#39;</span><span class="si">{}</span><span class="s2">&#39;: Parameter &#39;websocket_host&#39; is DEPRECATED in the admin module. &quot;</span>
+                <span class="s2">&quot;Configure it in the websocket module instead. The websocket module&#39;s value will be used.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shortname</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">_dep_port</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">_dep_port</span> <span class="o">!=</span> <span class="n">_default_ws_port</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Module &#39;</span><span class="si">{}</span><span class="s2">&#39;: Parameter &#39;websocket_port&#39; is DEPRECATED in the admin module. &quot;</span>
+                <span class="s2">&quot;Configure it in the websocket module instead. The websocket module&#39;s value will be used.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shortname</span><span class="p">))</span>
+
+        <span class="c1"># Stash deprecated fallback values so start() can use them if the</span>
+        <span class="c1"># websocket module is genuinely absent.  The authoritative lookup is</span>
+        <span class="c1"># deferred to start() because module __init__ methods run before any</span>
+        <span class="c1"># module&#39;s start() is called, so get_module(&#39;websocket&#39;) always returns</span>
+        <span class="c1"># None here even when the websocket module is properly configured.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ws_dep_host</span> <span class="o">=</span> <span class="n">_dep_host</span> <span class="ow">or</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ws_dep_port</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">_dep_port</span><span class="p">)</span> <span class="k">if</span> <span class="n">_dep_port</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">_default_ws_port</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ws_default_port</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">_default_ws_port</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">websocket_host</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">websocket_port</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">_default_ws_port</span><span class="p">)</span>
+
         <span class="n">mysuburl</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="k">if</span> <span class="n">suburl</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="n">mysuburl</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">suburl</span>
-        <span class="n">mysuburl2</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-        <span class="k">if</span> <span class="n">suburl2</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-            <span class="n">mysuburl2</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">suburl2</span>
         <span class="n">ip</span> <span class="o">=</span> <span class="n">Utils</span><span class="o">.</span><span class="n">get_local_ipv4_address</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod_http</span><span class="o">.</span><span class="n">_port</span>
         <span class="c1"># self.logger.warning(&#39;port = {}&#39;.format(self._port))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shng_url_root</span> <span class="o">=</span> <span class="s1">&#39;http://&#39;</span> <span class="o">+</span> <span class="n">ip</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_port</span><span class="p">)</span>         <span class="c1"># for links mto plugin webinterfaces</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">url_root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shng_url_root</span> <span class="o">+</span> <span class="n">mysuburl</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">url_root2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shng_url_root</span> <span class="o">+</span> <span class="n">mysuburl2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">api_url_root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shng_url_root</span> <span class="o">+</span> <span class="s1">&#39;api&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">api2_url_root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shng_url_root</span> <span class="o">+</span> <span class="s1">&#39;api2&#39;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5759,8 +5775,29 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">dbghigh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s2">&quot;Methode &#39;</span><span class="si">{method}</span><span class="s2">&#39; aufgerufen&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;method&#39;</span><span class="p">:</span> <span class="s1">&#39;start()&#39;</span><span class="p">}))</span>
 
+        <span class="c1"># Resolve websocket host/port now that all modules are started.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mod_ws</span> <span class="o">=</span> <span class="n">Modules</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span><span class="o">.</span><span class="n">get_module</span><span class="p">(</span><span class="s1">&#39;websocket&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">mod_ws</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">actual_port</span> <span class="o">=</span> <span class="n">mod_ws</span><span class="o">.</span><span class="n">get_port</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">actual_port</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">websocket_port</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">actual_port</span><span class="p">)</span>
+                <span class="c1"># Use the websocket module&#39;s bind IP only when it is a specific</span>
+                <span class="c1"># address; 0.0.0.0 / :: are wildcard bind addresses that the</span>
+                <span class="c1"># browser cannot connect to.</span>
+                <span class="n">ws_ip</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod_ws</span><span class="p">,</span> <span class="s1">&#39;ip&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">ws_ip</span> <span class="ow">and</span> <span class="n">ws_ip</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="s1">&#39;::&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">websocket_host</span> <span class="o">=</span> <span class="n">ws_ip</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;Module &#39;</span><span class="si">{}</span><span class="s2">&#39;: Websocket module not found; falling back to admin module parameters.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shortname</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">websocket_host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ws_dep_host</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">websocket_port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ws_dep_port</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Module &#39;</span><span class="si">{}</span><span class="s2">&#39;: Could not read websocket module config: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shortname</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">webif_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/webif&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">webif2_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;/webif2&#39;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Module &#39;</span><span class="si">{}</span><span class="s2">&#39;: webif_dir = webif_dir = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shortname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">webif_dir</span><span class="p">))</span>
         <span class="c1"># config for Angular app (special: error page)</span>
@@ -5768,35 +5805,15 @@
             <span class="s1">&#39;/&#39;</span><span class="p">:</span> <span class="p">{</span>
                 <span class="s1">&#39;tools.staticdir.root&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">webif_dir</span><span class="p">,</span>
                 <span class="s1">&#39;tools.staticdir.on&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                <span class="s1">&#39;tools.staticdir.dir&#39;</span><span class="p">:</span> <span class="s1">&#39;static&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;tools.staticdir.dir&#39;</span><span class="p">:</span> <span class="s1">&#39;static/browser&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;tools.staticdir.index&#39;</span><span class="p">:</span> <span class="s1">&#39;index.html&#39;</span><span class="p">,</span>
                 <span class="s1">&#39;tools.chaching.on&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
                 <span class="s1">&#39;tools.caching.force&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
                 <span class="s1">&#39;tools.caching.delay&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
                 <span class="s1">&#39;tools.expires.on&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                <span class="s1">&#39;tools.expires.secs&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
-                <span class="s1">&#39;error_page.404&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">webif_dir</span> <span class="o">+</span> <span class="s1">&#39;/static/index.html&#39;</span><span class="p">,</span>
-                <span class="c1">#                    &#39;error_page.404&#39;: self.error_page,</span>
-                <span class="c1">#                   &#39;tools.auth_basic.on&#39;: False,</span>
-                <span class="c1">#                   &#39;tools.auth_basic.realm&#39;: &#39;shng_admin_webif&#39;,</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-        <span class="c1"># config for Angular app (special: error page)</span>
-        <span class="n">config2</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;/&#39;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s1">&#39;tools.staticdir.root&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">webif2_dir</span><span class="p">,</span>
-                <span class="s1">&#39;tools.staticdir.on&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                <span class="s1">&#39;tools.staticdir.dir&#39;</span><span class="p">:</span> <span class="s1">&#39;static&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;tools.staticdir.index&#39;</span><span class="p">:</span> <span class="s1">&#39;index.html&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;tools.chaching.on&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-                <span class="s1">&#39;tools.caching.force&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-                <span class="s1">&#39;tools.caching.delay&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
-                <span class="s1">&#39;tools.expires.on&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                <span class="s1">&#39;tools.expires.secs&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
-                <span class="s1">&#39;error_page.404&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">webif2_dir</span> <span class="o">+</span> <span class="s1">&#39;/static/index.html&#39;</span><span class="p">,</span>
-                <span class="c1">#                    &#39;error_page.404&#39;: self.error_page,</span>
-                <span class="c1">#                   &#39;tools.auth_basic.on&#39;: False,</span>
-                <span class="c1">#                   &#39;tools.auth_basic.realm&#39;: &#39;shng_admin_webif&#39;,</span>
+                <span class="s1">&#39;tools.expires.secs&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="c1"># fix for path error</span>
+                <span class="s1">&#39;error_page.404&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spa_index</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">}</span>
         <span class="c1"># API config (special: request.dispatch)</span>
@@ -5814,38 +5831,8 @@
                 <span class="s1">&#39;error_page.405&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_page</span><span class="p">,</span>
                 <span class="s1">&#39;error_page.411&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_page</span><span class="p">,</span>
                 <span class="s1">&#39;error_page.500&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_page</span><span class="p">,</span>
-                <span class="c1"># &#39;tools.auth_basic.on&#39;: False,</span>
-                <span class="c1"># &#39;tools.auth_basic.realm&#39;: &#39;shng_admin_webif&#39;,</span>
             <span class="p">}</span>
         <span class="p">}</span>
-
-        <span class="c1"># def register_webif(self, app, pluginname, conf, pluginclass=&#39;&#39;, instance=&#39;&#39;, description=&#39;&#39;, webifname=&#39;&#39;, use_global_basic_auth=True):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Register an application for CherryPy</span>
-
-<span class="sd">        This method is called by a plugin to register a webinterface</span>
-
-<span class="sd">        It should be called like this:</span>
-
-<span class="sd">            self.mod_http.register_webif(WebInterface( ... ), </span>
-<span class="sd">                               self.get_shortname(), </span>
-<span class="sd">                               config, </span>
-<span class="sd">                               self.get_classname(), self.get_instance_name(),</span>
-<span class="sd">                               description,</span>
-<span class="sd">                               webifname,</span>
-<span class="sd">                               use_global_basic_auth</span>
-<span class="sd">                               useprefix)</span>
-
-
-<span class="sd">        :param app: Instance of the application object</span>
-<span class="sd">        :param pluginname: Mount point for the application</span>
-<span class="sd">        :param conf: Cherrypy application configuration dictionary</span>
-<span class="sd">        :param pluginclass: Name of the plugin&#39;s class</span>
-<span class="sd">        :param instance: Instance of the plugin (if multi-instance)</span>
-<span class="sd">        :param description: Description of the functionallity of the webif. If left empty, a generic description will be generated</span>
-<span class="sd">        :param webifname: Name of the webinterface. If left empty, the pluginname is used</span>
-<span class="sd">        :param use_global_basic_auth: if True, global basic_auth settings from the http module are used. If False, registering plugin provides its own basic_auth</span>
-<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Register the web interface as a cherrypy app</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mod_http</span><span class="o">.</span><span class="n">register_webif</span><span class="p">(</span><span class="n">WebInterface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">webif_dir</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shng_url_root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">url_root</span><span class="p">),</span>
@@ -5853,16 +5840,6 @@
                                      <span class="n">config</span><span class="p">,</span>
                                      <span class="s1">&#39;admin&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
                                      <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Administrationsoberfläche für SmartHomeNG&#39;</span><span class="p">,</span>
-                                     <span class="n">webifname</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-                                     <span class="n">use_global_basic_auth</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                                     <span class="n">useprefix</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-        <span class="c1"># Register the alternate web interface as a cherrypy app</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mod_http</span><span class="o">.</span><span class="n">register_webif</span><span class="p">(</span><span class="n">WebInterface</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">webif2_dir</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shng_url_root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">url_root2</span><span class="p">),</span>
-                                     <span class="n">suburl2</span><span class="p">,</span>
-                                     <span class="n">config2</span><span class="p">,</span>
-                                     <span class="s1">&#39;admin2&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-                                     <span class="n">description</span><span class="o">=</span><span class="s1">&#39;kommende Administrationsoberfläche für SmartHomeNG&#39;</span><span class="p">,</span>
                                      <span class="n">webifname</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
                                      <span class="n">use_global_basic_auth</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                      <span class="n">useprefix</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -5877,7 +5854,14 @@
                                      <span class="n">use_global_basic_auth</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                      <span class="n">useprefix</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="k">return</span>
+        <span class="c1"># Angular&#39;s polyfills bundle requests /3rdpartylicenses.txt at the server</span>
+        <span class="c1"># root (not relative to base-href), so serve it from the root app.</span>
+        <span class="n">license_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">webif_dir</span><span class="p">,</span> <span class="s1">&#39;static&#39;</span><span class="p">,</span> <span class="s1">&#39;3rdpartylicenses.txt&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">license_file</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;&#39;</span> <span class="ow">in</span> <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">apps</span><span class="p">:</span>
+            <span class="n">cherrypy</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">apps</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;/3rdpartylicenses.txt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;tools.staticfile.on&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s1">&#39;tools.staticfile.filename&#39;</span><span class="p">:</span> <span class="n">license_file</span><span class="p">,</span>
+            <span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5974,6 +5958,14 @@
 
         <span class="k">return</span> <span class="n">result</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_spa_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">traceback</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
+        <span class="n">cherrypy</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="mi">200</span>
+        <span class="n">cherrypy</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Cache-Control&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;no-store, no-cache, must-revalidate&#39;</span>
+        <span class="n">cherrypy</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Pragma&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;no-cache&#39;</span>
+        <span class="n">cherrypy</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Expires&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span>
+        <span class="n">index_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">webif_dir</span><span class="p">,</span> <span class="s1">&#39;static&#39;</span><span class="p">,</span> <span class="s1">&#39;browser&#39;</span><span class="p">,</span> <span class="s1">&#39;index.html&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">index_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">translate</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
     <span class="c1"># needed for Admin UI</span>
