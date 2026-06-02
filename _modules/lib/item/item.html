@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.item.item &mdash; Dokumentation v1.12.0.1 develop v1.12.0.1 develop (Stand 2. Juni 2026, commit 17197db) Dokumentation</title>
+  <title>lib.item.item &mdash; Dokumentation v1.12.0.1 develop v1.12.0.1 develop (Stand 2. Juni 2026, commit 64af79f) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -7562,7 +7562,7 @@
         <span class="n">eval_expression</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">eval_expression</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">eval_expression</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">NameError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
             <span class="n">_</span><span class="p">,</span> <span class="n">ex</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()</span>  <span class="c1"># err should be like &quot;name &#39;foo&#39; is not defined&quot;</span>
             <span class="n">err</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">err</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;name &#39;&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">err</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;&#39; is not defined&quot;</span><span class="p">):</span>
@@ -7806,12 +7806,12 @@
                 <span class="c1"># logger.warning(&quot;Item {}: Evaluating trigger condition {}&quot;.format(self._path, self._trigger_condition))</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="c1"># set up environment for calculating eval-expression</span>
-                    <span class="n">sh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span>
-                    <span class="n">shtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span>
-                    <span class="n">items</span> <span class="o">=</span> <span class="n">_items_instance</span>
+                    <span class="n">sh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span>  <span class="c1"># noqa: F841  # eval setup</span>
+                    <span class="n">shtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span>  <span class="c1"># noqa: F841  # eval setup</span>
+                    <span class="n">items</span> <span class="o">=</span> <span class="n">_items_instance</span>  <span class="c1"># noqa: F841  # eval setup</span>
                     <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>  <span class="c1"># noqa: I001</span>
                     <span class="kn">import</span><span class="w"> </span><span class="nn">lib.userfunctions</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">uf</span>
-                    <span class="n">env</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">env</span>
+                    <span class="n">env</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">env</span>  <span class="c1"># noqa: F841  # eval setup</span>
 
                     <span class="n">cond</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trigger_condition</span><span class="p">)</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Item &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">&#39;: Condition result &#39;</span><span class="si">{</span><span class="n">cond</span><span class="si">}</span><span class="s2">&#39; evaluating trigger condition </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_trigger_condition</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -7827,12 +7827,12 @@
 
             <span class="k">if</span> <span class="n">cond</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="c1"># set up environment for calculating eval-expression</span>
-                <span class="n">sh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span>
-                <span class="n">shtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span>
-                <span class="n">items</span> <span class="o">=</span> <span class="n">_items_instance</span>
+                <span class="n">sh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span>  <span class="c1"># noqa: F841  # eval setup</span>
+                <span class="n">shtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span>  <span class="c1"># noqa: F841  # eval setup</span>
+                <span class="n">items</span> <span class="o">=</span> <span class="n">_items_instance</span>  <span class="c1"># noqa: F841  # eval setup</span>
                 <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
                 <span class="kn">import</span><span class="w"> </span><span class="nn">lib.userfunctions</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">uf</span>
-                <span class="n">env</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">env</span>
+                <span class="n">env</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">env</span>  <span class="c1"># noqa: F841  # eval setup</span>
 
                 <span class="k">try</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">__prev_trigger_by</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__triggered_by</span>
@@ -7892,13 +7892,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># set up environment for calculating eval-expression</span>
-        <span class="n">sh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span>
-        <span class="n">shtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span>
-        <span class="n">items</span> <span class="o">=</span> <span class="n">_items_instance</span>
+        <span class="n">sh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span>  <span class="c1"># noqa: F841  # eval setup</span>
+        <span class="n">shtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span>  <span class="c1"># noqa: F841  # eval setup</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="n">_items_instance</span>  <span class="c1"># noqa: F841  # eval setup</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">lib.userfunctions</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">uf</span>
         <span class="c1"># uf.import_user_modules()  -  Modules were loaded during initialization phase of shng</span>
-        <span class="n">env</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">env</span>
+        <span class="n">env</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">env</span>  <span class="c1"># noqa: F841  # eval setup</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Item &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="si">}</span><span class="s2">&#39;: &#39;</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">&#39; evaluating </span><span class="si">{</span><span class="n">on_dest</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">on_eval</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -7984,43 +7984,43 @@
         <span class="c1"># source</span>
         <span class="c1"># dest</span>
         <span class="n">lvalue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">last_value</span>
-        <span class="n">mlvalue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">lvalue</span><span class="p">,</span> <span class="n">lvalue</span><span class="p">)</span>
-        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
-        <span class="n">age</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_last_change_age</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">mlvalue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">lvalue</span><span class="p">,</span> <span class="n">lvalue</span><span class="p">)</span>  <span class="c1"># noqa: F841  # eval setup</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>  <span class="c1"># noqa: F841  # eval setup</span>
+        <span class="n">age</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_last_change_age</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># noqa: F841  # eval setup</span>
         <span class="nb">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span> <span class="o">==</span> <span class="n">_items_instance</span><span class="p">:</span>
-            <span class="n">pname</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">pid</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">pname</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># noqa: F841  # eval setup</span>
+            <span class="n">pid</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># noqa: F841  # eval setup</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">pname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span><span class="o">.</span><span class="n">_name</span>
-            <span class="n">pid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span><span class="o">.</span><span class="n">_path</span>
-        <span class="n">mvalue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-        <span class="n">lowlimit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_rules_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lowlimit&#39;</span><span class="p">)</span>
-        <span class="n">highlimit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_rules_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;highlimit&#39;</span><span class="p">)</span>
-        <span class="nb">filter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_rules_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;filter&#39;</span><span class="p">)</span>
-        <span class="n">exclude</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_rules_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;exclude&#39;</span><span class="p">)</span>
-        <span class="n">sh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span>
+            <span class="n">pname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span><span class="o">.</span><span class="n">_name</span>  <span class="c1"># noqa: F841  # eval setup</span>
+            <span class="n">pid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parent</span><span class="o">.</span><span class="n">_path</span>  <span class="c1"># noqa: F841  # eval setup</span>
+        <span class="n">mvalue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>  <span class="c1"># noqa: F841  # eval setup</span>
+        <span class="n">lowlimit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_rules_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lowlimit&#39;</span><span class="p">)</span>  <span class="c1"># noqa: F841  # eval setup</span>
+        <span class="n">highlimit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_rules_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;highlimit&#39;</span><span class="p">)</span>  <span class="c1"># noqa: F841  # eval setup</span>
+        <span class="nb">filter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_rules_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;filter&#39;</span><span class="p">)</span>  <span class="c1"># noqa: F841  # eval setup</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_rules_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;exclude&#39;</span><span class="p">)</span>  <span class="c1"># noqa: F841  # eval setup</span>
+        <span class="n">sh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span>  <span class="c1"># noqa: F841  # eval setup</span>
         <span class="n">shtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span>
-        <span class="n">time</span> <span class="o">=</span> <span class="n">shtime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M:%S&quot;</span><span class="p">)</span>
-        <span class="n">date</span> <span class="o">=</span> <span class="n">shtime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">.%m.%Y&quot;</span><span class="p">)</span>
-        <span class="n">stamp</span> <span class="o">=</span> <span class="n">shtime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
-        <span class="n">now</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">shtime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="n">shtime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M:%S&quot;</span><span class="p">)</span>  <span class="c1"># noqa: F841  # eval setup</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="n">shtime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">.%m.%Y&quot;</span><span class="p">)</span>  <span class="c1"># noqa: F841  # eval setup</span>
+        <span class="n">stamp</span> <span class="o">=</span> <span class="n">shtime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>  <span class="c1"># noqa: F841  # eval setup</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">shtime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>  <span class="c1"># noqa: F841  # eval setup</span>
 
-        <span class="n">items</span> <span class="o">=</span> <span class="n">_items_instance</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="n">_items_instance</span>  <span class="c1"># noqa: F841  # eval setup</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_rules</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;itemvalue&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">entry</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_absolutepath</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;sh.&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="n">KEY_LOG_CHANGE</span><span class="p">)</span>
-                <span class="n">itemvalue</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">_items_instance</span><span class="o">.</span><span class="n">return_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">itemvalue</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">_items_instance</span><span class="o">.</span><span class="n">return_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>  <span class="c1"># noqa: F841  # eval setup</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">itemvalue</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">itemvalue</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># noqa: F841  # eval setup</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">: Invalid item in log_text &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_text</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
                          <span class="sa">f</span><span class="s2">&quot; or log_rules &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_rules</span><span class="si">}</span><span class="s2">&#39; - Exception: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">itemvalue</span> <span class="o">=</span> <span class="s2">&quot;INVALID&quot;</span>
+            <span class="n">itemvalue</span> <span class="o">=</span> <span class="s2">&quot;INVALID&quot;</span>  <span class="c1"># noqa: F841  # eval setup</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">lib.userfunctions</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">uf</span>
-        <span class="n">env</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">env</span>
+        <span class="n">env</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">env</span>  <span class="c1"># noqa: F841  # eval setup</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_log_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># logger.warning(f&quot;self._log_text: {self._log_text}, type={type(self._log_text)}&quot;)</span>
@@ -8138,7 +8138,7 @@
                     <span class="k">if</span> <span class="n">high_limit</span> <span class="o">&lt;=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
                         <span class="k">return</span>
                 <span class="k">if</span> <span class="n">filter_list</span> <span class="o">!=</span> <span class="p">[]:</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="n">filter_list</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filter_list</span><span class="p">:</span>
                         <span class="k">return</span>
                 <span class="k">elif</span> <span class="n">exclude_list</span> <span class="o">!=</span> <span class="p">[]:</span>
                     <span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="n">exclude_list</span><span class="p">:</span>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.scene &mdash; Dokumentation v1.12.0.1 develop v1.12.0.1 develop (Stand 2. Juni 2026, commit 17197db) Dokumentation</title>
+  <title>lib.scene &mdash; Dokumentation v1.12.0.1 develop v1.12.0.1 develop (Stand 2. Juni 2026, commit 64af79f) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5743,7 +5743,7 @@
                                 <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;#&#39;</span><span class="p">:</span>  <span class="c1"># ignore comments</span>
                                     <span class="k">continue</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">_add_scene_entry</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">translate</span><span class="p">(</span><span class="s2">&quot;Problem reading scene file </span><span class="si">{file}</span><span class="s2">: No .yaml or .conf file found with this name&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;file&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene_file</span><span class="p">}))</span>
                         <span class="k">continue</span>
                 <span class="n">item</span><span class="o">.</span><span class="n">add_method_trigger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trigger</span><span class="p">)</span>
@@ -5761,9 +5761,9 @@
 <span class="sd">        :return: evaluated value or None</span>
 <span class="sd">        :rtype: type of evaluated expression or None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">sh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span>
-        <span class="n">shtime</span> <span class="o">=</span> <span class="n">Shtime</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>
-        <span class="n">items</span> <span class="o">=</span> <span class="n">Items</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>
+        <span class="n">sh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span>  <span class="c1"># noqa: F841  # eval setup</span>
+        <span class="n">shtime</span> <span class="o">=</span> <span class="n">Shtime</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>  <span class="c1"># noqa: F841  # eval setup</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="n">Items</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>  <span class="c1"># noqa: F841  # eval setup</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">lib.userfunctions</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">uf</span>
 
@@ -5778,7 +5778,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_learned_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scene</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">ditem</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">lvalue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_learned_values</span><span class="p">[</span><span class="n">scene</span> <span class="o">+</span><span class="s1">&#39;#&#39;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">+</span><span class="s1">&#39;#&#39;</span><span class="o">+</span> <span class="n">ditem</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">]</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot; - Return learned value </span><span class="si">{}</span><span class="s2"> for scene/state/ditem </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lvalue</span><span class="p">,</span> <span class="n">scene</span> <span class="o">+</span><span class="s1">&#39;#&#39;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">+</span><span class="s1">&#39;#&#39;</span><span class="o">+</span> <span class="n">ditem</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">lvalue</span>
@@ -5872,7 +5872,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Trigger a scene</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scenes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scenes</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">()</span><span class="o">&amp;</span><span class="mi">127</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scenes</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">]:</span>
             <span class="n">state</span> <span class="o">=</span> <span class="n">item</span><span class="p">()</span>
@@ -5953,7 +5953,7 @@
 <span class="sd">        :return: scenes instance</span>
 <span class="sd">        :rtype: object of None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">_scenes_instance</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">_scenes_instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_scenes_instance</span></div>
@@ -5998,7 +5998,7 @@
         <span class="n">action</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scenes</span><span class="p">[</span><span class="n">scenename</span><span class="p">][</span><span class="n">action</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">translate</span><span class="p">(</span><span class="s2">&quot;get_scene_action_name: &quot;</span> <span class="o">+</span> <span class="s2">&quot;unable to get self._scenes[&#39;</span><span class="si">{scenename}</span><span class="s2">&#39;][&#39;</span><span class="si">{action}</span><span class="s2">&#39;][0][2] &lt;- </span><span class="si">{res}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;scenename&#39;</span><span class="p">:</span> <span class="n">scenename</span><span class="p">,</span> <span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="n">action</span><span class="p">,</span> <span class="s1">&#39;res&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scenes</span><span class="p">[</span><span class="n">scenename</span><span class="p">][</span><span class="n">action</span><span class="p">][</span><span class="mi">0</span><span class="p">]}))</span>
             <span class="k">return</span> <span class="s1">&#39;&#39;</span></div>
 

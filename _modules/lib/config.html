@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.config &mdash; Dokumentation v1.12.0.1 develop v1.12.0.1 develop (Stand 2. Juni 2026, commit 17197db) Dokumentation</title>
+  <title>lib.config &mdash; Dokumentation v1.12.0.1 develop v1.12.0.1 develop (Stand 2. Juni 2026, commit 64af79f) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5689,7 +5689,7 @@
     <span class="k">return</span> <span class="n">config</span></div>
 
 
-<div class="viewcode-block" id="parse_itemsdir"><a class="viewcode-back" href="../../lib/config.html#lib.config.parse_itemsdir">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">parse_itemsdir</span><span class="p">(</span><span class="n">itemsdir</span><span class="p">,</span> <span class="n">item_conf</span><span class="p">,</span> <span class="n">addfilenames</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">struct_dict</span><span class="o">=</span><span class="p">{}):</span>
+<div class="viewcode-block" id="parse_itemsdir"><a class="viewcode-back" href="../../lib/config.html#lib.config.parse_itemsdir">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">parse_itemsdir</span><span class="p">(</span><span class="n">itemsdir</span><span class="p">,</span> <span class="n">item_conf</span><span class="p">,</span> <span class="n">addfilenames</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">struct_dict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load and parse item configurations and merge it to the configuration tree</span>
 <span class="sd">    The configuration is only specified by the name of the directory.</span>
@@ -5708,6 +5708,8 @@
 <span class="sd">    :return: The resulting merged OrderedDict tree</span>
 <span class="sd">    :rtype: OrderedDict</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">struct_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">struct_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;parse_itemsdir: Beginning to parse items directory </span><span class="si">{</span><span class="n">itemsdir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">item_file</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">itemsdir</span><span class="p">)):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">item_file</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
@@ -5724,7 +5726,7 @@
     <span class="k">return</span> <span class="n">item_conf</span></div>
 
 
-<div class="viewcode-block" id="parse"><a class="viewcode-back" href="../../lib/config.html#lib.config.parse">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">addfilenames</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">parseitems</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">struct_dict</span><span class="o">=</span><span class="p">{}):</span>
+<div class="viewcode-block" id="parse"><a class="viewcode-back" href="../../lib/config.html#lib.config.parse">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">addfilenames</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">parseitems</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">struct_dict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load and parse a configuration file and merge it to the configuration tree</span>
 <span class="sd">    Depending on the extension of the filename, the apropriate parser is called</span>
@@ -5739,6 +5741,8 @@
 <span class="sd">    :return: The resulting merged OrderedDict tree</span>
 <span class="sd">    :rtype: OrderedDict</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">struct_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">struct_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">YAML_FILE</span><span class="p">)</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
@@ -5748,7 +5752,7 @@
 
 <span class="c1"># --------------------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="remove_keys"><a class="viewcode-back" href="../../lib/config.html#lib.config.remove_keys">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">remove_keys</span><span class="p">(</span><span class="n">ydata</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">remove</span><span class="o">=</span><span class="p">[</span><span class="n">REMOVE_ATTR</span><span class="p">],</span> <span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key_prefix</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="remove_keys"><a class="viewcode-back" href="../../lib/config.html#lib.config.remove_keys">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">remove_keys</span><span class="p">(</span><span class="n">ydata</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">remove</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key_prefix</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Removes given keys from a dict or OrderedDict structure</span>
 
@@ -5759,6 +5763,8 @@
 <span class="sd">    :type func: function</span>
 <span class="sd">    :type level: int</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">remove</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">remove</span> <span class="o">=</span> <span class="p">[</span><span class="n">REMOVE_ATTR</span><span class="p">]</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">level_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ydata</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">level_keys</span><span class="p">:</span>
@@ -6222,7 +6228,7 @@
     <span class="k">return</span></div>
 
 
-<div class="viewcode-block" id="parse_yaml"><a class="viewcode-back" href="../../lib/config.html#lib.config.parse_yaml">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">parse_yaml</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">addfilenames</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">parseitems</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">struct_dict</span><span class="o">=</span><span class="p">{}):</span>
+<div class="viewcode-block" id="parse_yaml"><a class="viewcode-back" href="../../lib/config.html#lib.config.parse_yaml">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">parse_yaml</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">addfilenames</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">parseitems</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">struct_dict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load and parse a yaml configuration file and merge it to the configuration tree</span>
 
@@ -6268,6 +6274,8 @@
 <span class="sd">    Valid characters for the items are a-z and A-Z plus any digit and underscore as second or further characters.</span>
 <span class="sd">    Valid characters for the attributes are the same as for an item plus @ and *</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">struct_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">struct_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;test_&#39;</span><span class="p">):</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;parse_yaml: Parsing file </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

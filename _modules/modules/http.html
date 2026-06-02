@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>modules.http &mdash; Dokumentation v1.12.0.1 develop v1.12.0.1 develop (Stand 2. Juni 2026, commit 17197db) Dokumentation</title>
+  <title>modules.http &mdash; Dokumentation v1.12.0.1 develop v1.12.0.1 develop (Stand 2. Juni 2026, commit 64af79f) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5755,7 +5755,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_starturl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;starturl&#39;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_connectionretries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;connectionretries&#39;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_webif_pagelength</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;webif_pagelength&#39;</span><span class="p">]</span>
-        <span class="k">except</span><span class="p">:</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Inconsistent module (invalid metadata definition)&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_init_complete</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">return</span>
@@ -5903,7 +5903,6 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_build_hostmaps</span><span class="p">()</span>
 
-        <span class="n">globaltemplates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gtemplates_dir</span>
         <span class="c1">#self.tplenv = Environment(loader=FileSystemLoader([os.path.join( self.webif_dir, &#39;templates&#39; ), globaltemplates] ))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tplenv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_template_environment</span><span class="p">()</span>
 
@@ -5989,13 +5988,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Module http: config dict: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="n">config</span> <span class="p">)</span> <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; - user &#39;</span><span class="si">{}</span><span class="s2">&#39;, password &#39;</span><span class="si">{}</span><span class="s2">&#39;, hashed_password &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_user</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_password</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hashed_password</span> <span class="p">)</span> <span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_showpluginlist</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_showpluginlist</span><span class="p">:</span>
             <span class="c1"># Register the plugin-list as a cherrypy app</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">plugins</span> <span class="o">=</span> <span class="n">_PluginsApp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">register_webif</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">plugins</span><span class="p">,</span> <span class="s1">&#39;plugins&#39;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
 <span class="c1">#                               pluginclass=&#39;&#39;, instance=&#39;&#39;, description=&#39;&#39;, webifname=&#39;&#39;)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_showservicelist</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_showservicelist</span><span class="p">:</span>
             <span class="c1"># Register the service-list as a cherrypy app</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">services</span> <span class="o">=</span> <span class="n">_ServicesApp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">register_service</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">services</span><span class="p">,</span> <span class="s1">&#39;services&#39;</span><span class="p">,</span> <span class="n">config_services</span><span class="p">)</span>
@@ -6087,7 +6086,7 @@
 
         <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_user_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span><span class="p">;</span>
+            <span class="k">return</span> <span class="kc">False</span>
         <span class="n">user_pwd_hash</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;password_hash&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
         <span class="n">pwd_hash</span> <span class="o">=</span> <span class="n">Utils</span><span class="o">.</span><span class="n">create_hash</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
 
@@ -6127,7 +6126,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tmpl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tplenv</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s1">&#39;error_page.html&#39;</span><span class="p">)</span>
         <span class="n">errno</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_showtraceback</span> <span class="o">==</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">errno</span> <span class="o">==</span> <span class="s1">&#39;404&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_showtraceback</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">errno</span> <span class="o">==</span> <span class="s1">&#39;404&#39;</span><span class="p">):</span>
             <span class="n">traceback</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">traceback</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;br&gt;&amp;nbsp;&amp;nbsp;&#39;</span><span class="p">)</span>
@@ -6151,7 +6150,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s2">&quot;10.10.10.10&quot;</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
                 <span class="n">connected</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">except</span><span class="p">:</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
                 <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Network access issue. Retry </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_connectionretries</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
@@ -6513,7 +6512,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot initialize visu for plugin &#39;</span><span class="si">{</span><span class="n">pluginname</span><span class="si">}</span><span class="s2">&#39; - visu is already active for plugin &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_visu_plugin</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">visu_port</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">visu_port</span> <span class="o">&lt;</span> <span class="mi">1024</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Visu port is missing o given port is &lt; 1024&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Visu port is missing o given port is &lt; 1024&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_visu_user</span> <span class="o">=</span> <span class="s1">&#39;visuuser&#39;</span>
@@ -6524,8 +6523,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_visu_realm</span> <span class="o">=</span> <span class="s1">&#39;shng_http_visu&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_visuport</span> <span class="o">=</span> <span class="n">visu_port</span>
 
-        <span class="n">mount</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span>
-        <span class="n">description</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Visu of plugin </span><span class="si">{</span><span class="n">pluginname</span><span class="si">}</span><span class="s1">&#39;</span>
 
         <span class="k">if</span> <span class="n">use_global_basic_auth</span><span class="p">:</span>
             <span class="n">conf</span><span class="p">[</span><span class="s1">&#39;/&#39;</span><span class="p">][</span><span class="s1">&#39;tools.auth_basic.on&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visu_basic_auth</span>
@@ -6645,12 +6642,12 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">starturl</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="o">.</span><span class="n">_applications</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">starturl</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="o">.</span><span class="n">_showpluginlist</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="o">.</span><span class="n">_showpluginlist</span><span class="p">:</span>
                     <span class="n">result</span> <span class="o">=</span> <span class="s1">&#39;plugins&#39;</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">return</span> <span class="s1">&#39;&#39;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="o">.</span><span class="n">_showservicelist</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="o">.</span><span class="n">_showservicelist</span><span class="p">:</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="s1">&#39;services&#39;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="s1">&#39;&#39;</span>
