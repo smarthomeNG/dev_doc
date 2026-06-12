@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.config &mdash; Dokumentation v1.12.0.1 develop v1.12.0.1 develop (Stand 10. Juni 2026, commit 5657658) Dokumentation</title>
+  <title>lib.config &mdash; Dokumentation v1.12.0.1 develop v1.12.0.1 develop (Stand 12. Juni 2026, commit a1f2463) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -396,6 +396,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#teilweises-einbinden-von-structs-partial-struct-inclusion-new">Teilweises Einbinden von structs (partial struct inclusion) <span class="redsup">new</span></a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#verwendung-mehrerer-definitionsdateien">Verwendung mehrerer Definitionsdateien</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#beispiele">Beispiele</a></li>
 </ul>
@@ -5973,6 +5974,74 @@
     <span class="k">return</span> <span class="n">internal_dict_value</span></div>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_resolve_partial_struct</span><span class="p">(</span><span class="n">struct_name</span><span class="p">,</span> <span class="n">struct_dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Attempt to resolve *struct_name* as a dotted sub-path into a registered struct.</span>
+
+<span class="sd">    This enables partial struct inclusion: instead of importing an entire struct,</span>
+<span class="sd">    only a named sub-tree of that struct is inserted into the item tree.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    If the struct ``kodi.master`` is defined and contains sub-items ``foo``, ``bar``</span>
+<span class="sd">    and ``baz``, a user can write::</span>
+
+<span class="sd">        myitem:</span>
+<span class="sd">            struct: kodi.master.bar</span>
+
+<span class="sd">    which inserts only the ``bar`` sub-tree of ``kodi.master`` rather than the</span>
+<span class="sd">    whole struct.  Deeper paths (e.g. ``kodi.master.bar.child1``) are equally</span>
+<span class="sd">    supported.</span>
+
+<span class="sd">    Disambiguation</span>
+<span class="sd">    --------------</span>
+<span class="sd">    The algorithm tries the **longest possible registered prefix first**.  A struct</span>
+<span class="sd">    literally named ``kodi.master.bar`` (if such a thing were ever registered) takes</span>
+<span class="sd">    precedence over the partial-path interpretation of the same string, because the</span>
+<span class="sd">    direct ``struct_dict.get()`` call in the caller is attempted before this helper</span>
+<span class="sd">    is invoked.</span>
+
+<span class="sd">    Return value</span>
+<span class="sd">    ------------</span>
+<span class="sd">    Returns a 3-tuple ``(result, matched_struct_name, sub_path)`` where:</span>
+
+<span class="sd">    * ``(sub_tree, name, path)``  — the sub-path was found and points to a dict node.</span>
+<span class="sd">    * ``(None, name, path)``      — a registered struct prefix was found, but the</span>
+<span class="sd">      sub-path is absent or leads to a scalar value (not a dict).</span>
+<span class="sd">    * ``(None, None, None)``      — no registered struct matches any prefix at all.</span>
+
+<span class="sd">    :param struct_name:  Dotted name to resolve (e.g. ``&#39;kodi.master.bar&#39;``)</span>
+<span class="sd">    :param struct_dict:  Dict of all registered structs keyed by their full name</span>
+<span class="sd">    :type struct_name:   str</span>
+<span class="sd">    :type struct_dict:   dict</span>
+<span class="sd">    :return:             3-tuple (sub_tree_or_None, matched_name_or_None, sub_path_or_None)</span>
+<span class="sd">    :rtype:              tuple</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parts</span> <span class="o">=</span> <span class="n">struct_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+    <span class="c1"># Iterate from longest possible prefix down to shortest (greedy, longest wins)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">candidate_name</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">[:</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">struct_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">candidate_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">candidate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="c1"># A registered struct was found — navigate the remaining sub-path key by key</span>
+        <span class="n">sub_path</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="n">i</span><span class="p">:])</span>
+        <span class="n">sub_tree</span> <span class="o">=</span> <span class="n">candidate</span>
+        <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">[</span><span class="n">i</span><span class="p">:]:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sub_tree</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">sub_tree</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1"># arrived at a scalar before exhausting the path</span>
+                <span class="k">break</span>
+            <span class="n">sub_tree</span> <span class="o">=</span> <span class="n">sub_tree</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sub_tree</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">break</span>              <span class="c1"># key not present at this level</span>
+        <span class="c1"># Return hit information regardless of sub-path outcome so the caller can</span>
+        <span class="c1"># emit a precise error message even when navigation fails</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">sub_tree</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sub_tree</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">candidate_name</span><span class="p">,</span>
+                <span class="n">sub_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+
 <div class="viewcode-block" id="nested_put"><a class="viewcode-back" href="../../lib/config.html#lib.config.nested_put">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">nested_put</span><span class="p">(</span><span class="n">output_dict</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 
@@ -6155,47 +6224,96 @@
 
 <div class="viewcode-block" id="add_struct_to_item_template"><a class="viewcode-back" href="../../lib/config.html#lib.config.add_struct_to_item_template">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">add_struct_to_item_template</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">struct_name</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">struct_dict</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">struct_attrs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Add the referenced struct to the items_template subtree</span>
+<span class="sd">    Add the referenced struct to the items_template subtree.</span>
 
-<span class="sd">    :param path: Path of the item which references a struct (template)</span>
-<span class="sd">    :param struct_name: Name of the to use for the item</span>
-<span class="sd">    :param template: Template dict to be merged into the item tree</span>
-<span class="sd">    :param struct_dict: dict with all defined structs (from /etc/structs.yaml and from loaded plugins)</span>
-<span class="sd">    :param instance: For multi instance plugins: instance for which the items work (is derived from item with struct attribute)</span>
-<span class="sd">    :param struct_attrs: OrderedDict with attributes to set for every item</span>
+<span class="sd">    Supports both full struct names and partial sub-path references:</span>
 
-<span class="sd">    :return:</span>
+<span class="sd">    * ``struct: kodi.master``       — imports the whole ``kodi.master`` struct (existing behaviour)</span>
+<span class="sd">    * ``struct: kodi.master.bar``   — imports only the ``bar`` sub-tree of ``kodi.master``</span>
+<span class="sd">    * ``struct: kodi.master.bar.child1`` — imports a deeper sub-tree</span>
+
+<span class="sd">    When a partial path is used, the algorithm first checks whether a struct with</span>
+<span class="sd">    the exact name exists (direct lookup).  Only if that fails, it tries to find the</span>
+<span class="sd">    longest registered struct name that is a prefix of the given name, then navigates</span>
+<span class="sd">    into the struct tree along the remaining path components.  This means that a</span>
+<span class="sd">    struct literally named ``kodi.master.bar`` is never shadowed by the partial-path</span>
+<span class="sd">    mechanism.</span>
+
+<span class="sd">    Errors are reported with context-specific messages:</span>
+
+<span class="sd">    * *struct not found* — no registered struct name matches any prefix of the given name.</span>
+<span class="sd">    * *sub-item not found* — a registered struct was found but the sub-path does not exist.</span>
+<span class="sd">    * *not a sub-item tree* — the sub-path resolves to a scalar attribute, not an item tree.</span>
+
+<span class="sd">    :param path:         Path of the item which references a struct (template)</span>
+<span class="sd">    :param struct_name:  Name (or partial path) of the struct to use for the item</span>
+<span class="sd">    :param template:     Template dict to be merged into the item tree</span>
+<span class="sd">    :param struct_dict:  Dict with all defined structs (from etc/structs/ and loaded plugins)</span>
+<span class="sd">    :param instance:     For multi-instance plugins: instance the items belong to</span>
+<span class="sd">    :param struct_attrs: OrderedDict with attributes to propagate to every item in the struct</span>
+<span class="sd">    :type path:          str</span>
+<span class="sd">    :type struct_name:   str</span>
+<span class="sd">    :type template:      OrderedDict</span>
+<span class="sd">    :type struct_dict:   dict</span>
+<span class="sd">    :type instance:      str</span>
+<span class="sd">    :type struct_attrs:  OrderedDict | None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;add_struct_to_item_template: path (parent)=</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">, struct_name=</span><span class="si">{</span><span class="n">struct_name</span><span class="si">}</span><span class="s2">, template=</span><span class="si">{</span><span class="nb">dict</span><span class="p">(</span><span class="n">template</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">struct</span> <span class="o">=</span> <span class="n">struct_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">struct_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">struct</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># no struct/template with this name</span>
-        <span class="n">nf</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
-        <span class="n">nf</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ERROR: struct &#39;&quot;</span> <span class="o">+</span> <span class="n">struct_name</span> <span class="o">+</span> <span class="s2">&quot;&#39; not found!&quot;</span>
-        <span class="n">nested_put</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">nf</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;add_struct_to_item_template: Struct definition for &#39;</span><span class="si">{</span><span class="n">struct_name</span><span class="si">}</span><span class="s2">&#39; not found (referenced in item </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># add struct/template to temporary item(template) tree</span>
-        <span class="c1">#logger.debug(&quot;- add_struct_to_item_template: struct_dict = {}&quot;.format(dict(struct_dict)))</span>
-        <span class="c1">#logger.debug(&quot;- add_struct_to_item_template: struct &#39;{}&#39; to item &#39;{}&#39;&quot;.format(struct_name, path))</span>
-        <span class="n">tmp_struct</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">struct</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s1">&#39;__struct_is_optional&#39;</span> <span class="ow">in</span> <span class="n">tmp_struct</span><span class="p">:</span>
-            <span class="k">del</span> <span class="n">tmp_struct</span><span class="p">[</span><span class="s1">&#39;__struct_is_optional&#39;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="s1">&#39;name&#39;</span> <span class="ow">in</span> <span class="n">tmp_struct</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">struct</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="kn">from</span><span class="w"> </span><span class="nn">lib.smarthome</span><span class="w"> </span><span class="kn">import</span> <span class="n">SmartHome</span>
-            <span class="n">_sh</span> <span class="o">=</span> <span class="n">SmartHome</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">Utils</span><span class="o">.</span><span class="n">to_bool</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">_sh</span><span class="p">,</span> <span class="s1">&#39;_struct_strip_name&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)):</span>
-                <span class="k">del</span> <span class="n">tmp_struct</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;removed &quot;name&quot; attribute from struct </span><span class="si">{</span><span class="n">struct_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">nested_put</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">tmp_struct</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="n">struct_attrs</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">instance</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="c1"># add instance to items added by template struct</span>
-            <span class="n">subtree</span> <span class="o">=</span> <span class="n">nested_get</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-            <span class="c1"># logger.info(f&quot;add_struct_to_item_template: Adding &#39;instance: {instance}&#39; to template for subtree &#39;{path}&#39;&quot;)</span>
-            <span class="c1"># add instance name to attributes which carry &#39;@instance&#39;</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- add_struct_to_item_template: Add instance=</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> to subtree=</span><span class="si">{</span><span class="n">subtree</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">replace_struct_instance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">subtree</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">struct</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Try to resolve as a partial sub-path of a registered struct</span>
+        <span class="n">sub_tree</span><span class="p">,</span> <span class="n">matched_name</span><span class="p">,</span> <span class="n">sub_path</span> <span class="o">=</span> <span class="n">_resolve_partial_struct</span><span class="p">(</span><span class="n">struct_name</span><span class="p">,</span> <span class="n">struct_dict</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sub_tree</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;add_struct_to_item_template: &#39;</span><span class="si">{</span><span class="n">struct_name</span><span class="si">}</span><span class="s2">&#39; resolved as &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;sub-path &#39;</span><span class="si">{</span><span class="n">sub_path</span><span class="si">}</span><span class="s2">&#39; of struct &#39;</span><span class="si">{</span><span class="n">matched_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="n">struct</span> <span class="o">=</span> <span class="n">sub_tree</span>
+        <span class="k">elif</span> <span class="n">matched_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># A registered struct was found but the sub-path is missing or scalar</span>
+            <span class="n">raw</span> <span class="o">=</span> <span class="n">nested_get</span><span class="p">(</span><span class="n">struct_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">matched_name</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">sub_path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">raw</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">err</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;struct &#39;</span><span class="si">{</span><span class="n">matched_name</span><span class="si">}</span><span class="s2">&#39; found but sub-item &#39;</span><span class="si">{</span><span class="n">sub_path</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                       <span class="sa">f</span><span class="s2">&quot;does not exist within it&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">err</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;struct &#39;</span><span class="si">{</span><span class="n">matched_name</span><span class="si">}</span><span class="s2">&#39; found but &#39;</span><span class="si">{</span><span class="n">sub_path</span><span class="si">}</span><span class="s2">&#39; is a scalar &quot;</span>
+                       <span class="sa">f</span><span class="s2">&quot;value (</span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span><span class="si">}</span><span class="s2">), not a sub-item tree&quot;</span><span class="p">)</span>
+            <span class="n">nf</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+            <span class="n">nf</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;ERROR: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">nested_put</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">nf</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;add_struct_to_item_template: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2"> (referenced in item &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39;)&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- add_struct_to_item_template: - after add - template=</span><span class="si">{</span><span class="nb">dict</span><span class="p">(</span><span class="n">template</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># No registered struct matches any prefix — original &quot;not found&quot; error</span>
+            <span class="n">nf</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+            <span class="n">nf</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ERROR: struct &#39;&quot;</span> <span class="o">+</span> <span class="n">struct_name</span> <span class="o">+</span> <span class="s2">&quot;&#39; not found!&quot;</span>
+            <span class="n">nested_put</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">nf</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;add_struct_to_item_template: Struct definition for &#39;</span><span class="si">{</span><span class="n">struct_name</span><span class="si">}</span><span class="s2">&#39; not found (referenced in item &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39;)&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- add_struct_to_item_template: - after add - template=</span><span class="si">{</span><span class="nb">dict</span><span class="p">(</span><span class="n">template</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+    <span class="c1"># --- struct resolved (either direct or via partial sub-path) ---</span>
+    <span class="c1"># add struct/template to temporary item(template) tree</span>
+    <span class="c1">#logger.debug(&quot;- add_struct_to_item_template: struct_dict = {}&quot;.format(dict(struct_dict)))</span>
+    <span class="c1">#logger.debug(&quot;- add_struct_to_item_template: struct &#39;{}&#39; to item &#39;{}&#39;&quot;.format(struct_name, path))</span>
+    <span class="n">tmp_struct</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">struct</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">&#39;__struct_is_optional&#39;</span> <span class="ow">in</span> <span class="n">tmp_struct</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">tmp_struct</span><span class="p">[</span><span class="s1">&#39;__struct_is_optional&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="s1">&#39;name&#39;</span> <span class="ow">in</span> <span class="n">tmp_struct</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tmp_struct</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">),</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">lib.smarthome</span><span class="w"> </span><span class="kn">import</span> <span class="n">SmartHome</span>
+        <span class="n">_sh</span> <span class="o">=</span> <span class="n">SmartHome</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">Utils</span><span class="o">.</span><span class="n">to_bool</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">_sh</span><span class="p">,</span> <span class="s1">&#39;_struct_strip_name&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)):</span>
+            <span class="k">del</span> <span class="n">tmp_struct</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;removed &quot;name&quot; attribute from struct </span><span class="si">{</span><span class="n">struct_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">nested_put</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">tmp_struct</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="n">struct_attrs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">instance</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># add instance to items added by template struct</span>
+        <span class="n">subtree</span> <span class="o">=</span> <span class="n">nested_get</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="c1"># logger.info(f&quot;add_struct_to_item_template: Adding &#39;instance: {instance}&#39; to template for subtree &#39;{path}&#39;&quot;)</span>
+        <span class="c1"># add instance name to attributes which carry &#39;@instance&#39;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- add_struct_to_item_template: Add instance=</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> to subtree=</span><span class="si">{</span><span class="n">subtree</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">replace_struct_instance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">subtree</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- add_struct_to_item_template: - after add - template=</span><span class="si">{</span><span class="nb">dict</span><span class="p">(</span><span class="n">template</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span></div>
