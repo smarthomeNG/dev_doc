@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Beispielplugin mit MQTT-Unterstützung &mdash; Dokumentation v1.12.0.1 develop v1.12.0.1 develop (Stand 16. Juni 2026, commit a1f2463) Dokumentation</title>
+  <title>Beispielplugin mit MQTT-Unterstützung &mdash; Dokumentation v1.12.0.1 develop v1.12.0.1 develop (Stand 16. Juni 2026, commit 4a6d142) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -4035,6 +4035,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../tools/tools_build_requirements.html">build_requirements.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tools/tools_conf_to_yaml_converter.html">conf_to_yaml_converter.py</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tools/tools_getshngpid.html">getshngpid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tools/tools_install_hooks.html">install-hooks.sh</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../tools/tools_install_hooks.html#wozu-dienen-die-hooks">Wozu dienen die Hooks?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tools/tools_install_hooks.html#scope-der-checks">Scope der Checks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tools/tools_install_hooks.html#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../tools/tools_install_hooks.html#push-trotzdem-erzwingen">Push trotzdem erzwingen</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../../tools/tools_plugin_metadata_checker.html">plugin_metadata_checker.py</a></li>
 </ul>
 </li>
@@ -5661,7 +5668,7 @@
 
     <span class="n">multi_instance</span><span class="p">:</span> <span class="n">false</span>           <span class="c1"># plugin supports multi instance</span>
     <span class="n">restartable</span><span class="p">:</span> <span class="n">unknown</span>            <span class="c1"># plugin supports stopping and starting again, must be implemented</span>
-    <span class="n">classname</span><span class="p">:</span> <span class="n">SamplePlugin</span>         <span class="c1"># class containing the plugin</span>
+    <span class="n">classname</span><span class="p">:</span> <span class="n">SampleMqttPlugin</span>     <span class="c1"># class containing the plugin</span>
 
 <span class="n">parameters</span><span class="p">:</span>
     <span class="c1"># Definition of parameters to be configured in etc/plugin.yaml (enter &#39;parameters: NONE&#39;, if section should be empty)</span>
@@ -5677,6 +5684,12 @@
 
 <span class="n">item_attributes</span><span class="p">:</span>
     <span class="c1"># Definition of item attributes defined by this plugin (enter &#39;item_attributes: NONE&#39;, if section should be empty)</span>
+
+    <span class="n">foo_itemid</span><span class="p">:</span>
+        <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">description</span><span class="p">:</span>
+            <span class="n">de</span><span class="p">:</span> <span class="s1">&#39;Geräte-ID für MQTT-Topic-Zusammensetzung (z.B. Shellyplug-Seriennummer)&#39;</span>
+            <span class="n">en</span><span class="p">:</span> <span class="s1">&#39;Device ID used to compose MQTT topics (e.g. Shellyplug serial number)&#39;</span>
 
 <span class="n">item_structs</span><span class="p">:</span>
     <span class="c1"># Definition of item-structure templates for this plugin (enter &#39;item_structs: NONE&#39;, if section should be empty)</span>
@@ -5737,9 +5750,10 @@
 <span class="sd">    the update functions for the items</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">PLUGIN_VERSION</span> <span class="o">=</span> <span class="s1">&#39;1.0.0&#39;</span>    <span class="c1"># (must match the version specified in plugin.yaml), use &#39;1.0.0&#39; for your initial plugin Release</span>
+    <span class="n">PLUGIN_VERSION</span> <span class="o">=</span> <span class="s1">&#39;1.0.0&#39;</span>    <span class="c1"># must match the version in plugin.yaml; use &#39;1.0.0&#39; for initial release</span>
+    <span class="n">ALLOW_MULTIINSTANCE</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># set to True if the plugin can run as multiple instances simultaneously</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sh</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sh</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initalizes the plugin.</span>
 
@@ -5825,24 +5839,18 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_iattr</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">conf</span><span class="p">,</span> <span class="s1">&#39;foo_itemid&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;parse item: </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-            <span class="c1"># subscribe to topic for relay state</span>
-            <span class="c1"># mqtt_id = self.get_iattr_value(item.conf, &#39;foo_itemid&#39;).upper()</span>
-            <span class="c1"># payload_type = item.property.type</span>
-            <span class="c1"># topic = &#39;shellies/shellyplug-&#39; + mqtt_id + &#39;/relay/0&#39;</span>
-            <span class="c1"># bool_values = [&#39;off&#39;,&#39;on&#39;]</span>
-            <span class="c1"># self.add_subscription(topic, payload_type, bool_values, item=item)</span>
+            <span class="c1"># Compose the MQTT topic from the device ID attribute.</span>
+            <span class="n">mqtt_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_iattr_value</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">conf</span><span class="p">,</span> <span class="s1">&#39;foo_itemid&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+            <span class="n">payload_type</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">type</span>
+            <span class="n">topic</span> <span class="o">=</span> <span class="s1">&#39;shellies/shellyplug-&#39;</span> <span class="o">+</span> <span class="n">mqtt_id</span> <span class="o">+</span> <span class="s1">&#39;/relay/0&#39;</span>
+            <span class="n">bool_values</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;off&#39;</span><span class="p">,</span> <span class="s1">&#39;on&#39;</span><span class="p">]</span>
+            <span class="c1"># Subscribe so the item value is updated when the device publishes.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_subscription</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="n">payload_type</span><span class="p">,</span> <span class="n">bool_values</span><span class="p">,</span> <span class="n">item</span><span class="o">=</span><span class="n">item</span><span class="p">)</span>
 
-            <span class="c1"># alternative:</span>
-            <span class="c1">#   self.add_subscription(topic, payload_type, bool_values, callback=self.on_mqtt_message)</span>
-            <span class="c1"># and implement callback:</span>
-            <span class="c1">#   def on_mqtt_message(self, topic, payload, qos=None, retain=None):</span>
-
-            <span class="c1"># todo</span>
-            <span class="c1"># if interesting item for sending values:</span>
-            <span class="c1">#   return self.update_item</span>
-
-            <span class="c1"># if the item is changed in SmartHomeNG and shall update the mqtt device, enable:</span>
-            <span class="c1"># return self.update_item</span>
+            <span class="c1"># Register the item so update_item() is called when the item changes</span>
+            <span class="c1"># in SmartHomeNG (e.g. to send an MQTT command to the device).</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">updating</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_item</span>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">parse_logic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logic</span><span class="p">):</span>
@@ -5881,9 +5889,10 @@
             <span class="c1"># and only, if the item has not been changed by this this plugin:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Update item: </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">, item has been changed outside this plugin&quot;</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_iattr</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">conf</span><span class="p">,</span> <span class="s1">&#39;foo_itemtag&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_iattr</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">conf</span><span class="p">,</span> <span class="s1">&#39;foo_itemid&#39;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;update_item was called with item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> from caller </span><span class="si">{</span><span class="n">caller</span><span class="si">}</span><span class="s2">, source </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> and dest </span><span class="si">{</span><span class="n">dest</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="sa">f</span><span class="s2">&quot;update_item: item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;from caller </span><span class="si">{</span><span class="n">caller</span><span class="si">}</span><span class="s2">, source </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">, dest </span><span class="si">{</span><span class="n">dest</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">pass</span>
 </pre></div>
 </div>
