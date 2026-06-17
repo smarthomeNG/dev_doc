@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.item.items &mdash; Dokumentation v1.12.0.1 develop v1.12.0.1 develop (Stand 16. Juni 2026, commit 4a6d142) Dokumentation</title>
+  <title>lib.item.items &mdash; Dokumentation v1.12.0.1 develop v1.12.0.1 develop (Stand 17. Juni 2026, commit d285ffd) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -5676,6 +5676,7 @@
 <span class="sd">:Note: This library is part of the core of SmartHomeNG. Regular plugins should not need to use this API.  It is manily implemented for plugins near to the core like **backend** and the core itself!</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 
@@ -5685,10 +5686,10 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.structs</span><span class="w"> </span><span class="kn">import</span> <span class="n">Structs</span>
 
 
-<span class="n">_items_instance</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1"># Pointer to the initialized instance of the Items class (for use by static methods)</span>
+<span class="n">_items_instance</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Pointer to the initialized instance of the Items class (for use by static methods)</span>
 
 
-<div class="viewcode-block" id="Items"><a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items">[Doku]</a><span class="k">class</span><span class="w"> </span><span class="nc">Items</span><span class="p">():</span>
+<div class="viewcode-block" id="Items"><a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items">[Doku]</a><span class="k">class</span><span class="w"> </span><span class="nc">Items</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Items loader class. (Item-methods from bin/smarthome.py are moved here.)</span>
 
@@ -5699,18 +5700,18 @@
 <span class="sd">    :type smarthome: object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">__items</span> <span class="o">=</span> <span class="p">[]</span>                     <span class="c1"># list with the paths of all items that are defined</span>
-    <span class="n">__item_dict</span> <span class="o">=</span> <span class="p">{}</span>                 <span class="c1"># dict with all the items that are defined in the form: {&quot;&lt;item-path&gt;&quot;: &quot;&lt;item-object&gt;&quot;, ...}</span>
+    <span class="n">__items</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list with the paths of all items that are defined</span>
+    <span class="n">__item_dict</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># dict with all the items that are defined in the form: {&quot;&lt;item-path&gt;&quot;: &quot;&lt;item-object&gt;&quot;, ...}</span>
 
-    <span class="n">_children</span> <span class="o">=</span> <span class="p">[]</span>                   <span class="c1"># List of top level items</span>
+    <span class="n">_children</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># List of top level items</span>
 
-    <span class="n">plugin_attributes</span> <span class="o">=</span> <span class="p">{}</span>           <span class="c1"># dict with all item attributes, that are defined by plugins</span>
-    <span class="n">plugin_attribute_prefixes</span> <span class="o">=</span> <span class="p">{}</span>   <span class="c1"># dict with all item attribute-prefixes, that are defined by plugins</span>
-    <span class="n">plugin_prefixes_tuple</span> <span class="o">=</span> <span class="kc">None</span>     <span class="c1"># tuple for finding if an attribute name starts with one of the prefixes</span>
+    <span class="n">plugin_attributes</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># dict with all item attributes, that are defined by plugins</span>
+    <span class="n">plugin_attribute_prefixes</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># dict with all item attribute-prefixes, that are defined by plugins</span>
+    <span class="n">plugin_prefixes_tuple</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># tuple for finding if an attribute name starts with one of the prefixes</span>
 
     <span class="n">structs</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="n">_item_methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">Item</span><span class="p">)</span> <span class="k">if</span> <span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;_&#39;</span><span class="p">]</span>
+    <span class="n">_item_methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">Item</span><span class="p">)</span> <span class="k">if</span> <span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;_&quot;</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">smarthome</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span> <span class="o">=</span> <span class="n">smarthome</span>
@@ -5719,15 +5720,19 @@
         <span class="k">global</span> <span class="n">_items_instance</span>
         <span class="k">if</span> <span class="n">_items_instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+
             <span class="n">curframe</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
             <span class="n">calframe</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getouterframes</span><span class="p">(</span><span class="n">curframe</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;A second &#39;items&#39; object has been created. There should only be ONE instance of class &#39;Items&#39;!!! Called from: </span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">calframe</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">calframe</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
+                <span class="s2">&quot;A second &#39;items&#39; object has been created. There should only be ONE instance of class &#39;Items&#39;!!! Called from: </span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">calframe</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">calframe</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
 
         <span class="n">_items_instance</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">structs</span> <span class="o">=</span> <span class="n">Structs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_ignore_item_collision</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="p">,</span> <span class="s1">&#39;_ignore_item_collision&#39;</span><span class="p">,</span> <span class="s1">&#39;False&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;True&#39;</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_ignore_item_collision</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="p">,</span> <span class="s2">&quot;_ignore_item_collision&quot;</span><span class="p">,</span> <span class="s2">&quot;False&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;True&quot;</span>
 
     <span class="c1"># -----------------------------------------------------------------------------------------</span>
     <span class="c1">#   Following (static) method of the class Items implement the API for Items in SmartHomeNG</span>
@@ -5754,14 +5759,12 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">_items_instance</span></div>
 
-
     <span class="c1"># -----------------------------------------------------------------------------------------</span>
     <span class="c1">#   Following methods handle structs</span>
     <span class="c1"># -----------------------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="Items.add_struct_definition"><a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.add_struct_definition">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_struct_definition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_name</span><span class="p">,</span> <span class="n">struct_name</span><span class="p">,</span> <span class="n">struct</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="s1">&#39;plugins&#39;</span><span class="p">,</span> <span class="n">optional</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Items.add_struct_definition"><a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.add_struct_definition">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_struct_definition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_name</span><span class="p">,</span> <span class="n">struct_name</span><span class="p">,</span> <span class="n">struct</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="s2">&quot;plugins&quot;</span><span class="p">,</span> <span class="n">optional</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">structs</span><span class="o">.</span><span class="n">add_struct_definition</span><span class="p">(</span><span class="n">plugin_name</span><span class="p">,</span> <span class="n">struct_name</span><span class="p">,</span> <span class="n">struct</span><span class="p">,</span> <span class="n">from_dir</span><span class="p">,</span> <span class="n">optional</span><span class="p">)</span></div>
-
 
 <div class="viewcode-block" id="Items.return_struct_definitions"><a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.return_struct_definitions">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">return_struct_definitions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5771,7 +5774,6 @@
 <span class="sd">        :rtype: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">structs</span><span class="o">.</span><span class="n">return_struct_definitions</span><span class="p">(</span><span class="nb">all</span><span class="p">)</span></div>
-
 
 <div class="viewcode-block" id="Items.load_itemdefinitions"><a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.load_itemdefinitions">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">load_itemdefinitions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env_dir</span><span class="p">,</span> <span class="n">items_dir</span><span class="p">,</span> <span class="n">etc_dir</span><span class="p">,</span> <span class="n">plugins_dir</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5800,17 +5802,18 @@
         <span class="c1"># and from ../etc/struct.yaml</span>
         <span class="c1">#</span>
         <span class="c1"># Read in item structs from ../etc/struct.yaml</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">shng_status</span><span class="p">[</span><span class="s1">&#39;details&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Structs&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">shng_status</span><span class="p">[</span><span class="s2">&quot;details&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Structs&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">structs</span><span class="o">.</span><span class="n">load_struct_definitions</span><span class="p">()</span>
-
 
         <span class="c1"># --------------------------------------------------------------------</span>
         <span class="c1"># Read in item definitions</span>
         <span class="c1">#</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">shng_status</span><span class="p">[</span><span class="s1">&#39;details&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Items&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">shng_status</span><span class="p">[</span><span class="s2">&quot;details&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Items&quot;</span>
         <span class="n">item_conf</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">item_conf</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">parse_itemsdir</span><span class="p">(</span><span class="n">env_dir</span><span class="p">,</span> <span class="n">item_conf</span><span class="p">)</span>
-        <span class="n">item_conf</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">parse_itemsdir</span><span class="p">(</span><span class="n">items_dir</span><span class="p">,</span> <span class="n">item_conf</span><span class="p">,</span> <span class="n">addfilenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">struct_dict</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">structs</span><span class="o">.</span><span class="n">_struct_definitions</span><span class="p">)</span>
+        <span class="n">item_conf</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">parse_itemsdir</span><span class="p">(</span>
+            <span class="n">items_dir</span><span class="p">,</span> <span class="n">item_conf</span><span class="p">,</span> <span class="n">addfilenames</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">struct_dict</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">structs</span><span class="o">.</span><span class="n">_struct_definitions</span>
+        <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">item_conf</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
@@ -5825,55 +5828,53 @@
                     <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="p">)[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">child</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span><span class="n">child_path</span><span class="p">,</span> <span class="n">child</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
-        <span class="k">del</span><span class="p">(</span><span class="n">item_conf</span><span class="p">)</span>  <span class="c1"># clean up</span>
+        <span class="k">del</span> <span class="n">item_conf</span>  <span class="c1"># clean up</span>
 
         <span class="c1"># Test if all used attributes are defined in configuread plugins</span>
-        <span class="c1">#feature moved to lib.metadata</span>
-        <span class="c1">#for item in self.return_items():</span>
+        <span class="c1"># feature moved to lib.metadata</span>
+        <span class="c1"># for item in self.return_items():</span>
         <span class="c1">#    item._test_attribute_existance()</span>
-
 
         <span class="c1"># --------------------------------------------------------------------</span>
         <span class="c1"># prepare loaded items for run phase of SmartHomeNG</span>
         <span class="c1">#</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">shng_status</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;Starting: Preparing loaded items&#39;</span><span class="p">,</span> <span class="s1">&#39;details&#39;</span><span class="p">:</span> <span class="s1">&#39;prerun&#39;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">shng_status</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;Starting: Preparing loaded items&quot;</span><span class="p">,</span> <span class="s2">&quot;details&quot;</span><span class="p">:</span> <span class="s2">&quot;prerun&quot;</span><span class="p">}</span>
 
         <span class="c1"># Build eval expressions from special functions and triggers before first run</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_items</span><span class="p">():</span>
             <span class="n">item</span><span class="o">.</span><span class="n">_init_prerun</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">shng_status</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;Starting: Preparing loaded items&#39;</span><span class="p">,</span> <span class="s1">&#39;details&#39;</span><span class="p">:</span> <span class="s1">&#39;start scheduler&#39;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">shng_status</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;Starting: Preparing loaded items&quot;</span><span class="p">,</span> <span class="s2">&quot;details&quot;</span><span class="p">:</span> <span class="s2">&quot;start scheduler&quot;</span><span class="p">}</span>
         <span class="c1"># Start schedulers of the items which have a crontab or a cycle attribute</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_items</span><span class="p">():</span>
             <span class="n">item</span><span class="o">.</span><span class="n">_init_start_scheduler</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">shng_status</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;Starting: Preparing loaded items&#39;</span><span class="p">,</span> <span class="s1">&#39;details&#39;</span><span class="p">:</span> <span class="s1">&#39;eval-run&#39;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">shng_status</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;Starting: Preparing loaded items&quot;</span><span class="p">,</span> <span class="s2">&quot;details&quot;</span><span class="p">:</span> <span class="s2">&quot;eval-run&quot;</span><span class="p">}</span>
         <span class="c1"># Run initial eval to set an initial value for the item</span>
-        <span class="c1">#import time</span>
-        <span class="c1">#gstart = time.time()</span>
-        <span class="c1">#gduration = 0.0</span>
-        <span class="c1">#gcount = 0</span>
+        <span class="c1"># import time</span>
+        <span class="c1"># gstart = time.time()</span>
+        <span class="c1"># gduration = 0.0</span>
+        <span class="c1"># gcount = 0</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_items</span><span class="p">():</span>
             <span class="n">item</span><span class="o">.</span><span class="n">_init_run</span><span class="p">()</span>
-            <span class="c1">#start = time.time()</span>
-            <span class="c1">#calculated = item._init_run()</span>
-            <span class="c1">#end = time.time()</span>
-            <span class="c1">#if calculated:</span>
+            <span class="c1"># start = time.time()</span>
+            <span class="c1"># calculated = item._init_run()</span>
+            <span class="c1"># end = time.time()</span>
+            <span class="c1"># if calculated:</span>
             <span class="c1">#    duration = end - start</span>
             <span class="c1">#    self.logger.warning(f&quot;_init_run: {item._path}, execution time = {duration}&quot;)</span>
             <span class="c1">#    gduration += duration</span>
             <span class="c1">#    gcount += 1</span>
-        <span class="c1">#gend = time.time()</span>
-        <span class="c1">#self.logger.warning(f&quot;_init_run: Totals: duration {gend-gstart}, eval execution time = {gduration} for {gcount} items&quot;)</span>
+        <span class="c1"># gend = time.time()</span>
+        <span class="c1"># self.logger.warning(f&quot;_init_run: Totals: duration {gend-gstart}, eval execution time = {gduration} for {gcount} items&quot;)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">shng_status</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;Starting: Preparing loaded items&#39;</span><span class="p">}</span></div>
-<span class="c1">#        self.item_count = len(self.__items)</span>
-<span class="c1">#        self._sh.item_count = self.item_count()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">shng_status</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;Starting: Preparing loaded items&quot;</span><span class="p">}</span></div>
 
-        <span class="c1"># here goes debug output (if needed) after the initialization of all items</span>
-        <span class="c1">#import lib.metadata as metadata</span>
-        <span class="c1">#self.logger.notice(f&quot;metadata.all_itemprefixdefinitions: {metadata.all_itemprefixdefinitions.keys()}&quot;)</span>
+    <span class="c1">#        self.item_count = len(self.__items)</span>
+    <span class="c1">#        self._sh.item_count = self.item_count()</span>
 
-
+    <span class="c1"># here goes debug output (if needed) after the initialization of all items</span>
+    <span class="c1"># import lib.metadata as metadata</span>
+    <span class="c1"># self.logger.notice(f&quot;metadata.all_itemprefixdefinitions: {metadata.all_itemprefixdefinitions.keys()}&quot;)</span>
 
 <div class="viewcode-block" id="Items.add_item"><a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.add_item">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5906,7 +5907,7 @@
 
         <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__items</span><span class="p">:</span>
             <span class="k">return</span>
-        
+
         <span class="c1"># remove item from Items data</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">__item_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">]</span>
@@ -5916,12 +5917,10 @@
 
         <span class="c1"># remove item bindings in plugins</span>
         <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">remove</span><span class="p">():</span>
-
             <span class="c1"># delete item</span>
             <span class="k">del</span> <span class="n">item</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2"> could not be removed due to incompatible plugins.&quot;</span><span class="p">)</span></div>
-
 
 <div class="viewcode-block" id="Items.get_toplevel_items"><a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.get_toplevel_items">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_toplevel_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5938,8 +5937,6 @@
     <span class="c1">#        for logic in self._logics:</span>
     <span class="c1">#            yield logic</span>
 
-
-
 <div class="viewcode-block" id="Items.return_item"><a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.return_item">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">return_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function to return the item for a given path</span>
@@ -5953,7 +5950,6 @@
 
         <span class="k">if</span> <span class="n">string</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__items</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__item_dict</span><span class="p">[</span><span class="n">string</span><span class="p">]</span></div>
-
 
 <div class="viewcode-block" id="Items.return_items"><a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.return_items">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">return_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5973,7 +5969,6 @@
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__items</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">__item_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span></div>
 
-
 <div class="viewcode-block" id="Items.match_items"><a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.match_items">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">match_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regex</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function to match items against a regular expression</span>
@@ -5985,19 +5980,34 @@
 <span class="sd">        :rtype: list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">regex</span><span class="p">,</span> <span class="n">__</span><span class="p">,</span> <span class="n">attr</span> <span class="o">=</span> <span class="n">regex</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
-        <span class="c1">#regex = regex.replace(&#39;.&#39;, &#39;\.&#39;).replace(&#39;*&#39;, &#39;.*&#39;) + &#39;$&#39;</span>
-        <span class="n">regex</span> <span class="o">=</span> <span class="n">regex</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;.*&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;$&#39;</span>
+        <span class="n">regex</span><span class="p">,</span> <span class="n">__</span><span class="p">,</span> <span class="n">attr</span> <span class="o">=</span> <span class="n">regex</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+        <span class="c1"># regex = regex.replace(&#39;.&#39;, &#39;\.&#39;).replace(&#39;*&#39;, &#39;.*&#39;) + &#39;$&#39;</span>
+        <span class="n">regex</span> <span class="o">=</span> <span class="n">regex</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\.&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="s2">&quot;.*&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;$&quot;</span>
         <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regex</span><span class="p">)</span>
-        <span class="n">attr</span><span class="p">,</span> <span class="n">__</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">)</span>
-        <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;]&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">attr</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="ow">and</span> <span class="n">val</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__item_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__items</span> <span class="k">if</span> <span class="n">regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">and</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__item_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">conf</span> <span class="ow">and</span> <span class="p">((</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__item_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">attr</span><span class="p">])</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">list</span><span class="p">,</span><span class="nb">dict</span><span class="p">]</span> <span class="ow">and</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__item_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">attr</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="n">val</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">__item_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">attr</span><span class="p">]))]</span>
-        <span class="k">elif</span> <span class="n">attr</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__item_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__items</span> <span class="k">if</span> <span class="n">regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">and</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__item_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">conf</span><span class="p">]</span>
+        <span class="n">attr</span><span class="p">,</span> <span class="n">__</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;]&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">attr</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">val</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__item_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__items</span>
+                <span class="k">if</span> <span class="n">regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__item_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">conf</span>
+                <span class="ow">and</span> <span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__item_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">attr</span><span class="p">])</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span>
+                        <span class="ow">and</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__item_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
+                    <span class="p">)</span>
+                    <span class="ow">or</span> <span class="p">(</span><span class="n">val</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">__item_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">attr</span><span class="p">])</span>
+                <span class="p">)</span>
+            <span class="p">]</span>
+        <span class="k">elif</span> <span class="n">attr</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__item_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__items</span>
+                <span class="k">if</span> <span class="n">regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">and</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__item_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">conf</span>
+            <span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__item_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__items</span> <span class="k">if</span> <span class="n">regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">item</span><span class="p">)]</span></div>
-
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_attribute_find</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">attr_list</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6029,16 +6039,15 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
             <span class="n">result</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">attr_list</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="n">attr</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">attr_list</span>
-        <span class="k">elif</span> <span class="n">attr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="n">attr</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">):</span>
             <span class="n">result</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">attr_list</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attr_list</span>
         <span class="k">return</span> <span class="n">result</span>
-
 
 <div class="viewcode-block" id="Items.find_items"><a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.find_items">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6056,7 +6065,6 @@
             <span class="c1">#     yield self.__item_dict[item]</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attribute_find</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">attributes</span><span class="p">):</span>
                 <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">__item_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span></div>
-
 
 <div class="viewcode-block" id="Items.find_children"><a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.find_children">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6080,7 +6088,6 @@
             <span class="n">children</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_children</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">children</span></div>
 
-
 <div class="viewcode-block" id="Items.item_count"><a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.item_count">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">item_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the number of defined items</span>
@@ -6089,7 +6096,6 @@
 <span class="sd">        :rtype: int</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__items</span><span class="p">)</span></div>
-
 
 <div class="viewcode-block" id="Items.stop"><a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.stop">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signum</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6101,7 +6107,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">__item_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">_fading</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__item_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__item_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">notify_all</span><span class="p">()</span></div>
-
 
 <div class="viewcode-block" id="Items.add_plugin_attribute"><a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.add_plugin_attribute">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_plugin_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_name</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">,</span> <span class="n">attribute</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6115,17 +6120,23 @@
         <span class="n">attribute_name</span> <span class="o">=</span> <span class="n">attribute_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_attributes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attribute_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">plugin_attributes</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">plugin_attributes</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">][</span><span class="s1">&#39;plugin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">plugin_name</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">plugin_attributes</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">][</span><span class="s1">&#39;meta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">attribute</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plugin_attributes</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">][</span><span class="s2">&quot;plugin&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">plugin_name</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plugin_attributes</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">][</span><span class="s2">&quot;meta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">attribute</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;add_plugin_attribute: </span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">) -&gt; </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attribute_name</span><span class="p">,</span> <span class="n">plugin_name</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">attribute</span><span class="p">)))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">plugin_name</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_attributes</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">][</span><span class="s1">&#39;plugin&#39;</span><span class="p">]:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_attributes</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">][</span><span class="s1">&#39;meta&#39;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">attribute</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plugins &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_attributes</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">][</span><span class="s1">&#39;plugin&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; and &#39;</span><span class="si">{</span><span class="n">plugin_name</span><span class="si">}</span><span class="s2">&#39; define the same item-attribute &#39;</span><span class="si">{</span><span class="n">attribute_name</span><span class="si">}</span><span class="s2">&#39; with different type definitions </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_attributes</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">][</span><span class="s1">&#39;meta&#39;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">attribute</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_attributes</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">][</span><span class="s1">&#39;meta&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;duplicate_use&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plugins &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_attributes</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">][</span><span class="s1">&#39;plugin&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; and &#39;</span><span class="si">{</span><span class="n">plugin_name</span><span class="si">}</span><span class="s2">&#39; define the same item-attribute &#39;</span><span class="si">{</span><span class="n">attribute_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">plugin_name</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_attributes</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">][</span><span class="s2">&quot;plugin&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_attributes</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">][</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">attribute</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Plugins &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_attributes</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">][</span><span class="s1">&#39;plugin&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; and &#39;</span><span class="si">{</span><span class="n">plugin_name</span><span class="si">}</span><span class="s2">&#39; define the same item-attribute &#39;</span><span class="si">{</span><span class="n">attribute_name</span><span class="si">}</span><span class="s2">&#39; with different type definitions </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_attributes</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">][</span><span class="s1">&#39;meta&#39;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">attribute</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_attributes</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">][</span><span class="s2">&quot;meta&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;duplicate_use&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Plugins &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_attributes</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">][</span><span class="s1">&#39;plugin&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; and &#39;</span><span class="si">{</span><span class="n">plugin_name</span><span class="si">}</span><span class="s2">&#39; define the same item-attribute &#39;</span><span class="si">{</span><span class="n">attribute_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                    <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plugins &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_attributes</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">][</span><span class="s1">&#39;plugin&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; and &#39;</span><span class="si">{</span><span class="n">plugin_name</span><span class="si">}</span><span class="s2">&#39; define the same item-attribute &#39;</span><span class="si">{</span><span class="n">attribute_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span></div>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Plugins &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_attributes</span><span class="p">[</span><span class="n">attribute_name</span><span class="p">][</span><span class="s1">&#39;plugin&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; and &#39;</span><span class="si">{</span><span class="n">plugin_name</span><span class="si">}</span><span class="s2">&#39; define the same item-attribute &#39;</span><span class="si">{</span><span class="n">attribute_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                    <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Items.add_plugin_attribute_prefix"><a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.add_plugin_attribute_prefix">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_plugin_attribute_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_name</span><span class="p">,</span> <span class="n">prefix_name</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6139,13 +6150,18 @@
         <span class="n">prefix_name</span> <span class="o">=</span> <span class="n">prefix_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_attribute_prefixes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prefix_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">plugin_attribute_prefixes</span><span class="p">[</span><span class="n">prefix_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">plugin_attribute_prefixes</span><span class="p">[</span><span class="n">prefix_name</span><span class="p">][</span><span class="s1">&#39;plugin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">plugin_name</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">plugin_attribute_prefixes</span><span class="p">[</span><span class="n">prefix_name</span><span class="p">][</span><span class="s1">&#39;meta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;add_plugin_attribute_prefix: </span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">) -&gt; </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix_name</span><span class="p">,</span> <span class="n">plugin_name</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">prefix</span><span class="p">)))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plugin_attribute_prefixes</span><span class="p">[</span><span class="n">prefix_name</span><span class="p">][</span><span class="s2">&quot;plugin&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">plugin_name</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plugin_attribute_prefixes</span><span class="p">[</span><span class="n">prefix_name</span><span class="p">][</span><span class="s2">&quot;meta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;add_plugin_attribute_prefix: </span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">) -&gt; </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix_name</span><span class="p">,</span> <span class="n">plugin_name</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">plugin_name</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_attribute_prefixes</span><span class="p">[</span><span class="n">prefix_name</span><span class="p">][</span><span class="s1">&#39;plugin&#39;</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Plugins &#39;</span><span class="si">{}</span><span class="s2">&#39; and &#39;</span><span class="si">{}</span><span class="s2">&#39; define the same item-attribute-prefix &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_attribute_prefixes</span><span class="p">[</span><span class="n">prefix_name</span><span class="p">][</span><span class="s1">&#39;plugin&#39;</span><span class="p">],</span> <span class="n">plugin_name</span><span class="p">,</span> <span class="n">prefix_name</span><span class="p">))</span></div>
-
+            <span class="k">if</span> <span class="n">plugin_name</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_attribute_prefixes</span><span class="p">[</span><span class="n">prefix_name</span><span class="p">][</span><span class="s2">&quot;plugin&quot;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">&quot;Plugins &#39;</span><span class="si">{}</span><span class="s2">&#39; and &#39;</span><span class="si">{}</span><span class="s2">&#39; define the same item-attribute-prefix &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">plugin_attribute_prefixes</span><span class="p">[</span><span class="n">prefix_name</span><span class="p">][</span><span class="s2">&quot;plugin&quot;</span><span class="p">],</span> <span class="n">plugin_name</span><span class="p">,</span> <span class="n">prefix_name</span>
+                    <span class="p">)</span>
+                <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Items.plugin_attribute_exists"><a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.plugin_attribute_exists">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">plugin_attribute_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6166,7 +6182,6 @@
 
         <span class="k">return</span> <span class="kc">False</span></div>
 
-
 <div class="viewcode-block" id="Items.get_plugin_attribute_type"><a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.get_plugin_attribute_type">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_plugin_attribute_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the type of the attribute&#39;s value</span>
@@ -6178,7 +6193,7 @@
         <span class="k">if</span> <span class="n">meta</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">meta</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span></div></div>
+            <span class="k">return</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span></div></div>
 </pre></div>
 
            </div>
