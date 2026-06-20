@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Class SmartDevicePlugin &mdash; Dokumentation v1.12.1.1 develop v1.12.1.1 develop (Stand 20. Juni 2026, commit 492820e) Dokumentation</title>
+  <title>Class SmartDevicePlugin &mdash; Dokumentation v1.12.1.1 develop v1.12.1.1 develop (Stand 20. Juni 2026, commit ac7f7af) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -506,9 +506,19 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../plugins/database/user_doc.html#export-von-daten">Export von Daten</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="../../../plugins/database/user_doc.html#aufbau-der-datenbank">Aufbau der Datenbank</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../plugins/database/user_doc.html#aufbau-der-datenbank">Aufbau der Datenbank</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../plugins/database/user_doc.html#fehlende-messwerte-datenlucken">Fehlende Messwerte (Datenlücken)</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="../../../plugins/database/user_doc.html#datenbankfunktionen-fur-datenreihen-plots">Datenbankfunktionen für Datenreihen/Plots</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../plugins/database/user_doc.html#datenbankfunktionen-fur-einzelauswertungen">Datenbankfunktionen für Einzelauswertungen</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../plugins/database/user_doc.html#datenqualitat-und-datenlucken">Datenqualität und Datenlücken</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../plugins/database/user_doc.html#item-db-mark-invalid">item.db_mark_invalid()</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../plugins/database/user_doc.html#item-db-mark-valid">item.db_mark_valid()</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../plugins/database/user_doc.html#auswirkung-auf-abfragen">Auswirkung auf Abfragen</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../plugins/database/user_doc.html#implizite-revalidierung">Implizite Revalidierung</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../plugins/db_addon/user_doc.html">db_addon</a><ul>
@@ -2357,9 +2367,19 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../plugins/database/user_doc.html#export-von-daten">Export von Daten</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="../../../plugins/database/user_doc.html#aufbau-der-datenbank">Aufbau der Datenbank</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../plugins/database/user_doc.html#aufbau-der-datenbank">Aufbau der Datenbank</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../plugins/database/user_doc.html#fehlende-messwerte-datenlucken">Fehlende Messwerte (Datenlücken)</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="../../../plugins/database/user_doc.html#datenbankfunktionen-fur-datenreihen-plots">Datenbankfunktionen für Datenreihen/Plots</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../plugins/database/user_doc.html#datenbankfunktionen-fur-einzelauswertungen">Datenbankfunktionen für Einzelauswertungen</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../plugins/database/user_doc.html#datenqualitat-und-datenlucken">Datenqualität und Datenlücken</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../plugins/database/user_doc.html#item-db-mark-invalid">item.db_mark_invalid()</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../plugins/database/user_doc.html#item-db-mark-valid">item.db_mark_valid()</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../plugins/database/user_doc.html#auswirkung-auf-abfragen">Auswirkung auf Abfragen</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../plugins/database/user_doc.html#implizite-revalidierung">Implizite Revalidierung</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../plugins/db_addon/user_doc.html">db_addon</a><ul>
@@ -4118,6 +4138,8 @@
 <li class="toctree-l5"><a class="reference internal" href="#kommandos">Kommandos</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#protokoll">Protokoll</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#verbindung">Verbindung</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#fehlerbehandlung">Fehlerbehandlung</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#loop-guard">Loop-Guard</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#datatypes">DataTypes</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#commands">Commands</a></li>
 </ul>
@@ -5785,8 +5807,9 @@ Detail erklärt.</p>
 <p>Standardmäßig wird kein Protokoll benötigt und somit nicht konfiguriert. Wenn Protokolle konfiguriert werden, so sind
 sie sowohl für das Plugin als auch für die konfigurierte Verbindung transparent.</p>
 <p>Zum Lieferumfang gehören die Protokollklassen <cite>SDPProtocol</cite> (keine gesonderte Funktion, Basisklasse, kann zum Testen
-verwendet werden) sowie <cite>SDPProtocolJsonrpc</cite> (stellt transparente Format- und Datenformatierung nach Json-RPC-Standard
-zur Verfügung).</p>
+verwendet werden), <cite>SDPProtocolJsonrpc</cite> (stellt transparente Format- und Datenformatierung nach Json-RPC-Standard
+zur Verfügung) sowie <cite>SDPProtocolResend</cite> (wiederholt gesendete Befehle, wenn die erwartete Antwort ausbleibt, und
+prüft Antworten anhand eines konfigurierbaren <code class="docutils literal notranslate"><span class="pre">reply_pattern</span></code>).</p>
 <p>Eigene Protokolle können definiert werden - im Beispiel sdp_viessmann z.B. die binären Protokolltypen P300 und KW2,
 die einen Verbindungsaufbau mit Handshake benötigen.</p>
 </section>
@@ -5803,6 +5826,83 @@ asnychronen Datenempfang), <cite>SDPConnectionNetUdpRequest</cite> (wie SDPConne
 UDP-Listener, z.B. für Multicast), <cite>SDPConnectionSerial</cite> (Anfrage-Antwort-Verbindung über serielle Schnittstelle)
 sowie <cite>SDPConnectionSerialAsync</cite> (serielle Verbindung mit Listener, der eingehende Daten unabhängig von gesendeten
 Kommandos empfangen kann).</p>
+</section>
+<section id="fehlerbehandlung">
+<h2>Fehlerbehandlung<a class="headerlink" href="#fehlerbehandlung" title="Permalink to this heading"></a></h2>
+<p>Es gilt das Prinzip: <strong>Rückgabewerte signalisieren Erfolg, Ausnahmen signalisieren Fehler.</strong>
+Eine Methode, die <code class="docutils literal notranslate"><span class="pre">None</span></code> oder einen Wert zurückgibt, war erfolgreich. Fehler werden ausschließlich über
+Ausnahmen kommuniziert.</p>
+<p>Die folgende Hierarchie wird verwendet:</p>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">SDP-Ausnahmen</span><a class="headerlink" href="#id2" title="Link zu dieser Tabelle"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Klasse</p></th>
+<th class="head"><p>Basisklassen</p></th>
+<th class="head"><p>Bedeutung</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SDPError</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Exception</span></code></p></td>
+<td><p>Basisklasse für alle SDP-Fehler. Für allgemeine Fehlerbehandlung genügt es, nur diese Klasse abzufangen.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SDPConnectionError</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SDPError</span></code>, <code class="docutils literal notranslate"><span class="pre">OSError</span></code></p></td>
+<td><p>Verbindungsfehler: Port nicht offen, Schreibfehler, Lesetimeout ohne Antwort. Durch Vererbung von <code class="docutils literal notranslate"><span class="pre">OSError</span></code>
+bleiben bestehende <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">OSError</span></code>-Blöcke rückwärtskompatibel.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SDPProtocolError</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SDPError</span></code></p></td>
+<td><p>Protokollfehler: Handshake gescheitert, unerwartete oder ungültige Geräteantwort, Prüfsummenfehler.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Für eigene Plugin-Klassen, die <code class="docutils literal notranslate"><span class="pre">_send_init_on_send()</span></code> oder <code class="docutils literal notranslate"><span class="pre">_send_bytes()</span></code> überschreiben, gelten folgende Regeln:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_send_bytes()</span></code>: Bei Fehlschlag <code class="docutils literal notranslate"><span class="pre">SDPConnectionError</span></code> auslösen (nicht <code class="docutils literal notranslate"><span class="pre">False</span></code> zurückgeben).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_send_init_on_send()</span></code>: Bei Fehlschlag <code class="docutils literal notranslate"><span class="pre">SDPProtocolError</span></code> auslösen (nicht <code class="docutils literal notranslate"><span class="pre">False</span></code> zurückgeben).
+Soll ein Sendevorgang lautlos übersprungen werden (z.B. Gerät noch nicht bereit), stattdessen
+<code class="docutils literal notranslate"><span class="pre">_do_before_send()</span></code> überschreiben und <code class="docutils literal notranslate"><span class="pre">(False,</span> <span class="pre">True)</span></code> zurückgeben.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">on_disconnect()</span></code>: Kann auch durch Lesetimeouts aufgerufen werden, nicht nur durch explizites
+Schließen der Verbindung. Implementierungen müssen idempotent sein.</p></li>
+</ul>
+</section>
+<section id="loop-guard">
+<h2>Loop-Guard<a class="headerlink" href="#loop-guard" title="Permalink to this heading"></a></h2>
+<p>Der Loop-Guard verhindert Endlosschleifen, die entstehen können, wenn ein Schreibbefehl fehlschlägt,
+der Item-Wert zurückgesetzt wird, und ein externes System (z.B. MQTT) diesen Reset als neue Anforderung
+interpretiert und denselben Wert erneut sendet.</p>
+<p>Der Guard zählt identische Schreibversuche für jedes Item innerhalb eines konfigurierbaren Zeitfensters.
+Werden innerhalb des Fensters zu viele identische Versuche erkannt, wird der Schreibvorgang unterdrückt
+und der Item-Wert <strong>nicht</strong> zurückgesetzt — die Rückkopplungsschleife wird damit unterbrochen.</p>
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text">Loop-Guard-Parameter</span><a class="headerlink" href="#id3" title="Link zu dieser Tabelle"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter (plugin.yaml)</p></th>
+<th class="head"><p>Standardwert</p></th>
+<th class="head"><p>Beschreibung</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">loop_guard_count</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">5</span></code></p></td>
+<td><p>Anzahl identischer Schreibversuche, die innerhalb des Zeitfensters den Guard auslösen.
+<code class="docutils literal notranslate"><span class="pre">0</span></code> deaktiviert den Guard vollständig.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">loop_guard_window</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">5.0</span></code></p></td>
+<td><p>Zeitfenster in Sekunden.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">loop_guard_source</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">''</span></code> (leer)</p></td>
+<td><p>Präfix des <code class="docutils literal notranslate"><span class="pre">caller</span></code>-Strings, auf den der Guard beschränkt wird (z.B. <code class="docutils literal notranslate"><span class="pre">'MQTT'</span></code>).
+Schreibvorgänge von anderen Aufrufern werden immer durchgelassen.
+Leer bedeutet: alle externen Aufrufer werden gezählt.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Der Guard wird automatisch zurückgesetzt, wenn der Item-Wert sich ändert, die Verbindung zum Gerät
+erfolgreich wiederhergestellt wird, oder das Zeitfenster abläuft ohne weitere Versuche.</p>
 </section>
 <section id="datatypes">
 <h2>DataTypes<a class="headerlink" href="#datatypes" title="Permalink to this heading"></a></h2>

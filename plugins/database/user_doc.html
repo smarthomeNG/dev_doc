@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>database &mdash; Dokumentation v1.12.1.1 develop v1.12.1.1 develop (Stand 20. Juni 2026, commit 492820e) Dokumentation</title>
+  <title>database &mdash; Dokumentation v1.12.1.1 develop v1.12.1.1 develop (Stand 20. Juni 2026, commit ac7f7af) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -506,9 +506,19 @@
 <li class="toctree-l5"><a class="reference internal" href="#export-von-daten">Export von Daten</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="#aufbau-der-datenbank">Aufbau der Datenbank</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aufbau-der-datenbank">Aufbau der Datenbank</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#fehlende-messwerte-datenlucken">Fehlende Messwerte (Datenlücken)</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="#datenbankfunktionen-fur-datenreihen-plots">Datenbankfunktionen für Datenreihen/Plots</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#datenbankfunktionen-fur-einzelauswertungen">Datenbankfunktionen für Einzelauswertungen</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#datenqualitat-und-datenlucken">Datenqualität und Datenlücken</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#item-db-mark-invalid">item.db_mark_invalid()</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#item-db-mark-valid">item.db_mark_valid()</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#auswirkung-auf-abfragen">Auswirkung auf Abfragen</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#implizite-revalidierung">Implizite Revalidierung</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../db_addon/user_doc.html">db_addon</a><ul>
@@ -2357,9 +2367,19 @@
 <li class="toctree-l5"><a class="reference internal" href="#export-von-daten">Export von Daten</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="#aufbau-der-datenbank">Aufbau der Datenbank</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aufbau-der-datenbank">Aufbau der Datenbank</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#fehlende-messwerte-datenlucken">Fehlende Messwerte (Datenlücken)</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="#datenbankfunktionen-fur-datenreihen-plots">Datenbankfunktionen für Datenreihen/Plots</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#datenbankfunktionen-fur-einzelauswertungen">Datenbankfunktionen für Einzelauswertungen</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#datenqualitat-und-datenlucken">Datenqualität und Datenlücken</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#item-db-mark-invalid">item.db_mark_invalid()</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#item-db-mark-valid">item.db_mark_valid()</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#auswirkung-auf-abfragen">Auswirkung auf Abfragen</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#implizite-revalidierung">Implizite Revalidierung</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../db_addon/user_doc.html">db_addon</a><ul>
@@ -4118,6 +4138,8 @@
 <li class="toctree-l5"><a class="reference internal" href="../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#kommandos">Kommandos</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#protokoll">Protokoll</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#verbindung">Verbindung</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#fehlerbehandlung">Fehlerbehandlung</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#loop-guard">Loop-Guard</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#datatypes">DataTypes</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#commands">Commands</a></li>
 </ul>
@@ -5808,16 +5830,40 @@ Verkleinern des Datenbank Datei nach dem Löschen einer größeren Menge von Dat
 <div><ul class="simple">
 <li><p>Column <cite>time</cite> - Ein UNIX Zeitstempel in eine Auflösung von Mikrosekunden</p></li>
 <li><p>Column <cite>item_id</cite> - Eine Referenz auf eine eindeutige Kennung eines Items in der Tabelle <cite>item</cite></p></li>
-<li><p>Column <cite>duration</cite> - Die Dauer in Mikrosekunden</p></li>
+<li><p>Column <cite>duration</cite> - Die Dauer in Mikrosekunden (NULL = Wert aktuell aktiv, Dauer noch offen)</p></li>
 <li><p>Column <cite>val_str</cite> - Der Itemwert als Zeichenkette wenn das Item den Typ <cite>str</cite> hat</p></li>
 <li><p>Column <cite>val_num</cite> - Der Itemwert als Zahl, wenn das Item den Typ <cite>num</cite> hat</p></li>
 <li><p>Column <cite>val_bool</cite> - Der Itemwert als Wahrheitswert, das Item den Typ <cite>bool</cite> oder <cite>num</cite> hat</p></li>
 <li><p>Column <cite>changed</cite> - Ein UNIX Zeitstempel (in einer Auflösung von Mikrosekunden) der letzen Änderung</p></li>
+<li><p>Column <cite>val_quality</cite> - Datenqualitätsflag: <code class="docutils literal notranslate"><span class="pre">0</span></code> = normaler Messwert (Standard), <code class="docutils literal notranslate"><span class="pre">1</span></code> = keine Daten verfügbar (Lücke)</p></li>
 </ul>
 </div></blockquote>
+<section id="fehlende-messwerte-datenlucken">
+<h3>Fehlende Messwerte (Datenlücken)<a class="headerlink" href="#fehlende-messwerte-datenlucken" title="Permalink to this heading"></a></h3>
+<p>Wenn ein Gerät (z. B. ein Wechselrichter) zeitweise nicht erreichbar ist, behält das Item
+in SmartHomeNG seinen letzten Wert. Ohne weiteres würde diese Zeitspanne fälschlicherweise
+als „Wert unverändert“ in der Datenbank gespeichert — mit Auswirkungen auf Mittelwerte und
+Energieberechnungen.</p>
+<p>Ab Schemaversion 7 unterstützt das Plugin explizite Datenlücken über die Methoden
+<code class="docutils literal notranslate"><span class="pre">item.db_mark_invalid()</span></code> und <code class="docutils literal notranslate"><span class="pre">item.db_mark_valid()</span></code>, die beim Start des Plugins
+automatisch auf allen registrierten Items verfügbar gemacht werden.</p>
+<p><strong>Verwendung im Plugin:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Verbindung verloren — Lücke öffnen</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">power</span><span class="o">.</span><span class="n">db_mark_invalid</span><span class="p">(</span><span class="n">caller</span><span class="o">=</span><span class="s1">&#39;solar_plugin&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">&#39;connection_lost&#39;</span><span class="p">)</span>
+
+<span class="c1"># Verbindung wiederhergestellt — Lücke schließen, dann neuen Wert setzen</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">power</span><span class="o">.</span><span class="n">db_mark_valid</span><span class="p">(</span><span class="n">caller</span><span class="o">=</span><span class="s1">&#39;solar_plugin&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">&#39;connection_restored&#39;</span><span class="p">)</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">new_value</span><span class="p">,</span> <span class="s1">&#39;solar_plugin&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Lückeneinträge (<code class="docutils literal notranslate"><span class="pre">val_quality</span> <span class="pre">=</span> <span class="pre">1</span></code>) werden bei Aggregationsabfragen (<code class="docutils literal notranslate"><span class="pre">avg</span></code>, <code class="docutils literal notranslate"><span class="pre">sum</span></code>,
+<code class="docutils literal notranslate"><span class="pre">integrate</span></code>, <code class="docutils literal notranslate"><span class="pre">on</span></code>, <code class="docutils literal notranslate"><span class="pre">min</span></code>, <code class="docutils literal notranslate"><span class="pre">max</span></code>) <strong>ausgeschlossen</strong>, sodass Mittelwerte und
+Energieberechnungen nur echte Messwerte berücksichtigen.  In Rohwertabfragen (<code class="docutils literal notranslate"><span class="pre">raw</span></code>)
+erscheinen sie als <code class="docutils literal notranslate"><span class="pre">NULL</span></code>-Werte, damit Visualisierungen Lücken darstellen können.</p>
 <p>Es gibt aktuell nur eine Möglichkeit die Anzahl der Datensätze pro Item zu begrenzen:
 Durch die Angabe des Item Attributs <code class="docutils literal notranslate"><span class="pre">database_maxage</span></code> wird das maximale Alter der Einträge eines Items begrenzt.
 Regelmässig werden Werte deren Zeitstempel älter ist als die angegebene Zeitspanne aus der Datenbank gelöscht.</p>
+</section>
 </section>
 <section id="datenbankfunktionen-fur-datenreihen-plots">
 <h2>Datenbankfunktionen für Datenreihen/Plots<a class="headerlink" href="#datenbankfunktionen-fur-datenreihen-plots" title="Permalink to this heading"></a></h2>
@@ -5924,6 +5970,95 @@ Beispiele finden sich in der SmartVisu Dokumentation unter plot.period.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">item.db(&#39;diff&#39;,&#39;365d&#39;, &#39;now&#39;)</span>
 </pre></div>
 </div>
+</section>
+<section id="datenqualitat-und-datenlucken">
+<h2>Datenqualität und Datenlücken<a class="headerlink" href="#datenqualitat-und-datenlucken" title="Permalink to this heading"></a></h2>
+<p>Wenn eine Datenquelle (z. B. ein Wechselrichter oder ein Cloud-Dienst) zeitweise
+nicht erreichbar ist, behält das Item in SmartHomeNG seinen letzten bekannten Wert.
+Ohne besondere Maßnahmen würde diese Zeitspanne fälschlicherweise als „Wert
+unverändert“ in der Datenbank gespeichert, was Mittelwerte und Energieberechnungen
+verfälscht.</p>
+<p>Ab <strong>Schemaversion 7</strong> unterstützt das Plugin explizite Datenlücken.  Jeder
+Eintrag in der <code class="docutils literal notranslate"><span class="pre">log</span></code>-Tabelle trägt jetzt eine Spalte <code class="docutils literal notranslate"><span class="pre">val_quality</span></code>:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Wert</p></th>
+<th class="head"><p>Bedeutung</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
+<td><p>Normaler, gültiger Messwert (Standard; alle alten Zeilen).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+<td><p>Keine Daten verfügbar (Lücke).  Alle <code class="docutils literal notranslate"><span class="pre">val_*</span></code> Spalten
+sind <code class="docutils literal notranslate"><span class="pre">NULL</span></code>.  Wird bei Aggregationen ausgeschlossen.</p></td>
+</tr>
+</tbody>
+</table>
+<section id="item-db-mark-invalid">
+<h3>item.db_mark_invalid()<a class="headerlink" href="#item-db-mark-invalid" title="Permalink to this heading"></a></h3>
+<p>Öffnet eine Datenlücke in der Datenbank für dieses Item.</p>
+<p>Das Plugin injiziert diese Methode auf allen registrierten Items in
+<code class="docutils literal notranslate"><span class="pre">parse_item()</span></code>.  Sie wird vom Datenquellen-Plugin aufgerufen, wenn die
+Verbindung zur Datenquelle unterbrochen wird.</p>
+<p>Der Python-Wert des Items bleibt dabei <strong>unverändert</strong> — die Methode wirkt
+ausschließlich auf den Datenbankpuffer.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Beispiel: im solar-Plugin, wenn die Verbindung verloren geht</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">leistung</span><span class="o">.</span><span class="n">db_mark_invalid</span><span class="p">(</span><span class="n">caller</span><span class="o">=</span><span class="s1">&#39;solar_plugin&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">&#39;connection_lost&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Parameter:</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">caller<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optionaler Bezeichner des Aufrufers (erscheint im Log).</p>
+</dd>
+<dt class="field-even">source<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optionale Quellbeschreibung (erscheint im Log).</p>
+</dd>
+</dl>
+</section>
+<section id="item-db-mark-valid">
+<h3>item.db_mark_valid()<a class="headerlink" href="#item-db-mark-valid" title="Permalink to this heading"></a></h3>
+<p>Schließt eine offene Datenlücke für dieses Item.</p>
+<p>Wird aufgerufen, wenn die Verbindung zur Datenquelle wiederhergestellt wird.
+Die offene Lücke erhält die berechnete Dauer zugewiesen.  Anschließend sollte
+der neue Messwert normal gesetzt werden.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Beispiel: im solar-Plugin, wenn die Verbindung wieder besteht</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">leistung</span><span class="o">.</span><span class="n">db_mark_valid</span><span class="p">(</span><span class="n">caller</span><span class="o">=</span><span class="s1">&#39;solar_plugin&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">&#39;connection_restored&#39;</span><span class="p">)</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">leistung</span><span class="p">(</span><span class="n">neuer_wert</span><span class="p">,</span> <span class="s1">&#39;solar_plugin&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Parameter:</strong></p>
+<dl class="field-list simple">
+<dt class="field-odd">caller<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optionaler Bezeichner des Aufrufers.</p>
+</dd>
+<dt class="field-even">source<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optionale Quellbeschreibung.</p>
+</dd>
+</dl>
+</section>
+<section id="auswirkung-auf-abfragen">
+<h3>Auswirkung auf Abfragen<a class="headerlink" href="#auswirkung-auf-abfragen" title="Permalink to this heading"></a></h3>
+<p>Einträge mit <code class="docutils literal notranslate"><span class="pre">val_quality</span> <span class="pre">=</span> <span class="pre">1</span></code> werden bei folgenden Funktionen automatisch
+<strong>ausgeschlossen</strong>:</p>
+<p><code class="docutils literal notranslate"><span class="pre">avg</span></code>, <code class="docutils literal notranslate"><span class="pre">sum</span></code>, <code class="docutils literal notranslate"><span class="pre">integrate</span></code>, <code class="docutils literal notranslate"><span class="pre">on</span></code>, <code class="docutils literal notranslate"><span class="pre">min</span></code>, <code class="docutils literal notranslate"><span class="pre">max</span></code></p>
+<p>Bei Rohwertabfragen (<code class="docutils literal notranslate"><span class="pre">raw</span></code>) erscheinen Lückeneinträge als <code class="docutils literal notranslate"><span class="pre">NULL</span></code>, damit
+Visualisierungen die Unterbrechung als echte Lücke darstellen können.</p>
+</section>
+<section id="implizite-revalidierung">
+<h3>Implizite Revalidierung<a class="headerlink" href="#implizite-revalidierung" title="Permalink to this heading"></a></h3>
+<p>Trifft ein neuer Messwert über <code class="docutils literal notranslate"><span class="pre">update_item()</span></code> ein, während für das Item noch
+eine offene Datenlücke besteht, <strong>schließt das Plugin die Lücke automatisch</strong> —
+ohne dass <code class="docutils literal notranslate"><span class="pre">db_mark_valid()</span></code> vorher explizit aufgerufen werden muss.  Die
+Lückendauer wird dabei korrekt ab dem Öffnungszeitpunkt der Lücke berechnet,
+nicht ab der letzten regulären Wertänderung.</p>
+<p>Das bedeutet: Wenn ein Gerät nach einem Verbindungsabbruch wieder Werte liefert,
+genügt es, den neuen Messwert direkt zu setzen.  <code class="docutils literal notranslate"><span class="pre">db_mark_valid()</span></code> ist dann
+optional und muss nur explizit aufgerufen werden, wenn die Lücke geschlossen
+werden soll, <em>bevor</em> der erste neue Messwert bekannt ist.</p>
+</section>
 </section>
 </section>
 
