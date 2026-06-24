@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.shtime &mdash; Dokumentation v1.12.1.1 develop v1.12.1.1 develop (Stand 24. Juni 2026, commit 19c5fa2) Dokumentation</title>
+  <title>lib.shtime &mdash; Dokumentation v1.12.1.1 develop v1.12.1.1 develop (Stand 24. Juni 2026, commit 6e7347f) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5856,6 +5856,10 @@
 
 <div class="viewcode-block" id="Shtime.ts"><a class="viewcode-back" href="../../lib/shtime.html#lib.shtime.Shtime.ts">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">ts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return dt as posix timestamp, possibly with different local tz&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">tz</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># already aware and no explicit override: timestamp() is tz-correct as-is,</span>
+            <span class="c1"># replacing tzinfo would silently shift the represented instant</span>
+            <span class="k">return</span> <span class="n">dt</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">tz</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">tz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tzinfo</span>
         <span class="k">return</span> <span class="n">dt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">tz</span><span class="p">)</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span></div>
@@ -5893,34 +5897,34 @@
 
 <div class="viewcode-block" id="Shtime.tzname"><a class="viewcode-back" href="../../lib/shtime.html#lib.shtime.Shtime.tzname">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">tzname</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the name about the actual local timezone (e.g. CEST)</span>
+<span class="sd">        Returns the name about the actual configured timezone (e.g. CEST)</span>
 
 <span class="sd">        :return: timezone string (like: &#39;CEST&#39; or &#39;CET&#39;)</span>
 <span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span><span class="o">.</span><span class="n">tzname</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">tzname</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Shtime.tznameST"><a class="viewcode-back" href="../../lib/shtime.html#lib.shtime.Shtime.tznameST">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">tznameST</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the name for Standard Time in the local timezone (e.g. CET)</span>
+<span class="sd">        Returns the name for Standard Time in the configured timezone (e.g. CET)</span>
 
 <span class="sd">        :return: Timezone info (like: &#39;CET&#39;)</span>
 <span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">jan</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">timestamp</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span>
+        <span class="n">jan</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tzinfo</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">jan</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Z&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Shtime.tznameDST"><a class="viewcode-back" href="../../lib/shtime.html#lib.shtime.Shtime.tznameDST">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">tznameDST</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the name for Daylight Saving Time (DST) in the local timezone (e.g. CEST)</span>
+<span class="sd">        Returns the name for Daylight Saving Time (DST) in the configured timezone (e.g. CEST)</span>
 
 <span class="sd">        :return: Timezone info (like: &#39;CEST&#39;)</span>
 <span class="sd">        :rtype: str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">jul</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">timestamp</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">tz</span><span class="o">.</span><span class="n">tzlocal</span><span class="p">())</span>
+        <span class="n">jul</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tzinfo</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">jul</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Z&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Shtime.utcnow"><a class="viewcode-back" href="../../lib/shtime.html#lib.shtime.Shtime.utcnow">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">utcnow</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -6256,8 +6260,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s2">&quot;Cannot convert type &#39;</span><span class="si">{key}</span><span class="s2">&#39; to datetime&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)))</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span> <span class="ow">and</span> <span class="n">key</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># key = self._timezone.localize(key)   # uses a pytz method</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_timezone</span><span class="p">)</span>
+            <span class="c1"># naive datetime: label it as being in shng&#39;s configured timezone, don&#39;t shift it.</span>
+            <span class="c1"># .astimezone() would instead treat it as OS-local time and convert (shift) it.</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timezone</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">key</span></div>
 
 <div class="viewcode-block" id="Shtime.date_transform"><a class="viewcode-back" href="../../lib/shtime.html#lib.shtime.Shtime.date_transform">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">date_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
@@ -6374,7 +6379,7 @@
 <span class="sd">        :return: date of today</span>
 <span class="sd">        :rtype: datetime.date</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">offset</span><span class="p">))</span><span class="o">.</span><span class="n">date</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">offset</span><span class="p">))</span><span class="o">.</span><span class="n">date</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Shtime.tomorrow"><a class="viewcode-back" href="../../lib/shtime.html#lib.shtime.Shtime.tomorrow">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">tomorrow</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

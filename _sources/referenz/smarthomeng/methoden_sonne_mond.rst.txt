@@ -50,6 +50,13 @@ Das Ergebnis ist ein auf UTC basierendes ``datetime`` Objekt
    sunset_tw = sh.sun.set(-6) # liefert den utc-basierten Zeitpunkt zu dem die Sonne 6° unter dem Horizont
                               # steht. (Ende der bürgerlichen Abenddämmerung)
 
+.. note::
+
+   An Orten mit Mitternachtssonne bzw. Polarnacht kann es vorkommen, dass die Sonne an einem bestimmten
+   Tag den angegebenen Horizont gar nicht erreicht (z.B. geht sie im Sommer gar nicht unter). In diesem
+   Fall liefert ``sh.sun.set()`` (und analog ``sh.sun.rise()``) den Wert ``None`` zurück, statt einer
+   Datums/Zeitangabe.
+
 
 sh.sun.rise()
 ~~~~~~~~~~~~~
@@ -118,6 +125,12 @@ Das Ergebnis ist ein auf UTC basierendes ``datetime`` Objekt
 
    moonset = sh.moon.set()      # liefert den utc-basierten Zeitpunkt des nächsten Monduntergangs
    moonset_tw = sh.moon.set(-6) # liefert den utc-basierten Zeitpunkt zu dem der Mond 6° unter dem Horizont steht
+
+.. note::
+
+   Analog zu ``sh.sun.set()``/``sh.sun.rise()`` kann ``sh.moon.set()``/``sh.moon.rise()`` an Orten mit
+   entsprechenden Bedingungen ``None`` zurückliefern, wenn der Mond den angegebenen Horizont an dem
+   betreffenden Tag nicht erreicht.
 
 
 sh.moon.rise()
