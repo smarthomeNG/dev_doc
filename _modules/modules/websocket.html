@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>modules.websocket &mdash; Dokumentation v1.12.1.1 develop v1.12.1.1 develop (Stand 7. Juli 2026, commit e073b9f) Dokumentation</title>
+  <title>modules.websocket &mdash; Dokumentation v1.12.1.1 develop v1.12.1.1 develop (Stand 9. Juli 2026, commit 6196c0b) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -397,7 +397,10 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#teilweises-einbinden-von-structs-partial-struct-inclusion-new">Teilweises Einbinden von structs (partial struct inclusion) <span class="redsup">new</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#teilweises-einbinden-von-structs-partial-struct-inclusion-new">Teilweises Einbinden von structs (partial struct inclusion) <span class="redsup">new</span></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../konfiguration/item_structs.html#fehlermeldungen">Fehlermeldungen</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#verwendung-mehrerer-definitionsdateien">Verwendung mehrerer Definitionsdateien</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#beispiele">Beispiele</a></li>
 </ul>
@@ -3866,6 +3869,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../admin/system.html#system-konfiguration">System Konfiguration</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../admin/system.html#allgemein">Allgemein</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../admin/system.html#http-modul">Http Modul</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../admin/system.html#websocket-modul">Websocket Modul</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../admin/system.html#admin-modul">Admin Modul</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../admin/system.html#mqtt-modul">MQTT Modul</a></li>
 </ul>
@@ -3883,6 +3887,13 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../admin/items.html">Items</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../admin/items.html#item-baum">Item Baum</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../admin/items.html#item-erstellen-bearbeiten-umbenennen-und-loschen">Item erstellen, bearbeiten, umbenennen und löschen</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../admin/items.html#item-erstellen">Item erstellen</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../admin/items.html#item-bearbeiten">Item bearbeiten</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../admin/items.html#item-umbenennen-verschieben">Item umbenennen / verschieben</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../admin/items.html#item-loschen">Item löschen</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="../../admin/items.html#item-monitoring">Item Monitoring</a></li>
 </ul>
 </li>
@@ -3914,6 +3925,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../admin/plugins.html#plugin-konfiguration">Plugin Konfiguration</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../admin/plugins.html#liste-der-konfigurierten-plugins">Liste der konfigurierten Plugins</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../admin/plugins.html#konfiguration-eines-plugins">Konfiguration eines Plugins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../admin/plugins.html#plugin-laden-entladen-und-neu-laden">Plugin laden, entladen und neu laden</a></li>
 </ul>
 </li>
 </ul>
@@ -3933,6 +3945,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../admin/logs.html#logging-konfiguration">Logging Konfiguration</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../admin/admin.html#hilfe">Hilfe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../admin/admin.html#dark-mode">Dark Mode</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../beispiele/beispiele.html">Beispiele, Tipps &amp; Tricks <span class="greensup">Update</span></a><ul>
@@ -5808,11 +5822,19 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Shutting down websocket server(s)...&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">call_soon_threadsafe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
-        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_server_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Websocket Server(s): Stopped&#39;</span><span class="p">)</span>
+            <span class="c1"># join() already blocks until the thread&#39;s own finally-block</span>
+            <span class="c1"># cleanup (task cancellation, asyncgen shutdown, loop.close())</span>
+            <span class="c1"># actually completes - a fixed sleep() beforehand only pads</span>
+            <span class="c1"># every shutdown with dead time, it does not help synchronize</span>
+            <span class="c1"># anything. Bound it so a regression here surfaces as a warning</span>
+            <span class="c1"># instead of an indefinite hang.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_server_thread</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_server_thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Websocket Server(s): did not stop within 10s&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Websocket Server(s): Stopped&#39;</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Stopping websocket error: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="k">pass</span>
@@ -5928,14 +5950,18 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
         <span class="k">finally</span><span class="p">:</span>
-            <span class="c1"># self.logger.warning(&quot;_ws_server_thread: finally&quot;)</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">shutdown_asyncgens</span><span class="p">()</span>
-                <span class="c1"># if python_version &gt;= &#39;3.9&#39;:</span>
-                <span class="c1">#    self.loop.shutdown_default_executor()</span>
-                <span class="c1"># time.sleep(3)</span>
-                <span class="c1"># self.logger.notice(f&quot;all_tasks: {self.loop.Task.all_tasks()}&quot;)</span>
-                <span class="c1"># self.loop.run_until_complete(self.loop.shutdown_asyncgens())</span>
+                <span class="c1"># cancel and drain all outstanding tasks and generators</span>
+                <span class="n">pending</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">all_tasks</span><span class="p">(</span><span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">t</span><span class="o">.</span><span class="n">done</span><span class="p">()]</span>
+                <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">pending</span><span class="p">:</span>
+                    <span class="n">task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">pending</span><span class="p">:</span>
+                    <span class="c1"># finally stop the loop</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">pending</span><span class="p">,</span> <span class="n">return_exceptions</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;_ws_server_thread: finally - Exception on cancelling pending tasks: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">shutdown_asyncgens</span><span class="p">())</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;_ws_server_thread: finally - Exception on loop.shutdown_asyncgens(): </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
@@ -6062,7 +6088,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2016-2025 SmartHomeNG Team  -  ACHTUNG: Dokumentation zum Develop Branch - Work in Progress.</p>
+    <p>&#169; Copyright 2016-2026 SmartHomeNG Team  -  ACHTUNG: Dokumentation zum Develop Branch - Work in Progress.</p>
   </div>
 
    

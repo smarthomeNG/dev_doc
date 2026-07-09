@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.smarthome &mdash; Dokumentation v1.12.1.1 develop v1.12.1.1 develop (Stand 7. Juli 2026, commit e073b9f) Dokumentation</title>
+  <title>lib.smarthome &mdash; Dokumentation v1.12.1.1 develop v1.12.1.1 develop (Stand 9. Juli 2026, commit 6196c0b) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -397,7 +397,10 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#teilweises-einbinden-von-structs-partial-struct-inclusion-new">Teilweises Einbinden von structs (partial struct inclusion) <span class="redsup">new</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#teilweises-einbinden-von-structs-partial-struct-inclusion-new">Teilweises Einbinden von structs (partial struct inclusion) <span class="redsup">new</span></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../konfiguration/item_structs.html#fehlermeldungen">Fehlermeldungen</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#verwendung-mehrerer-definitionsdateien">Verwendung mehrerer Definitionsdateien</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../konfiguration/item_structs.html#beispiele">Beispiele</a></li>
 </ul>
@@ -3866,6 +3869,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../admin/system.html#system-konfiguration">System Konfiguration</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../admin/system.html#allgemein">Allgemein</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../admin/system.html#http-modul">Http Modul</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../admin/system.html#websocket-modul">Websocket Modul</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../admin/system.html#admin-modul">Admin Modul</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../admin/system.html#mqtt-modul">MQTT Modul</a></li>
 </ul>
@@ -3883,6 +3887,13 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../admin/items.html">Items</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../admin/items.html#item-baum">Item Baum</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../admin/items.html#item-erstellen-bearbeiten-umbenennen-und-loschen">Item erstellen, bearbeiten, umbenennen und löschen</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../admin/items.html#item-erstellen">Item erstellen</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../admin/items.html#item-bearbeiten">Item bearbeiten</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../admin/items.html#item-umbenennen-verschieben">Item umbenennen / verschieben</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../admin/items.html#item-loschen">Item löschen</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="../../admin/items.html#item-monitoring">Item Monitoring</a></li>
 </ul>
 </li>
@@ -3914,6 +3925,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../admin/plugins.html#plugin-konfiguration">Plugin Konfiguration</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../admin/plugins.html#liste-der-konfigurierten-plugins">Liste der konfigurierten Plugins</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../admin/plugins.html#konfiguration-eines-plugins">Konfiguration eines Plugins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../admin/plugins.html#plugin-laden-entladen-und-neu-laden">Plugin laden, entladen und neu laden</a></li>
 </ul>
 </li>
 </ul>
@@ -3933,6 +3945,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../admin/logs.html#logging-konfiguration">Logging Konfiguration</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../admin/admin.html#hilfe">Hilfe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../admin/admin.html#dark-mode">Dark Mode</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../beispiele/beispiele.html">Beispiele, Tipps &amp; Tricks <span class="greensup">Update</span></a><ul>
@@ -5701,14 +5715,6 @@
 
 <span class="n">__docformat__</span> <span class="o">=</span> <span class="s1">&#39;reStructuredText&#39;</span>
 
-<span class="c1">#########################################################################</span>
-<span class="c1">#</span>
-<span class="c1"># TO DO:</span>
-<span class="c1"># - remove all remarks with old code (that has been moved to lib modules)</span>
-<span class="c1">#</span>
-<span class="c1">#########################################################################</span>
-
-
 <span class="c1">#####################################################################</span>
 <span class="c1"># Check Python Version</span>
 <span class="c1">#####################################################################</span>
@@ -5740,6 +5746,12 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">cryptography.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">CryptographyDeprecationWarning</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">CryptographyDeprecationWarning</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="n">BASE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
 <span class="n">PIDFILE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE</span><span class="p">,</span> <span class="s1">&#39;var&#39;</span><span class="p">,</span> <span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="s1">&#39;smarthome.pid&#39;</span><span class="p">)</span>
@@ -5840,7 +5852,18 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_config_etc</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_legacy_instances</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_orb_backend</span> <span class="o">=</span> <span class="s1">&#39;ephem&#39;</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_orb_backend</span> <span class="o">=</span> <span class="s1">&#39;ephem&#39;</span>
+
+        <span class="c1"># if set: create items with illegal named and warn, but go on</span>
+        <span class="c1"># else: refuse to create items with illegal names</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ignore_item_collision</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># default basename (without extension) for the yaml file that</span>
+        <span class="c1"># Items.create_item(persist=True) writes runtime-created items to,</span>
+        <span class="c1"># when no explicit filename is given. Overridable via</span>
+        <span class="c1"># &#39;created_items_file&#39; in etc/smarthome.yaml (see the config-loading</span>
+        <span class="c1"># loop in __init__, which overwrites any self._xxx default found here).</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_created_items_file</span> <span class="o">=</span> <span class="s1">&#39;created&#39;</span></div>
 
 <div class="viewcode-block" id="SmartHome.initialize_dir_vars"><a class="viewcode-back" href="../../entwicklung/core/core_shng.html#lib.smarthome.SmartHome.initialize_dir_vars">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize_dir_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_base_dir</span> <span class="o">=</span> <span class="n">BASE</span>
@@ -6012,10 +6035,6 @@
         <span class="n">threading</span><span class="o">.</span><span class="n">current_thread</span><span class="p">()</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Main&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alive</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="c1"># import bin.shngversion as shngversion</span>
-        <span class="c1"># VERSION = shngversion.get_shng_version()</span>
-        <span class="c1"># self.branch = shngversion.get_shng_branch()</span>
-        <span class="c1"># self.version = shngversion.get_shng_version()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connections</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_pidfile</span> <span class="o">=</span> <span class="n">PIDFILE</span>
@@ -6591,6 +6610,15 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method is used to stop SmartHomeNG and all it&#39;s threads</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">signum</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">source</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39; (received </span><span class="si">{</span><span class="n">signal</span><span class="o">.</span><span class="n">Signals</span><span class="p">(</span><span class="n">signum</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">)&#39;</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="n">source</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39; (received signal </span><span class="si">{</span><span class="n">signum</span><span class="si">}</span><span class="s1">)&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger_main</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;--------------------   SmartHomeNG stopping</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s1">   --------------------&#39;</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">shng_status</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="mi">31</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;Stopping&#39;</span><span class="p">}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">alive</span> <span class="o">=</span> <span class="kc">False</span>
@@ -6631,9 +6659,6 @@
                         <span class="p">)</span>
                         <span class="n">header_logged</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;-Thread: </span><span class="si">{</span><span class="n">thread</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">, still alive&#39;</span><span class="p">)</span>
-        <span class="c1">#            if header_logged:</span>
-        <span class="c1">#                self._logger.warning(&quot;SmartHomeNG stopped&quot;)</span>
-        <span class="c1">#        else:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger_main</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="s1">&#39;--------------------   SmartHomeNG stopped   --------------------&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">shng_status</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="mi">33</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="s1">&#39;Stopped&#39;</span><span class="p">}</span>
@@ -6641,7 +6666,15 @@
         <span class="n">lib</span><span class="o">.</span><span class="n">daemon</span><span class="o">.</span><span class="n">remove_pidfile</span><span class="p">(</span><span class="n">PIDFILE</span><span class="p">)</span>
 
         <span class="n">logging</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
-        <span class="n">exit</span><span class="p">(</span><span class="n">exitcode</span><span class="p">)</span>  <span class="c1"># default exit code 5 -&gt; for systemctl to restart SmartHomeNG</span></div>
+        <span class="c1"># stop() can be called from any thread (e.g. a web/websocket request</span>
+        <span class="c1"># handler when &quot;Restart Core&quot; is triggered from the admin UI, not</span>
+        <span class="c1"># just the main-thread signal handler for Ctrl-C). exit() only</span>
+        <span class="c1"># raises SystemExit on the calling thread, so if the main thread is</span>
+        <span class="c1"># blocked elsewhere (e.g. the interactive console&#39;s shell.interact())</span>
+        <span class="c1"># it never notices and the process lingers until nudged. All of</span>
+        <span class="c1"># SmartHomeNG&#39;s own teardown has already completed above, so a hard</span>
+        <span class="c1"># process exit here is safe regardless of which thread got here.</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">_exit</span><span class="p">(</span><span class="n">exitcode</span><span class="p">)</span>  <span class="c1"># default exit code 5 -&gt; for systemctl to restart SmartHomeNG</span></div>
 
 <div class="viewcode-block" id="SmartHome.restart"><a class="viewcode-back" href="../../entwicklung/core/core_shng.html#lib.smarthome.SmartHome.restart">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">restart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6803,27 +6836,22 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_object_refcount</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">objects</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
-            <span class="k">for</span> <span class="n">sym</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
-                <span class="c1"># skip deprecation warning on MacOS, these ciphers shouldn&#39;t be used anyway</span>
-                <span class="k">if</span> <span class="n">module</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;cryptography.hazmat.primitives.asymmetric.ec&#39;</span> <span class="ow">and</span> <span class="n">sym</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;SECT&#39;</span><span class="p">):</span>
-                    <span class="k">continue</span>
-                <span class="k">if</span> <span class="n">module</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;cryptography.hazmat.primitives.ciphers.algorithms&#39;</span> <span class="ow">and</span> <span class="n">sym</span> <span class="ow">in</span> <span class="p">[</span>
-                    <span class="s1">&#39;SECT233K1&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;Blowfish&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;CAST5&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;IDEA&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;SEED&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;TripleDES&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;ARC4&#39;</span><span class="p">,</span>
-                <span class="p">]:</span>
-                    <span class="k">continue</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">obj</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">sym</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
-                        <span class="n">objects</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">getrefcount</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                    <span class="k">pass</span>
+        <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+            <span class="c1"># getattr() below touches every symbol of every loaded module,</span>
+            <span class="c1"># including deprecated cryptography ciphers/modes (e.g.</span>
+            <span class="c1"># Camellia, CFB, CFB8, OFB, ...) - that list keeps growing as</span>
+            <span class="c1"># the cryptography package deprecates more of them, so suppress</span>
+            <span class="c1"># by category instead of maintaining a name list.</span>
+            <span class="k">if</span> <span class="n">CryptographyDeprecationWarning</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">CryptographyDeprecationWarning</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+                <span class="k">for</span> <span class="n">sym</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">module</span><span class="p">):</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">obj</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">sym</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+                            <span class="n">objects</span><span class="p">[</span><span class="n">obj</span><span class="p">]</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">getrefcount</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                        <span class="k">pass</span>
         <span class="k">return</span> <span class="n">objects</span>
 
     <span class="c1">#####################################################################</span>
@@ -6866,8 +6894,6 @@
                 <span class="k">if</span> <span class="n">c_b</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
                     <span class="k">break</span>
                 <span class="n">called_by</span> <span class="o">+=</span> <span class="s1">&#39; -&gt; &#39;</span> <span class="o">+</span> <span class="n">c_b</span>
-
-        <span class="c1">#            called_by = str(sys._getframe(3).f_code.co_name)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;dep_id_list&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dep_id_list</span> <span class="o">=</span> <span class="p">[]</span>
@@ -6961,18 +6987,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_deprecated_warning</span><span class="p">(</span><span class="s1">&#39;Items-API&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">match_items</span><span class="p">(</span><span class="n">regex</span><span class="p">)</span></div>
-
-    <span class="c1">#        regex, __, attr = regex.partition(&#39;:&#39;)</span>
-    <span class="c1">#        regex = regex.replace(&#39;.&#39;, &#39;\.&#39;).replace(&#39;*&#39;, &#39;.*&#39;) + &#39;$&#39;</span>
-    <span class="c1">#        regex = re.compile(regex)</span>
-    <span class="c1">#        attr, __, val = attr.partition(&#39;[&#39;)</span>
-    <span class="c1">#        val = val.rstrip(&#39;]&#39;)</span>
-    <span class="c1">#        if attr != &#39;&#39; and val != &#39;&#39;:</span>
-    <span class="c1">#            return [self.__item_dict[item] for item in self.__items if regex.match(item) and attr in self.__item_dict[item].conf and ((type(self.__item_dict[item].conf[attr]) in [list,dict] and val in self.__item_dict[item].conf[attr]) or (val == self.__item_dict[item].conf[attr]))]</span>
-    <span class="c1">#        elif attr != &#39;&#39;:</span>
-    <span class="c1">#            return [self.__item_dict[item] for item in self.__items if regex.match(item) and attr in self.__item_dict[item].conf]</span>
-    <span class="c1">#        else:</span>
-    <span class="c1">#            return [self.__item_dict[item] for item in self.__items if regex.match(item)]</span>
 
 <div class="viewcode-block" id="SmartHome.find_items"><a class="viewcode-back" href="../../entwicklung/core/core_shng.html#lib.smarthome.SmartHome.find_items">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">find_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;</span>
@@ -7174,7 +7188,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2016-2025 SmartHomeNG Team  -  ACHTUNG: Dokumentation zum Develop Branch - Work in Progress.</p>
+    <p>&#169; Copyright 2016-2026 SmartHomeNG Team  -  ACHTUNG: Dokumentation zum Develop Branch - Work in Progress.</p>
   </div>
 
    
