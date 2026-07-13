@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.shyaml &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 12. Juli 2026, commit 8884ff5) Dokumentation</title>
+  <title>lib.shyaml &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 13. Juli 2026, commit d436e3b) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -4363,8 +4363,10 @@
 <li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.get_key"><code class="docutils literal notranslate"><span class="pre">get_key()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.get_parent"><code class="docutils literal notranslate"><span class="pre">get_parent()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.setInDict"><code class="docutils literal notranslate"><span class="pre">setInDict()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.strip_yaml_extension"><code class="docutils literal notranslate"><span class="pre">strip_yaml_extension()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.writeBackToFile"><code class="docutils literal notranslate"><span class="pre">writeBackToFile()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.yaml_dump_roundtrip"><code class="docutils literal notranslate"><span class="pre">yaml_dump_roundtrip()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.yaml_exists"><code class="docutils literal notranslate"><span class="pre">yaml_exists()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.yaml_load"><code class="docutils literal notranslate"><span class="pre">yaml_load()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.yaml_load_fromstring"><code class="docutils literal notranslate"><span class="pre">yaml_load_fromstring()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.yaml_load_roundtrip"><code class="docutils literal notranslate"><span class="pre">yaml_load_roundtrip()</span></code></a></li>
@@ -6030,6 +6032,50 @@
 <span class="c1">#</span>
 
 
+<div class="viewcode-block" id="strip_yaml_extension"><a class="viewcode-back" href="../../lib/shyaml.html#lib.shyaml.strip_yaml_extension">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">strip_yaml_extension</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Strip a trailing .yaml or .yml (case-insensitive) from *filename*, if</span>
+<span class="sd">    present. Callers are not always consistent about whether they pass a</span>
+<span class="sd">    bare basename or one that already includes an extension - shng only</span>
+<span class="sd">    ever reads/writes the .yaml form on disk, so this normalizes either</span>
+<span class="sd">    input to the same basename.</span>
+
+<span class="sd">    :param filename: Basename of a yaml file, with or without extension</span>
+<span class="sd">    :type filename: str</span>
+
+<span class="sd">    :return: filename with any trailing .yaml/.yml removed</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">lower</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">lower</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.yaml&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">filename</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">lower</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.yml&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">filename</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">filename</span></div>
+
+
+<div class="viewcode-block" id="yaml_exists"><a class="viewcode-back" href="../../lib/shyaml.html#lib.shyaml.yaml_exists">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">yaml_exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check whether the yaml file for *filename* exists on disk, regardless</span>
+<span class="sd">    of whether *filename* already includes a .yaml/.yml extension or not.</span>
+
+<span class="sd">    A bare ``os.path.isfile(filename + YAML_FILE)`` silently returns False</span>
+<span class="sd">    (making callers wrongly conclude &quot;doesn&#39;t exist yet&quot;) when *filename*</span>
+<span class="sd">    already ends in an extension, since it would then look for a</span>
+<span class="sd">    nonexistent ``...yaml.yaml`` path - this was the root cause of an</span>
+<span class="sd">    existing item&#39;s file being silently overwritten instead of loaded and</span>
+<span class="sd">    merged into, whenever create_item()/rename_item() were handed a</span>
+<span class="sd">    filename that still had its extension attached.</span>
+
+<span class="sd">    :param filename: Basename of the yaml file, with or without extension</span>
+<span class="sd">    :type filename: str</span>
+
+<span class="sd">    :return: True if the file exists</span>
+<span class="sd">    :rtype: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">strip_yaml_extension</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="o">+</span> <span class="n">YAML_FILE</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="yaml_load_roundtrip"><a class="viewcode-back" href="../../lib/shyaml.html#lib.shyaml.yaml_load_roundtrip">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">yaml_load_roundtrip</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">raise_on_error</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load contents of a yaml file into an dict structure for editing (using Roundtrip Loader)</span>
@@ -6052,8 +6098,7 @@
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="n">y</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.yaml&#39;</span><span class="p">):</span>
-        <span class="n">filename</span> <span class="o">+=</span> <span class="n">YAML_FILE</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">strip_yaml_extension</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="o">+</span> <span class="n">YAML_FILE</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
             <span class="n">sdata</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
@@ -6122,8 +6167,7 @@
     <span class="p">)</span>
     <span class="n">sdata</span> <span class="o">=</span> <span class="n">_format_yaml_dump2</span><span class="p">(</span><span class="n">sdata</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.yaml&#39;</span><span class="p">):</span>
-        <span class="n">filename</span> <span class="o">+=</span> <span class="n">YAML_FILE</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">strip_yaml_extension</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="o">+</span> <span class="n">YAML_FILE</span>
     <span class="k">if</span> <span class="n">create_backup</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
             <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">filename</span> <span class="o">+</span> <span class="s1">&#39;.bak&#39;</span><span class="p">)</span>
@@ -6270,7 +6314,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">itemyamlfile</span> <span class="o">=</span> <span class="n">yamlfile</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filename</span> <span class="o">+</span> <span class="n">YAML_FILE</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">yaml_exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
         <span class="n">itemyamlfile</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
     <span class="n">itemyamlfile</span><span class="o">.</span><span class="n">setleafvalue</span><span class="p">(</span><span class="n">itempath</span><span class="p">,</span> <span class="n">itemattr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
     <span class="n">itemyamlfile</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
@@ -6297,11 +6341,11 @@
 
 <span class="sd">        :return: formatted string</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">strip_yaml_extension</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">filename_write</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">filename_write</span> <span class="o">=</span> <span class="n">filename</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filename_write</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">filename_write</span> <span class="o">=</span> <span class="n">filename_write</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filename_write</span> <span class="o">=</span> <span class="n">strip_yaml_extension</span><span class="p">(</span><span class="n">filename_write</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filename_bak</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename_write</span> <span class="o">+</span> <span class="s1">&#39;.bak&#39;</span> <span class="o">+</span> <span class="n">YAML_FILE</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_bak</span> <span class="o">=</span> <span class="n">create_bak</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">CommentedMap</span><span class="p">([])</span>

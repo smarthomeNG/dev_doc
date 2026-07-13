@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.item.items &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 12. Juli 2026, commit 8884ff5) Dokumentation</title>
+  <title>lib.item.items &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 13. Juli 2026, commit d436e3b) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -4363,8 +4363,10 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../lib/shyaml.html#lib.shyaml.get_key"><code class="docutils literal notranslate"><span class="pre">get_key()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../lib/shyaml.html#lib.shyaml.get_parent"><code class="docutils literal notranslate"><span class="pre">get_parent()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../lib/shyaml.html#lib.shyaml.setInDict"><code class="docutils literal notranslate"><span class="pre">setInDict()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../lib/shyaml.html#lib.shyaml.strip_yaml_extension"><code class="docutils literal notranslate"><span class="pre">strip_yaml_extension()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../lib/shyaml.html#lib.shyaml.writeBackToFile"><code class="docutils literal notranslate"><span class="pre">writeBackToFile()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../lib/shyaml.html#lib.shyaml.yaml_dump_roundtrip"><code class="docutils literal notranslate"><span class="pre">yaml_dump_roundtrip()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../lib/shyaml.html#lib.shyaml.yaml_exists"><code class="docutils literal notranslate"><span class="pre">yaml_exists()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../lib/shyaml.html#lib.shyaml.yaml_load"><code class="docutils literal notranslate"><span class="pre">yaml_load()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../lib/shyaml.html#lib.shyaml.yaml_load_fromstring"><code class="docutils literal notranslate"><span class="pre">yaml_load_fromstring()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../lib/shyaml.html#lib.shyaml.yaml_load_roundtrip"><code class="docutils literal notranslate"><span class="pre">yaml_load_roundtrip()</span></code></a></li>
@@ -5771,6 +5773,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">types</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">lib.config</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">lib.utils</span>
@@ -5779,6 +5782,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">lib.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">ITEM_DEFAULTS</span><span class="p">,</span> <span class="n">PLUGIN_PARSE_ITEM</span><span class="p">,</span> <span class="n">PLUGIN_REMOVE_ITEM</span><span class="p">,</span> <span class="n">PLUGIN_RENAME_ITEM</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">lib.item._internal._lifecycle</span><span class="w"> </span><span class="kn">import</span> <span class="n">_detach_from_other_items_triggers</span><span class="p">,</span> <span class="n">_remove_scheduler_jobs</span><span class="p">,</span> <span class="n">_stop_fading</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">lib.item._internal._parsing</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_item_name_collision</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lib.item._internal._pathresolution</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_absolutepath</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.item</span><span class="w"> </span><span class="kn">import</span> <span class="n">Item</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.structs</span><span class="w"> </span><span class="kn">import</span> <span class="n">Structs</span>
@@ -6078,7 +6082,7 @@
                 <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_item</span><span class="p">(</span><span class="n">parent_path</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">create_missing_parents</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parent item &#39;</span><span class="si">{</span><span class="n">parent_path</span><span class="si">}</span><span class="s2">&#39; not found&quot;</span><span class="p">)</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Item &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39; cannot be created: parent &#39;</span><span class="si">{</span><span class="n">parent_path</span><span class="si">}</span><span class="s2">&#39; not found&quot;</span><span class="p">)</span>
                     <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_item</span><span class="p">(</span>
                         <span class="n">parent_path</span><span class="p">,</span> <span class="p">{},</span> <span class="n">persist</span><span class="o">=</span><span class="n">persist</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="n">create_missing_parents</span><span class="o">=</span><span class="kc">True</span>
                     <span class="p">)</span>
@@ -6090,7 +6094,7 @@
 
         <span class="n">item_config</span> <span class="o">=</span> <span class="n">config</span>
         <span class="k">if</span> <span class="n">persist</span><span class="p">:</span>
-            <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_created_items_file</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">strip_yaml_extension</span><span class="p">(</span><span class="n">filename</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_created_items_file</span><span class="p">)</span>
             <span class="n">item_config</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
             <span class="c1"># _add_filenames_to_config() sets &#39;_filename&#39; on dict *values* of</span>
             <span class="c1"># its argument, recursively - wrap item_config so it (and every</span>
@@ -6151,7 +6155,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
         <span class="n">yf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yamlfile</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">target</span> <span class="o">+</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">YAML_FILE</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml_file</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
         <span class="n">yf</span><span class="o">.</span><span class="n">setvalue</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
         <span class="n">yf</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
@@ -6177,7 +6181,7 @@
 <span class="sd">        :rtype: dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">target</span> <span class="o">+</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">YAML_FILE</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">config</span>
         <span class="n">yf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yamlfile</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml_file</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
@@ -6382,6 +6386,8 @@
 <span class="sd">        :return: The same item, mutated</span>
 <span class="sd">        :rtype: Item</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">strip_yaml_extension</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="n">old_path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span>
         <span class="k">if</span> <span class="n">new_path</span> <span class="o">==</span> <span class="n">old_path</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">item</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;rewritten_references&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;failed_references&#39;</span><span class="p">:</span> <span class="p">[]}</span>
@@ -6476,7 +6482,7 @@
 
             <span class="k">if</span> <span class="n">target_filename</span> <span class="o">==</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">:</span>
                 <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">target</span> <span class="o">+</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">YAML_FILE</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
                     <span class="n">yf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yamlfile</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml_file</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
                     <span class="n">node</span> <span class="o">=</span> <span class="n">yf</span><span class="o">.</span><span class="n">getnode</span><span class="p">(</span><span class="n">old_path</span><span class="p">)</span>
@@ -6486,7 +6492,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">old_target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
                 <span class="n">node</span> <span class="o">=</span> <span class="kc">None</span>
-                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">old_target</span> <span class="o">+</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">YAML_FILE</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">old_target</span><span class="p">):</span>
                     <span class="n">old_yf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yamlfile</span><span class="p">(</span><span class="n">old_target</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml_file</span><span class="p">(</span><span class="n">old_yf</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
                     <span class="n">node</span> <span class="o">=</span> <span class="n">old_yf</span><span class="o">.</span><span class="n">getnode</span><span class="p">(</span><span class="n">old_path</span><span class="p">)</span>
@@ -6495,7 +6501,7 @@
 
                 <span class="n">new_target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">target_filename</span><span class="p">)</span>
                 <span class="n">new_yf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yamlfile</span><span class="p">(</span><span class="n">new_target</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">new_target</span> <span class="o">+</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">YAML_FILE</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">new_target</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml_file</span><span class="p">(</span><span class="n">new_yf</span><span class="p">,</span> <span class="n">target_filename</span><span class="p">)</span>
                 <span class="n">new_yf</span><span class="o">.</span><span class="n">setvalue</span><span class="p">(</span><span class="n">new_path</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
                 <span class="n">new_yf</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
@@ -6506,6 +6512,451 @@
         <span class="n">report</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_references</span><span class="p">(</span><span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">item</span><span class="p">,</span> <span class="n">report</span></div>
+
+<div class="viewcode-block" id="Items.copy_item"><a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.copy_item">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">copy_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">new_path</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">create_missing_parents</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_children</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Copy an item to *new_path* as an independent clone — fresh</span>
+<span class="sd">        plugin bindings and value history, no shared identity with the</span>
+<span class="sd">        source (unlike rename_item(), which preserves identity and only</span>
+<span class="sd">        relocates it). Copies the item&#39;s entire subtree by default; set</span>
+<span class="sd">        *include_children* to False to copy only the item itself.</span>
+
+<span class="sd">        Only persisted items can be copied: there is no existing helper</span>
+<span class="sd">        that reconstructs a full nested (with-children) config dict from</span>
+<span class="sd">        a live, non-persisted item tree — current_config_for_edit()</span>
+<span class="sd">        strips child (dict-valued) keys on purpose, since edit_item()</span>
+<span class="sd">        never touches children. A non-persisted source raises ValueError.</span>
+
+<span class="sd">        The copy is written to *filename* if given, otherwise to the</span>
+<span class="sd">        SOURCE item&#39;s own file — deliberately not the new parent&#39;s file</span>
+<span class="sd">        the way rename_item() defaults when moving, since a copy is</span>
+<span class="sd">        meant to be &quot;the same config, elsewhere,&quot; not adopt its new</span>
+<span class="sd">        neighbourhood&#39;s file.</span>
+
+<span class="sd">        Self-references inside the copied subtree (eval/on_change/</span>
+<span class="sd">        on_update/trigger/hysteresis_input/cycle/autotimer/</span>
+<span class="sd">        hysteresis_upper_threshold/hysteresis_lower_threshold) are</span>
+<span class="sd">        handled differently depending on whether their target is</span>
+<span class="sd">        actually part of what&#39;s being copied:</span>
+
+<span class="sd">        * An absolute (``sh.&lt;path&gt;``/bare-path) reference whose target</span>
+<span class="sd">          IS part of the copy (old_path itself, or one of its</span>
+<span class="sd">          descendants when include_children brought it along) is</span>
+<span class="sd">          rewritten from old_path to new_path, via the same</span>
+<span class="sd">          boundary-aware prefix replace rename_item() uses for external</span>
+<span class="sd">          references.</span>
+<span class="sd">        * An absolute reference whose target is NOT part of the copy (a</span>
+<span class="sd">          descendant include_children=False left behind, or something</span>
+<span class="sd">          entirely outside old_path&#39;s subtree) is left pointing at the</span>
+<span class="sd">          original — reported back in ``left_pointing_at_original``</span>
+<span class="sd">          rather than silently rewritten to a path that won&#39;t exist, or</span>
+<span class="sd">          silently dropped.</span>
+<span class="sd">        * A relative reference (leading-dot syntax, resolved fresh</span>
+<span class="sd">          against the item&#39;s own position at every load) is NEVER</span>
+<span class="sd">          rewritten — its target is inherently tied to tree position,</span>
+<span class="sd">          so &quot;leaving it alone&quot; IS the text staying byte-for-byte the</span>
+<span class="sd">          same. It&#39;s classified instead: silently fine if it still</span>
+<span class="sd">          resolves inside the copied tree; always reported in</span>
+<span class="sd">          ``relative_references_flagged`` if its original target was a</span>
+<span class="sd">          descendant that wasn&#39;t copied along (guaranteed broken); and,</span>
+<span class="sd">          if its target was outside old_path&#39;s subtree entirely,</span>
+<span class="sd">          reported only if re-resolving the same text from the new</span>
+<span class="sd">          position lands on a different target than before (can&#39;t tell</span>
+<span class="sd">          whether that drift is a bug or intentional, so it&#39;s surfaced</span>
+<span class="sd">          rather than guessed at).</span>
+
+<span class="sd">        :param item: The item to copy</span>
+<span class="sd">        :param new_path: Full path for the copy</span>
+<span class="sd">        :param filename: Explicit target yaml file (basename, no</span>
+<span class="sd">                          extension) to override the default (source</span>
+<span class="sd">                          item&#39;s own file)</span>
+<span class="sd">        :param create_missing_parents: If True, auto-create any missing</span>
+<span class="sd">                          ancestor of *new_path* instead of raising</span>
+<span class="sd">                          ValueError — see create_item().</span>
+<span class="sd">        :param include_children: If False, copy only the item&#39;s own</span>
+<span class="sd">                          attributes — none of its child items.</span>
+<span class="sd">        :type new_path: str</span>
+<span class="sd">        :type filename: str</span>
+<span class="sd">        :type create_missing_parents: bool</span>
+<span class="sd">        :type include_children: bool</span>
+
+<span class="sd">        :return: (copy, report) — copy is the newly created copy, or</span>
+<span class="sd">                 None if its own name collided with an existing</span>
+<span class="sd">                 attribute and was dropped (see create_item()); report</span>
+<span class="sd">                 is {&quot;left_pointing_at_original&quot;: [...],</span>
+<span class="sd">                 &quot;relative_references_flagged&quot;: [...]}, each entry a</span>
+<span class="sd">                 dict with item/attribute/reference (plus a reason and</span>
+<span class="sd">                 the resolved old/new targets for relative entries) —</span>
+<span class="sd">                 see _rewrite_subtree_self_references().</span>
+<span class="sd">        :rtype: tuple(Item or None, dict)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">strip_yaml_extension</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">old_path</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span>
+        <span class="k">if</span> <span class="n">new_path</span> <span class="o">==</span> <span class="n">old_path</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Item &#39;</span><span class="si">{</span><span class="n">old_path</span><span class="si">}</span><span class="s2">&#39; cannot be copied to itself&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Item &#39;</span><span class="si">{</span><span class="n">old_path</span><span class="si">}</span><span class="s2">&#39; cannot be copied: only persisted items can be copied&quot;</span><span class="p">)</span>
+
+        <span class="n">source_target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">source_target</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Item &#39;</span><span class="si">{</span><span class="n">old_path</span><span class="si">}</span><span class="s2">&#39; cannot be copied: source file &#39;</span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="si">}</span><span class="s2">&#39; not found&quot;</span><span class="p">)</span>
+
+        <span class="n">yf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yamlfile</span><span class="p">(</span><span class="n">source_target</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml_file</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">yf</span><span class="o">.</span><span class="n">getnode</span><span class="p">(</span><span class="n">old_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Item &#39;</span><span class="si">{</span><span class="n">old_path</span><span class="si">}</span><span class="s2">&#39; cannot be copied: no config found at its current path&quot;</span><span class="p">)</span>
+
+        <span class="n">config</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">include_children</span><span class="p">:</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)}</span>
+
+        <span class="n">copied_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collect_copied_paths</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">old_path</span><span class="p">)</span>
+        <span class="n">report</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;left_pointing_at_original&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;relative_references_flagged&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_subtree_self_references</span><span class="p">(</span>
+            <span class="n">config</span><span class="p">,</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">,</span> <span class="n">copied_paths</span><span class="p">,</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">,</span> <span class="n">report</span>
+        <span class="p">)</span>
+
+        <span class="n">copied_item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_item</span><span class="p">(</span>
+            <span class="n">new_path</span><span class="p">,</span>
+            <span class="n">config</span><span class="p">,</span>
+            <span class="n">persist</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">filename</span><span class="o">=</span><span class="n">filename</span> <span class="ow">or</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">,</span>
+            <span class="n">create_missing_parents</span><span class="o">=</span><span class="n">create_missing_parents</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">copied_item</span><span class="p">,</span> <span class="n">report</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_collect_copied_paths</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">base_path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the set of absolute item paths that will exist once</span>
+<span class="sd">        *config* (already include_children-filtered, as returned by</span>
+<span class="sd">        copy_item()) is persisted under *base_path* — base_path itself,</span>
+<span class="sd">        plus one entry per nested (dict-valued) child, recursively.</span>
+<span class="sd">        Used to tell whether a self-reference&#39;s target is actually part</span>
+<span class="sd">        of the copy.</span>
+
+<span class="sd">        :param config: Item subtree config (as returned by copy_item())</span>
+<span class="sd">        :param base_path: The path *config* itself is rooted at</span>
+<span class="sd">        :type config: dict</span>
+<span class="sd">        :type base_path: str</span>
+
+<span class="sd">        :return: set of absolute paths included in the copy</span>
+<span class="sd">        :rtype: set</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">paths</span> <span class="o">=</span> <span class="p">{</span><span class="n">base_path</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">paths</span> <span class="o">|=</span> <span class="n">Items</span><span class="o">.</span><span class="n">_collect_copied_paths</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">base_path</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">paths</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_self_reference_target</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">suffix</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resolve what a matched ``sh.&lt;old_path&gt;&lt;suffix&gt;`` self-reference</span>
+<span class="sd">        actually refers to — the longest prefix of old_path+suffix that</span>
+<span class="sd">        is a real item, since *suffix* may continue past a real child</span>
+<span class="sd">        item into a property accessor or plugin method call (e.g.</span>
+<span class="sd">        ``.last_change``, ``.db(...)``) that isn&#39;t a separate item at</span>
+<span class="sd">        all. Items nest contiguously (a child&#39;s own existence implies</span>
+<span class="sd">        every ancestor segment is a real item too), so stopping at the</span>
+<span class="sd">        first non-item segment is sufficient — no need to check every</span>
+<span class="sd">        possible truncation the way _resolve_references() does for</span>
+<span class="sd">        unanchored eval text.</span>
+
+<span class="sd">        :param old_path: The item path the match was anchored on</span>
+<span class="sd">        :param suffix: Whatever followed old_path in the match (e.g.</span>
+<span class="sd">                       &#39;&#39;, &#39;.child&#39;, &#39;.child.last_change&#39;)</span>
+<span class="sd">        :type old_path: str</span>
+<span class="sd">        :type suffix: str</span>
+
+<span class="sd">        :return: old_path, or the longest real-item extension of it</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">suffix</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">old_path</span>
+        <span class="n">resolved</span> <span class="o">=</span> <span class="n">old_path</span>
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">old_path</span>
+        <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="n">suffix</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
+            <span class="n">candidate</span> <span class="o">=</span> <span class="n">candidate</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">segment</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_item</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">resolved</span> <span class="o">=</span> <span class="n">candidate</span>
+        <span class="k">return</span> <span class="n">resolved</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_classify_relative_reference</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">rel</span><span class="p">,</span> <span class="n">subtree_old_path</span><span class="p">,</span> <span class="n">copied_paths</span><span class="p">,</span> <span class="n">current_old_path</span><span class="p">,</span> <span class="n">current_new_path</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">report</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Classify (never rewrite) a single relative reference found</span>
+<span class="sd">        inside a copied item&#39;s attribute — see copy_item()&#39;s docstring</span>
+<span class="sd">        for the three-way rule. Appends to</span>
+<span class="sd">        report[&#39;relative_references_flagged&#39;] when the reference may no</span>
+<span class="sd">        longer be correct; does nothing when it&#39;s still fine as-is.</span>
+
+<span class="sd">        :param rel: The relative-path text itself (e.g. &#39;..item&#39; — for</span>
+<span class="sd">                    a bare trigger/hysteresis_input value, or whatever</span>
+<span class="sd">                    followed &#39;sh.&#39; for an embedded eval-style reference)</span>
+<span class="sd">        :param subtree_old_path: Root path of the subtree being copied</span>
+<span class="sd">        :param copied_paths: Absolute paths included in the copy</span>
+<span class="sd">        :param current_old_path: Old absolute path of the item that</span>
+<span class="sd">                    owns this reference (may be a descendant of</span>
+<span class="sd">                    subtree_old_path, not subtree_old_path itself)</span>
+<span class="sd">        :param current_new_path: New absolute path of that same item</span>
+<span class="sd">        :param attr_name: Attribute the reference came from</span>
+<span class="sd">        :param report: Report dict, mutated in place</span>
+<span class="sd">        :type rel: str</span>
+<span class="sd">        :type subtree_old_path: str</span>
+<span class="sd">        :type copied_paths: set</span>
+<span class="sd">        :type current_old_path: str</span>
+<span class="sd">        :type current_new_path: str</span>
+<span class="sd">        :type attr_name: str</span>
+<span class="sd">        :type report: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">old_resolved</span> <span class="o">=</span> <span class="n">get_absolutepath</span><span class="p">(</span><span class="n">types</span><span class="o">.</span><span class="n">SimpleNamespace</span><span class="p">(</span><span class="n">_path</span><span class="o">=</span><span class="n">current_old_path</span><span class="p">),</span> <span class="n">rel</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">old_resolved</span> <span class="ow">in</span> <span class="n">copied_paths</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">old_resolved</span> <span class="o">==</span> <span class="n">subtree_old_path</span> <span class="ow">or</span> <span class="n">old_resolved</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">subtree_old_path</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span><span class="p">):</span>
+            <span class="n">report</span><span class="p">[</span><span class="s1">&#39;relative_references_flagged&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">current_new_path</span><span class="p">,</span>
+                    <span class="s1">&#39;attribute&#39;</span><span class="p">:</span> <span class="n">attr_name</span><span class="p">,</span>
+                    <span class="s1">&#39;reference&#39;</span><span class="p">:</span> <span class="n">rel</span><span class="p">,</span>
+                    <span class="s1">&#39;resolved_original_target&#39;</span><span class="p">:</span> <span class="n">old_resolved</span><span class="p">,</span>
+                    <span class="s1">&#39;reason&#39;</span><span class="p">:</span> <span class="s1">&#39;not_copied&#39;</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">new_resolved</span> <span class="o">=</span> <span class="n">get_absolutepath</span><span class="p">(</span><span class="n">types</span><span class="o">.</span><span class="n">SimpleNamespace</span><span class="p">(</span><span class="n">_path</span><span class="o">=</span><span class="n">current_new_path</span><span class="p">),</span> <span class="n">rel</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">new_resolved</span> <span class="o">!=</span> <span class="n">old_resolved</span><span class="p">:</span>
+            <span class="n">report</span><span class="p">[</span><span class="s1">&#39;relative_references_flagged&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">current_new_path</span><span class="p">,</span>
+                    <span class="s1">&#39;attribute&#39;</span><span class="p">:</span> <span class="n">attr_name</span><span class="p">,</span>
+                    <span class="s1">&#39;reference&#39;</span><span class="p">:</span> <span class="n">rel</span><span class="p">,</span>
+                    <span class="s1">&#39;resolved_original_target&#39;</span><span class="p">:</span> <span class="n">old_resolved</span><span class="p">,</span>
+                    <span class="s1">&#39;resolved_new_target&#39;</span><span class="p">:</span> <span class="n">new_resolved</span><span class="p">,</span>
+                    <span class="s1">&#39;reason&#39;</span><span class="p">:</span> <span class="s1">&#39;target_may_differ&#39;</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_flag_relative_sh_references</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">subtree_old_path</span><span class="p">,</span> <span class="n">copied_paths</span><span class="p">,</span> <span class="n">current_old_path</span><span class="p">,</span> <span class="n">current_new_path</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">report</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Scan sh.-style *text* (eval/on_change/on_update/cycle/</span>
+<span class="sd">        autotimer/hysteresis_upper_threshold/hysteresis_lower_threshold)</span>
+<span class="sd">        for embedded relative references and classify each one via</span>
+<span class="sd">        _classify_relative_reference() — never modifies *text*.</span>
+
+<span class="sd">        A relative reference embedded this way is marked by a literal</span>
+<span class="sd">        ``sh..`` — the mandatory ``sh.`` prefix supplies the first dot,</span>
+<span class="sd">        so it always has one more dot than the equivalent bare</span>
+<span class="sd">        trigger/hysteresis_input relative path (``sh...item()`` is the</span>
+<span class="sd">        embedded form of the bare ``..item``). This reuses the exact</span>
+<span class="sd">        same begintag/endtag scan</span>
+<span class="sd">        lib.item._internal._pathresolution.get_stringwithabsolutepathes()</span>
+<span class="sd">        uses to find and extract these, rather than re-deriving the dot</span>
+<span class="sd">        count independently and risking an off-by-one.</span>
+
+<span class="sd">        :param text: The attribute text to scan (unchanged on return)</span>
+<span class="sd">        :type text: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">begintag</span><span class="p">,</span> <span class="n">endtag</span> <span class="o">=</span> <span class="s1">&#39;sh.&#39;</span><span class="p">,</span> <span class="s1">&#39;(&#39;</span>
+        <span class="n">rest</span> <span class="o">=</span> <span class="n">text</span>
+        <span class="k">while</span> <span class="n">rest</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">begintag</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">rest</span> <span class="o">=</span> <span class="n">rest</span><span class="p">[</span><span class="n">rest</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">begintag</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">begintag</span><span class="p">)</span> <span class="p">:]</span>
+            <span class="k">if</span> <span class="n">endtag</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span> <span class="n">rest</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">endtag</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">rel</span> <span class="o">=</span> <span class="n">rest</span>
+                <span class="n">rest</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rel</span> <span class="o">=</span> <span class="n">rest</span><span class="p">[:</span> <span class="n">rest</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">endtag</span><span class="p">)]</span>
+                <span class="n">rest</span> <span class="o">=</span> <span class="n">rest</span><span class="p">[</span><span class="n">rest</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">endtag</span><span class="p">)</span> <span class="p">:]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_classify_relative_reference</span><span class="p">(</span>
+                <span class="n">rel</span><span class="p">,</span> <span class="n">subtree_old_path</span><span class="p">,</span> <span class="n">copied_paths</span><span class="p">,</span> <span class="n">current_old_path</span><span class="p">,</span> <span class="n">current_new_path</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">report</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rewrite_or_flag_sh_reference</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">text</span><span class="p">,</span>
+        <span class="n">subtree_old_path</span><span class="p">,</span>
+        <span class="n">subtree_new_path</span><span class="p">,</span>
+        <span class="n">copied_paths</span><span class="p">,</span>
+        <span class="n">current_old_path</span><span class="p">,</span>
+        <span class="n">current_new_path</span><span class="p">,</span>
+        <span class="n">attr_name</span><span class="p">,</span>
+        <span class="n">report</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rewrite or flag every self-reference inside sh.-style *text*</span>
+<span class="sd">        (eval/on_change/on_update/cycle/autotimer/</span>
+<span class="sd">        hysteresis_upper_threshold/hysteresis_lower_threshold) — see</span>
+<span class="sd">        copy_item()&#39;s docstring for the rule. Absolute references whose</span>
+<span class="sd">        target is part of the copy are rewritten from subtree_old_path</span>
+<span class="sd">        to subtree_new_path; ones that aren&#39;t are left untouched and</span>
+<span class="sd">        recorded into report[&#39;left_pointing_at_original&#39;]. Relative</span>
+<span class="sd">        references are classified only (never rewritten) via</span>
+<span class="sd">        _flag_relative_sh_references().</span>
+
+<span class="sd">        :param text: The attribute text to rewrite/scan</span>
+<span class="sd">        :type text: str</span>
+
+<span class="sd">        :return: text, with in-scope absolute references rewritten</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_flag_relative_sh_references</span><span class="p">(</span>
+            <span class="n">text</span><span class="p">,</span> <span class="n">subtree_old_path</span><span class="p">,</span> <span class="n">copied_paths</span><span class="p">,</span> <span class="n">current_old_path</span><span class="p">,</span> <span class="n">current_new_path</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">report</span>
+        <span class="p">)</span>
+
+        <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\bsh\.&#39;</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">subtree_old_path</span><span class="p">)</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;((?:\.[A-Za-z0-9_]+)*)(?![A-Za-z0-9_])&#39;</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_replace</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+            <span class="n">suffix</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">resolved</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_self_reference_target</span><span class="p">(</span><span class="n">subtree_old_path</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">resolved</span> <span class="ow">in</span> <span class="n">copied_paths</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s1">&#39;sh.&#39;</span> <span class="o">+</span> <span class="n">subtree_new_path</span> <span class="o">+</span> <span class="n">suffix</span>
+            <span class="n">report</span><span class="p">[</span><span class="s1">&#39;left_pointing_at_original&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span><span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">current_new_path</span><span class="p">,</span> <span class="s1">&#39;attribute&#39;</span><span class="p">:</span> <span class="n">attr_name</span><span class="p">,</span> <span class="s1">&#39;reference&#39;</span><span class="p">:</span> <span class="n">resolved</span><span class="p">}</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">pattern</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">_replace</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rewrite_or_flag_bare_reference</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">value</span><span class="p">,</span>
+        <span class="n">subtree_old_path</span><span class="p">,</span>
+        <span class="n">subtree_new_path</span><span class="p">,</span>
+        <span class="n">copied_paths</span><span class="p">,</span>
+        <span class="n">current_old_path</span><span class="p">,</span>
+        <span class="n">current_new_path</span><span class="p">,</span>
+        <span class="n">attr_name</span><span class="p">,</span>
+        <span class="n">report</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rewrite or flag a single bare-path self-reference (trigger/</span>
+<span class="sd">        hysteresis_input) — see copy_item()&#39;s docstring for the rule.</span>
+<span class="sd">        Unlike sh.-style text, these attributes store a bare item path</span>
+<span class="sd">        directly (no embedded ``sh.`` prefix, no property/method</span>
+<span class="sd">        suffix), so a relative value is recognized simply by a leading</span>
+<span class="sd">        ``.`` and resolved directly, with no prefix-stripping needed.</span>
+
+<span class="sd">        :param value: The bare path value to rewrite/classify</span>
+<span class="sd">        :type value: str</span>
+
+<span class="sd">        :return: value, rewritten if it referenced subtree_old_path and</span>
+<span class="sd">                 the target is part of the copy; unchanged otherwise</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_classify_relative_reference</span><span class="p">(</span>
+                <span class="n">value</span><span class="p">,</span> <span class="n">subtree_old_path</span><span class="p">,</span> <span class="n">copied_paths</span><span class="p">,</span> <span class="n">current_old_path</span><span class="p">,</span> <span class="n">current_new_path</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">report</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">value</span>
+
+        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="n">subtree_old_path</span> <span class="ow">or</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">subtree_old_path</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">copied_paths</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">subtree_new_path</span> <span class="o">+</span> <span class="n">value</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">subtree_old_path</span><span class="p">)</span> <span class="p">:]</span>
+            <span class="n">report</span><span class="p">[</span><span class="s1">&#39;left_pointing_at_original&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span><span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">current_new_path</span><span class="p">,</span> <span class="s1">&#39;attribute&#39;</span><span class="p">:</span> <span class="n">attr_name</span><span class="p">,</span> <span class="s1">&#39;reference&#39;</span><span class="p">:</span> <span class="n">value</span><span class="p">}</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="n">_SH_STYLE_ATTRIBUTES</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;eval&#39;</span><span class="p">,</span> <span class="s1">&#39;cycle&#39;</span><span class="p">,</span> <span class="s1">&#39;autotimer&#39;</span><span class="p">,</span> <span class="s1">&#39;hysteresis_upper_threshold&#39;</span><span class="p">,</span> <span class="s1">&#39;hysteresis_lower_threshold&#39;</span><span class="p">)</span>
+    <span class="n">_SH_STYLE_LIST_ATTRIBUTES</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;on_change&#39;</span><span class="p">,</span> <span class="s1">&#39;on_update&#39;</span><span class="p">)</span>
+    <span class="n">_BARE_PATH_LIST_ATTRIBUTES</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;trigger&#39;</span><span class="p">,)</span>
+    <span class="n">_BARE_PATH_ATTRIBUTES</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;hysteresis_input&#39;</span><span class="p">,)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rewrite_subtree_self_references</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">subtree_old_path</span><span class="p">,</span> <span class="n">subtree_new_path</span><span class="p">,</span> <span class="n">copied_paths</span><span class="p">,</span> <span class="n">current_old_path</span><span class="p">,</span> <span class="n">current_new_path</span><span class="p">,</span> <span class="n">report</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Recursively rewrite or flag self-references inside *config* (a</span>
+<span class="sd">        nested item subtree config, as returned by</span>
+<span class="sd">        shyaml.yamlfile.getnode()) — used by copy_item(), see its</span>
+<span class="sd">        docstring for the full rule. Descends into every dict-valued</span>
+<span class="sd">        key (a nested child item block), not just the top level,</span>
+<span class="sd">        tracking each descendant&#39;s own old/new path as it goes (needed</span>
+<span class="sd">        to correctly resolve a descendant&#39;s own relative references,</span>
+<span class="sd">        which are anchored on ITS position, not the subtree root&#39;s).</span>
+
+<span class="sd">        :param config: Nested item config dict (mutated in place and</span>
+<span class="sd">                        returned)</span>
+<span class="sd">        :param subtree_old_path: Root path of the subtree being copied</span>
+<span class="sd">        :param subtree_new_path: Root path the subtree is copied to</span>
+<span class="sd">        :param copied_paths: Absolute paths included in the copy (see</span>
+<span class="sd">                        _collect_copied_paths())</span>
+<span class="sd">        :param current_old_path: Old absolute path of *config* itself</span>
+<span class="sd">        :param current_new_path: New absolute path of *config* itself</span>
+<span class="sd">        :param report: Report dict, mutated in place — see</span>
+<span class="sd">                        copy_item()&#39;s docstring</span>
+<span class="sd">        :type config: dict</span>
+<span class="sd">        :type subtree_old_path: str</span>
+<span class="sd">        :type subtree_new_path: str</span>
+<span class="sd">        :type copied_paths: set</span>
+<span class="sd">        :type current_old_path: str</span>
+<span class="sd">        :type current_new_path: str</span>
+<span class="sd">        :type report: dict</span>
+
+<span class="sd">        :return: config, with matching absolute references rewritten</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_rewrite_sh</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_or_flag_sh_reference</span><span class="p">(</span>
+                <span class="n">text</span><span class="p">,</span>
+                <span class="n">subtree_old_path</span><span class="p">,</span>
+                <span class="n">subtree_new_path</span><span class="p">,</span>
+                <span class="n">copied_paths</span><span class="p">,</span>
+                <span class="n">current_old_path</span><span class="p">,</span>
+                <span class="n">current_new_path</span><span class="p">,</span>
+                <span class="n">attr_name</span><span class="p">,</span>
+                <span class="n">report</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_rewrite_bare</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_or_flag_bare_reference</span><span class="p">(</span>
+                <span class="n">value</span><span class="p">,</span>
+                <span class="n">subtree_old_path</span><span class="p">,</span>
+                <span class="n">subtree_new_path</span><span class="p">,</span>
+                <span class="n">copied_paths</span><span class="p">,</span>
+                <span class="n">current_old_path</span><span class="p">,</span>
+                <span class="n">current_new_path</span><span class="p">,</span>
+                <span class="n">attr_name</span><span class="p">,</span>
+                <span class="n">report</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_SH_STYLE_ATTRIBUTES</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr_name</span><span class="p">),</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">_rewrite_sh</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">],</span> <span class="n">attr_name</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_SH_STYLE_LIST_ATTRIBUTES</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr_name</span><span class="p">),</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">_rewrite_sh</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">entry</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span>
+                <span class="p">]</span>
+        <span class="k">for</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_BARE_PATH_LIST_ATTRIBUTES</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr_name</span><span class="p">),</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">_rewrite_bare</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">entry</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span>
+                <span class="p">]</span>
+        <span class="k">for</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_BARE_PATH_ATTRIBUTES</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr_name</span><span class="p">),</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">_rewrite_bare</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">],</span> <span class="n">attr_name</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_subtree_self_references</span><span class="p">(</span>
+                    <span class="n">value</span><span class="p">,</span>
+                    <span class="n">subtree_old_path</span><span class="p">,</span>
+                    <span class="n">subtree_new_path</span><span class="p">,</span>
+                    <span class="n">copied_paths</span><span class="p">,</span>
+                    <span class="n">current_old_path</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">key</span><span class="p">,</span>
+                    <span class="n">current_new_path</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">key</span><span class="p">,</span>
+                    <span class="n">report</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">config</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_rewrite_references</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6551,9 +7002,15 @@
                             <span class="n">config</span><span class="p">[</span><span class="s1">&#39;hysteresis_input&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_bare_path_reference</span><span class="p">(</span>
                                 <span class="n">config</span><span class="p">[</span><span class="s1">&#39;hysteresis_input&#39;</span><span class="p">],</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span>
                             <span class="p">)</span>
-                    <span class="k">elif</span> <span class="n">attr_name</span> <span class="o">==</span> <span class="s1">&#39;eval&#39;</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="s1">&#39;eval&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-                            <span class="n">config</span><span class="p">[</span><span class="s1">&#39;eval&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_sh_path_reference</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;eval&#39;</span><span class="p">],</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="p">(</span>
+                        <span class="s1">&#39;eval&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;cycle&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;autotimer&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;hysteresis_upper_threshold&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;hysteresis_lower_threshold&#39;</span><span class="p">,</span>
+                    <span class="p">):</span>
+                        <span class="k">if</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+                            <span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_sh_path_reference</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">],</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
                     <span class="k">elif</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;on_change&#39;</span><span class="p">,</span> <span class="s1">&#39;on_update&#39;</span><span class="p">):</span>
                         <span class="k">if</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
                             <span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
@@ -6578,7 +7035,7 @@
 <span class="sd">        :param path: Full dotted path of the entry to remove</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">target</span> <span class="o">+</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">YAML_FILE</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
             <span class="k">return</span>
         <span class="n">yf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yamlfile</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml_file</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
@@ -6748,7 +7205,11 @@
 <span class="sd">        Yield (attribute_name, text) pairs for *item*&#39;s reference-bearing</span>
 <span class="sd">        attributes, for use by find_references(). Single-value attributes</span>
 <span class="sd">        are skipped when unset; list attributes contribute one pair per</span>
-<span class="sd">        entry.</span>
+<span class="sd">        entry. cycle/autotimer/hysteresis_upper_threshold/</span>
+<span class="sd">        hysteresis_lower_threshold each split into two independently</span>
+<span class="sd">        sh.-expanded runtime parts (time/value, threshold/timer) — both</span>
+<span class="sd">        are yielded under the same attribute_name, since the raw config</span>
+<span class="sd">        value being rewritten is one string either way.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">_eval</span><span class="p">:</span>
             <span class="k">yield</span> <span class="p">(</span><span class="s1">&#39;eval&#39;</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_eval</span><span class="p">)</span>
@@ -6760,6 +7221,22 @@
             <span class="k">yield</span> <span class="p">(</span><span class="s1">&#39;trigger&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">_hysteresis_input</span><span class="p">:</span>
             <span class="k">yield</span> <span class="p">(</span><span class="s1">&#39;hysteresis_input&#39;</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_hysteresis_input</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">_cycle_time</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="s1">&#39;cycle&#39;</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_cycle_time</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">_cycle_value</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="s1">&#39;cycle&#39;</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_cycle_value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">_autotimer_time</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="s1">&#39;autotimer&#39;</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_autotimer_time</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">_autotimer_value</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="s1">&#39;autotimer&#39;</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_autotimer_value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">_hysteresis_upper_threshold</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="s1">&#39;hysteresis_upper_threshold&#39;</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_hysteresis_upper_threshold</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">_hysteresis_upper_timer</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="s1">&#39;hysteresis_upper_threshold&#39;</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_hysteresis_upper_timer</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">_hysteresis_lower_threshold</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="s1">&#39;hysteresis_lower_threshold&#39;</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_hysteresis_lower_threshold</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">_hysteresis_lower_timer</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="s1">&#39;hysteresis_lower_threshold&#39;</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_hysteresis_lower_timer</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Items.current_config_for_edit"><a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.current_config_for_edit">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">current_config_for_edit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6791,7 +7268,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">:</span>
             <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">target</span> <span class="o">+</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">YAML_FILE</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
                 <span class="n">yf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yamlfile</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml_file</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
                 <span class="n">existing</span> <span class="o">=</span> <span class="n">yf</span><span class="o">.</span><span class="n">getnode</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Class Items &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 12. Juli 2026, commit 8884ff5) Dokumentation</title>
+  <title>Class Items &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 13. Juli 2026, commit d436e3b) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
@@ -4366,8 +4366,10 @@
 <li class="toctree-l5"><a class="reference internal" href="shyaml.html#lib.shyaml.get_key"><code class="docutils literal notranslate"><span class="pre">get_key()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="shyaml.html#lib.shyaml.get_parent"><code class="docutils literal notranslate"><span class="pre">get_parent()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="shyaml.html#lib.shyaml.setInDict"><code class="docutils literal notranslate"><span class="pre">setInDict()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="shyaml.html#lib.shyaml.strip_yaml_extension"><code class="docutils literal notranslate"><span class="pre">strip_yaml_extension()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="shyaml.html#lib.shyaml.writeBackToFile"><code class="docutils literal notranslate"><span class="pre">writeBackToFile()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="shyaml.html#lib.shyaml.yaml_dump_roundtrip"><code class="docutils literal notranslate"><span class="pre">yaml_dump_roundtrip()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="shyaml.html#lib.shyaml.yaml_exists"><code class="docutils literal notranslate"><span class="pre">yaml_exists()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="shyaml.html#lib.shyaml.yaml_load"><code class="docutils literal notranslate"><span class="pre">yaml_load()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="shyaml.html#lib.shyaml.yaml_load_fromstring"><code class="docutils literal notranslate"><span class="pre">yaml_load_fromstring()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="shyaml.html#lib.shyaml.yaml_load_roundtrip"><code class="docutils literal notranslate"><span class="pre">yaml_load_roundtrip()</span></code></a></li>
@@ -5979,6 +5981,87 @@ extension) to override the default above</p></li>
 </dd>
 <dt class="field-odd">Rückgabetyp<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="item_class_item.html#lib.item.item.Item" title="lib.item.item.Item">Item</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.item.Items.copy_item">
+<span class="sig-name descname"><span class="pre">copy_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_missing_parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/item/items.html#Items.copy_item"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.item.Items.copy_item" title="Link zu dieser Definition"></a></dt>
+<dd><p>Copy an item to <em>new_path</em> as an independent clone — fresh
+plugin bindings and value history, no shared identity with the
+source (unlike rename_item(), which preserves identity and only
+relocates it). Copies the item’s entire subtree by default; set
+<em>include_children</em> to False to copy only the item itself.</p>
+<p>Only persisted items can be copied: there is no existing helper
+that reconstructs a full nested (with-children) config dict from
+a live, non-persisted item tree — current_config_for_edit()
+strips child (dict-valued) keys on purpose, since edit_item()
+never touches children. A non-persisted source raises ValueError.</p>
+<p>The copy is written to <em>filename</em> if given, otherwise to the
+SOURCE item’s own file — deliberately not the new parent’s file
+the way rename_item() defaults when moving, since a copy is
+meant to be „the same config, elsewhere,“ not adopt its new
+neighbourhood’s file.</p>
+<p>Self-references inside the copied subtree (eval/on_change/
+on_update/trigger/hysteresis_input/cycle/autotimer/
+hysteresis_upper_threshold/hysteresis_lower_threshold) are
+handled differently depending on whether their target is
+actually part of what’s being copied:</p>
+<ul class="simple">
+<li><p>An absolute (<code class="docutils literal notranslate"><span class="pre">sh.&lt;path&gt;</span></code>/bare-path) reference whose target
+IS part of the copy (old_path itself, or one of its
+descendants when include_children brought it along) is
+rewritten from old_path to new_path, via the same
+boundary-aware prefix replace rename_item() uses for external
+references.</p></li>
+<li><p>An absolute reference whose target is NOT part of the copy (a
+descendant include_children=False left behind, or something
+entirely outside old_path’s subtree) is left pointing at the
+original — reported back in <code class="docutils literal notranslate"><span class="pre">left_pointing_at_original</span></code>
+rather than silently rewritten to a path that won’t exist, or
+silently dropped.</p></li>
+<li><p>A relative reference (leading-dot syntax, resolved fresh
+against the item’s own position at every load) is NEVER
+rewritten — its target is inherently tied to tree position,
+so „leaving it alone“ IS the text staying byte-for-byte the
+same. It’s classified instead: silently fine if it still
+resolves inside the copied tree; always reported in
+<code class="docutils literal notranslate"><span class="pre">relative_references_flagged</span></code> if its original target was a
+descendant that wasn’t copied along (guaranteed broken); and,
+if its target was outside old_path’s subtree entirely,
+reported only if re-resolving the same text from the new
+position lands on a different target than before (can’t tell
+whether that drift is a bug or intentional, so it’s surfaced
+rather than guessed at).</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameter<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>item</strong> – The item to copy</p></li>
+<li><p><strong>new_path</strong> (<em>str</em>) – Full path for the copy</p></li>
+<li><p><strong>filename</strong> (<em>str</em>) – Explicit target yaml file (basename, no
+extension) to override the default (source
+item’s own file)</p></li>
+<li><p><strong>create_missing_parents</strong> (<em>bool</em>) – If True, auto-create any missing
+ancestor of <em>new_path</em> instead of raising
+ValueError — see create_item().</p></li>
+<li><p><strong>include_children</strong> (<em>bool</em>) – If False, copy only the item’s own
+attributes — none of its child items.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Rückgabe<span class="colon">:</span></dt>
+<dd class="field-even"><p>(copy, report) — copy is the newly created copy, or
+None if its own name collided with an existing
+attribute and was dropped (see create_item()); report
+is {„left_pointing_at_original“: […],
+„relative_references_flagged“: […]}, each entry a
+dict with item/attribute/reference (plus a reason and
+the resolved old/new targets for relative entries) —
+see _rewrite_subtree_self_references().</p>
+</dd>
+<dt class="field-odd">Rückgabetyp<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple(<a class="reference internal" href="item_class_item.html#lib.item.item.Item" title="lib.item.item.Item">Item</a> or None, dict)</p>
 </dd>
 </dl>
 </dd></dl>
