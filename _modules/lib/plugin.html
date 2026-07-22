@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.plugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 22. Juli 2026, commit 476e098) Dokumentation</title>
+  <title>lib.plugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 22. Juli 2026, commit b111276) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -6357,13 +6357,13 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;myplugin referrer cnt2= </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">gc</span><span class="o">.</span><span class="n">get_referrers</span><span class="p">(</span><span class="n">myplugin</span><span class="p">))</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
             <span class="c1"># remove references in plugins data</span>
-            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plugindict</span><span class="p">,</span> <span class="n">plgname</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="n">myplugin</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugindict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">plgname</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="n">myplugin</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugindict</span><span class="p">[</span><span class="n">plgname</span><span class="p">]</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error on removing </span><span class="si">{</span><span class="n">plgname</span><span class="si">}</span><span class="s1"> from plugindict: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plugindict</span><span class="p">,</span> <span class="n">plgname</span> <span class="o">+</span> <span class="s1">&#39;#&#39;</span> <span class="o">+</span> <span class="n">instance</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="n">myplugin</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugindict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">plgname</span> <span class="o">+</span> <span class="s1">&#39;#&#39;</span> <span class="o">+</span> <span class="n">instance</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="n">myplugin</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugindict</span><span class="p">[</span><span class="n">plgname</span> <span class="o">+</span> <span class="s1">&#39;#&#39;</span> <span class="o">+</span> <span class="n">instance</span><span class="p">]</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -6667,6 +6667,24 @@
             <span class="c1"># initialize the loaded instance of the plugin</span>
             <span class="c1"># exec(&quot;self.plugin.__init__(smarthome{0}{1})&quot;.format(&quot;,&quot; if len(arglist) else &quot;&quot;, argstring))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">smarthome</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="c1"># QA guard: detect plugins that skip super().__init__(), which</span>
+            <span class="c1"># leaves them running on SmartPlugin/MqttPlugin&#39;s class-level</span>
+            <span class="c1"># mutable-default fallbacks (shared across every plugin instance)</span>
+            <span class="c1"># instead of proper instance-specific state. Work now, fail later:</span>
+            <span class="c1"># just warn for now while the 3rd-party plugin fleet gets audited;</span>
+            <span class="c1"># TODO/FIXME: once that audit is done, uncomment the line below to</span>
+            <span class="c1"># actually refuse to run plugins that fail this check.</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_implementation</span><span class="p">(),</span> <span class="n">SmartPlugin</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_implementation</span><span class="p">(),</span> <span class="s1">&#39;_smartplugin_super_init_done&#39;</span><span class="p">,</span> <span class="kc">False</span>
+            <span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Plugin &#39;</span><span class="si">{</span><span class="n">classpath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; (section &#39;</span><span class="si">{</span><span class="n">plg_section</span><span class="si">}</span><span class="s2">&#39;) does not call &quot;</span>
+                    <span class="sa">f</span><span class="s1">&#39;super().__init__() from its own __init__() method - it is running on shared &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;class-level default state instead of instance-specific state, which can leak &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;data between plugin instances. Please fix the plugin.&#39;</span>
+                <span class="p">)</span>
+                <span class="c1"># self.get_implementation()._init_complete = False</span>
 
             <span class="c1"># set level to make logger appear in internal list of loggers (if not configured by logging.yaml)</span>
             <span class="k">try</span><span class="p">:</span>  <span class="c1"># skip classic plugins</span>

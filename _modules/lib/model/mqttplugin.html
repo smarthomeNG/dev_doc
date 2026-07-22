@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.mqttplugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 22. Juli 2026, commit 476e098) Dokumentation</title>
+  <title>lib.model.mqttplugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 22. Juli 2026, commit b111276) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -5750,6 +5750,16 @@
 
 
 <div class="viewcode-block" id="MqttPlugin"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/mqttplugin_class.html#lib.model.mqttplugin.MqttPlugin">[Doku]</a><span class="k">class</span><span class="w"> </span><span class="nc">MqttPlugin</span><span class="p">(</span><span class="n">SmartPlugin</span><span class="p">):</span>
+    <span class="c1"># TODO/FIXME: _item_values is a class-level mutable default, kept (not</span>
+    <span class="c1"># switched to a None sentinel) so plugins that skip super().__init__()</span>
+    <span class="c1"># keep working exactly as before - they just still share this single</span>
+    <span class="c1"># dict across every MqttPlugin instance/subclass that doesn&#39;t set its</span>
+    <span class="c1"># own (confirmed happening today between mqtt/shelly/tasmota/</span>
+    <span class="c1"># zigbee2mqtt). __init__ below now sets the instance-level dict for</span>
+    <span class="c1"># every plugin that *does* call super().__init__(), which is already</span>
+    <span class="c1"># the fix for the common case. Revisit once the 3rd-party plugin fleet</span>
+    <span class="c1"># has been audited for super().__init__() compliance, then this can</span>
+    <span class="c1"># become _item_values = None to fail loudly instead of sharing state.</span>
     <span class="n">_item_values</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># dict of dicts</span>
 
     <span class="c1"># Initialization of SmartPlugin class called by super().__init__() from the plugin&#39;s __init__() method</span>
@@ -5758,6 +5768,8 @@
 <span class="sd">        Initialization Routine for the mqtt extension class to SmartPlugin</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_item_values</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># dict of dicts; instance-specific, see TODO/FIXME above the class attribute</span>
 
         <span class="c1"># get instance of MQTT module</span>
         <span class="k">try</span><span class="p">:</span>

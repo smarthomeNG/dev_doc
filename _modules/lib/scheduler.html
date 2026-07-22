@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.scheduler &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 22. Juli 2026, commit 476e098) Dokumentation</title>
+  <title>lib.scheduler &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 22. Juli 2026, commit b111276) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -6334,28 +6334,34 @@
 
 <div class="viewcode-block" id="Scheduler.update_item"><a class="viewcode-back" href="../../lib/scheduler.html#lib.scheduler.Scheduler.update_item">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;provide a mechanism to handle changes of cycle item references&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cycle_items</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;item </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1"> not registered for cycle update, ignoring.&#39;</span><span class="p">)</span>
-            <span class="k">return</span>
-
-        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cycle_items</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">]:</span>
-            <span class="n">cycle_item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;obj&#39;</span><span class="p">]</span>
-            <span class="n">cycle</span> <span class="o">=</span> <span class="n">cycle_item</span><span class="o">.</span><span class="n">get_attr_time</span><span class="p">(</span><span class="s1">&#39;cycle&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">cycle</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;item </span><span class="si">{</span><span class="n">cycle_item</span><span class="si">}</span><span class="s1"> for cycle update return invalid cycle data </span><span class="si">{</span><span class="n">cycle</span><span class="si">}</span><span class="s1">, ignoring.&#39;</span><span class="p">)</span>
+        <span class="c1"># called synchronously on whatever thread changes the watched item</span>
+        <span class="c1"># (item.add_method_trigger), so this must not touch _scheduler/</span>
+        <span class="c1"># _cycle_items without the lock run() and the other mutators use -</span>
+        <span class="c1"># otherwise a concurrent run() iteration and this method can read/</span>
+        <span class="c1"># write the same job entry&#39;s &#39;cycle&#39;/&#39;value&#39;/&#39;next&#39; interleaved</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cycle_items</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;item </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1"> not registered for cycle update, ignoring.&#39;</span><span class="p">)</span>
                 <span class="k">return</span>
 
-            <span class="n">value</span> <span class="o">=</span> <span class="n">cycle_item</span><span class="o">.</span><span class="n">get_attr_value</span><span class="p">(</span><span class="s1">&#39;cycle&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cycle_items</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">]:</span>
+                <span class="n">cycle_item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;obj&#39;</span><span class="p">]</span>
+                <span class="n">cycle</span> <span class="o">=</span> <span class="n">cycle_item</span><span class="o">.</span><span class="n">get_attr_time</span><span class="p">(</span><span class="s1">&#39;cycle&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">cycle</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;item </span><span class="si">{</span><span class="n">cycle_item</span><span class="si">}</span><span class="s1"> for cycle update return invalid cycle data </span><span class="si">{</span><span class="n">cycle</span><span class="si">}</span><span class="s1">, ignoring.&#39;</span><span class="p">)</span>
+                    <span class="k">return</span>
 
-            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;cycle&#39;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;cycle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cycle</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;cycle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">cycle</span><span class="p">:</span> <span class="n">value</span><span class="p">}</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">cycle_item</span><span class="o">.</span><span class="n">get_attr_value</span><span class="p">(</span><span class="s1">&#39;cycle&#39;</span><span class="p">)</span>
 
-            <span class="c1"># as we don&#39;t know the last execution time, we start anew from now</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_next_time</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
+                <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;cycle&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;cycle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cycle</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;cycle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">cycle</span><span class="p">:</span> <span class="n">value</span><span class="p">}</span>
+
+                <span class="c1"># as we don&#39;t know the last execution time, we start anew from now</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_next_time</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Scheduler.get"><a class="viewcode-back" href="../../lib/scheduler.html#lib.scheduler.Scheduler.get">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">from_smartplugin</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

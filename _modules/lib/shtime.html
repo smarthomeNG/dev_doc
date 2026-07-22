@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.shtime &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 22. Juli 2026, commit 476e098) Dokumentation</title>
+  <title>lib.shtime &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 22. Juli 2026, commit b111276) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5775,7 +5775,6 @@
 
 <div class="viewcode-block" id="Shtime"><a class="viewcode-back" href="../../lib/shtime.html#lib.shtime.Shtime">[Doku]</a><span class="k">class</span><span class="w"> </span><span class="nc">Shtime</span><span class="p">:</span>
     <span class="n">_tzinfo</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">_timezone</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_utctz</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_starttime</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">_tz</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
@@ -5859,18 +5858,12 @@
         <span class="n">tzinfo</span> <span class="o">=</span> <span class="n">tz</span><span class="o">.</span><span class="n">gettz</span><span class="p">(</span><span class="n">tzone</span><span class="p">)</span>  <span class="c1"># type: tzfile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;set_tz: tz=</span><span class="si">{</span><span class="n">tz</span><span class="si">}</span><span class="s1"> -&gt; tzinfo=</span><span class="si">{</span><span class="n">tzinfo</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">tzinfo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1">#            TZ = tzinfo</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_tz</span> <span class="o">=</span> <span class="n">tzone</span>
             <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;TZ&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tz</span>
-            <span class="c1">#             self._tzinfo = TZ</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_tzinfo</span><span class="p">(</span><span class="n">tzinfo</span><span class="p">)</span>
-            <span class="c1"># self._timezone = pytz.timezone(tzone)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_timezone</span> <span class="o">=</span> <span class="n">tz</span><span class="o">.</span><span class="n">gettz</span><span class="p">(</span><span class="n">tzone</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="s2">&quot;Problem parsing timezone &#39;</span><span class="si">{tz}</span><span class="s2">&#39; - Using UTC&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tz</span><span class="o">=</span><span class="n">tzone</span><span class="p">))</span>
-            <span class="c1"># self._timezone = pytz.timezone(&quot;UTC&quot;)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_timezone</span> <span class="o">=</span> <span class="n">tz</span><span class="o">.</span><span class="n">gettz</span><span class="p">(</span><span class="s1">&#39;UTC&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;self.set_tz: -&gt; self._timezone=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_timezone</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_tzinfo</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">gettz</span><span class="p">(</span><span class="s1">&#39;UTC&#39;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;self.set_tz: -&gt; self._tzinfo=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tzinfo</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">return</span></div>
 
@@ -6307,7 +6300,7 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span> <span class="ow">and</span> <span class="n">key</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># naive datetime: label it as being in shng&#39;s configured timezone, don&#39;t shift it.</span>
             <span class="c1"># .astimezone() would instead treat it as OS-local time and convert (shift) it.</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_timezone</span><span class="p">)</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tzinfo</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">key</span></div>
 
 <div class="viewcode-block" id="Shtime.date_transform"><a class="viewcode-back" href="../../lib/shtime.html#lib.shtime.Shtime.date_transform">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">date_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>

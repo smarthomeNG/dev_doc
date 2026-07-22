@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Module admin (README) &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 22. Juli 2026, commit 476e098) Dokumentation</title>
+  <title>Module admin (README) &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 22. Juli 2026, commit b111276) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5745,114 +5745,190 @@
 </section>
 <section id="api-des-moduls-admin">
 <h2>API des Moduls admin<a class="headerlink" href="#api-des-moduls-admin" title="Permalink to this heading"></a></h2>
-<p>Im folgenden sind die einzelnen Teile des REST APIs beschrieben,
-welches das admin Modul zur Verfügung stellt und intern nutzt.</p>
-<p>Wenn zur Nutzung des einzelen APIs eine Authentifizierung notwendig
-ist, ist dieses erwähnt.</p>
-<section id="auth-api-authentification-for-clients">
-<h3>AUTH API -  Authentification for clients<a class="headerlink" href="#auth-api-authentification-for-clients" title="Permalink to this heading"></a></h3>
-<section id="post-api-auth">
-<h4>POST /api/auth/<a class="headerlink" href="#post-api-auth" title="Permalink to this heading"></a></h4>
-<p>Authentifiziert den Client bei SmartHomeNG und erhält einen
-Token (JWT) bei erfolgreicher Authentifizierung.</p>
+<p>This module exposes a JWT-authenticated REST API under <code class="docutils literal notranslate"><span class="pre">/api/</span></code>, consumed by the shngadmin
+frontend (a separate repository). The full endpoint-by-endpoint reference — every route,
+method, query/body params, and auth requirement — lives in
+<a class="reference download internal" download="" href="../../_downloads/42ff584580fb1df937e38dbd749f2fbe/openapi.yaml"><span class="xref download myst">openapi.yaml</span></a>; this section is a grouped overview, reconstructed 2026-07-20
+from the actual handler code in <code class="docutils literal notranslate"><span class="pre">api_*.py</span></code> and cross-checked against every call site in
+shngadmin. Where this file and <code class="docutils literal notranslate"><span class="pre">openapi.yaml</span></code> disagree, trust <code class="docutils literal notranslate"><span class="pre">openapi.yaml</span></code> — it’s the
+more detailed source.</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">openapi.yaml</span></code> is generated, not hand-edited</strong> — same convention as <code class="docutils literal notranslate"><span class="pre">requirements/*.txt</span></code>
+(see <code class="docutils literal notranslate"><span class="pre">lib/shpypi.py</span></code>). Its actual source of truth is the <code class="docutils literal notranslate"><span class="pre">ApiDoc</span></code>/<code class="docutils literal notranslate"><span class="pre">ApiParam</span></code> metadata
+attached directly to each route’s handler method in <code class="docutils literal notranslate"><span class="pre">api_*.py</span></code> (see <code class="docutils literal notranslate"><span class="pre">rest.py</span></code> for the
+type definitions) — e.g. <code class="docutils literal notranslate"><span class="pre">read.api_doc</span> <span class="pre">=</span> <span class="pre">[ApiDoc(...)]</span></code> sitting right next to that same
+method’s existing <code class="docutils literal notranslate"><span class="pre">read.expose_resource</span> <span class="pre">=</span> <span class="pre">True</span></code> line. This replaced a hand-maintained
+<code class="docutils literal notranslate"><span class="pre">api.raml</span></code> that went stale because nothing forced it to change alongside the code; putting
+the metadata in the same few lines as the route it documents is the actual fix, not just a
+different file format. After changing a route (or its <code class="docutils literal notranslate"><span class="pre">ApiDoc</span></code>), regenerate with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">tools</span><span class="o">/</span><span class="n">build_openapi</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Note: <code class="docutils literal notranslate"><span class="pre">/admin/</span></code> (without <code class="docutils literal notranslate"><span class="pre">/api</span></code>) is <em>not</em> part of this API — it’s the suburl the built
+Angular frontend’s static files are served from. An older, unauthenticated set of
+JSON/HTML endpoints used to live there before shngadmin migrated to this REST API; they
+have since been removed (see the <code class="docutils literal notranslate"><span class="pre">WebInterface</span></code> class docstring in <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code>).</p>
+<p>Unless noted otherwise, every endpoint below requires the <code class="docutils literal notranslate"><span class="pre">Authorization:</span> <span class="pre">Bearer</span> <span class="pre">&lt;jwt&gt;</span></code>
+header.</p>
+<section id="auth-api-login-and-token-renewal">
+<h3>AUTH API — login and token renewal<a class="headerlink" href="#auth-api-login-and-token-renewal" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/api/authenticate/user</span></code> — log in with SHA-512-hashed credentials, get a JWT. <em>No auth required.</em></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/api/authenticate/renew</span></code> — renew the current JWT before it expires.</p></li>
+</ul>
+</section>
+<section id="config-api-read-write-etc-smarthome-yaml-and-etc-module-yaml-sections">
+<h3>CONFIG API — read/write etc/smarthome.yaml and etc/module.yaml sections<a class="headerlink" href="#config-api-read-write-etc-smarthome-yaml-and-etc-module-yaml-sections" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/config/</span></code> — all config sections (common, http, websocket, admin, mqtt) in one call.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/config/{common|http|websocket|admin|mqtt}</span></code> — a single section (backend only; shngadmin always fetches everything via the bare <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/config/</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/api/config/core</span></code> — save config. Despite the path, this writes <em>all</em> sections together in one call, regardless of which id (<code class="docutils literal notranslate"><span class="pre">core</span></code>/<code class="docutils literal notranslate"><span class="pre">common</span></code>/<code class="docutils literal notranslate"><span class="pre">http</span></code>/<code class="docutils literal notranslate"><span class="pre">admin</span></code>/<code class="docutils literal notranslate"><span class="pre">mqtt</span></code>) is used — shngadmin always uses <code class="docutils literal notranslate"><span class="pre">core</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/config/check_config_etc/</span></code> — dry-run check whether <code class="docutils literal notranslate"><span class="pre">etc/</span></code> needs/can be migrated.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/api/config/enable_config_etc/</span></code> — (re-)enable the <code class="docutils literal notranslate"><span class="pre">etc/</span></code> config directory.</p></li>
+</ul>
+</section>
+<section id="items-api-item-tree-item-crud-struct-templates">
+<h3>ITEMS API — item tree, item CRUD, struct templates<a class="headerlink" href="#items-api-item-tree-item-crud-struct-templates" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/items/list/</span></code> — flat item list.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/items/tree</span></code> — item tree structure.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/items/attributes</span></code> — core item-attribute catalog.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/items/structs/</span></code> — item struct templates (<code class="docutils literal notranslate"><span class="pre">etc/struct.yaml</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/items/{itemPath}</span></code> — full detail for one item.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/api/items/{itemPath}</span></code> — live-set an item’s value.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/api/items/{itemPath}</span></code> — create a new item.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PATCH</span> <span class="pre">/api/items/{itemPath}</span></code> — replace an item’s config (full replace, not a partial patch despite the verb).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DELETE</span> <span class="pre">/api/items/{itemPath}?persist=&amp;recursive=</span></code> — delete an item.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/api/items/{itemPath}/rename</span></code> — rename or move an item (same endpoint for both).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/api/items/{itemPath}/copy</span></code> — copy an item, subtree included by default.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/items/{itemPath}/references</span></code> — what references this item (pre-delete check).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/api/items/{itemPath}/remove_references</span></code> — strip other items‘/plugins‘ references to this item.</p></li>
+</ul>
+</section>
+<section id="plugins-api-read-only-plugin-discovery-info">
+<h3>PLUGINS API — read-only plugin discovery/info<a class="headerlink" href="#plugins-api-read-only-plugin-discovery-info" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/plugins/</span></code> — <strong>deactivated 2026-07-20</strong> (now 404s). Was an installed-plugin-name → type map, a strict subset of <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/plugins/installed/</span></code>, which shngadmin already fetches. Being test-run as removed — see <code class="docutils literal notranslate"><span class="pre">api_plugins.py</span></code>’s <code class="docutils literal notranslate"><span class="pre">PluginsController.read</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/plugins/installed/</span></code> — full metadata for every plugin in the <code class="docutils literal notranslate"><span class="pre">plugins/</span></code> directory.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/plugins/config/</span></code> — configuration of all currently configured plugins.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/plugins/info/</span></code> — plugin metadata for the plugin-list page.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/plugins/logicparams/</span></code> — plugin-contributed logic-parameter metadata.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/plugins/api/</span></code> — plugin API metadata.</p></li>
+</ul>
+</section>
+<section id="plugin-api-single-plugin-config-crud-and-lifecycle-control">
+<h3>PLUGIN API — single-plugin config CRUD and lifecycle control<a class="headerlink" href="#plugin-api-single-plugin-config-crud-and-lifecycle-control" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/api/plugin/{pluginSection}/</span></code> — update one plugin’s config section.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/api/plugin/{pluginSection}/</span></code> — add a new plugin config section.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DELETE</span> <span class="pre">/api/plugin/{pluginSection}/</span></code> — delete a plugin config section.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/api/plugin/{pluginConfigName}?action={start|stop|load|unload|reload}[&amp;filename=]</span></code> — lifecycle/state control.</p></li>
+</ul>
+</section>
+<section id="logics-api-logic-list-detail-lifecycle-groups-parameters">
+<h3>LOGICS API — logic list, detail, lifecycle, groups, parameters<a class="headerlink" href="#logics-api-logic-list-detail-lifecycle-groups-parameters" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/logics/[?infotype=groups]</span></code> — flat list, or the logic-group tree.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/logics/{logicName}[?infotype=status]</span></code> — one logic’s detail, or its runtime status.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/api/logics/{logicName}?action={trigger|enable|disable|load|unload|reload|delete|create|rename}[&amp;filename=][&amp;newfilename=]</span></code> — lifecycle/state actions and rename. (<code class="docutils literal notranslate"><span class="pre">delete_with_code</span></code> is a backend-only variant, also deletes the logic’s <code class="docutils literal notranslate"><span class="pre">.py</span></code> file — not currently called by shngadmin.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/api/logics/{logicName}?action=saveparameters</span></code> — save the logic’s parameter section.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/api/logics/{groupName}?action=savegroup</span></code> — save a logic group.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/api/logics/{groupName}?action=deletegroup</span></code> — delete a logic group.</p></li>
+</ul>
+</section>
+<section id="scenes-api-scene-list-and-reload">
+<h3>SCENES API — scene list and reload<a class="headerlink" href="#scenes-api-scene-list-and-reload" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/scenes/</span></code> — list of configured scenes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/api/scenes/reload/{name}</span></code> — reload one scene, or <code class="docutils literal notranslate"><span class="pre">all</span></code> for every scene.</p></li>
+</ul>
+</section>
+<section id="schedulers-api-scheduler-list">
+<h3>SCHEDULERS API — scheduler list<a class="headerlink" href="#schedulers-api-scheduler-list" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/schedulers/</span></code> — list of configured schedulers.</p></li>
+</ul>
+</section>
+<section id="threads-api-running-threads">
+<h3>THREADS API — running threads<a class="headerlink" href="#threads-api-running-threads" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/threads/</span></code> — list of running threads.</p></li>
+</ul>
+</section>
+<section id="functions-api-registered-functions">
+<h3>FUNCTIONS API — registered functions<a class="headerlink" href="#functions-api-registered-functions" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/functions/</span></code> — list of registered functions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/api/functions/reload/{name}</span></code> — reload one function, or <code class="docutils literal notranslate"><span class="pre">all</span></code> for every function.</p></li>
+</ul>
+</section>
+<section id="services-api-config-text-validation-conversion-cache-maintenance">
+<h3>SERVICES API — config-text validation/conversion, cache maintenance<a class="headerlink" href="#services-api-config-text-validation-conversion-cache-maintenance" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/api/services/evalcheck/</span></code> — validate a Python <code class="docutils literal notranslate"><span class="pre">eval:</span></code>-style expression.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/api/services/yamlcheck/</span></code> — validate raw YAML text.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/api/services/yamlconvert/</span></code> — convert arbitrary config text to YAML.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/services/cachecheck/</span></code> — list orphaned cache files.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/api/services/cachefile_delete?filename=</span></code> — delete one cache file.</p></li>
+</ul>
+</section>
+<section id="files-api-raw-read-write-access-to-etc-config-files">
+<h3>FILES API — raw read/write access to etc/ config files<a class="headerlink" href="#files-api-raw-read-write-access-to-etc-config-files" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">filetype</span></code> is a closed set: <code class="docutils literal notranslate"><span class="pre">structs</span></code>, <code class="docutils literal notranslate"><span class="pre">items</span></code>, <code class="docutils literal notranslate"><span class="pre">scenes</span></code>, <code class="docutils literal notranslate"><span class="pre">functions</span></code>, <code class="docutils literal notranslate"><span class="pre">logics</span></code> (list files
+of that type, or read/write one with <code class="docutils literal notranslate"><span class="pre">?filename=</span></code>), plus the special cases <code class="docutils literal notranslate"><span class="pre">logging</span></code>
+(<code class="docutils literal notranslate"><span class="pre">etc/logging.yaml</span></code>) and <code class="docutils literal notranslate"><span class="pre">backup</span></code> (GET only, returns a zip of the whole <code class="docutils literal notranslate"><span class="pre">etc/</span></code> dir).</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/files/{filetype}/[?filename=]</span></code> — file list, or one file’s raw text.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/api/files/{filetype}/?filename=</span></code> — create a new file (409 if it already exists).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/api/files/{filetype}/[?filename=]</span></code> — save/overwrite a file. For <code class="docutils literal notranslate"><span class="pre">logging</span></code>, the response includes <code class="docutils literal notranslate"><span class="pre">config_reloaded</span></code>/<code class="docutils literal notranslate"><span class="pre">config_restored</span></code> flags — bad YAML is auto-rolled back server-side.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DELETE</span> <span class="pre">/api/files/{filetype}/[?filename=]</span></code> — delete a file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/files/backup/</span></code> — download a config backup.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/api/files/restore?filename=</span></code> — restore <code class="docutils literal notranslate"><span class="pre">etc/</span></code> from a backup (backend only — no current shngadmin caller found).</p></li>
+</ul>
+</section>
+<section id="loggers-api-logger-list-level-handler-control">
+<h3>LOGGERS API — logger list, level/handler control<a class="headerlink" href="#loggers-api-logger-list-level-handler-control" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/loggers/</span></code> — all loggers with current levels.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/api/loggers/{logger}?level=</span></code> — set a logger’s level.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/api/loggers/{logger}?handlers=</span></code> — set a logger’s handler list.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/api/loggers/{logger}/</span></code> — add a new logger.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DELETE</span> <span class="pre">/api/loggers/{logger}/</span></code> — delete a logger.</p></li>
+</ul>
+</section>
+<section id="logs-api-log-file-list-and-chunked-reading">
+<h3>LOGS API — log file list and chunked reading<a class="headerlink" href="#logs-api-log-file-list-and-chunked-reading" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/logs/</span></code> — list of available log files.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/logs/{filename}?chunk=</span></code> — one chunk of a log file (<code class="docutils literal notranslate"><span class="pre">chunk=1</span></code> first, <code class="docutils literal notranslate"><span class="pre">chunk=0</span></code> is the server convention for „last chunk“).</p></li>
+</ul>
+</section>
+<section id="server-api-bootstrap-info-status-restart-pypi-check">
+<h3>SERVER API — bootstrap info, status, restart, PyPI check<a class="headerlink" href="#server-api-bootstrap-info-status-restart-pypi-check" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/server/</span></code> — basic info (<code class="docutils literal notranslate"><span class="pre">default_language</span></code>, <code class="docutils literal notranslate"><span class="pre">client_ip</span></code>, <code class="docutils literal notranslate"><span class="pre">login_required</span></code>, <code class="docutils literal notranslate"><span class="pre">websocket_host</span></code>, <code class="docutils literal notranslate"><span class="pre">websocket_port</span></code>). <em>No auth required</em> even though it’s flagged <code class="docutils literal notranslate"><span class="pre">authentication_needed</span></code> in code — exempted via <code class="docutils literal notranslate"><span class="pre">public_root</span></code> for exactly this bare path. Also (ab)used as a lightweight reachability heartbeat by shngadmin.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/server/info</span></code> — extended info: timezone, core/plugins git branch, <code class="docutils literal notranslate"><span class="pre">developer_mode</span></code>, <code class="docutils literal notranslate"><span class="pre">dark_mode</span></code> default, <code class="docutils literal notranslate"><span class="pre">resource_graph_period</span></code>, <code class="docutils literal notranslate"><span class="pre">restart_stops_only</span></code>, and more.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/server/status/</span></code> — shng core running/stopped status.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/api/server/restart/</span></code> — restart shng core.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/server/pypi</span></code> — PyPI package/version check data.</p></li>
+</ul>
+</section>
+<section id="system-api-os-process-level-stats">
+<h3>SYSTEM API — OS/process-level stats<a class="headerlink" href="#system-api-os-process-level-stats" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/system/info</span></code> — CPU/memory/disk stats for the System Overview page.</p></li>
+</ul>
+</section>
+<section id="websocket-api-live-item-values-and-time-series-charts">
+<h3>WebSocket API — live item values and time-series charts<a class="headerlink" href="#websocket-api-live-item-values-and-time-series-charts" title="Permalink to this heading"></a></h3>
+<p>Separate from the REST API above: <code class="docutils literal notranslate"><span class="pre">ws(s)://{host}:{ws_port}/adm</span></code>, handled by the
+<code class="docutils literal notranslate"><span class="pre">websocket</span></code> module’s admin protocol (<code class="docutils literal notranslate"><span class="pre">modules/websocket/admin.py</span></code>), documented in
+<a class="reference internal" href="websocket_admingui_requests.html"><span class="std std-doc">websocket_admingui_requests.rst</span></a>. Used for live item
+value monitoring and the System Overview page’s resource-usage graphs. No JWT is used on
+this channel.</p>
 </section>
 </section>
-<section id="config-api-get-and-update-information-about-the-core-s-configuration">
-<h3>CONFIG API - Get and update information about the core’s configuration<a class="headerlink" href="#config-api-get-and-update-information-about-the-core-s-configuration" title="Permalink to this heading"></a></h3>
-<section id="get-api-config">
-<h4>GET /api/config<a class="headerlink" href="#get-api-config" title="Permalink to this heading"></a></h4>
-<p>liefert die Konfiguration des Core von SmartHomeNG</p>
-</section>
-<section id="get-api-config-module-or-common">
-<h4>GET /api/config/&lt;module (or ‚common‘)&gt;<a class="headerlink" href="#get-api-config-module-or-common" title="Permalink to this heading"></a></h4>
-<p>liefert die Konfiguration der Modules oder des allgemeinen
-(common) Teils von SmartHomeNG</p>
-</section>
-<section id="put-api-config-module-or-common">
-<h4>PUT /api/config/&lt;module (or ‚common‘)&gt;<a class="headerlink" href="#put-api-config-module-or-common" title="Permalink to this heading"></a></h4>
-<p>Macht ein Update auf den entsprechenden Teil der Konfiguration</p>
-<p>-&gt; authentication_needed = True</p>
-</section>
-</section>
-<section id="logics-api-xxx">
-<h3>LOGICS API - xxx<a class="headerlink" href="#logics-api-xxx" title="Permalink to this heading"></a></h3>
 <section id="id1">
-<h4>???<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h4>
-</section>
-</section>
-<section id="logs-api-get-information-about-logs-and-get-log-content">
-<h3>LOGS API - Get information about logs and get log content<a class="headerlink" href="#logs-api-get-information-about-logs-and-get-log-content" title="Permalink to this heading"></a></h3>
-<section id="get-api-logs">
-<h4>GET /api/logs<a class="headerlink" href="#get-api-logs" title="Permalink to this heading"></a></h4>
-<p>liefert die Liste der vorhandenen logs</p>
-</section>
-<section id="get-api-logs-logname">
-<h4>GET /api/logs/&lt;logname&gt;<a class="headerlink" href="#get-api-logs-logname" title="Permalink to this heading"></a></h4>
-<p>liefert den Inhalt einer log-Datei</p>
-</section>
-</section>
-<section id="plugins-api-get-information-about-installed-or-configured-plugins">
-<h3>PLUGINS API - Get information about installed or configured plugins<a class="headerlink" href="#plugins-api-get-information-about-installed-or-configured-plugins" title="Permalink to this heading"></a></h3>
-<section id="get-api-plugins">
-<h4>GET /api/plugins<a class="headerlink" href="#get-api-plugins" title="Permalink to this heading"></a></h4>
-<p>liefert die Liste der installierten Plugins</p>
-</section>
-<section id="get-api-plugins-config">
-<h4>GET /api/plugins/config<a class="headerlink" href="#get-api-plugins-config" title="Permalink to this heading"></a></h4>
-<p>liefert die gesamte config</p>
-</section>
-</section>
-</section>
-<section id="plugin-api-handle-a-single-plugin-configuration">
-<h2>PLUGIN API  -  Handle a single plugin configuration<a class="headerlink" href="#plugin-api-handle-a-single-plugin-configuration" title="Permalink to this heading"></a></h2>
-<section id="post-api-plugin-config-neu">
-<h3>POST /api/plugin/config/&lt;neu&gt;<a class="headerlink" href="#post-api-plugin-config-neu" title="Permalink to this heading"></a></h3>
-<p>legt eine neue Confic-section Namens ‚&lt;neu&gt;‘ an</p>
-<p>-&gt; authentication_needed = True</p>
-</section>
-<section id="put-api-plugin-config-plgsection">
-<h3>PUT /api/plugin/config/&lt;plgsection&gt;<a class="headerlink" href="#put-api-plugin-config-plgsection" title="Permalink to this heading"></a></h3>
-<p>Macht ein Update auf die Section ‚&lt;plgsection&gt;‘</p>
-<p>-&gt; authentication_needed = True</p>
-</section>
-<section id="delete-api-plugin-config-plgsection">
-<h3>DELETE /api/plugin/config/&lt;plgsection&gt;<a class="headerlink" href="#delete-api-plugin-config-plgsection" title="Permalink to this heading"></a></h3>
-<p>Löscht die Section ‚&lt;plgsection&gt;‘</p>
-<p>-&gt; authentication_needed = True</p>
-</section>
-</section>
-<section id="scenes-api-get-information-about-configured-scenes">
-<h2>SCENES API  -  Get information about configured scenes<a class="headerlink" href="#scenes-api-get-information-about-configured-scenes" title="Permalink to this heading"></a></h2>
-<p>####GET /api/scenes
-liefert die Liste der konfigurierten Szenen</p>
-</section>
-<section id="scheduler-api-get-information-about-configured-schedulers">
-<h2>SCHEDULER API  -  Get information about configured schedulers<a class="headerlink" href="#scheduler-api-get-information-about-configured-schedulers" title="Permalink to this heading"></a></h2>
-<p>####GET /api/sched
-liefert die Liste der konfigurierten Scheduler</p>
-</section>
-<section id="scheduler-api-get-information-about-the-smarthomeng-server-configuration">
-<h2>SCHEDULER API  -  Get information about the SmartHomeNG server configuration<a class="headerlink" href="#scheduler-api-get-information-about-the-smarthomeng-server-configuration" title="Permalink to this heading"></a></h2>
-<p>####GET /api/serverinfo
-liefert Informationen über die Konfiguration des SmartHomeNG Servers</p>
-</section>
-<section id="threads-api-get-information-about-running-threads">
-<h2>THREADS API  -  Get information about running threads<a class="headerlink" href="#threads-api-get-information-about-running-threads" title="Permalink to this heading"></a></h2>
-<p>####GET /api/threads
-liefert die Liste der laufenden Threads</p>
-</section>
-<section id="status-api-get-running-status-of-the-smarthomeng-server-instance">
-<h2>STATUS API  -  Get running status of the SmartHomeNG server instance<a class="headerlink" href="#status-api-get-running-status-of-the-smarthomeng-server-instance" title="Permalink to this heading"></a></h2>
-<p>####GET /api/status
-liefert den aktuellen Status von SmartHomeNG</p>
-</section>
-<section id="restart-api-restart-the-smarthomeng-server-instance">
-<h2>RESTART API  -  Restart the SmartHomeNG server instance<a class="headerlink" href="#restart-api-restart-the-smarthomeng-server-instance" title="Permalink to this heading"></a></h2>
-<p>####GET /api/restart
-Startet die SmartHomeNG Server Instanz neu</p>
-</section>
-<section id="id2">
-<h2><a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<h2><a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
 <section id="test-if-module-admin-is-loaded">
 <h3>Test if module admin is loaded<a class="headerlink" href="#test-if-module-admin-is-loaded" title="Permalink to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">admin</span></code> is a loadlable module. Therefore there is no guarantiee that it is present in every system. Before you can use this module, you have to make sure ist is loaded. You can do it by calling a method of the main smarthome object. Do it like this:</p>

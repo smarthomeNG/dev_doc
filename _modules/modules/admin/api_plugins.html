@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>modules.admin.api_plugins &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 22. Juli 2026, commit 476e098) Dokumentation</title>
+  <title>modules.admin.api_plugins &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 22. Juli 2026, commit b111276) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -5759,7 +5759,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">lib.model.smartplugin</span><span class="w"> </span><span class="kn">import</span> <span class="n">SmartPlugin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">lib.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">KEY_CLASS_PATH</span><span class="p">,</span> <span class="n">YAML_FILE</span><span class="p">,</span> <span class="n">DIR_PLUGINS</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.rest</span><span class="w"> </span><span class="kn">import</span> <span class="n">RESTResource</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.rest</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApiDoc</span><span class="p">,</span> <span class="n">RESTResource</span>
 
 
 <div class="viewcode-block" id="PluginsController"><a class="viewcode-back" href="../../../referenz/module/module_admin.html#modules.admin.api_plugins.PluginsController">[Doku]</a><span class="k">class</span><span class="w"> </span><span class="nc">PluginsController</span><span class="p">(</span><span class="n">RESTResource</span><span class="p">):</span>
@@ -5806,7 +5806,10 @@
 
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_data</span><span class="p">)</span></div>
 
-    <span class="n">read</span><span class="o">.</span><span class="n">expose_resource</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="c1"># Deactivated 2026-07-20 to check whether anything still depends on it: this is a strict</span>
+    <span class="c1"># subset of GET /api/plugins/installed/ (name -&gt; type only, vs. full metadata), which</span>
+    <span class="c1"># shngadmin already fetches. No other caller found. If nothing breaks, remove for good.</span>
+    <span class="c1"># read.expose_resource = True</span>
     <span class="n">read</span><span class="o">.</span><span class="n">authentication_needed</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 
@@ -5882,7 +5885,15 @@
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_data</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
     <span class="n">read</span><span class="o">.</span><span class="n">expose_resource</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">read</span><span class="o">.</span><span class="n">authentication_needed</span> <span class="o">=</span> <span class="kc">True</span></div>
+    <span class="n">read</span><span class="o">.</span><span class="n">authentication_needed</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">read</span><span class="o">.</span><span class="n">api_doc</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">ApiDoc</span><span class="p">(</span>
+            <span class="n">summary</span><span class="o">=</span><span class="s1">&#39;Full metadata for every plugin present in the plugins/ directory (not just configured ones)&#39;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s1">&#39;get&#39;</span><span class="p">,</span>
+            <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/plugins/installed/&#39;</span><span class="p">,</span>
+            <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;plugins&#39;</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="PluginsConfigController"><a class="viewcode-back" href="../../../referenz/module/module_admin.html#modules.admin.api_plugins.PluginsConfigController">[Doku]</a><span class="k">class</span><span class="w"> </span><span class="nc">PluginsConfigController</span><span class="p">(</span><span class="n">RESTResource</span><span class="p">):</span>
@@ -6000,7 +6011,15 @@
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">info</span><span class="p">)</span></div>
 
     <span class="n">read</span><span class="o">.</span><span class="n">expose_resource</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">read</span><span class="o">.</span><span class="n">authentication_needed</span> <span class="o">=</span> <span class="kc">True</span></div>
+    <span class="n">read</span><span class="o">.</span><span class="n">authentication_needed</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">read</span><span class="o">.</span><span class="n">api_doc</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">ApiDoc</span><span class="p">(</span>
+            <span class="n">summary</span><span class="o">=</span><span class="s1">&#39;Configuration of all currently configured plugins&#39;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s1">&#39;get&#39;</span><span class="p">,</span>
+            <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/plugins/config/&#39;</span><span class="p">,</span>
+            <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;plugins&#39;</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="PluginsInfoController"><a class="viewcode-back" href="../../../referenz/module/module_admin.html#modules.admin.api_plugins.PluginsInfoController">[Doku]</a><span class="k">class</span><span class="w"> </span><span class="nc">PluginsInfoController</span><span class="p">(</span><span class="n">RESTResource</span><span class="p">):</span>
@@ -6252,7 +6271,12 @@
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">plugins_sorted</span><span class="p">)</span></div>
 
     <span class="n">read</span><span class="o">.</span><span class="n">expose_resource</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">read</span><span class="o">.</span><span class="n">authentication_needed</span> <span class="o">=</span> <span class="kc">True</span></div>
+    <span class="n">read</span><span class="o">.</span><span class="n">authentication_needed</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">read</span><span class="o">.</span><span class="n">api_doc</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">ApiDoc</span><span class="p">(</span>
+            <span class="n">summary</span><span class="o">=</span><span class="s1">&#39;Plugin metadata for the plugin-list page&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;get&#39;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/plugins/info/&#39;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;plugins&#39;</span><span class="p">]</span>
+        <span class="p">)</span>
+    <span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="PluginsAPIController"><a class="viewcode-back" href="../../../referenz/module/module_admin.html#modules.admin.api_plugins.PluginsAPIController">[Doku]</a><span class="k">class</span><span class="w"> </span><span class="nc">PluginsAPIController</span><span class="p">(</span><span class="n">RESTResource</span><span class="p">):</span>
@@ -6295,7 +6319,8 @@
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_list</span><span class="p">)</span></div>
 
     <span class="n">read</span><span class="o">.</span><span class="n">expose_resource</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">read</span><span class="o">.</span><span class="n">authentication_needed</span> <span class="o">=</span> <span class="kc">True</span></div>
+    <span class="n">read</span><span class="o">.</span><span class="n">authentication_needed</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">read</span><span class="o">.</span><span class="n">api_doc</span> <span class="o">=</span> <span class="p">[</span><span class="n">ApiDoc</span><span class="p">(</span><span class="n">summary</span><span class="o">=</span><span class="s1">&#39;Plugin API metadata&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;get&#39;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/plugins/api/&#39;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;plugins&#39;</span><span class="p">])]</span></div>
 
 
 <div class="viewcode-block" id="PluginsLogicParametersController"><a class="viewcode-back" href="../../../referenz/module/module_admin.html#modules.admin.api_plugins.PluginsLogicParametersController">[Doku]</a><span class="k">class</span><span class="w"> </span><span class="nc">PluginsLogicParametersController</span><span class="p">(</span><span class="n">RESTResource</span><span class="p">):</span>
@@ -6325,7 +6350,15 @@
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">get_logic_parameters</span><span class="p">())</span></div>
 
     <span class="n">read</span><span class="o">.</span><span class="n">expose_resource</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">read</span><span class="o">.</span><span class="n">authentication_needed</span> <span class="o">=</span> <span class="kc">True</span></div>
+    <span class="n">read</span><span class="o">.</span><span class="n">authentication_needed</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">read</span><span class="o">.</span><span class="n">api_doc</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">ApiDoc</span><span class="p">(</span>
+            <span class="n">summary</span><span class="o">=</span><span class="s1">&#39;Plugin-contributed logic-parameter metadata, for the logic editor&#39;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s1">&#39;get&#39;</span><span class="p">,</span>
+            <span class="n">path</span><span class="o">=</span><span class="s1">&#39;/plugins/logicparams/&#39;</span><span class="p">,</span>
+            <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;plugins&#39;</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">]</span></div>
 </pre></div>
 
            </div>

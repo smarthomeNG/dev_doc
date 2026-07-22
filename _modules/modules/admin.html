@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>modules.admin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 22. Juli 2026, commit 476e098) Dokumentation</title>
+  <title>modules.admin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 22. Juli 2026, commit b111276) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5751,10 +5751,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">lib.module</span><span class="w"> </span><span class="kn">import</span> <span class="n">Modules</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">lib.shtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">Shtime</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.systemdata</span><span class="w"> </span><span class="kn">import</span> <span class="n">SystemData</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.itemdata</span><span class="w"> </span><span class="kn">import</span> <span class="n">ItemData</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.plugindata</span><span class="w"> </span><span class="kn">import</span> <span class="n">PluginData</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">.rest</span><span class="w"> </span><span class="kn">import</span> <span class="n">RESTResource</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.api_server</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
@@ -5826,7 +5822,6 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">login_expiration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;login_expiration&#39;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">login_autorenew</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;login_autorenew&#39;</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pypi_timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;pypi_timeout&#39;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">itemtree_fullpath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;itemtree_fullpath&#39;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">itemtree_searchstart</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;itemtree_searchstart&#39;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log_chunksize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s1">&#39;log_chunksize&#39;</span><span class="p">]</span>
@@ -6139,18 +6134,23 @@
     <span class="k">return</span> <span class="n">s</span>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">WebInterface</span><span class="p">(</span><span class="n">SystemData</span><span class="p">,</span> <span class="n">ItemData</span><span class="p">,</span> <span class="n">PluginData</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WebInterface</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Serves the built Angular shngadmin frontend&#39;s static assets at the admin</span>
+<span class="sd">    suburl. Used to mix in SystemData/ItemData/PluginData, a set of</span>
+<span class="sd">    unauthenticated pre-REST JSON/HTML endpoints (items_json,</span>
+<span class="sd">    item_change_value_html, plugin_set_config_html, systeminfo_json,</span>
+<span class="sd">    pypi_json, ...) fully superseded once shngadmin migrated to the</span>
+<span class="sd">    JWT-authenticated REST API (WebApi below); removed since nothing called</span>
+<span class="sd">    them anymore.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">webif_dir</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">shng_url_root</span><span class="p">,</span> <span class="n">url_root</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">_sh</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">=</span> <span class="n">module</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pypi_timeout</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">pypi_timeout</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shng_url_root</span> <span class="o">=</span> <span class="n">shng_url_root</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">url_root</span> <span class="o">=</span> <span class="n">url_root</span>
-
-        <span class="n">SystemData</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="p">)</span>
-        <span class="n">ItemData</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="n">PluginData</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="k">return</span>
 

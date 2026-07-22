@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 22. Juli 2026, commit 476e098) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 22. Juli 2026, commit b111276) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -5788,11 +5788,19 @@
 
     <span class="n">_pluginname_prefix</span> <span class="o">=</span> <span class="s1">&#39;plugins.&#39;</span>
 
-    <span class="c1"># these variables _should_ be instance members (not class members) ...</span>
-    <span class="c1"># BUT if a plugin fails to call the parent class&#39; __init__(), these are</span>
-    <span class="c1"># not present and cause errors.</span>
-    <span class="c1"># So - until a proper QA for 3rd party plugins is in place - we define these</span>
-    <span class="c1"># as class members to prevent AttributeErrors later on...</span>
+    <span class="c1"># TODO/FIXME: these variables _should_ be instance members (not class</span>
+    <span class="c1"># members) ... BUT if a plugin fails to call the parent class&#39; __init__(),</span>
+    <span class="c1"># these are not present and cause errors. So - until a proper QA for</span>
+    <span class="c1"># 3rd party plugins is in place - we define these as class members to</span>
+    <span class="c1"># prevent AttributeErrors later on. __init__() below does set proper</span>
+    <span class="c1"># instance-level versions for every plugin that *does* call</span>
+    <span class="c1"># super().__init__() (the common case), so these class-level defaults</span>
+    <span class="c1"># only get shared across instances for plugins that skip it - confirmed</span>
+    <span class="c1"># happening today (e.g. miflora, traffic). Same trade-off, same fix</span>
+    <span class="c1"># shape as lib/model/mqttplugin.py&#39;s _item_values. Revisit once the</span>
+    <span class="c1"># 3rd-party plugin fleet has been audited for super().__init__()</span>
+    <span class="c1"># compliance, then these can become None sentinels to fail loudly</span>
+    <span class="c1"># instead of sharing state.</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -5866,6 +5874,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_state</span> <span class="o">=</span> <span class="s1">&#39;unused&#39;</span>  <span class="c1"># stored state of the asyncio use of the plugin</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_used_plugin_coro</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># plugin coro used when calling start_asyncio (to be able to used by a generic &#39;restart asyncio&#39; method</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_run_queue</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># queue to send commends to the main-coro/plugin-coro</span>
+
+        <span class="c1"># QA sentinel: only reachable if this __init__() actually ran, i.e. the</span>
+        <span class="c1"># plugin&#39;s own __init__() correctly called super().__init__(). Checked</span>
+        <span class="c1"># by lib/plugin.py&#39;s PluginWrapper right after instantiating the</span>
+        <span class="c1"># plugin, to detect the &quot;forgot super().__init__()&quot; case that the</span>
+        <span class="c1"># class-level mutable defaults above exist to paper over.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_smartplugin_super_init_done</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="c1">#</span>
     <span class="c1"># the following methods should be overwritten</span>
