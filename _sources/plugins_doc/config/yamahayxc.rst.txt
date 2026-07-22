@@ -32,7 +32,7 @@ Dieses Plugin ermöglicht, Yamaha MusicCast-Geräte in SmartHomeNG einzubinden.
 
 Dabei ist es möglich, verschiedene Geräte aus SmartHomeNG aus anzusprechen und zu steuern, als auch über SmartHomeNG auszulesen.
 
-Die Steuerungsmöglichkeiten umfassen (derzeit) unter Anderem:
+Die Steuerungsmöglichkeiten umfassen unter Anderem:
 
  - Gerät ein-/ausschalten, Standby, Sleep-Timer
  - Wiedergabequelle auswählen (geräteabhängig, z.B. NetRadio, Radio, NetUSB, Streamingdienste)
@@ -40,8 +40,11 @@ Die Steuerungsmöglichkeiten umfassen (derzeit) unter Anderem:
  - Lautstärkesteuerung
  - Anwahl von Favoriten und Presets (geräteabhängig)
  - Stellen und De-/Aktivieren des Weckers (geräteabhängig)
+ - Tuner-Steuerung (AM/FM): Band, Frequenz, Sendersuchlauf, Presets
+ - Klangfeld/DSP (geräteabhängig): Sound Program, 3D Surround, Direct/Pure Direct, Enhancer, Klangregelung, Equalizer, Balance
+ - Multiroom (MusicCast Link, geräteabhängig, Grundfunktionen an echter Mehrgeräte-Hardware getestet): Gruppen erstellen/beitreten/verlassen, Clients hinzufügen/entfernen
 
-Die Möglichkeiten, Statusinformationen abzurufen, umfassen (derzeit) u.a.
+Die Möglichkeiten, Statusinformationen abzurufen, umfassen u.a.
 
  - Gerätestatus (an/aus/Standby), 
  - Lautstärke, Stummschaltung,
@@ -51,7 +54,7 @@ Die Möglichkeiten, Statusinformationen abzurufen, umfassen (derzeit) u.a.
  - aktuelle Wiedergabeposition (quellenabhängig),
  - Coverbild des aktuellen Titels (quellenabhängig)
 
-Weitere Funktionen werden nach Bedarf und Verfügbarkeit von entsprechenden Geräten implementiert. Grundsätzlich ist die Architektur des Plugins so strukturiert, dass prinzipiell alle verfügbaren Kommandos im entsprechenden Steuerungsstandard implementiert werden können. Für noch nicht implementierte Steuerungsbefehle ist ein genereller "Pass-Thru"-Befehl vorhanden, so dass beliebige Befehlssequenzen an das Gerät gesendet werden können.
+Für noch nicht implementierte Steuerungsbefehle ist ein genereller "Pass-Thru"-Befehl vorhanden, so dass beliebige Befehlssequenzen an das Gerät gesendet werden können.
 
 
 
@@ -61,7 +64,7 @@ Anforderungen
 
 
 
- - Minimum SmartHomeNG Version: **1.3**
+ - Minimum SmartHomeNG Version: **1.12**
 
 Konfiguration
 =============
@@ -100,7 +103,7 @@ yamahayxc_host
 ==============
 
 
-Hostname für das Yamaha-Gerät. Gilt für alle untergeordneten Items.
+Hostname oder IP-Adresse für das Yamaha-Gerät. Gilt für alle untergeordneten Items.
 
  - Datentyp: **str**
 
@@ -109,7 +112,7 @@ yamahayxc_zone
 ==============
 
 
-Ausgewählte Zone
+Ausgewählte Zone. Gilt für alle untergeordneten Items.
 
  - Datentyp: **str**
  - Standardwert: **main**
@@ -129,9 +132,17 @@ alarm
 
 .. treeview::
      - :dir:`folder` **alarm** (`foo`, ---)
-         - :dir:`file` **alarm_on** (`bool`, ---)
-         - :dir:`file` **alarm_time** (`str`, ---)
-         - :dir:`file` **alarm_beep** (`bool`, ---)
+         - :dir:`file` **alarm_on** (`bool`, Wecker aktivieren)
+         - :dir:`file` **alarm_time** (`str`, Weckzeit als vierstelliger String, bspw. "0630")
+         - :dir:`file` **alarm_beep** (`bool`, Wecker-Piepen aktivieren (nur, wenn Wecker aktiv))
+
+
+amp
+===
+
+
+.. treeview::
+     - :dir:`file` **amp** (`foo`, ---)
 
 
 basic
@@ -141,23 +152,255 @@ basic
 .. treeview::
      - :dir:`folder` **basic** (`foo`, ---)
          - :dir:`file` **wakeup** (`bool`, ---)
-         - :dir:`file` **power** (`bool`, ---)
-         - :dir:`file` **volume** (`num`, ---)
-         - :dir:`file` **mute** (`bool`, ---)
-         - :dir:`file` **input** (`str`, ---)
-         - :dir:`file` **track** (`str`, ---)
-         - :dir:`file` **albumart** (`str`, ---)
-         - :dir:`file` **albumarturl** (`str`, ---)
-         - :dir:`file` **update** (`bool`, ---)
-         - :dir:`file` **preset** (`num`, ---)
-         - :dir:`file` **sleep** (`num`, ---)
-         - :dir:`file` **artist** (`str`, ---)
-         - :dir:`file` **curtime** (`num`, ---)
-         - :dir:`file` **totaltime** (`num`, ---)
-         - :dir:`file` **playback** (`str`, ---)
-         - :dir:`file` **passthru** (`str`, ---)
-         - :dir:`file` **playing** (`bool`, ---)
-         - :dir:`file` **standby** (`bool`, ---)
+         - :dir:`file` **power** (`bool`, Ein-/Ausschalter für die aktuelle Zone)
+         - :dir:`file` **volume** (`num`, Lautstärke der aktuellen Zone in Gerätewerten)
+         - :dir:`file` **mute** (`bool`, Stummschaltung)
+         - :dir:`file` **input** (`str`, Tonquelle)
+         - :dir:`file` **track** (`str`, Aktuell gespielter Track. Nur-Lese-Zugriff.)
+         - :dir:`file` **albumart** (`str`, URL zum Bild des aktuellen Albums. Nur-Lese-Zugriff.)
+         - :dir:`file` **albumarturl** (`str`, HTML-Snippet zum Bild des aktuellen Albums. Nur-Lese-Zugriff.)
+         - :dir:`file` **update** (`bool`, Alle Werte für aktuelles Gerät neu lesen.)
+         - :dir:`file` **preset** (`num`, Auswahl voreingestellter Wiedergabelisten.)
+         - :dir:`file` **sleep** (`num`, Ausschalttimer, gültige Werte 0, 30, 60, 90, 120)
+         - :dir:`file` **artist** (`str`, Interpret des aktuell gespielten Tracks. Nur-Lese-Zugriff.)
+         - :dir:`file` **curtime** (`num`, Aktuelle Spielzeit des gespielten Tracks. Nur-Lese-Zugriff.)
+         - :dir:`file` **totaltime** (`num`, Länge des aktuell gespielten Tracks. Nur-Lese-Zugriff.)
+         - :dir:`file` **playback** (`str`, Wiedergabestatus als Textausgabe.)
+         - :dir:`file` **passthru** (`str`, Item, um fertig formatierte Befehlssequenzen an das Gerät zu senden.)
+         - :dir:`file` **playing** (`bool`, Bool-Indikator, ob die Wiedergabe läuft. Nur-Lese-Zugriff.)
+         - :dir:`file` **standby** (`bool`, Bool-Indikator, ob das Gerät im Leerlauf ist. Nur-Lese-Zugriff.)
+
+
+debug
+=====
+
+Diagnose-Items, kein Teil des YXC-Protokolls.
+
+.. treeview::
+     - :dir:`folder` **debug** (`foo`, Diagnose-Items, kein Teil des YXC-Protokolls.)
+         - :dir:`file` **refresh** (`bool`, Debug-Items neu befüllen.)
+         - :dir:`file` **features** (`dict`, Erkannte getFeatures-Fähigkeiten dieser Zone. Nur-Lese-Zugriff.)
+         - :dir:`file` **dev_zone** (`dict`, Registrierte Item-Pfade je Kommando für diese Zone. Nur-Lese-Zugriff.)
+         - :dir:`file` **tuner_features** (`dict`, Erkannte Tuner-Fähigkeiten dieses Geräts. Nur-Lese-Zugriff.)
+         - :dir:`file` **dev_global** (`dict`, Registrierte Item-Pfade je Kommando, geräteweit/netusb/Wecker. Nur-Lese-Zugriff.)
+         - :dir:`file` **dev_tuner** (`dict`, Registrierte Item-Pfade je Kommando, Tuner. Nur-Lese-Zugriff.)
+         - :dir:`file` **dev_link** (`dict`, Registrierte Item-Pfade je Kommando, Link. Nur-Lese-Zugriff.)
+
+
+dsp
+===
+
+
+.. treeview::
+     - :dir:`folder` **dsp** (`foo`, ---)
+         - :dir:`folder` **dsp** (`foo`, ---)
+             - :dir:`file` **available** (`bool`, Bool-Indikator, ob DSP-Funktionen für diese Zone verfügbar sind. Nur-Lese-Zugriff.)
+
+
+dsp_content
+===========
+
+Klangfeld/DSP-Steuerung der aktuellen Zone (geräteabhängig).
+
+.. treeview::
+     - :dir:`folder` **dsp_content** (`foo`, Klangfeld/DSP-Steuerung der aktuellen Zone (geräteabhängig).)
+         - :dir:`folder` **sound_program** (`str`, Soundprogramm, gültige Werte in .values)
+             - :dir:`file` **values** (`list`, Gültige Werte für Soundprogramm. Nur-Lese-Zugriff.)
+         - :dir:`file` **surround_3d** (`bool`, 3D-Surround-Modus aktivieren)
+         - :dir:`file` **direct** (`bool`, Direkt-Modus aktivieren)
+         - :dir:`file` **pure_direct** (`bool`, Pure-Direct-Modus aktivieren)
+         - :dir:`file` **enhancer** (`bool`, Enhancer aktivieren)
+         - :dir:`folder` **tone_control_mode** (`str`, Klangregelungs-Modus, gültige Werte in .values)
+             - :dir:`file` **values** (`list`, Gültige Werte für Klangregelungs-Modus. Nur-Lese-Zugriff.)
+         - :dir:`folder` **tone** (`foo`, Bass-/Höhen-/Balance-Einstellungen.)
+             - :dir:`folder` **bass** (`num`, Bass-Anhebung/-Absenkung)
+                 - :dir:`file` **min** (`num`, Minimaler Wert für tone.bass. Nur-Lese-Zugriff.)
+                 - :dir:`file` **max** (`num`, Maximaler Wert für tone.bass. Nur-Lese-Zugriff.)
+                 - :dir:`file` **step** (`num`, Schrittweite für tone.bass. Nur-Lese-Zugriff.)
+             - :dir:`folder` **treble** (`num`, Höhen-Anhebung/-Absenkung)
+                 - :dir:`file` **min** (`num`, Minimaler Wert für tone.treble. Nur-Lese-Zugriff.)
+                 - :dir:`file` **max** (`num`, Maximaler Wert für tone.treble. Nur-Lese-Zugriff.)
+                 - :dir:`file` **step** (`num`, Schrittweite für tone.treble. Nur-Lese-Zugriff.)
+             - :dir:`folder` **balance** (`num`, Balance zwischen linkem/rechtem Kanal)
+                 - :dir:`file` **min** (`num`, Minimaler Wert für tone.balance. Nur-Lese-Zugriff.)
+                 - :dir:`file` **max** (`num`, Maximaler Wert für tone.balance. Nur-Lese-Zugriff.)
+                 - :dir:`file` **step** (`num`, Schrittweite für tone.balance. Nur-Lese-Zugriff.)
+         - :dir:`folder` **equalizer_mode** (`str`, Equalizer-Modus, gültige Werte in .values)
+             - :dir:`file` **values** (`list`, Gültige Werte für Equalizer-Modus. Nur-Lese-Zugriff.)
+         - :dir:`folder` **equalizer** (`foo`, Equalizer-Einstellungen (tief/mittel/hoch).)
+             - :dir:`folder` **low** (`num`, Equalizer tiefe Frequenzen)
+                 - :dir:`file` **min** (`num`, Minimaler Wert für equalizer.low. Nur-Lese-Zugriff.)
+                 - :dir:`file` **max** (`num`, Maximaler Wert für equalizer.low. Nur-Lese-Zugriff.)
+                 - :dir:`file` **step** (`num`, Schrittweite für equalizer.low. Nur-Lese-Zugriff.)
+             - :dir:`folder` **mid** (`num`, Equalizer mittlere Frequenzen)
+                 - :dir:`file` **min** (`num`, Minimaler Wert für equalizer.mid. Nur-Lese-Zugriff.)
+                 - :dir:`file` **max** (`num`, Maximaler Wert für equalizer.mid. Nur-Lese-Zugriff.)
+                 - :dir:`file` **step** (`num`, Schrittweite für equalizer.mid. Nur-Lese-Zugriff.)
+             - :dir:`folder` **high** (`num`, Equalizer hohe Frequenzen)
+                 - :dir:`file` **min** (`num`, Minimaler Wert für equalizer.high. Nur-Lese-Zugriff.)
+                 - :dir:`file` **max** (`num`, Maximaler Wert für equalizer.high. Nur-Lese-Zugriff.)
+                 - :dir:`file` **step** (`num`, Schrittweite für equalizer.high. Nur-Lese-Zugriff.)
+         - :dir:`file` **update** (`bool`, Aktuelle DSP-Werte neu lesen.)
+
+
+legacy_alarm
+============
+
+
+.. treeview::
+     - :dir:`file` **legacy_alarm** (`foo`, ---)
+
+
+link
+====
+
+
+.. treeview::
+     - :dir:`folder` **link** (`foo`, ---)
+         - :dir:`file` **link** (`foo`, ---)
+
+
+media
+=====
+
+
+.. treeview::
+     - :dir:`folder` **media** (`foo`, ---)
+         - :dir:`folder` **netusb** (`foo`, UPNP-AV, USB, Bluetooth-Status und -Steuerung)
+             - :dir:`file` **track** (`str`, Aktuell gespielter Track. Nur-Lese-Zugriff.)
+             - :dir:`file` **artist** (`str`, Interpret des aktuell gespielten Tracks. Nur-Lese-Zugriff.)
+             - :dir:`file` **curtime** (`num`, Aktuelle Spielzeit des gespielten Tracks. Nur-Lese-Zugriff.)
+             - :dir:`file` **totaltime** (`num`, Länge des aktuell gespielten Tracks. Nur-Lese-Zugriff.)
+             - :dir:`file` **playback** (`str`, Wiedergabestatus als Textausgabe.)
+             - :dir:`file` **playing** (`bool`, Bool-Indikator, ob die Wiedergabe läuft. Nur-Lese-Zugriff.)
+             - :dir:`file` **albumart** (`str`, URL zum Bild des aktuellen Albums. Nur-Lese-Zugriff.)
+             - :dir:`file` **albumarturl** (`str`, HTML-Snippet zum Bild des aktuellen Albums. Nur-Lese-Zugriff.)
+             - :dir:`file` **preset** (`num`, Auswahl voreingestellter Wiedergabelisten.)
+             - :dir:`file` **standby** (`bool`, Bool-Indikator, ob das Gerät im Leerlauf ist. Nur-Lese-Zugriff.)
+             - :dir:`file` **update** (`bool`, Aktuelle Werte für netusb neu lesen.)
+         - :dir:`folder` **tuner** (`foo`, Tuner-Steuerung (AM/FM))
+             - :dir:`folder` **band** (`str`, AM/FM/DAB, je nach Gerät. RDS ist kein eigenes Band, sondern Zusatzinfo im FM-Betrieb.)
+                 - :dir:`file` **values** (`list`, Gültige Werte für Band. Nur-Lese-Zugriff.)
+             - :dir:`folder` **freq** (`num`, Sendefrequenz für das aktuell gewählte Band, Grenzen in .min/.max/.step)
+                 - :dir:`file` **min** (`num`, Minimaler Frequenzwert für das aktuell gewählte Band. Nur-Lese-Zugriff.)
+                 - :dir:`file` **max** (`num`, Maximaler Frequenzwert für das aktuell gewählte Band. Nur-Lese-Zugriff.)
+                 - :dir:`file` **step** (`num`, Schrittweite für Frequenzwert für das aktuell gewählte Band. Nur-Lese-Zugriff.)
+             - :dir:`file` **seek** (`str`, Sendersuchlauf, gültige Werte "up"/"down"/"cancel"/"auto_up"/"auto_down"/"tp_up"/"tp_down" (RDS))
+             - :dir:`file` **tuned** (`bool`, Bool-Indikator, ob ein Sender empfangen wird. Nur-Lese-Zugriff.)
+             - :dir:`file` **station** (`str`, Empfangener Sendername (RDS Program Service). Nur-Lese-Zugriff.)
+             - :dir:`file` **preset** (`num`, Anwahl gespeicherter Tuner-Presets.)
+             - :dir:`file` **preset_store** (`num`, Aktuellen Sender auf Preset-Nummer speichern.)
+             - :dir:`file` **preset_clear** (`num`, Preset-Nummer löschen.)
+             - :dir:`file` **preset_switch** (`str`, Zum nächsten/vorherigen Preset wechseln, gültige Werte "next"/"previous")
+             - :dir:`file` **update** (`bool`, Aktuelle Werte für Tuner neu lesen.)
+         - :dir:`folder` **link** (`foo`, Multiroom (MusicCast Link) Gruppen-Status und -Steuerung.)
+             - :dir:`file` **linked** (`bool`, Bool-Indikator, ob das Gerät aktuell in einer Link-Gruppe ist. Nur-Lese-Zugriff.)
+             - :dir:`file` **role** (`str`, Rolle in der Link-Gruppe ("server"/"client"/"none"). Nur-Lese-Zugriff.)
+             - :dir:`file` **available_devices** (`list`, Für Link konfigurierte Hosts, als Auswahl für client.join/server.add_device. Nur-Lese-Zugriff.)
+             - :dir:`folder` **server** (`foo`, Aktionen/Status in der Rolle als Gruppen-Server.)
+                 - :dir:`file` **linked_devices** (`list`, IP-Adressen der Gruppen-Clients (nur als Server verfügbar). Nur-Lese-Zugriff.)
+                 - :dir:`file` **add_device** (`str`, Host/IP als Client zur Gruppe hinzufügen.)
+                 - :dir:`file` **remove_device** (`str`, Host/IP aus der Gruppe entfernen.)
+                 - :dir:`file` **disband** (`bool`, Gruppe auflösen (Serverrolle beenden).)
+             - :dir:`folder` **client** (`foo`, Aktionen in der Rolle als Gruppen-Client.)
+                 - :dir:`file` **join** (`str`, Als Client dem Server mit dem/der angegebenen Host/IP beitreten.)
+                 - :dir:`file` **leave** (`bool`, Gruppe als Client verlassen.)
+             - :dir:`folder` **options** (`foo`, Selten benötigte Optionen/Informationen zum Link.)
+                 - :dir:`file` **group_id** (`str`, Link-Gruppen-ID des Geräts. Nur-Lese-Zugriff.)
+                 - :dir:`file` **group_name** (`str`, Name der Link-Gruppe. Nur-Lese-Zugriff.)
+                 - :dir:`file` **server_zone** (`str`, Zone des Gruppen-Servers. Nur-Lese-Zugriff.)
+                 - :dir:`file` **audio_dropout** (`bool`, Bool-Indikator für Audio-Aussetzer in der Link-Gruppe. Nur-Lese-Zugriff.)
+             - :dir:`file` **update** (`bool`, Aktuelle Werte für Link neu lesen.)
+
+
+netusb
+======
+
+
+.. treeview::
+     - :dir:`folder` **netusb** (`foo`, ---)
+         - :dir:`file` **netusb** (`foo`, ---)
+
+
+tuner
+=====
+
+
+.. treeview::
+     - :dir:`folder` **tuner** (`foo`, ---)
+         - :dir:`file` **tuner** (`foo`, ---)
+
+
+zone2
+=====
+
+
+.. treeview::
+     - :dir:`folder` **zone2** (`foo`, ---)
+         - :dir:`file` **available** (`bool`, Bool-Indikator, ob Zone 2 an diesem Gerät verfügbar ist. Nur-Lese-Zugriff.)
+
+
+zone3
+=====
+
+
+.. treeview::
+     - :dir:`folder` **zone3** (`foo`, ---)
+         - :dir:`file` **available** (`bool`, Bool-Indikator, ob Zone 3 an diesem Gerät verfügbar ist. Nur-Lese-Zugriff.)
+
+
+zone4
+=====
+
+
+.. treeview::
+     - :dir:`folder` **zone4** (`foo`, ---)
+         - :dir:`file` **available** (`bool`, Bool-Indikator, ob Zone 4 an diesem Gerät verfügbar ist. Nur-Lese-Zugriff.)
+
+
+zone_amp
+========
+
+
+.. treeview::
+     - :dir:`folder` **zone_amp** (`foo`, ---)
+         - :dir:`file` **power** (`bool`, Ein-/Ausschalter für die aktuelle Zone)
+         - :dir:`folder` **volume** (`num`, Lautstärke der aktuellen Zone in Prozent)
+             - :dir:`file` **min** (`num`, Minimaler Lautstärkewert für volume.raw. Nur-Lese-Zugriff.)
+             - :dir:`file` **max** (`num`, Maximaler Lautstärkewert für volume.raw. Nur-Lese-Zugriff.)
+             - :dir:`file` **step** (`num`, Schrittweite für Lautstärkewert für volume.raw. Nur-Lese-Zugriff.)
+             - :dir:`file` **raw** (`num`, Lautstärke der aktuellen Zone in Gerätewerten)
+         - :dir:`file` **mute** (`bool`, Stummschaltung)
+         - :dir:`file` **sleep** (`num`, Ausschalttimer, gültige Werte 0, 30, 60, 90, 120)
+         - :dir:`folder` **input** (`str`, Tonquelle, gültige Werte in .values)
+             - :dir:`file` **values** (`list`, Gültige Werte für Tonquelle. Nur-Lese-Zugriff.)
+         - :dir:`file` **update** (`bool`, Alle Werte für aktuelles Gerät neu lesen.)
+         - :dir:`file` **passthru** (`str`, Item, um fertig formatierte Befehlssequenzen an das Gerät zu senden.)
+
+
+zone_link_controls
+==================
+
+
+.. treeview::
+     - :dir:`folder` **zone_link_controls** (`foo`, ---)
+         - :dir:`folder` **link_control** (`str`, Link-Control-Modus, gültige Werte in .values)
+             - :dir:`file` **values** (`list`, Gültige Werte für Link-Control. Nur-Lese-Zugriff.)
+         - :dir:`folder` **link_audio_delay** (`str`, Audio-Delay-Modus, gültige Werte in .values. Nicht gültig, wenn Link-Control auf "stability" gesetzt ist.)
+             - :dir:`file` **values** (`list`, Gültige Werte für Audio-Delay. Nur-Lese-Zugriff.)
+         - :dir:`folder` **link_audio_quality** (`str`, Audioqualität, gültige Werte in .values.)
+             - :dir:`file` **values** (`list`, Gültige Werte für Audioqualität. Nur-Lese-Zugriff.)
+
+
+zones
+=====
+
+
+.. treeview::
+     - :dir:`folder` **zones** (`foo`, ---)
+         - :dir:`file` **zone2** (`foo`, Zone 2)
+         - :dir:`file` **zone3** (`foo`, Zone 3)
+         - :dir:`file` **zone4** (`foo`, Zone 4)
 
 
 ===============

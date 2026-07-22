@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yamahayxc &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 19. Juli 2026, commit 476e098) Dokumentation</title>
+  <title>yamahayxc &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 22. Juli 2026, commit 476e098) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5729,10 +5729,47 @@
 <h2>Anmerkungen<a class="headerlink" href="#anmerkungen" title="Permalink to this heading"></a></h2>
 <p>Das Plugin wird nach Bedarf weiterentwickelt und unterstützt noch längst nicht alle möglichen Funktionen, die im Yamaha Extended Control (YXC)-Standard definiert sind. Ich nutze es aber selbst täglich. Die genutzten und getesteten Geräte sind RX-V483, ISX-18D und WX-010.
 Das Plugin nutzt die YXC API, welche auf dem Austausch von JSON-formatierten Daten basiert. Es abonniert die Daten der konfigurierten Geräte, um laufend mit Statusmeldungen versorgt zu werden. Diese werden per UDP verteilt, solange eine Kommunikation zwischen Client (Plugin) und Gerät erfolgt und 10 Minuten nach der letzten Kommunikation. Das Plugin kann mit mehreren Verbindungen gleichzeitig umgehen. Bisher habe ich keine Fehler feststellen können, aber ich habe nur 5 Geräte zum Testen.</p>
-<p>Items können nach eigenen Vorstellungen eingerichtet werden; sie werden vom Plugin durch das Item-Attribut <code class="docutils literal notranslate"><span class="pre">yamahayxc_cmd</span></code> identifiziert. Steuerungs- und Statusitems können unterhalb des Geräteitems nicht verzweigen, sie müssen alle auf derselben Ebene unmittelbar unterhalb des Geräteitems sein. (sorry)</p>
-<p>Das <code class="docutils literal notranslate"><span class="pre">update</span></code>-Item hat keine eigene Funktion. Wenn dieses Item geändert wird, wird der aktuelle Status vom Gerät aktiv abgefragt. Solange das Abonnement aktiv ist, wird das nicht benötigt, weil die Daten vom Gerät aktiv aktuell gehalten werden. Wenn der Timeout von 10 Minuten überschritten ist und mit dem <code class="docutils literal notranslate"><span class="pre">update</span></code>-Item die Informationen abgefragt werden, läuft das Abonnement von Neuem los.</p>
+<p>Items können nach eigenen Vorstellungen eingerichtet werden; sie werden vom Plugin durch das Item-Attribut <code class="docutils literal notranslate"><span class="pre">yamahayxc_cmd</span></code> identifiziert. <code class="docutils literal notranslate"><span class="pre">yamahayxc_host</span></code> und <code class="docutils literal notranslate"><span class="pre">yamahayxc_zone</span></code> müssen nicht mehr direkt am Elternitem eines Steuerungs-/Statusitems stehen - das Plugin sucht sie in den Vorfahren-Items nach oben. Dadurch können Items beliebig tief verschachtelt werden, z.B. um Fähigkeits-Items als Unteritems ihres jeweiligen Werte-Items abzulegen.</p>
+<p>Das <code class="docutils literal notranslate"><span class="pre">update</span></code>-Item (in Struct <code class="docutils literal notranslate"><span class="pre">yamahayxc.amp</span></code>) hat keine eigene Funktion, sondern fragt beim Setzen aktiv den kompletten Status des Geräts ab (alle Zonen + netusb + Tuner + Link + Alarm). Nach jedem Schreiben eines beliebigen anderen Items aktualisiert das Plugin ohnehin automatisch den betroffenen Bereich (z.B. nur die geänderte Zone bei einem Zonen-Item, nur netusb bei einem netusb-Item, usw.) - ein komplettes <code class="docutils literal notranslate"><span class="pre">update</span></code> ist also i.d.R. nicht nötig, außer beim Timeout des 10-Minuten-Abonnements. Für einen gezielten, aber nicht vollständigen Refresh gibt es zusätzlich <code class="docutils literal notranslate"><span class="pre">update_dsp</span></code> (in Struct <code class="docutils literal notranslate"><span class="pre">dsp</span></code>/<code class="docutils literal notranslate"><span class="pre">dsp_content</span></code>), <code class="docutils literal notranslate"><span class="pre">update_netusb</span></code> (in <code class="docutils literal notranslate"><span class="pre">media.netusb</span></code>/<code class="docutils literal notranslate"><span class="pre">netusb</span></code>) sowie <code class="docutils literal notranslate"><span class="pre">update_tuner</span></code>/<code class="docutils literal notranslate"><span class="pre">update_link</span></code>.</p>
 <p>Änderungen, Hinweise und Erweiterungen werden jederzeit angenommen, Wünsche können etwas dauern…</p>
-<p>Derzeit sind nur die Zonen <cite>main</cite> und <cite>netusb</cite> implementiert. Weitere Zonen werden gern aufgenommen, wenn Testhardware zur Verfügung gestellt wird ;)</p>
+<p>Neben <cite>main</cite> unterstützt das Plugin jetzt auch eigene Structs für <cite>zone2</cite>, <cite>zone3</cite> und <cite>zone4</cite> (<code class="docutils literal notranslate"><span class="pre">yamahayxc.zone2</span></code>/<code class="docutils literal notranslate"><span class="pre">yamahayxc.zone3</span></code>/<code class="docutils literal notranslate"><span class="pre">yamahayxc.zone4</span></code>, jeweils mit <code class="docutils literal notranslate"><span class="pre">power</span></code>/<code class="docutils literal notranslate"><span class="pre">volume</span></code>/<code class="docutils literal notranslate"><span class="pre">mute</span></code>/<code class="docutils literal notranslate"><span class="pre">sleep</span></code>/<code class="docutils literal notranslate"><span class="pre">input</span></code>/<code class="docutils literal notranslate"><span class="pre">wakeup</span></code>/<code class="docutils literal notranslate"><span class="pre">update</span></code> sowie den zonenspezifischen Link-Reglern <code class="docutils literal notranslate"><span class="pre">link_control</span></code>/<code class="docutils literal notranslate"><span class="pre">link_audio_delay</span></code>/<code class="docutils literal notranslate"><span class="pre">link_audio_quality</span></code> - inhaltlich dasselbe wie <code class="docutils literal notranslate"><span class="pre">amp</span></code>, nur für die jeweils andere Zone). Jedes dieser drei Structs bringt zusätzlich ein <code class="docutils literal notranslate"><span class="pre">present</span></code>-Item (r/o, bool) mit: erst <code class="docutils literal notranslate"><span class="pre">True</span></code>, wenn das Gerät die Zone laut <code class="docutils literal notranslate"><span class="pre">getFeatures</span></code> tatsächlich meldet - so kann eine Visu Zonen-Regler ein-/ausblenden, ohne raten zu müssen. <code class="docutils literal notranslate"><span class="pre">amp</span></code> (main) hat kein <code class="docutils literal notranslate"><span class="pre">present</span></code>, da main immer existiert. <cite>netusb</cite>-Funktionen (Wiedergabe, Presets, Titel/Interpret) sind weiterhin geräteweit (nicht zonenspezifisch), wie es der YXC-Standard vorsieht. Da mir keine Mehrzonen-Hardware zum Testen zur Verfügung steht, ist dieser Teil nur gegen die offizielle YXC-Spezifikation entwickelt, nicht gegen echte Geräte getestet - Rückmeldungen sind willkommen.</p>
+<p>Der Tuner (AM/FM) wird jetzt ebenfalls unterstützt: Band/Frequenz einstellen, Sendersuchlauf, Presets abrufen/speichern/löschen/durchschalten (siehe Struct <code class="docutils literal notranslate"><span class="pre">yamahayxc.tuner</span></code>). DAB und das Umsortieren von Presets (<code class="docutils literal notranslate"><span class="pre">movePreset</span></code>) sind bewusst nicht implementiert - DAB, weil ich keine Testgeräte habe, <code class="docutils literal notranslate"><span class="pre">movePreset</span></code> weil es zwei Parameter (Quell- und Zielposition) braucht und sich nicht in das Ein-Item-ein-Wert-Schema des Plugins einfügt; über <code class="docutils literal notranslate"><span class="pre">passthru</span></code> bleibt es trotzdem erreichbar.</p>
+<p>Klangfeld/DSP-Funktionen (Sound Program, 3D Surround, Direct, Pure Direct, Enhancer, Klangregelung, Equalizer, Balance) sind jetzt ebenfalls verfügbar (siehe Struct <code class="docutils literal notranslate"><span class="pre">yamahayxc.dsp</span></code>), zonenspezifisch und je nach Gerät unterschiedlich verfügbar. Für die Bool-Werte (<code class="docutils literal notranslate"><span class="pre">surround_3d</span></code>/<code class="docutils literal notranslate"><span class="pre">direct</span></code>/<code class="docutils literal notranslate"><span class="pre">pure_direct</span></code>/<code class="docutils literal notranslate"><span class="pre">enhancer</span></code>) folgt das Plugin dem in der YXC-Spezifikation dokumentierten Typ (JSON-Bool); anders als bei <code class="docutils literal notranslate"><span class="pre">mute</span></code>/den Alarm-Items, wo an echten Geräten abweichendes Verhalten beobachtet wurde, konnte ich das für diese neuen Items nicht an echter Hardware verifizieren - Rückmeldungen sind willkommen. Im Struct sind Bass/Höhen/Balance unter <code class="docutils literal notranslate"><span class="pre">tone</span></code> gruppiert (<code class="docutils literal notranslate"><span class="pre">tone.bass</span></code>/<code class="docutils literal notranslate"><span class="pre">tone.treble</span></code>/<code class="docutils literal notranslate"><span class="pre">tone.balance</span></code>) und Equalizer-Bänder unter <code class="docutils literal notranslate"><span class="pre">equalizer</span></code> (<code class="docutils literal notranslate"><span class="pre">equalizer.low</span></code>/<code class="docutils literal notranslate"><span class="pre">equalizer.mid</span></code>/<code class="docutils literal notranslate"><span class="pre">equalizer.high</span></code>); <code class="docutils literal notranslate"><span class="pre">tone_control_mode</span></code>/<code class="docutils literal notranslate"><span class="pre">equalizer_mode</span></code> bleiben eigenständige Geschwister-Items, da sie für die jeweilige Gruppe insgesamt gelten. Zusätzlich gibt es <code class="docutils literal notranslate"><span class="pre">dsp.available</span></code> (r/o, bool): true, sobald die Zone laut <code class="docutils literal notranslate"><span class="pre">getFeatures</span></code> irgendeine DSP-Fähigkeit meldet (Sound Program oder einen der Klangfeld-Funktionsnamen) - praktisch z.B. um in einer Visu ein DSP-Popup nur anzuzeigen, wenn es auch etwas zu bedienen gibt.</p>
+<p><strong>Breaking Change / Migration:</strong> Vor dieser Umstellung lagen <code class="docutils literal notranslate"><span class="pre">tone_bass</span></code>/<code class="docutils literal notranslate"><span class="pre">tone_treble</span></code>/<code class="docutils literal notranslate"><span class="pre">eq_low</span></code>/<code class="docutils literal notranslate"><span class="pre">eq_mid</span></code>/<code class="docutils literal notranslate"><span class="pre">eq_high</span></code>/<code class="docutils literal notranslate"><span class="pre">balance</span></code> als flache Items direkt unter dem Geräteitem. Wer das Struct <code class="docutils literal notranslate"><span class="pre">yamahayxc.dsp</span></code> nutzt, muss vorhandene Item-Referenzen (Visu-Widgets, Logiken) auf die neuen Pfade umstellen. Für einen schrittweisen Umzug ohne Ausfallzeit gibt es das Struct <code class="docutils literal notranslate"><span class="pre">yamahayxc.dsp_bridge</span></code>: es bindet <code class="docutils literal notranslate"><span class="pre">yamahayxc.dsp</span></code> (neue Pfade) ein und ergänzt zusätzlich die sechs alten flachen Items - beide Pfad-Sätze sind dann gleichzeitig live (dasselbe <code class="docutils literal notranslate"><span class="pre">yamahayxc_cmd</span></code> kann jetzt auf mehrere Items gleichzeitig registriert werden, alle erhalten Updates). Nach dem Umzug der Referenzen die sechs alten Items aus der eigenen Konfiguration entfernen bzw. zurück auf <code class="docutils literal notranslate"><span class="pre">yamahayxc.dsp</span></code> wechseln. <code class="docutils literal notranslate"><span class="pre">volume</span></code> selbst ist <strong>nicht</strong> betroffen - der Pfad ist unverändert, es kamen nur Unteritems hinzu.</p>
+<p><strong>Weitere Struct-Umstellung - ``basic`` wurde zu ``amp`` + ``netusb`` aufgeteilt:</strong> Das bisherige Struct <code class="docutils literal notranslate"><span class="pre">basic</span></code> vermischte zonenspezifische Verstärkersteuerung (power/volume/mute/sleep/input) mit geräteweiter netusb-Wiedergabe (track/artist/albumart/playback/preset/curtime/totaltime/passthru/playing/standby) - bei Mehrzonen-Geräten führte das dazu, dass die netusb-Items bei jeder zusätzlich mit <code class="docutils literal notranslate"><span class="pre">basic</span></code> ausgestatteten Zone dupliziert wurden. Neu:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">yamahayxc.amp</span></code> - Verstärker-/Zonenkern (power/volume/mute/sleep/input) plus die zonenspezifischen Link-Regler (<code class="docutils literal notranslate"><span class="pre">link_control</span></code>/<code class="docutils literal notranslate"><span class="pre">link_audio_delay</span></code>/<code class="docutils literal notranslate"><span class="pre">link_audio_quality</span></code>), Ersatz für <code class="docutils literal notranslate"><span class="pre">basic</span></code>. Zusätzlich <code class="docutils literal notranslate"><span class="pre">input.sources</span></code> (Liste der vom Gerät gemeldeten gültigen Eingänge, per <code class="docutils literal notranslate"><span class="pre">getFeatures</span></code>, analog zu <code class="docutils literal notranslate"><span class="pre">volume.min</span></code>/<code class="docutils literal notranslate"><span class="pre">max</span></code>). Für <cite>zone2</cite>/<cite>zone3</cite>/<cite>zone4</cite> gibt es die inhaltlich identischen Structs <code class="docutils literal notranslate"><span class="pre">yamahayxc.zone2</span></code>/<code class="docutils literal notranslate"><span class="pre">zone3</span></code>/<code class="docutils literal notranslate"><span class="pre">zone4</span></code> (siehe oben, inkl. <code class="docutils literal notranslate"><span class="pre">present</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">yamahayxc.netusb</span></code> - die bisherigen netusb-Items, jetzt eigenständig; kombinieren mit <code class="docutils literal notranslate"><span class="pre">amp</span></code> wie gehabt: <code class="docutils literal notranslate"><span class="pre">struct:</span> <span class="pre">[yamahayxc.amp,</span> <span class="pre">yamahayxc.netusb]</span></code> (<code class="docutils literal notranslate"><span class="pre">playing</span></code>/<code class="docutils literal notranslate"><span class="pre">standby</span></code> benötigen <code class="docutils literal notranslate"><span class="pre">power</span></code> aus <code class="docutils literal notranslate"><span class="pre">amp</span></code>, um korrekt aufzulösen).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">yamahayxc.alarm</span></code> ist jetzt ebenfalls eigenständig (nur die drei Alarm-Items) statt automatisch <code class="docutils literal notranslate"><span class="pre">basic</span></code> einzubinden - kombinieren wie <code class="docutils literal notranslate"><span class="pre">dsp</span></code>/<code class="docutils literal notranslate"><span class="pre">tuner</span></code>/<code class="docutils literal notranslate"><span class="pre">link</span></code>: <code class="docutils literal notranslate"><span class="pre">struct:</span> <span class="pre">[yamahayxc.amp,</span> <span class="pre">yamahayxc.alarm]</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">yamahayxc.tuner</span></code>/<code class="docutils literal notranslate"><span class="pre">link</span></code>/<code class="docutils literal notranslate"><span class="pre">netusb</span></code> sind jetzt alle Aliase auf Unterbäume eines gemeinsamen, selbst nicht direkt zu verwendenden Structs <code class="docutils literal notranslate"><span class="pre">yamahayxc.media</span></code> (<code class="docutils literal notranslate"><span class="pre">media.tuner</span></code>/<code class="docutils literal notranslate"><span class="pre">media.netusb</span></code>/<code class="docutils literal notranslate"><span class="pre">media.link</span></code>) - inhaltlich unverändert (bis auf die drei Link-Regler, siehe unten), nur intern anders organisiert. <code class="docutils literal notranslate"><span class="pre">media</span></code> heißt so (vormals <code class="docutils literal notranslate"><span class="pre">zone</span></code>), weil es inzwischen wirklich rein geräteweit ist und beliebig oft/einmal pro Host kombiniert werden kann, ohne dass etwas dupliziert.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">yamahayxc.dsp</span></code> ist jetzt ebenfalls ein eigenständiger Alias (auf <code class="docutils literal notranslate"><span class="pre">dsp_content</span></code>) statt Teil des alten <code class="docutils literal notranslate"><span class="pre">zone</span></code>-Structs - DSP ist wie <code class="docutils literal notranslate"><span class="pre">amp</span></code> zonenspezifisch, gehörte also nie wirklich zu den geräteweiten netusb/tuner/link-Funktionen.</p></li>
+</ul>
+<p><strong>Weitere Breaking Change:</strong> <code class="docutils literal notranslate"><span class="pre">struct:</span> <span class="pre">yamahayxc.link</span></code> allein (ohne <code class="docutils literal notranslate"><span class="pre">amp</span></code> kombiniert) enthält <code class="docutils literal notranslate"><span class="pre">link_control</span></code>/<code class="docutils literal notranslate"><span class="pre">link_audio_delay</span></code>/<code class="docutils literal notranslate"><span class="pre">link_audio_quality</span></code> nicht mehr - die kommen jetzt aus <code class="docutils literal notranslate"><span class="pre">amp</span></code>/<code class="docutils literal notranslate"><span class="pre">zone2</span></code>/<code class="docutils literal notranslate"><span class="pre">zone3</span></code>/<code class="docutils literal notranslate"><span class="pre">zone4</span></code>, da sie laut Spezifikation zonenspezifisch sind (anders als der Rest von Link). Jedes dokumentierte Beispiel kombiniert ohnehin bereits <code class="docutils literal notranslate"><span class="pre">[amp,</span> <span class="pre">...,</span> <span class="pre">link]</span></code>, wo die Items am selben Pfad landen wie vorher (nur aus einem anderen Struct stammend) - betroffen ist also nur eine alleinstehende <code class="docutils literal notranslate"><span class="pre">link</span></code>-Nutzung, nicht der übliche Fall.</p>
+<p>Migration wie beim DSP-Umzug: <code class="docutils literal notranslate"><span class="pre">yamahayxc.legacy_basic</span></code> ist ein eingefrorener Schnappschuss des alten <code class="docutils literal notranslate"><span class="pre">basic</span></code>-Structs (identische Item-Pfade, keine Anpassung nötig), <code class="docutils literal notranslate"><span class="pre">yamahayxc.legacy_alarm</span></code> entsprechend für das alte <code class="docutils literal notranslate"><span class="pre">alarm</span></code>. Wer <code class="docutils literal notranslate"><span class="pre">struct:</span> <span class="pre">yamahayxc.basic</span></code> bzw. <code class="docutils literal notranslate"><span class="pre">yamahayxc.alarm</span></code> verwendet, kann einfach auf <code class="docutils literal notranslate"><span class="pre">yamahayxc.legacy_basic</span></code>/<code class="docutils literal notranslate"><span class="pre">yamahayxc.legacy_alarm</span></code> umbenennen und später in Ruhe auf <code class="docutils literal notranslate"><span class="pre">[yamahayxc.amp,</span> <span class="pre">yamahayxc.netusb]</span></code> umstellen.</p>
+<p><strong>MusicCast Link (Multiroom) - inzwischen an echter Mehrgeräte-Hardware getestet (Grundfunktionen), Details siehe unten.</strong> Struct <code class="docutils literal notranslate"><span class="pre">yamahayxc.link</span></code> bietet eine vereinfachte Sicht auf die rohen YXC <code class="docutils literal notranslate"><span class="pre">dist/*</span></code>-Primitiven:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">linked</span></code> (r/o, bool) ist das primäre „bin ich überhaupt gruppiert?“-Signal, abgeleitet aus <code class="docutils literal notranslate"><span class="pre">group_id</span></code>. Laut YXC-Spezifikation (Advanced) wird <code class="docutils literal notranslate"><span class="pre">group_id</span></code> beim Trennen auf eine 32-stellige Null-Hex-ID („000…“) zurückgesetzt - das ist offiziell dokumentiertes Verhalten, kein Gerätefehler.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">role</span></code> (r/o, ‚server‘/‘client‘/‘none‘) wird auf <code class="docutils literal notranslate"><span class="pre">linked</span></code> abgestimmt: sobald <code class="docutils literal notranslate"><span class="pre">linked</span></code> false ist, liefert das Item <strong>immer</strong> ‚none‘, unabhängig davon, was das Gerät selbst gerade meldet. Grund: An echter Hardware (bestätigt sowohl über einen <code class="docutils literal notranslate"><span class="pre">leave</span></code> dieses Plugins als auch unabhängig über die MusicCast-App) wurde beobachtet, dass ein Gerät nach dem Trennen weiterhin <code class="docutils literal notranslate"><span class="pre">role:</span> <span class="pre">client</span></code> meldet, während <code class="docutils literal notranslate"><span class="pre">group_id</span></code> bereits korrekt auf Null steht - <code class="docutils literal notranslate"><span class="pre">role</span></code> allein ist also kein verlässliches Signal, <code class="docutils literal notranslate"><span class="pre">group_id</span></code>/<code class="docutils literal notranslate"><span class="pre">linked</span></code> sind es.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">available_devices</span></code> (r/o, Liste) listet alle Hosts, für die dieses Plugin mindestens ein Item konfiguriert hat (reines Plugin-Bookkeeping, kein Gerätestatus) - gedacht als Grundlage für eine Visu-Dropdown-Auswahl für <code class="docutils literal notranslate"><span class="pre">client.join</span></code>/<code class="docutils literal notranslate"><span class="pre">server.add_device</span></code>. Steht bereits direkt nach dem Plugin-Start zur Verfügung, unabhängig davon, ob das Gerät erreichbar ist, und bleibt auch danach aktuell: Wird zur Laufzeit ein Item (Admin-UI) mit <code class="docutils literal notranslate"><span class="pre">yamahayxc_host</span></code> angelegt, bearbeitet (z.B. Hostname geändert) oder gelöscht, aktualisiert sich die Liste auf allen betroffenen Geräten sofort, ohne auf die nächste Geräteabfrage zu warten - sobald das letzte Item für einen Host verschwindet, wird auch dessen Eintrag entfernt.</p></li>
+<li><p>Server- und Client-Aktionen/-Infos sind in <code class="docutils literal notranslate"><span class="pre">server</span></code>/<code class="docutils literal notranslate"><span class="pre">client</span></code> unterverschachtelt - beide Gruppen existieren auf jedem Gerät gleichzeitig (welche gerade zutrifft, zeigt <code class="docutils literal notranslate"><span class="pre">role</span></code>):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">server.linked_devices</span></code> (r/o, Liste der Client-IPs) ist nur gefüllt, während <code class="docutils literal notranslate"><span class="pre">role</span></code> ‚server‘ ist - ein Client kennt laut Spezifikation seine Mitspieler nicht, nur der Server führt die Liste.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">server.add_device</span></code>/<code class="docutils literal notranslate"><span class="pre">server.remove_device</span></code> (als/werde Server, Ziel-Host als Client hinzufügen/entfernen), <code class="docutils literal notranslate"><span class="pre">server.disband</span></code> (eigene Rolle komplett aufgeben, Verteilung endet damit).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">client.join</span></code> (Wert = Ziel-Host, wird Client davon), <code class="docutils literal notranslate"><span class="pre">client.leave</span></code> (die Gruppe verlassen).</p></li>
+</ul>
+<p>Alle fünf sind bool- oder String-Trigger-Items: <code class="docutils literal notranslate"><span class="pre">enforce_updates</span></code> ist gesetzt, und die reinen bool-Trigger (<code class="docutils literal notranslate"><span class="pre">server.disband</span></code>/<code class="docutils literal notranslate"><span class="pre">client.leave</span></code>/<code class="docutils literal notranslate"><span class="pre">update</span></code>) setzen sich nach getaner Aktion selbst auf <code class="docutils literal notranslate"><span class="pre">False</span></code> zurück (kein manuelles Aus-/Wieder-Einschalten nötig, um sie erneut auszulösen) - <code class="docutils literal notranslate"><span class="pre">client.join</span></code>/<code class="docutils literal notranslate"><span class="pre">server.add_device</span></code>/<code class="docutils literal notranslate"><span class="pre">server.remove_device</span></code> behalten ihren zuletzt geschriebenen Zielwert. Ein reines „Verteilung pausieren, Gruppe behalten“ (YXC <code class="docutils literal notranslate"><span class="pre">stopDistribution</span></code>) gibt es bewusst nicht als eigenes Item - dafür fehlt ein klarer Wiederaufnahme-Weg und ein praktischer Anwendungsfall; bei Bedarf später nachrüstbar.</p>
+</li>
+<li><p>Selten benötigte/rohe Felder (<code class="docutils literal notranslate"><span class="pre">group_id</span></code>, <code class="docutils literal notranslate"><span class="pre">group_name</span></code>, <code class="docutils literal notranslate"><span class="pre">server_zone</span></code>, <code class="docutils literal notranslate"><span class="pre">audio_dropout</span></code>, <code class="docutils literal notranslate"><span class="pre">control</span></code>, <code class="docutils literal notranslate"><span class="pre">audio_delay</span></code>, <code class="docutils literal notranslate"><span class="pre">audio_quality</span></code>) liegen unter <code class="docutils literal notranslate"><span class="pre">options</span></code> - <code class="docutils literal notranslate"><span class="pre">options.group_id</span></code> insbesondere bleibt bewusst sichtbar, da <code class="docutils literal notranslate"><span class="pre">linked</span></code> genau davon abgeleitet wird.</p></li>
+</ul>
+<p>Diese Orchestrierungs-Funktionen (<code class="docutils literal notranslate"><span class="pre">client.join</span></code>/<code class="docutils literal notranslate"><span class="pre">server.add_device</span></code>/<code class="docutils literal notranslate"><span class="pre">server.remove_device</span></code>/<code class="docutils literal notranslate"><span class="pre">client.leave</span></code>/<code class="docutils literal notranslate"><span class="pre">server.disband</span></code>) rufen mehrere API-Aufrufe über zwei Geräte hinweg auf (Client + Master), wie es die YXC-Spezifikation (Advanced) in Abschnitt 9.1 beschreibt. Zwei konkrete Unsicherheiten bleiben (unabhängig von den o.g. Grundfunktionen, die inzwischen getestet sind):</p>
+<ul class="simple">
+<li><p>Der <code class="docutils literal notranslate"><span class="pre">num</span></code>-Parameter von <code class="docutils literal notranslate"><span class="pre">startDistribution</span></code> („Link distribution number“) ist in der Spezifikation nicht eindeutig definiert; das Plugin verwendet einen einfachen, pro Plugin-Instanz hochzählenden Zähler als bestmögliche Interpretation.</p></li>
+<li><p>Antwortcode 200/201 bedeutet laut Spezifikation „Linking/Unlinking in progress“ - diese Vorgänge laufen also asynchron auf dem Gerät. Das Plugin wartet den Abschluss nicht ab, sondern verlässt sich auf die nächste Statusabfrage bzw. Push-Benachrichtigung.</p></li>
+</ul>
+<p>Bitte weiterhin Rückmeldungen zu ungewöhnlichem Verhalten geben, insbesondere bei mehr als zwei Geräten oder verschachtelten Gruppen-Operationen - bisher nur mit zwei Geräten (1 Server, 1 Client) getestet.</p>
+<p>Für Lautstärke und die Klangfeld-Wertebereiche (Bass/Höhen, Equalizer, Balance) liest das Plugin per <code class="docutils literal notranslate"><span class="pre">getFeatures</span></code> den vom Gerät gemeldeten min/max/step-Bereich aus und stellt ihn als read-only Unteritems bereit (z.B. <code class="docutils literal notranslate"><span class="pre">volume.min</span></code>/<code class="docutils literal notranslate"><span class="pre">volume.max</span></code>/<code class="docutils literal notranslate"><span class="pre">volume.step</span></code>, <code class="docutils literal notranslate"><span class="pre">tone.bass.min</span></code>/…, <code class="docutils literal notranslate"><span class="pre">equalizer.low.min</span></code>/…). Da diese Werte beim Start einmalig abgefragt werden und sich zur Laufzeit nicht ändern, aktualisieren sie sich nicht laufend. <code class="docutils literal notranslate"><span class="pre">volume</span></code> selbst ist standardmäßig auf 0..100 Prozent skaliert (beschreibbar, Umrechnung anhand von <code class="docutils literal notranslate"><span class="pre">volume.min</span></code>/<code class="docutils literal notranslate"><span class="pre">volume.max</span></code>, im Plugin selbst berechnet, nicht per eval-Struct) - die Lautstärke in reinen Gerätewerten liegt unter <code class="docutils literal notranslate"><span class="pre">volume.raw</span></code>. Damit kann eine Visu <code class="docutils literal notranslate"><span class="pre">volume</span></code> immer mit einer festen 0..100-Skala verwenden, unabhängig vom tatsächlichen Gerätebereich.</p>
+<p>Genauso liest das Plugin für jedes Item mit einer festen Werteliste (statt eines Zahlenbereichs) die vom Gerät tatsächlich unterstützten Werte per <code class="docutils literal notranslate"><span class="pre">getFeatures</span></code> aus und stellt sie als read-only Listen-Unteritem <code class="docutils literal notranslate"><span class="pre">&lt;item&gt;.values</span></code> bereit: <code class="docutils literal notranslate"><span class="pre">input.sources</span></code> (bereits länger vorhanden), sowie neu <code class="docutils literal notranslate"><span class="pre">sound_program.values</span></code>, <code class="docutils literal notranslate"><span class="pre">tone_control_mode.values</span></code>, <code class="docutils literal notranslate"><span class="pre">equalizer_mode.values</span></code>, <code class="docutils literal notranslate"><span class="pre">link_control.values</span></code>, <code class="docutils literal notranslate"><span class="pre">link_audio_delay.values</span></code> und <code class="docutils literal notranslate"><span class="pre">link_audio_quality.values</span></code>. Meldet ein Gerät eine bestimmte Liste nicht (modellabhängig - z.B. <code class="docutils literal notranslate"><span class="pre">tone_control_mode_list</span></code>/<code class="docutils literal notranslate"><span class="pre">equalizer_mode_list</span></code> fehlen auf manchen Geräten ganz), bleibt das jeweilige <code class="docutils literal notranslate"><span class="pre">.values</span></code>-Item einfach leer (<code class="docutils literal notranslate"><span class="pre">[]</span></code>), statt einen Platzhalter oder Fehler zu erzeugen.</p>
+<p>Beim Start fragt das Plugin pro Gerät <code class="docutils literal notranslate"><span class="pre">getFeatures</span></code> ab und merkt sich, welche Befehle (power/volume/mute) und Eingänge in der jeweiligen Zone tatsächlich unterstützt werden. Nicht unterstützte Befehle/Eingänge werden abgelehnt (mit Logmeldung), Lautstärkewerte werden auf den vom Gerät gemeldeten Bereich (min/max/step) begrenzt. Ist das Gerät beim Start nicht erreichbar, wird diese Prüfung übersprungen und wie bisher ungeprüft gesendet.</p>
 <p>Seit SmartHomeNG v1.7 werden Item-Structs bereitgestellt, mit denen die Funktionalitäten eines einfachen Players und zusätzlich Weckerfunktionen genutzt werden können.</p>
 </section>
 <section id="anforderungen">
@@ -5774,10 +5811,25 @@ sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> <
 <span class="w">        </span><span class="nt">yamahayxc_host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.2.211</span>
 <span class="w">        </span><span class="nt">yamahayxc_zone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">main</span>
 
-<span class="w">        </span><span class="nt">struct</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yamahayxc.basic</span>
+<span class="w">        </span><span class="nt">struct</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">yamahayxc.amp</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">yamahayxc.netusb</span><span class="p p-Indicator">]</span>
 </pre></div>
 </div>
-<p>oder ohne Item-Structs (mit identischem Resultat):</p>
+<p>Zweite Zone desselben Geräts (z.B. Receiver mit <cite>main</cite> + <cite>zone2</cite>): einfach ein zweites Geräte-Item mit derselben <code class="docutils literal notranslate"><span class="pre">yamahayxc_host</span></code>, aber anderer <code class="docutils literal notranslate"><span class="pre">yamahayxc_zone</span></code> anlegen, und dafür <code class="docutils literal notranslate"><span class="pre">yamahayxc.zone2</span></code>/<code class="docutils literal notranslate"><span class="pre">zone3</span></code>/<code class="docutils literal notranslate"><span class="pre">zone4</span></code> statt <code class="docutils literal notranslate"><span class="pre">yamahayxc.amp</span></code> verwenden (inhaltlich identisch, inklusive <code class="docutils literal notranslate"><span class="pre">present</span></code>). <code class="docutils literal notranslate"><span class="pre">netusb</span></code> nur bei <strong>einer</strong> der Zonen einbinden (netusb ist geräteweit, nicht zonenspezifisch - würde sonst pro Zone dupliziert):</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">media</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">avr_main</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">yamahayxc_host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.2.212</span>
+<span class="w">        </span><span class="nt">yamahayxc_zone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">main</span>
+
+<span class="w">        </span><span class="nt">struct</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">yamahayxc.amp</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">yamahayxc.netusb</span><span class="p p-Indicator">]</span>
+
+<span class="w">    </span><span class="nt">avr_zone2</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">yamahayxc_host</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">192.168.2.212</span>
+<span class="w">        </span><span class="nt">yamahayxc_zone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">zone2</span>
+
+<span class="w">        </span><span class="nt">struct</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yamahayxc.zone2</span>
+</pre></div>
+</div>
+<p>oder ohne Item-Structs (mit identischem Resultat zu <code class="docutils literal notranslate"><span class="pre">[yamahayxc.amp,</span> <span class="pre">yamahayxc.netusb]</span></code> kombiniert auf einem Item - die <code class="docutils literal notranslate"><span class="pre">amp</span></code>-Items direkt unter dem Geräteitem, die <code class="docutils literal notranslate"><span class="pre">netusb</span></code>-Items ab dem Track-Abschnitt weiter unten):</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">media</span><span class="p">:</span>
 
 <span class="w">    </span><span class="nt">wx010</span><span class="p">:</span>
@@ -5797,6 +5849,26 @@ sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> <
 <span class="w">            </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">volume</span>
 <span class="w">            </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
 
+<span class="w">            </span><span class="c1"># optional: device-reported range, fetched once via getFeatures</span>
+<span class="w">            </span><span class="nt">min</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">volume_min</span>
+<span class="w">                </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span>
+<span class="w">            </span><span class="nt">max</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">volume_max</span>
+<span class="w">                </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span>
+<span class="w">            </span><span class="nt">step</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">volume_step</span>
+<span class="w">                </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span>
+<span class="w">            </span><span class="c1"># optional: r/w volume scaled to 0..100 using min/max above</span>
+<span class="w">            </span><span class="nt">percent</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">volume_percent</span>
+<span class="w">                </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rw</span>
+<span class="w">                </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
 <span class="w">        </span><span class="c1"># True = mute enable, False = mute disable</span>
 <span class="w">        </span><span class="nt">mute</span><span class="p">:</span>
 <span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
@@ -5809,7 +5881,15 @@ sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> <
 <span class="w">            </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">input</span>
 <span class="w">            </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
 
+<span class="w">            </span><span class="c1"># optional: device-reported list of valid input values,</span>
+<span class="w">            </span><span class="c1"># fetched once via getFeatures</span>
+<span class="w">            </span><span class="nt">sources</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+<span class="w">                </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">input_sources</span>
+<span class="w">                </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span>
+
 <span class="w">        </span><span class="c1"># possible values are &#39;play&#39;, &#39;stop&#39;, &#39;pause&#39;, &#39;previous&#39;, &#39;next&#39;...</span>
+<span class="w">        </span><span class="c1"># (netusb from here on - device-global, not zone-specific)</span>
 <span class="w">        </span><span class="nt">playback</span><span class="p">:</span>
 <span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
 <span class="w">            </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">playback</span>
@@ -5861,7 +5941,9 @@ sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> <
 <span class="w">            </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">passthru</span>
 <span class="w">            </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
 
-<span class="c1"># write-only item to force update of all items above. See notes.</span>
+<span class="c1"># write-only item to force a full refresh (all zones + netusb + tuner +</span>
+<span class="c1"># link + alarm). See notes above - update_dsp/update_netusb/update_tuner/</span>
+<span class="c1"># update_link give a narrower, category-scoped refresh instead.</span>
 <span class="w">        </span><span class="w w-Error"> </span><span class="nt">update</span><span class="p">:</span>
 <span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
 <span class="w">            </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state</span>
@@ -5888,6 +5970,352 @@ sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> <
 <span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
 <span class="w">            </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">alarm_time</span>
 <span class="w">            </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
+
+<span class="c1"># the following items are only valid for devices with a tuner (AM/FM);</span>
+<span class="c1"># also available as struct &#39;yamahayxc.tuner&#39; (alias for media.tuner),</span>
+<span class="c1"># device-global (nicht zonenspezifisch). Item-Namen ohne &#39;tuner_&#39;-Präfix,</span>
+<span class="c1"># der Pfad (tuner.band statt tuner_band) gibt den Kontext bereits vor.</span>
+<span class="w">        </span><span class="nt">tuner</span><span class="p">:</span>
+
+<span class="w">            </span><span class="c1"># band auswählen, &#39;am&#39; oder &#39;fm&#39;</span>
+<span class="w">            </span><span class="nt">band</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+<span class="w">                </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tuner_band</span>
+<span class="w">                </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
+<span class="w">            </span><span class="c1"># Frequenz direkt einstellen, in kHz (z.B. 87500 = 87,5 MHz)</span>
+<span class="w">            </span><span class="nt">freq</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tuner_freq</span>
+<span class="w">                </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
+<span class="w">            </span><span class="c1"># Sendersuchlauf: &#39;up&#39; / &#39;down&#39; / &#39;cancel&#39; / &#39;auto_up&#39; / &#39;auto_down&#39; / &#39;tp_up&#39; / &#39;tp_down&#39;</span>
+<span class="w">            </span><span class="nt">seek</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+<span class="w">                </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tuner_seek</span>
+<span class="w">                </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
+<span class="w">            </span><span class="c1"># aktuell empfangen? (read-only)</span>
+<span class="w">            </span><span class="nt">tuned</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
+<span class="w">                </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tuner_tuned</span>
+
+<span class="w">            </span><span class="c1"># Sendername/RDS-Text, falls verfügbar (read-only)</span>
+<span class="w">            </span><span class="nt">station</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+<span class="w">                </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tuner_station</span>
+
+<span class="w">            </span><span class="c1"># Preset abrufen (Nummer je nach Gerät)</span>
+<span class="w">            </span><span class="nt">preset</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tuner_preset</span>
+<span class="w">                </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
+<span class="w">            </span><span class="c1"># aktuellen Sender auf Preset-Nummer speichern</span>
+<span class="w">            </span><span class="nt">preset_store</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tuner_preset_store</span>
+<span class="w">                </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
+<span class="w">            </span><span class="c1"># Preset-Nummer löschen</span>
+<span class="w">            </span><span class="nt">preset_clear</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tuner_preset_clear</span>
+<span class="w">                </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
+<span class="w">            </span><span class="c1"># zum nächsten/vorherigen Preset wechseln: &#39;next&#39; / &#39;previous&#39;</span>
+<span class="w">            </span><span class="nt">preset_switch</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+<span class="w">                </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tuner_preset_switch</span>
+<span class="w">                </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
+
+<span class="c1"># die folgenden Items steuern Klangfeld/DSP-Funktionen (geräteabhängig);</span>
+<span class="c1"># auch als Struct &#39;yamahayxc.dsp&#39; verfügbar, zonenspezifisch</span>
+
+<span class="w">        </span><span class="c1"># Sound Program auswählen (z.B. &#39;munich&#39;, &#39;straight&#39;, ... - geräteabhängig)</span>
+<span class="w">        </span><span class="nt">sound_program</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+<span class="w">            </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sound_program</span>
+<span class="w">            </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
+<span class="w">        </span><span class="c1"># 3D Surround an/aus</span>
+<span class="w">        </span><span class="nt">surround_3d</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
+<span class="w">            </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">surround_3d</span>
+<span class="w">            </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
+<span class="w">        </span><span class="c1"># Direct-Modus an/aus</span>
+<span class="w">        </span><span class="nt">direct</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
+<span class="w">            </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">direct</span>
+<span class="w">            </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
+<span class="w">        </span><span class="c1"># Pure-Direct-Modus an/aus</span>
+<span class="w">        </span><span class="nt">pure_direct</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
+<span class="w">            </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pure_direct</span>
+<span class="w">            </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
+<span class="w">        </span><span class="c1"># Enhancer an/aus</span>
+<span class="w">        </span><span class="nt">enhancer</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
+<span class="w">            </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">enhancer</span>
+<span class="w">            </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
+<span class="w">        </span><span class="c1"># Klangregelungs-Modus, z.B. &#39;manual&#39; / &#39;auto&#39; / &#39;bypass&#39; (geräteabhängig)</span>
+<span class="w">        </span><span class="nt">tone_control_mode</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+<span class="w">            </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tone_control_mode</span>
+<span class="w">            </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
+<span class="w">        </span><span class="c1"># tone/bass/höhen/balance gruppiert unter &#39;tone&#39;, jeweils mit</span>
+<span class="w">        </span><span class="c1"># optionalem min/max/step-Unteritem (gerätespezifischer Bereich,</span>
+<span class="w">        </span><span class="c1"># via getFeatures)</span>
+<span class="w">        </span><span class="nt">tone</span><span class="p">:</span>
+
+<span class="w">            </span><span class="c1"># Bass-Wert (nur wirksam bei tone_control_mode=manual)</span>
+<span class="w">            </span><span class="nt">bass</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tone_bass</span>
+<span class="w">                </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+<span class="w">                </span><span class="nt">min</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tone_bass_min</span>
+<span class="w">                    </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span>
+<span class="w">                </span><span class="nt">max</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tone_bass_max</span>
+<span class="w">                    </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span>
+<span class="w">                </span><span class="nt">step</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tone_bass_step</span>
+<span class="w">                    </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span>
+
+<span class="w">            </span><span class="c1"># Höhen-Wert (nur wirksam bei tone_control_mode=manual)</span>
+<span class="w">            </span><span class="nt">treble</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tone_treble</span>
+<span class="w">                </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+<span class="w">                </span><span class="nt">min</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tone_treble_min</span>
+<span class="w">                    </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span>
+<span class="w">                </span><span class="nt">max</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tone_treble_max</span>
+<span class="w">                    </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span>
+<span class="w">                </span><span class="nt">step</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tone_treble_step</span>
+<span class="w">                    </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span>
+
+<span class="w">            </span><span class="c1"># L/R-Balance, negativ=links, positiv=rechts</span>
+<span class="w">            </span><span class="nt">balance</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">balance</span>
+<span class="w">                </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+<span class="w">                </span><span class="nt">min</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">balance_min</span>
+<span class="w">                    </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span>
+<span class="w">                </span><span class="nt">max</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">balance_max</span>
+<span class="w">                    </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span>
+<span class="w">                </span><span class="nt">step</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">balance_step</span>
+<span class="w">                    </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span>
+
+<span class="w">        </span><span class="c1"># Equalizer-Modus, z.B. &#39;manual&#39; / &#39;auto&#39; / &#39;bypass&#39; (geräteabhängig)</span>
+<span class="w">        </span><span class="nt">equalizer_mode</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+<span class="w">            </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">equalizer_mode</span>
+<span class="w">            </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
+<span class="w">        </span><span class="c1"># Equalizer-Bänder gruppiert unter &#39;equalizer&#39;, jeweils mit</span>
+<span class="w">        </span><span class="c1"># optionalem min/max/step-Unteritem</span>
+<span class="w">        </span><span class="nt">equalizer</span><span class="p">:</span>
+
+<span class="w">            </span><span class="c1"># Equalizer tiefe Frequenzen (nur wirksam bei equalizer_mode=manual)</span>
+<span class="w">            </span><span class="nt">low</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eq_low</span>
+<span class="w">                </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+<span class="w">                </span><span class="nt">min</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eq_low_min</span>
+<span class="w">                    </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span>
+<span class="w">                </span><span class="nt">max</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eq_low_max</span>
+<span class="w">                    </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span>
+<span class="w">                </span><span class="nt">step</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eq_low_step</span>
+<span class="w">                    </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span>
+
+<span class="w">            </span><span class="c1"># Equalizer mittlere Frequenzen (nur wirksam bei equalizer_mode=manual)</span>
+<span class="w">            </span><span class="nt">mid</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eq_mid</span>
+<span class="w">                </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+<span class="w">                </span><span class="nt">min</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eq_mid_min</span>
+<span class="w">                    </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span>
+<span class="w">                </span><span class="nt">max</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eq_mid_max</span>
+<span class="w">                    </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span>
+<span class="w">                </span><span class="nt">step</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eq_mid_step</span>
+<span class="w">                    </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span>
+
+<span class="w">            </span><span class="c1"># Equalizer hohe Frequenzen (nur wirksam bei equalizer_mode=manual)</span>
+<span class="w">            </span><span class="nt">high</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eq_high</span>
+<span class="w">                </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+<span class="w">                </span><span class="nt">min</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eq_high_min</span>
+<span class="w">                    </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span>
+<span class="w">                </span><span class="nt">max</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eq_high_max</span>
+<span class="w">                    </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span>
+<span class="w">                </span><span class="nt">step</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">eq_high_step</span>
+<span class="w">                    </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ro</span>
+
+
+<span class="c1"># die folgenden Items steuern MusicCast Link (Multiroom), geräteabhängig;</span>
+<span class="c1"># auch als Struct &#39;yamahayxc.link&#39; (Alias für media.link) verfügbar.</span>
+<span class="c1"># Grundfunktionen an echter Mehrgeräte-Hardware getestet, siehe Hinweise</span>
+<span class="c1"># weiter oben in diesem Dokument. Vereinfachte UI über die rohen YXC</span>
+<span class="c1"># dist/*-Primitiven - &#39;linked&#39;/&#39;role&#39; sind die primären Signale, Rohdaten</span>
+<span class="c1"># liegen unter &#39;options&#39;. link_control/link_audio_delay/</span>
+<span class="c1"># link_audio_quality liegen NICHT hier, sondern in &#39;amp&#39;/&#39;zone2&#39;/&#39;zone3&#39;/</span>
+<span class="c1"># &#39;zone4&#39; (zonenspezifisch, siehe oben).</span>
+<span class="w">        </span><span class="nt">link</span><span class="p">:</span>
+
+<span class="w">            </span><span class="c1"># primäres &quot;bin ich gruppiert?&quot;-Signal, aus group_id</span>
+<span class="w">            </span><span class="c1"># abgeleitet (read-only)</span>
+<span class="w">            </span><span class="nt">linked</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
+<span class="w">                </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">link_linked</span>
+
+<span class="w">            </span><span class="c1"># &#39;server&#39; / &#39;client&#39; / &#39;none&#39; - wird auf &#39;none&#39; erzwungen,</span>
+<span class="w">            </span><span class="c1"># sobald &#39;linked&#39; false ist, auch wenn das Gerät selbst noch</span>
+<span class="w">            </span><span class="c1"># einen älteren Wert meldet (read-only)</span>
+<span class="w">            </span><span class="nt">role</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+<span class="w">                </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">link_role</span>
+
+<span class="w">            </span><span class="c1"># alle Hosts, für die dieses Plugin mindestens ein Item</span>
+<span class="w">            </span><span class="c1"># konfiguriert hat (Plugin-Bookkeeping, kein Gerätestatus) -</span>
+<span class="w">            </span><span class="c1"># z.B. für eine Visu-Dropdown-Auswahl (read-only). Steht</span>
+<span class="w">            </span><span class="c1"># bereits direkt nach dem Start zur Verfügung.</span>
+<span class="w">            </span><span class="nt">available_devices</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+<span class="w">                </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">link_hosts</span>
+
+<span class="w">            </span><span class="c1"># Aktionen/Infos, die nur als Gruppen-Server Sinn ergeben</span>
+<span class="w">            </span><span class="nt">server</span><span class="p">:</span>
+
+<span class="w">                </span><span class="c1"># IP-Adressen der Gruppen-Clients, nur gefüllt während</span>
+<span class="w">                </span><span class="c1"># role=server (read-only)</span>
+<span class="w">                </span><span class="nt">linked_devices</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">link_devices</span>
+
+<span class="w">                </span><span class="c1"># (als/werde Server) den angegebenen Host/IP als Client</span>
+<span class="w">                </span><span class="c1"># hinzufügen</span>
+<span class="w">                </span><span class="nt">add_device</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">link_add_client</span>
+<span class="w">                    </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
+<span class="w">                </span><span class="c1"># den angegebenen Host/IP aus der Gruppe entfernen</span>
+<span class="w">                </span><span class="nt">remove_device</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">link_remove_client</span>
+<span class="w">                    </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
+<span class="w">                </span><span class="c1"># eigene Rolle komplett aufgeben (kein separates</span>
+<span class="w">                </span><span class="c1"># &quot;pausieren, Gruppe behalten&quot; - kein klarer</span>
+<span class="w">                </span><span class="c1"># Wiederaufnahme-Weg, kein praktischer Anwendungsfall)</span>
+<span class="w">                </span><span class="nt">disband</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">link_disband</span>
+<span class="w">                    </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
+<span class="w">            </span><span class="c1"># Aktionen, die nur als Gruppen-Client Sinn ergeben</span>
+<span class="w">            </span><span class="nt">client</span><span class="p">:</span>
+
+<span class="w">                </span><span class="c1"># als Client des angegebenen Host/IP einer Gruppe</span>
+<span class="w">                </span><span class="c1"># beitreten</span>
+<span class="w">                </span><span class="nt">join</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">link_join</span>
+<span class="w">                    </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
+<span class="w">                </span><span class="c1"># die Gruppe verlassen</span>
+<span class="w">                </span><span class="nt">leave</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">link_leave</span>
+<span class="w">                    </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
+<span class="w">            </span><span class="c1"># selten benötigte/rohe Felder</span>
+<span class="w">            </span><span class="nt">options</span><span class="p">:</span>
+
+<span class="w">                </span><span class="c1"># Gruppen-ID, 32-stelliger Hex-String (read-only) - das</span>
+<span class="w">                </span><span class="c1"># ist, wovon &#39;linked&#39; abgeleitet wird</span>
+<span class="w">                </span><span class="nt">group_id</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">link_group_id</span>
+
+<span class="w">                </span><span class="c1"># Gruppenname setzen/lesen (nur im flüchtigen Speicher</span>
+<span class="w">                </span><span class="c1"># des Geräts)</span>
+<span class="w">                </span><span class="nt">group_name</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">link_group_name</span>
+<span class="w">                    </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
+<span class="w">                </span><span class="c1"># Zone, die als Master dient, falls role=server (read-only)</span>
+<span class="w">                </span><span class="nt">server_zone</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">link_server_zone</span>
+
+<span class="w">                </span><span class="c1"># Tonaussetzer während Distribution erkannt? (read-only)</span>
+<span class="w">                </span><span class="nt">audio_dropout</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
+<span class="w">                    </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">link_audio_dropout</span>
+
+<span class="c1"># link_control (&#39;normal&#39;/&#39;stability_boost&#39;), link_audio_delay</span>
+<span class="c1"># (&#39;lip_sync&#39;/&#39;audio_sync_on&#39;/&#39;audio_sync_off&#39;/&#39;balanced&#39;) und</span>
+<span class="c1"># link_audio_quality (&#39;compressed&#39;/&#39;uncompressed&#39;) sind zonenspezifisch</span>
+<span class="c1"># (Spezifikations-Ausnahme innerhalb von Link) und liegen deshalb in</span>
+<span class="c1"># &#39;amp&#39;/&#39;zone2&#39;/&#39;zone3&#39;/&#39;zone4&#39;, nicht hier:</span>
+<span class="w">        </span><span class="nt">link_control</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+<span class="w">            </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">link_control</span>
+<span class="w">            </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
+<span class="w">        </span><span class="nt">link_audio_delay</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+<span class="w">            </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">link_audio_delay</span>
+<span class="w">            </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
+
+<span class="w">        </span><span class="nt">link_audio_quality</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
+<span class="w">            </span><span class="nt">yamahayxc_cmd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">link_audio_quality</span>
+<span class="w">            </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;True&#39;</span>
 </pre></div>
 </div>
 </section>
@@ -5902,6 +6330,16 @@ sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> <
 <span class="o">&gt;</span> <span class="n">up</span> <span class="n">media</span><span class="o">.</span><span class="n">wx010</span><span class="o">.</span><span class="n">power</span><span class="o">=</span><span class="kc">False</span>
 <span class="o">&gt;</span> <span class="n">up</span> <span class="n">media</span><span class="o">.</span><span class="n">wx010</span><span class="o">.</span><span class="n">passthru</span><span class="o">=</span><span class="s1">&#39;v1/Main/setPower?power=off&#39;</span>
 <span class="o">&gt;</span> <span class="n">up</span> <span class="n">media</span><span class="o">.</span><span class="n">wx010</span><span class="o">.</span><span class="n">alarm_time</span><span class="o">=</span><span class="s1">&#39;1430&#39;</span>
+<span class="o">&gt;</span> <span class="n">up</span> <span class="n">media</span><span class="o">.</span><span class="n">avr</span><span class="o">.</span><span class="n">tuner</span><span class="o">.</span><span class="n">band</span><span class="o">=</span><span class="n">fm</span>
+<span class="o">&gt;</span> <span class="n">up</span> <span class="n">media</span><span class="o">.</span><span class="n">avr</span><span class="o">.</span><span class="n">tuner</span><span class="o">.</span><span class="n">freq</span><span class="o">=</span><span class="mi">87500</span>
+<span class="o">&gt;</span> <span class="n">up</span> <span class="n">media</span><span class="o">.</span><span class="n">avr</span><span class="o">.</span><span class="n">tuner</span><span class="o">.</span><span class="n">preset</span><span class="o">=</span><span class="mi">5</span>
+<span class="o">&gt;</span> <span class="n">up</span> <span class="n">media</span><span class="o">.</span><span class="n">avr</span><span class="o">.</span><span class="n">sound_program</span><span class="o">=</span><span class="n">munich</span>
+<span class="o">&gt;</span> <span class="n">up</span> <span class="n">media</span><span class="o">.</span><span class="n">avr</span><span class="o">.</span><span class="n">tone</span><span class="o">.</span><span class="n">bass</span><span class="o">=</span><span class="mi">3</span>
+<span class="o">&gt;</span> <span class="n">up</span> <span class="n">media</span><span class="o">.</span><span class="n">avr</span><span class="o">.</span><span class="n">tone</span><span class="o">.</span><span class="n">balance</span><span class="o">=-</span><span class="mi">5</span>
+<span class="o">&gt;</span> <span class="n">up</span> <span class="n">media</span><span class="o">.</span><span class="n">avr</span><span class="o">.</span><span class="n">volume</span><span class="o">=</span><span class="mi">50</span>
+<span class="o">&gt;</span> <span class="n">up</span> <span class="n">media</span><span class="o">.</span><span class="n">avr</span><span class="o">.</span><span class="n">volume</span><span class="o">.</span><span class="n">raw</span><span class="o">=</span><span class="mi">35</span>
+<span class="o">&gt;</span> <span class="n">up</span> <span class="n">media</span><span class="o">.</span><span class="n">roomA</span><span class="o">.</span><span class="n">link</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">join</span><span class="o">=</span><span class="mf">192.168.2.212</span>
+<span class="o">&gt;</span> <span class="n">up</span> <span class="n">media</span><span class="o">.</span><span class="n">roomA</span><span class="o">.</span><span class="n">link</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">leave</span><span class="o">=</span><span class="kc">True</span>
 </pre></div>
 </div>
 <dl class="field-list simple">

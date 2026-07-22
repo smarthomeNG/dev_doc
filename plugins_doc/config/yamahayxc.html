@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plugin ‚yamahayxc‘ Konfiguration &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 19. Juli 2026, commit 476e098) Dokumentation</title>
+  <title>Plugin ‚yamahayxc‘ Konfiguration &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 22. Juli 2026, commit 476e098) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5726,7 +5726,7 @@
 <h2>Beschreibung<a class="headerlink" href="#beschreibung" title="Permalink to this heading"></a></h2>
 <p>Dieses Plugin ermöglicht, Yamaha MusicCast-Geräte in SmartHomeNG einzubinden.</p>
 <p>Dabei ist es möglich, verschiedene Geräte aus SmartHomeNG aus anzusprechen und zu steuern, als auch über SmartHomeNG auszulesen.</p>
-<p>Die Steuerungsmöglichkeiten umfassen (derzeit) unter Anderem:</p>
+<p>Die Steuerungsmöglichkeiten umfassen unter Anderem:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Gerät ein-/ausschalten, Standby, Sleep-Timer</p></li>
@@ -5735,9 +5735,12 @@
 <li><p>Lautstärkesteuerung</p></li>
 <li><p>Anwahl von Favoriten und Presets (geräteabhängig)</p></li>
 <li><p>Stellen und De-/Aktivieren des Weckers (geräteabhängig)</p></li>
+<li><p>Tuner-Steuerung (AM/FM): Band, Frequenz, Sendersuchlauf, Presets</p></li>
+<li><p>Klangfeld/DSP (geräteabhängig): Sound Program, 3D Surround, Direct/Pure Direct, Enhancer, Klangregelung, Equalizer, Balance</p></li>
+<li><p>Multiroom (MusicCast Link, geräteabhängig, Grundfunktionen an echter Mehrgeräte-Hardware getestet): Gruppen erstellen/beitreten/verlassen, Clients hinzufügen/entfernen</p></li>
 </ul>
 </div></blockquote>
-<p>Die Möglichkeiten, Statusinformationen abzurufen, umfassen (derzeit) u.a.</p>
+<p>Die Möglichkeiten, Statusinformationen abzurufen, umfassen u.a.</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Gerätestatus (an/aus/Standby),</p></li>
@@ -5749,13 +5752,13 @@
 <li><p>Coverbild des aktuellen Titels (quellenabhängig)</p></li>
 </ul>
 </div></blockquote>
-<p>Weitere Funktionen werden nach Bedarf und Verfügbarkeit von entsprechenden Geräten implementiert. Grundsätzlich ist die Architektur des Plugins so strukturiert, dass prinzipiell alle verfügbaren Kommandos im entsprechenden Steuerungsstandard implementiert werden können. Für noch nicht implementierte Steuerungsbefehle ist ein genereller „Pass-Thru“-Befehl vorhanden, so dass beliebige Befehlssequenzen an das Gerät gesendet werden können.</p>
+<p>Für noch nicht implementierte Steuerungsbefehle ist ein genereller „Pass-Thru“-Befehl vorhanden, so dass beliebige Befehlssequenzen an das Gerät gesendet werden können.</p>
 </section>
 <section id="anforderungen">
 <h2>Anforderungen<a class="headerlink" href="#anforderungen" title="Permalink to this heading"></a></h2>
 <blockquote>
 <div><ul class="simple">
-<li><p>Minimum SmartHomeNG Version: <strong>1.3</strong></p></li>
+<li><p>Minimum SmartHomeNG Version: <strong>1.12</strong></p></li>
 </ul>
 </div></blockquote>
 </section>
@@ -5783,7 +5786,7 @@
 </section>
 <section id="yamahayxc-host">
 <h2>yamahayxc_host<a class="headerlink" href="#yamahayxc-host" title="Permalink to this heading"></a></h2>
-<p>Hostname für das Yamaha-Gerät. Gilt für alle untergeordneten Items.</p>
+<p>Hostname oder IP-Adresse für das Yamaha-Gerät. Gilt für alle untergeordneten Items.</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>str</strong></p></li>
@@ -5792,7 +5795,7 @@
 </section>
 <section id="yamahayxc-zone">
 <h2>yamahayxc_zone<a class="headerlink" href="#yamahayxc-zone" title="Permalink to this heading"></a></h2>
-<p>Ausgewählte Zone</p>
+<p>Ausgewählte Zone. Gilt für alle untergeordneten Items.</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>str</strong></p></li>
@@ -5810,13 +5813,21 @@
 <ul class="simple">
 <li><dl class="simple">
 <dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>alarm</strong> (<cite>foo</cite>, —)</dt><dd><ul>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>alarm_on</strong> (<cite>bool</cite>, —)</p></li>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>alarm_time</strong> (<cite>str</cite>, —)</p></li>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>alarm_beep</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>alarm_on</strong> (<cite>bool</cite>, Wecker aktivieren)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>alarm_time</strong> (<cite>str</cite>, Weckzeit als vierstelliger String, bspw. „0630“)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>alarm_beep</strong> (<cite>bool</cite>, Wecker-Piepen aktivieren (nur, wenn Wecker aktiv))</p></li>
 </ul>
 </dd>
 </dl>
 </li>
+</ul>
+</div>
+</section>
+<section id="amp">
+<h2>amp<a class="headerlink" href="#amp" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>amp</strong> (<cite>foo</cite>, —)</p></li>
 </ul>
 </div>
 </section>
@@ -5827,23 +5838,445 @@
 <li><dl class="simple">
 <dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>basic</strong> (<cite>foo</cite>, —)</dt><dd><ul>
 <li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>wakeup</strong> (<cite>bool</cite>, —)</p></li>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>power</strong> (<cite>bool</cite>, —)</p></li>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>volume</strong> (<cite>num</cite>, —)</p></li>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>mute</strong> (<cite>bool</cite>, —)</p></li>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>input</strong> (<cite>str</cite>, —)</p></li>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>track</strong> (<cite>str</cite>, —)</p></li>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>albumart</strong> (<cite>str</cite>, —)</p></li>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>albumarturl</strong> (<cite>str</cite>, —)</p></li>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>update</strong> (<cite>bool</cite>, —)</p></li>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>preset</strong> (<cite>num</cite>, —)</p></li>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>sleep</strong> (<cite>num</cite>, —)</p></li>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>artist</strong> (<cite>str</cite>, —)</p></li>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>curtime</strong> (<cite>num</cite>, —)</p></li>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>totaltime</strong> (<cite>num</cite>, —)</p></li>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>playback</strong> (<cite>str</cite>, —)</p></li>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>passthru</strong> (<cite>str</cite>, —)</p></li>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>playing</strong> (<cite>bool</cite>, —)</p></li>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>standby</strong> (<cite>bool</cite>, —)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>power</strong> (<cite>bool</cite>, Ein-/Ausschalter für die aktuelle Zone)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>volume</strong> (<cite>num</cite>, Lautstärke der aktuellen Zone in Gerätewerten)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>mute</strong> (<cite>bool</cite>, Stummschaltung)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>input</strong> (<cite>str</cite>, Tonquelle)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>track</strong> (<cite>str</cite>, Aktuell gespielter Track. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>albumart</strong> (<cite>str</cite>, URL zum Bild des aktuellen Albums. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>albumarturl</strong> (<cite>str</cite>, HTML-Snippet zum Bild des aktuellen Albums. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>update</strong> (<cite>bool</cite>, Alle Werte für aktuelles Gerät neu lesen.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>preset</strong> (<cite>num</cite>, Auswahl voreingestellter Wiedergabelisten.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>sleep</strong> (<cite>num</cite>, Ausschalttimer, gültige Werte 0, 30, 60, 90, 120)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>artist</strong> (<cite>str</cite>, Interpret des aktuell gespielten Tracks. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>curtime</strong> (<cite>num</cite>, Aktuelle Spielzeit des gespielten Tracks. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>totaltime</strong> (<cite>num</cite>, Länge des aktuell gespielten Tracks. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>playback</strong> (<cite>str</cite>, Wiedergabestatus als Textausgabe.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>passthru</strong> (<cite>str</cite>, Item, um fertig formatierte Befehlssequenzen an das Gerät zu senden.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>playing</strong> (<cite>bool</cite>, Bool-Indikator, ob die Wiedergabe läuft. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>standby</strong> (<cite>bool</cite>, Bool-Indikator, ob das Gerät im Leerlauf ist. Nur-Lese-Zugriff.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="debug">
+<h2>debug<a class="headerlink" href="#debug" title="Permalink to this heading"></a></h2>
+<p>Diagnose-Items, kein Teil des YXC-Protokolls.</p>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>debug</strong> (<cite>foo</cite>, Diagnose-Items, kein Teil des YXC-Protokolls.)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>refresh</strong> (<cite>bool</cite>, Debug-Items neu befüllen.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>features</strong> (<cite>dict</cite>, Erkannte getFeatures-Fähigkeiten dieser Zone. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>dev_zone</strong> (<cite>dict</cite>, Registrierte Item-Pfade je Kommando für diese Zone. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>tuner_features</strong> (<cite>dict</cite>, Erkannte Tuner-Fähigkeiten dieses Geräts. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>dev_global</strong> (<cite>dict</cite>, Registrierte Item-Pfade je Kommando, geräteweit/netusb/Wecker. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>dev_tuner</strong> (<cite>dict</cite>, Registrierte Item-Pfade je Kommando, Tuner. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>dev_link</strong> (<cite>dict</cite>, Registrierte Item-Pfade je Kommando, Link. Nur-Lese-Zugriff.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="dsp">
+<h2>dsp<a class="headerlink" href="#dsp" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>dsp</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>dsp</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>available</strong> (<cite>bool</cite>, Bool-Indikator, ob DSP-Funktionen für diese Zone verfügbar sind. Nur-Lese-Zugriff.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="dsp-content">
+<h2>dsp_content<a class="headerlink" href="#dsp-content" title="Permalink to this heading"></a></h2>
+<p>Klangfeld/DSP-Steuerung der aktuellen Zone (geräteabhängig).</p>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>dsp_content</strong> (<cite>foo</cite>, Klangfeld/DSP-Steuerung der aktuellen Zone (geräteabhängig).)</dt><dd><ul>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>sound_program</strong> (<cite>str</cite>, Soundprogramm, gültige Werte in .values)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>values</strong> (<cite>list</cite>, Gültige Werte für Soundprogramm. Nur-Lese-Zugriff.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>surround_3d</strong> (<cite>bool</cite>, 3D-Surround-Modus aktivieren)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>direct</strong> (<cite>bool</cite>, Direkt-Modus aktivieren)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>pure_direct</strong> (<cite>bool</cite>, Pure-Direct-Modus aktivieren)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>enhancer</strong> (<cite>bool</cite>, Enhancer aktivieren)</p></li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>tone_control_mode</strong> (<cite>str</cite>, Klangregelungs-Modus, gültige Werte in .values)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>values</strong> (<cite>list</cite>, Gültige Werte für Klangregelungs-Modus. Nur-Lese-Zugriff.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>tone</strong> (<cite>foo</cite>, Bass-/Höhen-/Balance-Einstellungen.)</dt><dd><ul>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>bass</strong> (<cite>num</cite>, Bass-Anhebung/-Absenkung)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>min</strong> (<cite>num</cite>, Minimaler Wert für tone.bass. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>max</strong> (<cite>num</cite>, Maximaler Wert für tone.bass. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>step</strong> (<cite>num</cite>, Schrittweite für tone.bass. Nur-Lese-Zugriff.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>treble</strong> (<cite>num</cite>, Höhen-Anhebung/-Absenkung)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>min</strong> (<cite>num</cite>, Minimaler Wert für tone.treble. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>max</strong> (<cite>num</cite>, Maximaler Wert für tone.treble. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>step</strong> (<cite>num</cite>, Schrittweite für tone.treble. Nur-Lese-Zugriff.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>balance</strong> (<cite>num</cite>, Balance zwischen linkem/rechtem Kanal)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>min</strong> (<cite>num</cite>, Minimaler Wert für tone.balance. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>max</strong> (<cite>num</cite>, Maximaler Wert für tone.balance. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>step</strong> (<cite>num</cite>, Schrittweite für tone.balance. Nur-Lese-Zugriff.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>equalizer_mode</strong> (<cite>str</cite>, Equalizer-Modus, gültige Werte in .values)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>values</strong> (<cite>list</cite>, Gültige Werte für Equalizer-Modus. Nur-Lese-Zugriff.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>equalizer</strong> (<cite>foo</cite>, Equalizer-Einstellungen (tief/mittel/hoch).)</dt><dd><ul>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>low</strong> (<cite>num</cite>, Equalizer tiefe Frequenzen)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>min</strong> (<cite>num</cite>, Minimaler Wert für equalizer.low. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>max</strong> (<cite>num</cite>, Maximaler Wert für equalizer.low. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>step</strong> (<cite>num</cite>, Schrittweite für equalizer.low. Nur-Lese-Zugriff.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>mid</strong> (<cite>num</cite>, Equalizer mittlere Frequenzen)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>min</strong> (<cite>num</cite>, Minimaler Wert für equalizer.mid. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>max</strong> (<cite>num</cite>, Maximaler Wert für equalizer.mid. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>step</strong> (<cite>num</cite>, Schrittweite für equalizer.mid. Nur-Lese-Zugriff.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>high</strong> (<cite>num</cite>, Equalizer hohe Frequenzen)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>min</strong> (<cite>num</cite>, Minimaler Wert für equalizer.high. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>max</strong> (<cite>num</cite>, Maximaler Wert für equalizer.high. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>step</strong> (<cite>num</cite>, Schrittweite für equalizer.high. Nur-Lese-Zugriff.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>update</strong> (<cite>bool</cite>, Aktuelle DSP-Werte neu lesen.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="legacy-alarm">
+<h2>legacy_alarm<a class="headerlink" href="#legacy-alarm" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>legacy_alarm</strong> (<cite>foo</cite>, —)</p></li>
+</ul>
+</div>
+</section>
+<section id="link">
+<h2>link<a class="headerlink" href="#link" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>link</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>link</strong> (<cite>foo</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="media">
+<h2>media<a class="headerlink" href="#media" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>media</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>netusb</strong> (<cite>foo</cite>, UPNP-AV, USB, Bluetooth-Status und -Steuerung)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>track</strong> (<cite>str</cite>, Aktuell gespielter Track. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>artist</strong> (<cite>str</cite>, Interpret des aktuell gespielten Tracks. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>curtime</strong> (<cite>num</cite>, Aktuelle Spielzeit des gespielten Tracks. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>totaltime</strong> (<cite>num</cite>, Länge des aktuell gespielten Tracks. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>playback</strong> (<cite>str</cite>, Wiedergabestatus als Textausgabe.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>playing</strong> (<cite>bool</cite>, Bool-Indikator, ob die Wiedergabe läuft. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>albumart</strong> (<cite>str</cite>, URL zum Bild des aktuellen Albums. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>albumarturl</strong> (<cite>str</cite>, HTML-Snippet zum Bild des aktuellen Albums. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>preset</strong> (<cite>num</cite>, Auswahl voreingestellter Wiedergabelisten.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>standby</strong> (<cite>bool</cite>, Bool-Indikator, ob das Gerät im Leerlauf ist. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>update</strong> (<cite>bool</cite>, Aktuelle Werte für netusb neu lesen.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>tuner</strong> (<cite>foo</cite>, Tuner-Steuerung (AM/FM))</dt><dd><ul>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>band</strong> (<cite>str</cite>, AM/FM/DAB, je nach Gerät. RDS ist kein eigenes Band, sondern Zusatzinfo im FM-Betrieb.)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>values</strong> (<cite>list</cite>, Gültige Werte für Band. Nur-Lese-Zugriff.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>freq</strong> (<cite>num</cite>, Sendefrequenz für das aktuell gewählte Band, Grenzen in .min/.max/.step)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>min</strong> (<cite>num</cite>, Minimaler Frequenzwert für das aktuell gewählte Band. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>max</strong> (<cite>num</cite>, Maximaler Frequenzwert für das aktuell gewählte Band. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>step</strong> (<cite>num</cite>, Schrittweite für Frequenzwert für das aktuell gewählte Band. Nur-Lese-Zugriff.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>seek</strong> (<cite>str</cite>, Sendersuchlauf, gültige Werte „up“/“down“/“cancel“/“auto_up“/“auto_down“/“tp_up“/“tp_down“ (RDS))</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>tuned</strong> (<cite>bool</cite>, Bool-Indikator, ob ein Sender empfangen wird. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>station</strong> (<cite>str</cite>, Empfangener Sendername (RDS Program Service). Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>preset</strong> (<cite>num</cite>, Anwahl gespeicherter Tuner-Presets.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>preset_store</strong> (<cite>num</cite>, Aktuellen Sender auf Preset-Nummer speichern.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>preset_clear</strong> (<cite>num</cite>, Preset-Nummer löschen.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>preset_switch</strong> (<cite>str</cite>, Zum nächsten/vorherigen Preset wechseln, gültige Werte „next“/“previous“)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>update</strong> (<cite>bool</cite>, Aktuelle Werte für Tuner neu lesen.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>link</strong> (<cite>foo</cite>, Multiroom (MusicCast Link) Gruppen-Status und -Steuerung.)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>linked</strong> (<cite>bool</cite>, Bool-Indikator, ob das Gerät aktuell in einer Link-Gruppe ist. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>role</strong> (<cite>str</cite>, Rolle in der Link-Gruppe („server“/“client“/“none“). Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>available_devices</strong> (<cite>list</cite>, Für Link konfigurierte Hosts, als Auswahl für client.join/server.add_device. Nur-Lese-Zugriff.)</p></li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>server</strong> (<cite>foo</cite>, Aktionen/Status in der Rolle als Gruppen-Server.)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>linked_devices</strong> (<cite>list</cite>, IP-Adressen der Gruppen-Clients (nur als Server verfügbar). Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>add_device</strong> (<cite>str</cite>, Host/IP als Client zur Gruppe hinzufügen.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>remove_device</strong> (<cite>str</cite>, Host/IP aus der Gruppe entfernen.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>disband</strong> (<cite>bool</cite>, Gruppe auflösen (Serverrolle beenden).)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>client</strong> (<cite>foo</cite>, Aktionen in der Rolle als Gruppen-Client.)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>join</strong> (<cite>str</cite>, Als Client dem Server mit dem/der angegebenen Host/IP beitreten.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>leave</strong> (<cite>bool</cite>, Gruppe als Client verlassen.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>options</strong> (<cite>foo</cite>, Selten benötigte Optionen/Informationen zum Link.)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>group_id</strong> (<cite>str</cite>, Link-Gruppen-ID des Geräts. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>group_name</strong> (<cite>str</cite>, Name der Link-Gruppe. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>server_zone</strong> (<cite>str</cite>, Zone des Gruppen-Servers. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>audio_dropout</strong> (<cite>bool</cite>, Bool-Indikator für Audio-Aussetzer in der Link-Gruppe. Nur-Lese-Zugriff.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>update</strong> (<cite>bool</cite>, Aktuelle Werte für Link neu lesen.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="netusb">
+<h2>netusb<a class="headerlink" href="#netusb" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>netusb</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>netusb</strong> (<cite>foo</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="tuner">
+<h2>tuner<a class="headerlink" href="#tuner" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>tuner</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>tuner</strong> (<cite>foo</cite>, —)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="zone2">
+<h2>zone2<a class="headerlink" href="#zone2" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>zone2</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>available</strong> (<cite>bool</cite>, Bool-Indikator, ob Zone 2 an diesem Gerät verfügbar ist. Nur-Lese-Zugriff.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="zone3">
+<h2>zone3<a class="headerlink" href="#zone3" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>zone3</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>available</strong> (<cite>bool</cite>, Bool-Indikator, ob Zone 3 an diesem Gerät verfügbar ist. Nur-Lese-Zugriff.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="zone4">
+<h2>zone4<a class="headerlink" href="#zone4" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>zone4</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>available</strong> (<cite>bool</cite>, Bool-Indikator, ob Zone 4 an diesem Gerät verfügbar ist. Nur-Lese-Zugriff.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="zone-amp">
+<h2>zone_amp<a class="headerlink" href="#zone-amp" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>zone_amp</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>power</strong> (<cite>bool</cite>, Ein-/Ausschalter für die aktuelle Zone)</p></li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>volume</strong> (<cite>num</cite>, Lautstärke der aktuellen Zone in Prozent)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>min</strong> (<cite>num</cite>, Minimaler Lautstärkewert für volume.raw. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>max</strong> (<cite>num</cite>, Maximaler Lautstärkewert für volume.raw. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>step</strong> (<cite>num</cite>, Schrittweite für Lautstärkewert für volume.raw. Nur-Lese-Zugriff.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>raw</strong> (<cite>num</cite>, Lautstärke der aktuellen Zone in Gerätewerten)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>mute</strong> (<cite>bool</cite>, Stummschaltung)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>sleep</strong> (<cite>num</cite>, Ausschalttimer, gültige Werte 0, 30, 60, 90, 120)</p></li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>input</strong> (<cite>str</cite>, Tonquelle, gültige Werte in .values)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>values</strong> (<cite>list</cite>, Gültige Werte für Tonquelle. Nur-Lese-Zugriff.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>update</strong> (<cite>bool</cite>, Alle Werte für aktuelles Gerät neu lesen.)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>passthru</strong> (<cite>str</cite>, Item, um fertig formatierte Befehlssequenzen an das Gerät zu senden.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="zone-link-controls">
+<h2>zone_link_controls<a class="headerlink" href="#zone-link-controls" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>zone_link_controls</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>link_control</strong> (<cite>str</cite>, Link-Control-Modus, gültige Werte in .values)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>values</strong> (<cite>list</cite>, Gültige Werte für Link-Control. Nur-Lese-Zugriff.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>link_audio_delay</strong> (<cite>str</cite>, Audio-Delay-Modus, gültige Werte in .values. Nicht gültig, wenn Link-Control auf „stability“ gesetzt ist.)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>values</strong> (<cite>list</cite>, Gültige Werte für Audio-Delay. Nur-Lese-Zugriff.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>link_audio_quality</strong> (<cite>str</cite>, Audioqualität, gültige Werte in .values.)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>values</strong> (<cite>list</cite>, Gültige Werte für Audioqualität. Nur-Lese-Zugriff.)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="zones">
+<h2>zones<a class="headerlink" href="#zones" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>zones</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>zone2</strong> (<cite>foo</cite>, Zone 2)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>zone3</strong> (<cite>foo</cite>, Zone 3)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>zone4</strong> (<cite>foo</cite>, Zone 4)</p></li>
 </ul>
 </dd>
 </dl>
