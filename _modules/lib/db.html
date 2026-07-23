@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.db &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 22. Juli 2026, commit b111276) Dokumentation</title>
+  <title>lib.db &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 23. Juli 2026, commit 1cbda76) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -510,6 +510,12 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/database/user_doc.html#aufbau-der-datenbank">Aufbau der Datenbank</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../plugins/database/user_doc.html#fehlende-messwerte-datenlucken">Fehlende Messwerte (Datenlücken)</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../plugins/database/user_doc.html#kompaktierung-statt-loschen-database-maxage-action">Kompaktierung statt Löschen (database_maxage_action)</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../plugins/database/user_doc.html#item-attribute">Item Attribute</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../plugins/database/user_doc.html#beispiel">Beispiel</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../plugins/database/user_doc.html#minimum-maximum-als-eigenstandige-items-database-min-database-max">Minimum/Maximum als eigenständige Items (database.min / database.max)</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/database/user_doc.html#datenbankfunktionen-fur-datenreihen-plots">Datenbankfunktionen für Datenreihen/Plots</a></li>
@@ -2371,6 +2377,12 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/database/user_doc.html#aufbau-der-datenbank">Aufbau der Datenbank</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../plugins/database/user_doc.html#fehlende-messwerte-datenlucken">Fehlende Messwerte (Datenlücken)</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../plugins/database/user_doc.html#kompaktierung-statt-loschen-database-maxage-action">Kompaktierung statt Löschen (database_maxage_action)</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../plugins/database/user_doc.html#item-attribute">Item Attribute</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../plugins/database/user_doc.html#beispiel">Beispiel</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../plugins/database/user_doc.html#minimum-maximum-als-eigenstandige-items-database-min-database-max">Minimum/Maximum als eigenständige Items (database.min / database.max)</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/database/user_doc.html#datenbankfunktionen-fur-datenreihen-plots">Datenbankfunktionen für Datenreihen/Plots</a></li>
@@ -5865,6 +5877,11 @@
     <span class="c1"># the wrong type.</span>
     <span class="n">_numeric_connect_keys</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;port&#39;</span><span class="p">}</span>
 
+    <span class="c1"># connect() kwargs that must be a real bool rather than the literal</span>
+    <span class="c1"># string from config - a non-empty string like &#39;False&#39; is truthy in</span>
+    <span class="c1"># Python and would silently defeat an explicit override.</span>
+    <span class="n">_bool_connect_keys</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;check_same_thread&#39;</span><span class="p">}</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">dbapi</span><span class="p">,</span> <span class="n">connect</span><span class="p">,</span> <span class="n">formatting</span><span class="o">=</span><span class="s1">&#39;named&#39;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new database instance</span>
 
@@ -5931,12 +5948,27 @@
                             <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
                         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                             <span class="k">pass</span>
+                    <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bool_connect_keys</span><span class="p">:</span>
+                        <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;false&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">connect</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">OrderedDict</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_params</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">connect</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
 
         <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">connect</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_params</span> <span class="o">=</span> <span class="n">connect</span>
+
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dbapi</span><span class="p">,</span> <span class="s1">&#39;__name__&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;sqlite3&#39;</span> <span class="ow">and</span> <span class="s1">&#39;check_same_thread&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">:</span>
+            <span class="c1"># This class already serializes every connection access via</span>
+            <span class="c1"># self._fdb_lock below - sqlite3&#39;s own check_same_thread=True</span>
+            <span class="c1"># default (which rejects any cross-thread use of the connection</span>
+            <span class="c1"># object) is therefore redundant, and actively breaks the</span>
+            <span class="c1"># scheduler-driven access pattern every caller assumes: connect()</span>
+            <span class="c1"># typically runs once on the main thread at startup, while</span>
+            <span class="c1"># periodic maintenance tasks (e.g. the database plugin&#39;s</span>
+            <span class="c1"># remove_older_than_maxage/build_orphanlist) run on a scheduler</span>
+            <span class="c1"># thread. Only applied as a default - an explicit</span>
+            <span class="c1"># check_same_thread in the connect config always wins.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="s1">&#39;check_same_thread&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_format_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbapi</span><span class="o">.</span><span class="n">paramstyle</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_output</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">:</span>
@@ -6065,6 +6097,90 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span></div>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cursor_op_with_reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">empty</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error_prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run *op(cursor)* against a fresh cursor of our own (the ``cur is</span>
+<span class="sd">        None`` case in execute()/fetchone()/fetchall()), retrying exactly</span>
+<span class="sd">        once after a reconnect if the connection has gone stale.</span>
+
+<span class="sd">        ``verify()`` is the dedicated, actively-called health check for a</span>
+<span class="sd">        connection - but callers that go through the newer ItemStore/</span>
+<span class="sd">        LogStore CRUD layer (store.py) always call execute()/fetchone()/</span>
+<span class="sd">        fetchall() with ``cur=None`` and never call verify() themselves.</span>
+<span class="sd">        Without this, a single dropped connection (network blip, MySQL</span>
+<span class="sd">        restarting, &quot;Lost connection to MySQL server during query&quot;) leaves</span>
+<span class="sd">        ``self._conn`` in a broken-but-not-None state that nothing ever</span>
+<span class="sd">        resets - every subsequent cur=None call fails identically until</span>
+<span class="sd">        something unrelated happens to call verify() or the process</span>
+<span class="sd">        restarts. This mirrors verify()&#39;s own close-then-reconnect recovery,</span>
+<span class="sd">        scoped to the one statement actually being run instead of a</span>
+<span class="sd">        separate probe query.</span>
+
+<span class="sd">        :param op:        Callable taking a cursor, returning the result.</span>
+<span class="sd">        :param quiet:     Suppress the error-level log entry on final failure.</span>
+<span class="sd">        :param empty:     Value to return if no cursor could be obtained at</span>
+<span class="sd">                          all (mirrors execute()&#39;s ``result = []`` /</span>
+<span class="sd">                          fetchone()&#39;s ``result = &#39;&#39;`` no-cursor fallbacks).</span>
+<span class="sd">        :param error_prefix: Message prefix to log on final failure (the</span>
+<span class="sd">                          final exception is appended); falls back to a</span>
+<span class="sd">                          generic message if omitted.</span>
+
+<span class="sd">        Also closes a separate, longstanding gap: this cur=None path is</span>
+<span class="sd">        exactly what ItemStore/LogStore always use, and none of it was ever</span>
+<span class="sd">        wrapped in self._fdb_lock - unlike the plugin&#39;s older _query()</span>
+<span class="sd">        wrapper, which always locked before a cur=None call. Concurrent</span>
+<span class="sd">        threads (the scheduler running maxage/orphan cleanup, live item</span>
+<span class="sd">        writes, WebIf/logic reads) could hit the same self._conn/cursor at</span>
+<span class="sd">        once with no serialization at all. Locked here now, released again</span>
+<span class="sd">        before close()/connect() run (both lock internally, and</span>
+<span class="sd">        self._fdb_lock is a plain, non-reentrant Lock - holding it across</span>
+<span class="sd">        those calls would deadlock).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">last_error</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># never connected, or a previous attempt already gave up</span>
+                <span class="c1"># and closed us - not a &quot;stale&quot; condition, just not</span>
+                <span class="c1"># connected right now. Preserve today&#39;s behaviour: no</span>
+                <span class="c1"># reconnect storm here, that&#39;s _initialize_db()&#39;s throttled</span>
+                <span class="c1"># job. Only an existing-but-broken connection gets retried.</span>
+                <span class="k">return</span> <span class="n">empty</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">(</span><span class="mi">300</span><span class="p">):</span>
+                <span class="n">last_error</span> <span class="o">=</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: could not acquire lock within 300s&#39;</span><span class="p">)</span>
+                <span class="k">break</span>
+
+            <span class="n">c</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># sqlite3 raises immediately on .cursor() against an</span>
+                <span class="c1"># already-closed connection; pymysql instead tends to</span>
+                <span class="c1"># return a cursor that only fails on first use. Either way</span>
+                <span class="c1"># it&#39;s the same &quot;connection object present but unusable&quot;</span>
+                <span class="c1"># condition this retry exists for.</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">op</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+                <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">result</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">last_error</span> <span class="o">=</span> <span class="n">e</span>
+                <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                        <span class="k">pass</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">attempt</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="k">break</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">quiet</span><span class="p">:</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="n">error_prefix</span> <span class="ow">or</span> <span class="sa">f</span><span class="s1">&#39;Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: query failed after reconnect attempt&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">last_error</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">last_error</span>
+
 <div class="viewcode-block" id="Database.execute"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.execute">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">formatting</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cur</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute the given statement</span>
 
@@ -6094,26 +6210,20 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Can not prepare query: </span><span class="si">{}</span><span class="s1"> (args </span><span class="si">{}</span><span class="s1">): </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
             <span class="k">raise</span>
 
-        <span class="n">c</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">cur</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">result</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
-                    <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="n">c</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">result</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">quiet</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Can not execute query: </span><span class="si">{</span><span class="n">stmt</span><span class="si">}</span><span class="s1"> (args </span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s1">): </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="k">raise</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+        <span class="k">if</span> <span class="n">cur</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">quiet</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Can not execute query: </span><span class="si">{</span><span class="n">stmt</span><span class="si">}</span><span class="s1"> (args </span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s1">): </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">raise</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cursor_op_with_reconnect</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">args</span><span class="p">),</span>
+            <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">,</span>
+            <span class="n">empty</span><span class="o">=</span><span class="p">[],</span>
+            <span class="n">error_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Can not execute query: </span><span class="si">{</span><span class="n">stmt</span><span class="si">}</span><span class="s1"> (args </span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Database.verify"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.verify">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">retry</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Verifies the connection status and reconnets if required</span>
@@ -6139,7 +6249,14 @@
                 <span class="n">locked</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">locked</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">fetchone</span><span class="p">(</span><span class="s1">&#39;SELECT 1&#39;</span><span class="p">)</span>
+                    <span class="c1"># explicit cursor: fetchone(cur=None) now locks</span>
+                    <span class="c1"># internally too (see _cursor_op_with_reconnect) - we</span>
+                    <span class="c1"># already hold self._fdb_lock here, and it&#39;s a plain</span>
+                    <span class="c1"># non-reentrant Lock, so a cur=None call from the same</span>
+                    <span class="c1"># thread would deadlock against itself.</span>
+                    <span class="n">probe_cur</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">fetchone</span><span class="p">(</span><span class="s1">&#39;SELECT 1&#39;</span><span class="p">,</span> <span class="n">cur</span><span class="o">=</span><span class="n">probe_cur</span><span class="p">)</span>
+                    <span class="n">probe_cur</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
                     <span class="n">retry</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -6165,19 +6282,17 @@
 <span class="sd">        the result. It accepts the same arguments as mentioned in the</span>
 <span class="sd">        &#39;execute()&#39; method.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">cur</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;fetchone: No cursor defined for stmt </span><span class="si">{</span><span class="n">stmt</span><span class="si">}</span><span class="s1"> with params </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">formatting</span><span class="o">=</span><span class="n">formatting</span><span class="p">,</span> <span class="n">cur</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">)</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
-                <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cur</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">formatting</span><span class="o">=</span><span class="n">formatting</span><span class="p">,</span> <span class="n">cur</span><span class="o">=</span><span class="n">cur</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">)</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">result</span></div>
+            <span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">op</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">formatting</span><span class="o">=</span><span class="n">formatting</span><span class="p">,</span> <span class="n">cur</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cursor_op_with_reconnect</span><span class="p">(</span>
+            <span class="n">op</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">,</span> <span class="n">empty</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">error_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;fetchone failed for stmt </span><span class="si">{</span><span class="n">stmt</span><span class="si">}</span><span class="s1"> with params </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Database.fetchall"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.fetchall">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">fetchall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">formatting</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cur</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute given statement and fetch all rows from result</span>
@@ -6185,18 +6300,17 @@
 <span class="sd">        This method can be used to fetch all rows from the result. It accepts</span>
 <span class="sd">        the same arguments as mentioned in the &#39;execute()&#39; method.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">cur</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">formatting</span><span class="o">=</span><span class="n">formatting</span><span class="p">,</span> <span class="n">cur</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">)</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
-                <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cur</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">formatting</span><span class="o">=</span><span class="n">formatting</span><span class="p">,</span> <span class="n">cur</span><span class="o">=</span><span class="n">cur</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">)</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">result</span></div>
+            <span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">op</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">formatting</span><span class="o">=</span><span class="n">formatting</span><span class="p">,</span> <span class="n">cur</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cursor_op_with_reconnect</span><span class="p">(</span>
+            <span class="n">op</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">,</span> <span class="n">empty</span><span class="o">=</span><span class="p">[],</span> <span class="n">error_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;fetchall failed for stmt </span><span class="si">{</span><span class="n">stmt</span><span class="si">}</span><span class="s1"> with params </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="p">)</span></div>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">formatting</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Internal helper method to convert the statement and parameter list&quot;&quot;&quot;</span>

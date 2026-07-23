@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>database &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 22. Juli 2026, commit b111276) Dokumentation</title>
+  <title>database &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 23. Juli 2026, commit 1cbda76) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -513,6 +513,12 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#aufbau-der-datenbank">Aufbau der Datenbank</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#fehlende-messwerte-datenlucken">Fehlende Messwerte (Datenlücken)</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#kompaktierung-statt-loschen-database-maxage-action">Kompaktierung statt Löschen (database_maxage_action)</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#item-attribute">Item Attribute</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#beispiel">Beispiel</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#minimum-maximum-als-eigenstandige-items-database-min-database-max">Minimum/Maximum als eigenständige Items (database.min / database.max)</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#datenbankfunktionen-fur-datenreihen-plots">Datenbankfunktionen für Datenreihen/Plots</a></li>
@@ -2374,6 +2380,12 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#aufbau-der-datenbank">Aufbau der Datenbank</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#fehlende-messwerte-datenlucken">Fehlende Messwerte (Datenlücken)</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#kompaktierung-statt-loschen-database-maxage-action">Kompaktierung statt Löschen (database_maxage_action)</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#item-attribute">Item Attribute</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#beispiel">Beispiel</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#minimum-maximum-als-eigenstandige-items-database-min-database-max">Minimum/Maximum als eigenständige Items (database.min / database.max)</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#datenbankfunktionen-fur-datenreihen-plots">Datenbankfunktionen für Datenreihen/Plots</a></li>
@@ -5910,9 +5922,155 @@ automatisch auf allen registrierten Items verfügbar gemacht werden.</p>
 <code class="docutils literal notranslate"><span class="pre">integrate</span></code>, <code class="docutils literal notranslate"><span class="pre">on</span></code>, <code class="docutils literal notranslate"><span class="pre">min</span></code>, <code class="docutils literal notranslate"><span class="pre">max</span></code>) <strong>ausgeschlossen</strong>, sodass Mittelwerte und
 Energieberechnungen nur echte Messwerte berücksichtigen.  In Rohwertabfragen (<code class="docutils literal notranslate"><span class="pre">raw</span></code>)
 erscheinen sie als <code class="docutils literal notranslate"><span class="pre">NULL</span></code>-Werte, damit Visualisierungen Lücken darstellen können.</p>
-<p>Es gibt aktuell nur eine Möglichkeit die Anzahl der Datensätze pro Item zu begrenzen:
-Durch die Angabe des Item Attributs <code class="docutils literal notranslate"><span class="pre">database_maxage</span></code> wird das maximale Alter der Einträge eines Items begrenzt.
-Regelmässig werden Werte deren Zeitstempel älter ist als die angegebene Zeitspanne aus der Datenbank gelöscht.</p>
+<p>Es gibt zwei Möglichkeiten, die Anzahl der Datensätze pro Item zu begrenzen: Durch die Angabe des
+Item Attributs <code class="docutils literal notranslate"><span class="pre">database_maxage</span></code> wird das maximale Alter der Einträge eines Items begrenzt.
+Standardmäßig werden Werte, deren Zeitstempel älter ist als die angegebene Zeitspanne, regelmäßig aus
+der Datenbank gelöscht. Alternativ können ältere Werte statt gelöscht zu werden auch zu einem Wert pro
+Kompaktierungsintervall verdichtet werden, siehe unten „Kompaktierung statt Löschen“.</p>
+</section>
+</section>
+<section id="kompaktierung-statt-loschen-database-maxage-action">
+<h2>Kompaktierung statt Löschen (database_maxage_action)<a class="headerlink" href="#kompaktierung-statt-loschen-database-maxage-action" title="Permalink to this heading"></a></h2>
+<p>Standardmäßig löscht <code class="docutils literal notranslate"><span class="pre">database_maxage</span></code> alte Werte ersatzlos. Über das Item Attribut
+<code class="docutils literal notranslate"><span class="pre">database_maxage_action</span></code> kann stattdessen festgelegt werden, dass alte Rohwerte zu jeweils <strong>einem</strong>
+Wert pro Kompaktierungsintervall verdichtet werden, statt komplett zu verschwinden. So bleibt zum
+Beispiel der Verlauf eines Werts über Jahre hinweg als Tagesmittelwert erhalten, während die
+minütlichen Rohdaten irgendwann gelöscht werden.</p>
+<p>Die Kompaktierung läuft im selben Turnus wie das bisherige Löschen (Parameter <code class="docutils literal notranslate"><span class="pre">removeold_cycle</span></code>)
+und arbeitet sich - genau wie das Löschen - in begrenzten Schritten durch alte Daten (Parameter
+<code class="docutils literal notranslate"><span class="pre">max_aggregate_intervals</span></code>), um die Datenbank nicht mit einem einzigen großen Durchlauf zu blockieren.</p>
+<section id="item-attribute">
+<h3>Item Attribute<a class="headerlink" href="#item-attribute" title="Permalink to this heading"></a></h3>
+<dl>
+<dt><code class="docutils literal notranslate"><span class="pre">database_maxage_action</span></code></dt><dd><p>Legt fest, was mit Werten passiert, die älter als <code class="docutils literal notranslate"><span class="pre">database_maxage</span></code> sind. Standardwert ist
+<code class="docutils literal notranslate"><span class="pre">delete</span></code> (bisheriges Verhalten). Jeder andere Wert ersetzt die Rohwerte eines Intervalls durch
+<strong>einen</strong> berechneten Wert:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Wert</p></th>
+<th class="head"><p>Bedeutung</p></th>
+<th class="head"><p>Gültig für Typ</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>delete</p></td>
+<td><p>Werte löschen (Standard)</p></td>
+<td><p>beliebig</p></td>
+</tr>
+<tr class="row-odd"><td><p>avg</p></td>
+<td><p>Zeitgewichteter Mittelwert</p></td>
+<td><p>num, bool</p></td>
+</tr>
+<tr class="row-even"><td><p>sum</p></td>
+<td><p>Summe der Werte</p></td>
+<td><p>num, bool</p></td>
+</tr>
+<tr class="row-odd"><td><p>min</p></td>
+<td><p>Minimalwert</p></td>
+<td><p>num, bool</p></td>
+</tr>
+<tr class="row-even"><td><p>max</p></td>
+<td><p>Maximalwert</p></td>
+<td><p>num, bool</p></td>
+</tr>
+<tr class="row-odd"><td><p>integrate</p></td>
+<td><p>Diskretes Integral über der Zeit</p></td>
+<td><p>num, bool</p></td>
+</tr>
+<tr class="row-even"><td><p>on</p></td>
+<td><p>Prozentzahl der Werte &gt; 0 (zeitgewichtet)</p></td>
+<td><p>bool, str</p></td>
+</tr>
+<tr class="row-odd"><td><p>countall</p></td>
+<td><p>Anzahl der Rohwerte im Intervall</p></td>
+<td><p>beliebig</p></td>
+</tr>
+<tr class="row-even"><td><p>first</p></td>
+<td><p>Ältester Rohwert im Intervall, unverändert</p></td>
+<td><p>beliebig</p></td>
+</tr>
+<tr class="row-odd"><td><p>last</p></td>
+<td><p>Neuester Rohwert im Intervall, unverändert</p></td>
+<td><p>beliebig</p></td>
+</tr>
+</tbody>
+</table>
+<p>Die Funktionen <code class="docutils literal notranslate"><span class="pre">avg</span></code>, <code class="docutils literal notranslate"><span class="pre">sum</span></code>, <code class="docutils literal notranslate"><span class="pre">min</span></code>, <code class="docutils literal notranslate"><span class="pre">max</span></code>, <code class="docutils literal notranslate"><span class="pre">integrate</span></code>, <code class="docutils literal notranslate"><span class="pre">on</span></code> und <code class="docutils literal notranslate"><span class="pre">countall</span></code>
+entsprechen den gleichnamigen Funktionen aus dem Abschnitt „Datenbankfunktionen für
+Einzelauswertungen“ weiter oben. <code class="docutils literal notranslate"><span class="pre">first</span></code> und <code class="docutils literal notranslate"><span class="pre">last</span></code> gibt es dort nicht - sie behalten den
+tatsächlich gespeicherten Wert bei, statt etwas zu berechnen, und sind deshalb die einzigen
+Funktionen, die auch für Items vom Typ <code class="docutils literal notranslate"><span class="pre">str</span></code> sinnvoll funktionieren (z.B. um den letzten
+Status-Text eines Tages zu behalten, statt nur die Anzahl der Statuswechsel zu zählen).</p>
+<p>Ist ein Wert für den Typ des Items ungültig (z.B. <code class="docutils literal notranslate"><span class="pre">sum</span></code> bei einem <code class="docutils literal notranslate"><span class="pre">str</span></code>-Item, dessen
+numerische Spalte immer leer ist), wird dies beim Start als Fehler geloggt und für dieses Item
+automatisch auf <code class="docutils literal notranslate"><span class="pre">delete</span></code> zurückgefallen.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">database_maxage_interval</span></code></dt><dd><p>Größe eines Kompaktierungsintervalls, im gleichen Format wie <code class="docutils literal notranslate"><span class="pre">cycle</span></code>/<code class="docutils literal notranslate"><span class="pre">autotimer</span></code>
+(z.B. <code class="docutils literal notranslate"><span class="pre">24h</span></code>, <code class="docutils literal notranslate"><span class="pre">30m</span></code> - <strong>kein</strong> <code class="docutils literal notranslate"><span class="pre">d</span></code>-Suffix für Tage). Nur relevant, wenn
+<code class="docutils literal notranslate"><span class="pre">database_maxage_action</span></code> nicht <code class="docutils literal notranslate"><span class="pre">delete</span></code> ist. Ohne Angabe gilt der Plugin-Parameter
+<code class="docutils literal notranslate"><span class="pre">default_maxage_interval</span></code>.</p>
+</dd>
+</dl>
+<p>Beide Attribute haben bewusst <strong>keinen</strong> Standardwert direkt am Item-Attribut, damit die
+Plugin-Parameter <code class="docutils literal notranslate"><span class="pre">default_maxage_action</span></code>/<code class="docutils literal notranslate"><span class="pre">default_maxage_interval</span></code> als Fallback greifen können,
+wenn ein Item nur <code class="docutils literal notranslate"><span class="pre">database_maxage</span></code> setzt, aber keine eigene Aktion/Intervall konfiguriert.</p>
+</section>
+<section id="beispiel">
+<h3>Beispiel<a class="headerlink" href="#beispiel" title="Permalink to this heading"></a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">solar</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">leistung</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">        </span><span class="nt">database</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">database_maxage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">90</span>
+<span class="w">        </span><span class="nt">database_maxage_action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">avg</span>
+<span class="w">        </span><span class="nt">database_maxage_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">24h</span>
+</pre></div>
+</div>
+<p>Werte, die älter als 90 Tage sind, werden zu einem Tagesmittelwert zusammengefasst statt gelöscht zu
+werden.</p>
+</section>
+<section id="minimum-maximum-als-eigenstandige-items-database-min-database-max">
+<h3>Minimum/Maximum als eigenständige Items (database.min / database.max)<a class="headerlink" href="#minimum-maximum-als-eigenstandige-items-database-min-database-max" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">database_maxage_action</span></code> liefert bewusst nur <strong>einen</strong> Wert pro Intervall - wer zusätzlich zum
+Mittelwert auch Minimum und/oder Maximum eines Intervalls dauerhaft speichern möchte, kann dafür die
+mitgelieferten Structs <code class="docutils literal notranslate"><span class="pre">database.min</span></code> und <code class="docutils literal notranslate"><span class="pre">database.max</span></code> nutzen. Sie legen jeweils ein eigenes
+Kind-Item an (<code class="docutils literal notranslate"><span class="pre">db_min</span></code> bzw. <code class="docutils literal notranslate"><span class="pre">db_max</span></code>), das den Wert des übergeordneten Items live mitschreibt und
+unabhängig mit <code class="docutils literal notranslate"><span class="pre">database_maxage_action:</span> <span class="pre">min</span></code> bzw. <code class="docutils literal notranslate"><span class="pre">max</span></code> kompaktiert wird:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">solar</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">leistung</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">        </span><span class="nt">database</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">database_maxage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">90</span>
+<span class="w">        </span><span class="nt">database_maxage_action</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">avg</span>
+<span class="w">        </span><span class="nt">struct</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database.min</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database.max</span>
+</pre></div>
+</div>
+<p>Dadurch entstehen <code class="docutils literal notranslate"><span class="pre">solar.leistung.db_min</span></code> und <code class="docutils literal notranslate"><span class="pre">solar.leistung.db_max</span></code> als vollwertige,
+eigenständig geloggte Items.</p>
+<div class="admonition note">
+<p class="admonition-title">Bemerkung</p>
+<p>Die Structs kopieren <code class="docutils literal notranslate"><span class="pre">database_maxage</span></code>/<code class="docutils literal notranslate"><span class="pre">database_maxage_interval</span></code> <strong>nicht</strong> vom
+übergeordneten Item - beide Kind-Items nutzen die gleichen Plugin-Parameter
+(<code class="docutils literal notranslate"><span class="pre">default_maxage</span></code>/<code class="docutils literal notranslate"><span class="pre">default_maxage_interval</span></code>) wie jedes andere Item auch, das diese Attribute
+nicht selbst setzt. Setzt das übergeordnete Item einen abweichenden, expliziten Wert für
+<code class="docutils literal notranslate"><span class="pre">database_maxage</span></code> (wie im Beispiel oben, <code class="docutils literal notranslate"><span class="pre">90</span></code>), muss dieser bei Bedarf zusätzlich lokal auf
+den Kind-Items gesetzt werden:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">solar</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">leistung</span><span class="p">:</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+<span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">struct</span><span class="p p-Indicator">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database.min</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database.max</span>
+
+<span class="w">        </span><span class="nt">db_min</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">database_maxage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">90</span>
+<span class="w">        </span><span class="nt">db_max</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">database_maxage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">90</span>
+</pre></div>
+</div>
+</div>
 </section>
 </section>
 <section id="datenbankfunktionen-fur-datenreihen-plots">

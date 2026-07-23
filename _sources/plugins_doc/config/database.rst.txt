@@ -113,6 +113,26 @@ Falls dieser Parameter einen Wert größer 0 enthält: Standard maxage für Item
 
  - Minimalwert: **0**
 
+default_maxage_action
+=====================
+
+
+Standard-Aktion für Items mit database_maxage, die kein eigenes database_maxage_action gesetzt haben
+
+ - Datentyp: **str**
+ - Standardwert: **delete**
+
+
+default_maxage_interval
+=======================
+
+
+Standard-Kompaktierungsintervall für Items, die kein eigenes database_maxage_interval gesetzt haben (nur relevant, falls database_maxage_action nicht 'delete' ist). Format wie bei 'cycle'/'autotimer' (z.B. '24h', '30m'), Tage-Suffix 'd' wird nicht unterstützt.
+
+ - Datentyp: **str**
+ - Standardwert: **24h**
+
+
 driver
 ======
 
@@ -122,6 +142,17 @@ Spezifiziert das DB-API2 Treiber Modul
  - Datentyp: **str**
  - Standardwert: **sqlite3**
 
+
+max_aggregate_intervals
+=======================
+
+
+Maximale Anzahl an Kompaktierungs-Intervallen, die pro Durchlauf für ein Item verarbeitet werden, reduziert die Belastung der Datenbank bei alten Datenbeständen
+
+ - Datentyp: **int**
+ - Standardwert: **30**
+
+ - Minimalwert: **1**
 
 max_delete_logentries
 =====================
@@ -223,6 +254,24 @@ Maximales Alter (in Tagen) der Logeinträge, die für dieses Item gespeichert we
 
  - Minimalwert: **0**
 
+database_maxage_action
+======================
+
+
+Aktion, die beim Erreichen von database_maxage auf ältere Logeinträge angewendet wird. 'delete' (Standardverhalten) löscht die Einträge ersatzlos; jeder andere Wert ersetzt sie durch einen Kompaktierungswert pro database_maxage_interval, statt sie zu löschen. Kein Standardwert hier gesetzt, damit default_maxage_action als Fallback greifen kann, wenn das Attribut nicht gesetzt ist.
+
+ - Datentyp: **str**
+
+
+database_maxage_interval
+========================
+
+
+Kompaktierungsintervall im Format von 'cycle'/'autotimer' (z.B. '24h', '30m'; kein 'd'-Suffix), nur relevant falls database_maxage_action nicht 'delete' ist. Kein Standardwert hier gesetzt, damit default_maxage_interval als Fallback greifen kann, wenn das Attribut nicht gesetzt ist.
+
+ - Datentyp: **str**
+
+
 database_write_on_shutdown
 ==========================
 
@@ -240,7 +289,24 @@ Item-Structs
 
 Das Plugin stellt die folgenden Item-Structs zur Verfügung. Diese Informationen sind aus der `plugin.yaml` entnommen und möglicherweise nicht vollständig.
 
-**Keine**
+
+max
+===
+
+
+.. treeview::
+     - :dir:`folder` **max** (`foo`, ---)
+         - :dir:`file` **db_max** (`num`, ---)
+
+
+min
+===
+
+
+.. treeview::
+     - :dir:`folder` **min** (`foo`, ---)
+         - :dir:`file` **db_min** (`num`, ---)
+
 
 ===============
 Logik Parameter
