@@ -272,12 +272,80 @@ media
              - :dir:`file` **curtime** (`num`, Aktuelle Spielzeit des gespielten Tracks. Nur-Lese-Zugriff.)
              - :dir:`file` **totaltime** (`num`, Länge des aktuell gespielten Tracks. Nur-Lese-Zugriff.)
              - :dir:`file` **playback** (`str`, Wiedergabestatus als Textausgabe.)
+             - :dir:`file` **repeat** (`str`, Wiederholmodus, gültige Werte in .available.)
+             - :dir:`file` **repeat_available** (`list`, Gültige Werte für repeat. Nur-Lese-Zugriff.)
+             - :dir:`file` **shuffle** (`str`, Zufallswiedergabe, gültige Werte in .available.)
+             - :dir:`file` **shuffle_available** (`list`, Gültige Werte für shuffle. Nur-Lese-Zugriff.)
+             - :dir:`file` **queue_type** (`str`, Art der aktuellen Wiedergabe-Warteschlange (beobachteter Wert z.B. "user").
+Laut Spezifikation als "Reserved" markiert, wird vom Gerät aber tatsächlich befüllt.
+Nur-Lese-Zugriff.)
              - :dir:`file` **playing** (`bool`, Bool-Indikator, ob die Wiedergabe läuft. Nur-Lese-Zugriff.)
              - :dir:`file` **albumart** (`str`, URL zum Bild des aktuellen Albums. Nur-Lese-Zugriff.)
              - :dir:`file` **albumarturl** (`str`, HTML-Snippet zum Bild des aktuellen Albums. Nur-Lese-Zugriff.)
              - :dir:`file` **preset** (`num`, Auswahl voreingestellter Wiedergabelisten.)
              - :dir:`file` **standby** (`bool`, Bool-Indikator, ob das Gerät im Leerlauf ist. Nur-Lese-Zugriff.)
              - :dir:`file` **update** (`bool`, Aktuelle Werte für netusb neu lesen.)
+             - :dir:`folder` **browse** (`foo`, UPnP/USB/DLNA-Inhalte durchsuchen (getListInfo/setListControl). Geräteweit
+geteilte Navigationsposition - nicht pro Client/Zone getrennt, kann sich also mit
+der offiziellen MusicCast App oder einer zweiten Visu-Sitzung überschneiden.
+Zielzone für .play ist vorerst immer "main". play_now/play_next/queue_add/
+playlist_bank/playlist_add (manageList) sind nicht Teil der offiziellen
+YXC-Spezifikation - deren type-Werte wurden per Netzwerkmitschnitt der echten
+MusicCast-iOS-App aus dem "..."-Kontextmenü rekonstruiert, nicht aus dem Dokument.)
+                 - :dir:`file` **list** (`list`, Aktuelle Seite der Liste (bis zu 8 Einträge). Nur-Lese-Zugriff.)
+                 - :dir:`file` **menu_name** (`str`, Name der aktuellen Ebene/des aktuellen Ordners. Nur-Lese-Zugriff.)
+                 - :dir:`file` **menu_layer** (`num`, Tiefe der aktuellen Ebene (0 = Wurzel). Nur-Lese-Zugriff.)
+                 - :dir:`file` **max_line** (`num`, Gesamtanzahl der Einträge auf dieser Ebene. Nur-Lese-Zugriff.)
+                 - :dir:`file` **index** (`num`, Offset der aktuell angezeigten Seite (Vielfaches von 8). Nur-Lese-Zugriff.)
+                 - :dir:`file` **playing_index** (`num`, Index des aktuell wiedergegebenen Eintrags in dieser Liste, -1 falls keiner. Nur-Lese-Zugriff.)
+                 - :dir:`file` **busy** (`bool`, True während ein getListInfo-Abruf läuft (bis zu 30s laut Spezifikation). Nur-Lese-Zugriff.)
+                 - :dir:`file` **page** (`num`, Schreiben fordert die Seite ab diesem Offset an (wird intern auf ein
+Vielfaches von 8 abgerundet).)
+                 - :dir:`file` **select** (`num`, Schreiben des absoluten Index (browse.index + Position in browse.list)
+eines Eintrags steigt eine Ebene tiefer in diesen Eintrag ein, sofern per
+.attribute als auswählbar markiert.)
+                 - :dir:`file` **play** (`num`, Schreiben des absoluten Index eines Eintrags spielt ihn ab (Zone "main"),
+sofern per .attribute als abspielbar markiert.)
+                 - :dir:`file` **return** (`bool`, True schreiben, um eine Ebene nach oben zu wechseln.)
+                 - :dir:`file` **play_now** (`num`, Schreiben des absoluten Index eines Eintrags spielt ihn sofort ab (unterbricht
+die aktuelle Wiedergabe), unabhängig vom Layer/Auswahlstatus. Nicht Teil der
+offiziellen YXC-Spezifikation, per Mitschnitt der echten MusicCast-App aus dem
+"..."-Kontextmenü rekonstruiert (siehe Hinweis oben im Beschreibungstext).)
+                 - :dir:`file` **play_next** (`num`, Schreiben des absoluten Index eines Eintrags reiht ihn direkt nach dem
+aktuellen Titel ein. Siehe play_now.)
+                 - :dir:`file` **queue_add** (`num`, Schreiben des absoluten Index eines Eintrags hängt ihn ans Ende der
+Wiedergabe-Warteschlange an. Siehe play_now.)
+                 - :dir:`file` **playlist_bank** (`num`, Auswahl einer der (bis zu 5) benannten MusicCast-Playlisten für playlist_add
+(1-5, gerätespezifisch). Muss vor playlist_add mindestens einmal gesetzt werden -
+rein lokal gemerkt, löst selbst keine Geräteanfrage aus.)
+                 - :dir:`file` **playlist_add** (`num`, Schreiben des absoluten Index eines Eintrags fügt ihn der über playlist_bank
+gewählten Playliste hinzu. Siehe play_now.)
+                 - :dir:`file` **playlist_names** (`list`, Namen der bis zu 5 benannten MusicCast-Playlisten (Index 0 = Bank 1, ...).
+Wird nicht automatisch aktualisiert (ändert sich selten) - Aktualisierung nach
+playlist_rename sowie über media.netusb.update. Nur-Lese-Zugriff.)
+                 - :dir:`file` **playlist_rename** (`str`, Schreiben eines Textes benennt die über playlist_bank gewählte Playliste um.)
+                 - :dir:`file` **playlist_clear** (`bool`, True schreiben, um die über playlist_bank gewählte Playliste zu leeren
+(Name bleibt erhalten).)
+             - :dir:`folder` **queue** (`foo`, Wiedergabe-Warteschlange (getPlayQueue/managePlayQueue/copyPlayQueue/
+clearPlayQueue). Eigener, von browse getrennter Index-Raum - queue.play/
+queue.delete beziehen sich auf die Position in queue.list, nicht in browse.list.
+Nicht Teil der offiziellen YXC-Spezifikation, nicht einmal als "Reserved"
+erwähnt - per Netzwerkmitschnitt der echten MusicCast-iOS-App rekonstruiert.)
+                 - :dir:`file` **list** (`list`, Aktuelle Warteschlange (alle Einträge, keine Seitenweise-Abfrage wie bei
+browse.list beobachtet). Nur-Lese-Zugriff.)
+                 - :dir:`file` **max_line** (`num`, Gesamtanzahl der Einträge in der Warteschlange. Nur-Lese-Zugriff.)
+                 - :dir:`file` **playing_index** (`num`, Index des aktuell wiedergegebenen Eintrags in der Warteschlange. Nur-Lese-Zugriff.)
+                 - :dir:`file` **play** (`num`, Schreiben des absoluten Index eines Warteschlangen-Eintrags springt dorthin
+und spielt ihn ab (Zone "main").)
+                 - :dir:`file` **delete** (`num`, Schreiben des absoluten Index eines Warteschlangen-Eintrags entfernt ihn
+aus der Warteschlange. Heißt "delete" statt "remove", da "remove" mit
+Item.remove() kollidiert (siehe check_item_name_collision).)
+                 - :dir:`file` **save_playlist** (`bool`, True schreiben, um die gesamte aktuelle Warteschlange als über
+browse.playlist_bank gewählte MusicCast-Playliste zu speichern (dieselbe
+Bank-Auswahl wie browse.playlist_add, aber ganze Warteschlange statt
+einzelnem Eintrag).)
+                 - :dir:`file` **clear** (`bool`, True schreiben, um die Warteschlange zu leeren.)
+                 - :dir:`file` **update** (`bool`, True schreiben, um die Warteschlange neu abzufragen.)
          - :dir:`folder` **tuner** (`foo`, Tuner-Steuerung (AM/FM))
              - :dir:`folder` **band** (`str`, AM/FM/DAB, je nach Gerät. RDS ist kein eigenes Band, sondern Zusatzinfo im FM-Betrieb.)
                  - :dir:`file` **values** (`list`, Gültige Werte für Band. Nur-Lese-Zugriff.)
