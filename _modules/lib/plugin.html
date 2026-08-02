@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.plugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 1. August 2026, commit 8228245) Dokumentation</title>
+  <title>lib.plugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 2. August 2026, commit e1eaf54) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5778,8 +5778,10 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">ast</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">gc</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">graphlib</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
@@ -6351,7 +6353,10 @@
             <span class="c1"># execute de-initialization code of the plugin</span>
             <span class="n">myplugin</span><span class="o">.</span><span class="n">deinit</span><span class="p">()</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">_threads</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">mythread</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">thread_list</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_threads</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">threads_early</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">threads_late</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">mythread</span> <span class="ow">in</span> <span class="n">thread_list</span><span class="p">:</span>
+                    <span class="n">thread_list</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">mythread</span><span class="p">)</span>
+                    <span class="k">break</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">myplugin</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Plugins._plugins nach remove (</span><span class="si">{}</span><span class="s1">) = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span><span class="p">))</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Plugins._threads nach remove (</span><span class="si">{}</span><span class="s1">) = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_threads</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_threads</span><span class="p">))</span>
@@ -6435,6 +6440,7 @@
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="n">mymodule</span> <span class="o">=</span> <span class="n">myplugin</span><span class="o">.</span><span class="vm">__module__</span>
+        <span class="n">classpath</span> <span class="o">=</span> <span class="n">myplugin</span><span class="o">.</span><span class="n">_classpath</span>
         <span class="n">alive</span> <span class="o">=</span> <span class="n">myplugin</span><span class="o">.</span><span class="n">alive</span>
 
         <span class="c1"># read plugin configuration (from etc/plugin.yaml)</span>
@@ -6461,18 +6467,20 @@
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">, step 2: unload plugin&#39;</span><span class="p">)</span>
         <span class="k">del</span> <span class="n">myplugin</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">unload_plugin</span><span class="p">(</span><span class="n">configname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">unload_plugin</span><span class="p">(</span><span class="n">configname</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">: unload_plugin failed, aborting reload&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">, step 3: reload plugin code&#39;</span><span class="p">)</span>
         <span class="n">myplugin</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">reload</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">mymodule</span><span class="p">])</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error on reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1"> from </span><span class="si">{</span><span class="n">mymodule</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reload_module_tree</span><span class="p">(</span><span class="n">classpath</span><span class="p">,</span> <span class="n">mymodule</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">: error reloading plugin code&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">, step 4: load plugin&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">load_plugin</span><span class="p">(</span><span class="n">configname</span><span class="p">,</span> <span class="n">plg_conf</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_plugin</span><span class="p">(</span><span class="n">configname</span><span class="p">,</span> <span class="n">plg_conf</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">: load_plugin failed, aborting reload&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
         <span class="n">myplugin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_plugin</span><span class="p">(</span><span class="n">configname</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">, step 5: (re)init items&#39;</span><span class="p">)</span>
@@ -6480,13 +6488,123 @@
 
         <span class="k">if</span> <span class="n">alive</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">, step 6: start plugin&#39;</span><span class="p">)</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">myplugin</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;error on starting plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start_plugin</span><span class="p">(</span><span class="n">configname</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1"> complete&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_reload_module_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classpath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mymodule</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reloads a plugin&#39;s own top-level module and every submodule of its</span>
+<span class="sd">        package already present in sys.modules (e.g. a webif submodule) -</span>
+<span class="sd">        not just the top-level module. reload() only re-executes the module</span>
+<span class="sd">        it&#39;s called on; a `from .webif import WebInterface` line inside a</span>
+<span class="sd">        reloaded top-level module just rebinds to whatever&#39;s already cached</span>
+<span class="sd">        in sys.modules for the submodule, so without this, edits to</span>
+<span class="sd">        locally-imported submodules never take effect.</span>
+
+<span class="sd">        reload() itself doesn&#39;t cascade to what a module imports, so the</span>
+<span class="sd">        reload order matters too: if module A imports a name from sibling</span>
+<span class="sd">        module B, A must be reloaded *after* B, or A&#39;s `from .b import x`</span>
+<span class="sd">        line rebinds to whatever&#39;s still cached for B at that moment. The</span>
+<span class="sd">        order is derived from each candidate&#39;s own import statements</span>
+<span class="sd">        (static-parsed, not guessed from nesting depth), topologically</span>
+<span class="sd">        sorted so dependencies always reload before their dependents.</span>
+
+<span class="sd">        :param classpath: the plugin&#39;s package path (e.g. &#39;plugins.hue2&#39;)</span>
+<span class="sd">        :param mymodule: the module the plugin&#39;s class is actually defined</span>
+<span class="sd">            in - usually the same as classpath, but may be a submodule of it</span>
+<span class="sd">        :return: True if every module reloaded successfully</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="n">classpath</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span>
+        <span class="n">candidates</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span> <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="n">classpath</span> <span class="ow">or</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">)}</span>
+        <span class="n">candidates</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mymodule</span><span class="p">)</span>  <span class="c1"># may be defined outside classpath&#39;s own package tree</span>
+
+        <span class="n">order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reload_order</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">mymodule</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">order</span><span class="p">:</span>
+            <span class="n">module</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">module</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">reload</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;_reload_module_tree: error reloading </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_reload_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">candidates</span><span class="p">:</span> <span class="nb">set</span><span class="p">,</span> <span class="n">mymodule</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines a reload order for `candidates` (a set of sys.modules</span>
+<span class="sd">        keys) in which each module&#39;s own dependencies - on other members of</span>
+<span class="sd">        `candidates` - are reloaded before it, derived from parsing each</span>
+<span class="sd">        module&#39;s actual import statements. mymodule is always placed last,</span>
+<span class="sd">        since load_plugin() re-fetches the plugin&#39;s class from it</span>
+<span class="sd">        immediately after reloading finishes.</span>
+
+<span class="sd">        Falls back to [mymodule] only (i.e. the old, pre-submodule-aware</span>
+<span class="sd">        behavior) if the imports form a cycle - reload() has no sane</span>
+<span class="sd">        semantics for a true import cycle, so this is a defined, safe</span>
+<span class="sd">        degradation rather than an unhandled exception out of reload_plugin().</span>
+
+<span class="sd">        :param candidates: module names (sys.modules keys) to consider</span>
+<span class="sd">        :param mymodule: the module to always reload last</span>
+<span class="sd">        :return: module names in dependency order</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_module_local_dependencies</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">candidates</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">}</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">graphlib</span><span class="o">.</span><span class="n">TopologicalSorter</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span><span class="o">.</span><span class="n">static_order</span><span class="p">())</span>
+        <span class="k">except</span> <span class="n">graphlib</span><span class="o">.</span><span class="n">CycleError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;_reload_module_tree: circular import detected among </span><span class="si">{</span><span class="n">mymodule</span><span class="si">}</span><span class="s2">&#39;s submodules (</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">), &quot;</span>
+                <span class="sa">f</span><span class="s1">&#39;falling back to reloading </span><span class="si">{</span><span class="n">mymodule</span><span class="si">}</span><span class="s1"> only&#39;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">mymodule</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">mymodule</span> <span class="ow">in</span> <span class="n">order</span><span class="p">:</span>
+            <span class="n">order</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">mymodule</span><span class="p">)</span>
+        <span class="n">order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mymodule</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">order</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_module_local_dependencies</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">candidates</span><span class="p">:</span> <span class="nb">set</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Statically parses module `name`&#39;s own import statements and returns</span>
+<span class="sd">        which members of `candidates` it imports from (directly or as a</span>
+<span class="sd">        submodule) - i.e. which of them must be reloaded before it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">module</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">tree</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">module</span><span class="p">))</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">SyntaxError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="n">package</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">__package__</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">dependencies</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">ast</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">tree</span><span class="p">):</span>
+            <span class="n">targets</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">ImportFrom</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">level</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">bits</span> <span class="o">=</span> <span class="n">package</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">level</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">base</span> <span class="o">=</span> <span class="n">bits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">bits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="kc">None</span>
+                    <span class="k">if</span> <span class="n">base</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="n">base_target</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">base</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">module</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">module</span> <span class="k">else</span> <span class="n">base</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">module</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="n">base_target</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">module</span>
+                <span class="n">targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">base_target</span><span class="p">)</span>
+                <span class="c1"># `from .pkg import sub` - sub may itself be a submodule</span>
+                <span class="n">targets</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">base_target</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">alias</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Import</span><span class="p">):</span>
+                <span class="n">targets</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">alias</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">alias</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
+
+            <span class="n">dependencies</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">target</span> <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">targets</span> <span class="k">if</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">candidates</span> <span class="ow">and</span> <span class="n">target</span> <span class="o">!=</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dependencies</span>
 
 <div class="viewcode-block" id="Plugins.start"><a class="viewcode-back" href="../../lib/plugin_class_plugins.html#lib.plugin.Plugins.start">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start plugins&#39;</span><span class="p">)</span>
@@ -6520,6 +6638,29 @@
                 <span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Stop of plugins finished&#39;</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="Plugins.start_plugin"><a class="viewcode-back" href="../../lib/plugin_class_plugins.html#lib.plugin.Plugins.start_plugin">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">start_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configname</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Starts an already-loaded plugin via its dedicated PluginWrapper</span>
+<span class="sd">        thread - the same path bulk startup uses - instead of calling the</span>
+<span class="sd">        plugin&#39;s run() directly on the caller&#39;s thread.</span>
+
+<span class="sd">        :param configname: name of the plugin configuration section</span>
+<span class="sd">        :return: True if the thread was started, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">thread</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_pluginthread</span><span class="p">(</span><span class="n">configname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">thread</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;start_plugin: no thread found for </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">, plugin not loaded?&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="c1"># a Thread may only ever be started once - ident is set the moment</span>
+        <span class="c1"># start() is called and, unlike is_alive(), stays set after the</span>
+        <span class="c1"># thread finishes, so it correctly distinguishes &quot;never started&quot;</span>
+        <span class="c1"># from &quot;already ran (and possibly already finished)&quot;</span>
+        <span class="k">if</span> <span class="n">thread</span><span class="o">.</span><span class="n">ident</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;start_plugin: </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1"> has already been started&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
 <div class="viewcode-block" id="Plugins.get_pluginthread"><a class="viewcode-back" href="../../lib/plugin_class_plugins.html#lib.plugin.Plugins.get_pluginthread">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_pluginthread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configname</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns one plugin with given name</span>
@@ -6527,7 +6668,7 @@
 <span class="sd">        :return: Thread object for the given plugin name</span>
 <span class="sd">        :rtype: object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">thread</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_threads</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">thread</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_threads</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threads_early</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threads_late</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">thread</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">configname</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">thread</span></div></div>
 
