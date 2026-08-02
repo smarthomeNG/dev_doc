@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 2. August 2026, commit 71bb2b5) Dokumentation</title>
+  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 2. August 2026, commit bc1a11e) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -5772,6 +5772,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">lib.shyaml</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">shyaml</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lib.metadata</span><span class="w"> </span><span class="kn">import</span> <span class="n">Metadata</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">lib.model.smartplugin</span><span class="w"> </span><span class="kn">import</span> <span class="n">SmartPlugin</span><span class="p">,</span> <span class="n">SmartPluginWebIf</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">lib.item.item</span><span class="w"> </span><span class="kn">import</span> <span class="n">Item</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">lib.plugin</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plugins</span>
@@ -7508,9 +7509,9 @@
     <span class="n">HELP_STRUCT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        ========================================================================</span>
 
-<span class="s2">        If you call it with -s as a parameter, the plugin will insert the struct</span>
-<span class="s2">        into the plugins&#39; `plugins/&lt;plugin_name&gt;/plugin.yaml` file. Old struct</span>
-<span class="s2">        content will be overwritten:</span>
+<span class="s2">        If you call this plugin with -s as a parameter, the plugin will insert</span>
+<span class="s2">        the struct into the plugins&#39; `plugins/&lt;plugin_name&gt;/plugin.yaml` file.</span>
+<span class="s2">        Old struct content will be overwritten:</span>
 
 <span class="s2">        ``__init__.py -s``</span>
 
@@ -7533,11 +7534,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">yaml</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cmdlist</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">usage</span> <span class="o">=</span> <span class="s1">&#39;&lt;Error: Help text not set&gt;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">struct_mode</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">acl</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lc</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indentwidth</span> <span class="o">=</span> <span class="mi">4</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_usage</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>
+
         <span class="n">ch</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
         <span class="n">ch</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
 
@@ -7545,50 +7549,22 @@
         <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">  @ </span><span class="si">%(lineno)d</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">ch</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
 
-        <span class="c1"># add the handlers to the logger</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+        <span class="c1"># attach the handler to the ROOT logger, not just this one -</span>
+        <span class="c1"># SDPConnection and friends create their own, differently-named</span>
+        <span class="c1"># loggers in standalone mode (e.g. logging.getLogger(&#39;__main__&#39;) -</span>
+        <span class="c1"># see lib/model/sdp/connection.py), which would otherwise never</span>
+        <span class="c1"># reach a handler at all and be silently discarded. A logger with</span>
+        <span class="c1"># no explicit level of its own (the default for any of those)</span>
+        <span class="c1"># inherits its effective level from the nearest ancestor that has</span>
+        <span class="c1"># one set - setting it on root here makes -v/&#39;critical only&#39; apply</span>
+        <span class="c1"># to them too, not just to this specific logger</span>
+        <span class="n">root_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+        <span class="n">root_logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>
+        <span class="n">root_logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">struct_mode</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">acl</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lc</span> <span class="o">=</span> <span class="kc">False</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">indentwidth</span> <span class="o">=</span> <span class="mi">4</span>
-
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;-h&#39;</span><span class="p">,</span> <span class="s1">&#39;--help&#39;</span><span class="p">,</span> <span class="s1">&#39;-?&#39;</span><span class="p">,</span> <span class="s1">&#39;/?&#39;</span><span class="p">,</span> <span class="s1">&#39;/h&#39;</span><span class="p">,</span> <span class="s1">&#39;/help&#39;</span><span class="p">]):</span>
-            <span class="c1"># check for further command line arguments</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)):</span>
-                <span class="n">arg_str</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="n">arg</span><span class="p">]</span>
-
-                <span class="k">if</span> <span class="n">arg_str</span> <span class="o">==</span> <span class="s1">&#39;-v&#39;</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Debug logging enabled&#39;</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
-
-                <span class="k">elif</span> <span class="n">arg_str</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;-s&#39;</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">struct_mode</span> <span class="o">=</span> <span class="kc">True</span>
-
-                <span class="k">elif</span> <span class="n">arg_str</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;-a&#39;</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">acl</span> <span class="o">=</span> <span class="kc">True</span>
-
-                <span class="k">elif</span> <span class="n">arg_str</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;-l&#39;</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">lc</span> <span class="o">=</span> <span class="kc">True</span>
-
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="c1"># convertible to dict?</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">arg_str</span><span class="p">))</span>
-                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                        <span class="c1"># if not: try to parse as &#39;name=value&#39;</span>
-                        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;([^= </span><span class="se">\n</span><span class="s1">]+)=([^= </span><span class="se">\n</span><span class="s1">]+)&#39;</span><span class="p">,</span> <span class="n">arg_str</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
-                            <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-
-        <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">usage</span><span class="p">)</span>
-            <span class="k">return</span>
-
-        <span class="c1"># make sure we are in shng base dir</span>
+        <span class="c1"># make sure we are in shng base dir - needed below to locate</span>
+        <span class="c1"># plugin.yaml, for both the help text and actually running the</span>
+        <span class="c1"># plugin, so this has to happen before either</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;bin&#39;</span><span class="p">,</span> <span class="s1">&#39;smarthome.py&#39;</span><span class="p">)):</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Plugin needs to be called from SmartHomeNG base directory. Aborting.&#39;</span><span class="p">)</span>
             <span class="k">return</span>
@@ -7608,11 +7584,71 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">plugin_path</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_path</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">plugin_name</span> <span class="o">=</span> <span class="n">pfitems</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">PLUGIN_PATH</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_mod_path</span>
+
+        <span class="c1"># no shng instance exists in standalone mode - Metadata tolerates</span>
+        <span class="c1"># sh=None (falls back to cwd, which the base-dir check above just</span>
+        <span class="c1"># verified, and skips the http-module-only global parameter)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_name</span><span class="p">,</span> <span class="s1">&#39;plugin&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_mod_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">usage</span> <span class="o">=</span> <span class="s1">&#39;&lt;Error: Help text not set&gt;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_usage</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;-h&#39;</span><span class="p">,</span> <span class="s1">&#39;--help&#39;</span><span class="p">,</span> <span class="s1">&#39;-?&#39;</span><span class="p">,</span> <span class="s1">&#39;/?&#39;</span><span class="p">,</span> <span class="s1">&#39;/h&#39;</span><span class="p">,</span> <span class="s1">&#39;/help&#39;</span><span class="p">]):</span>
+            <span class="c1"># check for further command line arguments</span>
+            <span class="n">raw_args</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)):</span>
+                <span class="n">arg_str</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="n">arg</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">arg_str</span> <span class="o">==</span> <span class="s1">&#39;-v&#39;</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Debug logging enabled&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+                    <span class="n">root_logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">arg_str</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;-s&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">struct_mode</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="k">elif</span> <span class="n">arg_str</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;-a&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">acl</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="k">elif</span> <span class="n">arg_str</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;-l&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">lc</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">arg_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;--&#39;</span><span class="p">):</span>
+                        <span class="c1"># &#39;--key=val&#39; is just &#39;key=val&#39; with a friendlier,</span>
+                        <span class="c1"># more familiar-looking CLI flag prefix</span>
+                        <span class="n">arg_str</span> <span class="o">=</span> <span class="n">arg_str</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="c1"># convertible to dict?</span>
+                        <span class="n">raw_args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">arg_str</span><span class="p">))</span>
+                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                        <span class="c1"># if not: try to parse as &#39;name=value&#39;</span>
+                        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;([^= </span><span class="se">\n</span><span class="s1">]+)=([^= </span><span class="se">\n</span><span class="s1">]+)&#39;</span><span class="p">,</span> <span class="n">arg_str</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                            <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                            <span class="n">raw_args</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">usage</span><span class="p">)</span>
+            <span class="k">return</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">struct_mode</span><span class="p">:</span>
+            <span class="c1"># struct export doesn&#39;t connect to a device, so the usual</span>
+            <span class="c1"># mandatory-parameter/type checking below doesn&#39;t apply here</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">raw_args</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">PLUGIN_PATH</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_mod_path</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">create_struct_yaml</span><span class="p">()</span>
             <span class="k">return</span>
+
+        <span class="c1"># resolve declared defaults, type-convert, and check that every</span>
+        <span class="c1"># mandatory parameter (with no default) was actually supplied -</span>
+        <span class="c1"># instead of finding out however many calls deep into the plugin</span>
+        <span class="c1"># once it tries to use a parameter that was never set</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">allparams_ok</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">check_parameters</span><span class="p">(</span><span class="n">raw_args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">allparams_ok</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Missing required parameter(s) - see -h for available options and defaults.&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">PLUGIN_PATH</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_mod_path</span>
 
         <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;This is the </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_name</span><span class="si">}</span><span class="s1"> plugin running in standalone mode&#39;</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
@@ -7632,7 +7668,37 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">set_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">options</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_class</span><span class="p">,</span> <span class="s1">&#39;STANDALONE_HELP_OPTIONS&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
         <span class="n">extra</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_class</span><span class="p">,</span> <span class="s1">&#39;STANDALONE_HELP_EXTRA&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">usage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">HELP_USAGE</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">HELP_DEVICE</span> <span class="o">+</span> <span class="n">options</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">HELP_STRUCT</span> <span class="o">+</span> <span class="n">extra</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_parameters</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">usage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">HELP_USAGE</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">HELP_DEVICE</span> <span class="o">+</span> <span class="n">options</span> <span class="o">+</span> <span class="n">parameters</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">HELP_STRUCT</span> <span class="o">+</span> <span class="n">extra</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_format_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Formats this plugin&#39;s declared parameters (name, type, default or</span>
+<span class="sd">        mandatory-flag, English description) from plugin.yaml, for</span>
+<span class="sd">        inclusion in the standalone usage text.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Available parameters (from plugin.yaml):&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span> <span class="o">*</span> <span class="mi">72</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">_paramlist</span><span class="p">:</span>
+            <span class="n">definition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+            <span class="n">ptype</span> <span class="o">=</span> <span class="n">definition</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">)</span>
+            <span class="n">description</span> <span class="o">=</span> <span class="n">definition</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">description</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">description</span> <span class="o">=</span> <span class="n">description</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;en&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">description</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;de&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">description</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">definition</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mandatory&#39;</span><span class="p">):</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ptype</span><span class="si">}</span><span class="s1">, mandatory&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">default</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">get_parameter_defaultvalue</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">info</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ptype</span><span class="si">}</span><span class="s1">, default: </span><span class="si">{</span><span class="n">default</span><span class="si">}</span><span class="s1">&#39;</span>
+
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;  </span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s1">&lt;24</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">info</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">description</span><span class="p">:</span>
+                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;      </span><span class="si">{</span><span class="n">description</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add_item_to_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_path</span><span class="p">,</span> <span class="n">item_dict</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;add entry for custom read group triggers&quot;&quot;&quot;</span>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.metadata &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 2. August 2026, commit 71bb2b5) Dokumentation</title>
+  <title>lib.metadata &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 2. August 2026, commit bc1a11e) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5822,7 +5822,11 @@
         <span class="c1">#        logger.warning(self._log_premsg + &quot;relative_filename = &#39;{}&#39;&quot;.format(self.relative_filename))</span>
 
         <span class="c1"># read complete definitions from metadata file</span>
-        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_basedir</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_filename</span><span class="p">)</span>
+        <span class="c1"># sh may be None (e.g. standalone-mode plugin invocation, no shng</span>
+        <span class="c1"># instance running at all) - fall back to cwd, which callers in</span>
+        <span class="c1"># that situation are already required to keep at the shng base dir</span>
+        <span class="n">basedir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_basedir</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">&#39;.&#39;</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basedir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_filename</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="kc">None</span>
@@ -6015,7 +6019,10 @@
 
         <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">get_module</span><span class="p">(</span><span class="s1">&#39;http&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># sh may be None (standalone-mode plugin invocation) - no modules</span>
+        <span class="c1"># are loaded at all in that case, so there&#39;s no web interface and</span>
+        <span class="c1"># nothing to add here</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">get_module</span><span class="p">(</span><span class="s1">&#39;http&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># only if http module is loaded:</span>
             <span class="c1"># global plugin parameter &#39;webif_pagelength&#39;</span>
             <span class="n">result</span><span class="p">[</span><span class="s1">&#39;webif_pagelength&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
