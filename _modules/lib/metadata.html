@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.metadata &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 2. August 2026, commit bc1a11e) Dokumentation</title>
+  <title>lib.metadata &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 2. August 2026, commit 0433ffc) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -6969,7 +6969,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_definitioninfo</span><span class="p">(</span><span class="n">definition</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">itemdefinitions</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Metadata.check_parameters"><a class="viewcode-back" href="../../lib/metadata.html#lib.metadata.Metadata.check_parameters">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="Metadata.check_parameters"><a class="viewcode-back" href="../../lib/metadata.html#lib.metadata.Metadata.check_parameters">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks the values of a dict of configured parameters.</span>
 
@@ -6979,11 +6979,17 @@
 <span class="sd">        values in the the datatype of the parameter definition</span>
 
 <span class="sd">        :param args: Configured parameters with the values</span>
+<span class="sd">        :param source: human-readable description of where args came from, used</span>
+<span class="sd">            in log messages (e.g. &quot;the command line&quot; for standalone-mode</span>
+<span class="sd">            invocation). Defaults to the addon&#39;s /etc/*.yaml config file, which</span>
+<span class="sd">            is what args actually is for every other caller.</span>
 <span class="sd">        :type args: dict of parameter-values (values as string)</span>
+<span class="sd">        :type source: str</span>
 
 <span class="sd">        :return: All defined parameters with values, Flag if all parameters are ok (no mandatory is missing)</span>
 <span class="sd">        :rtype: dict, bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">source</span> <span class="ow">or</span> <span class="sa">f</span><span class="s1">&#39;/etc/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_addon_type</span><span class="si">}{</span><span class="n">YAML_FILE</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="n">addon_params</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
         <span class="n">hide_params</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -7000,21 +7006,14 @@
                 <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">param</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mandatory&#39;</span><span class="p">):</span>
-                            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">_log_premsg</span>
-                                <span class="o">+</span> <span class="s2">&quot;&#39;</span><span class="si">{}</span><span class="s2">&#39; is mandatory, but was not found in /etc/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                                    <span class="n">param</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_addon_type</span> <span class="o">+</span> <span class="n">YAML_FILE</span>
-                                <span class="p">)</span>
-                            <span class="p">)</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_premsg</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">&#39; is mandatory, but was not found in </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                             <span class="n">allparams_ok</span> <span class="o">=</span> <span class="kc">False</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">addon_params</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_defaultvalue</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
                             <span class="n">hide_params</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">Utils</span><span class="o">.</span><span class="n">to_bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">param</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;hide&#39;</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
                             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">_log_premsg</span>
-                                <span class="o">+</span> <span class="s2">&quot;value not found in plugin configuration file for parameter &#39;</span><span class="si">{}</span><span class="s2">&#39; -&gt; using default value &#39;</span><span class="si">{}</span><span class="s2">&#39; instead&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                                    <span class="n">param</span><span class="p">,</span> <span class="n">addon_params</span><span class="p">[</span><span class="n">param</span><span class="p">]</span>
-                                <span class="p">)</span>
+                                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;value not found in </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2"> for parameter &#39;</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">&#39; -&gt; using default value &#39;</span><span class="si">{</span><span class="n">addon_params</span><span class="p">[</span><span class="n">param</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; instead&quot;</span>
                             <span class="p">)</span>
                 <span class="c1">#                    logger.warning(self._log_premsg + &quot;&#39;{}&#39; not found in /etc/{}, using default value &#39;{}&#39;&quot;.format(param, self._addon_type + YAML_FILE, addon_params[param]))</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -7026,10 +7025,7 @@
                             <span class="n">hide_params</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">hide_params</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">Utils</span><span class="o">.</span><span class="n">to_bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">param</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;hide&#39;</span><span class="p">),</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">_log_premsg</span>
-                            <span class="o">+</span> <span class="s2">&quot;Found &#39;</span><span class="si">{}</span><span class="s2">&#39; with value &#39;</span><span class="si">{}</span><span class="s2">&#39; in /etc/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_addon_type</span> <span class="o">+</span> <span class="n">YAML_FILE</span><span class="p">)</span>
-                        <span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_premsg</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;Found &#39;</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">&#39; with value &#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39; in </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                             <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">param</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mandatory&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
