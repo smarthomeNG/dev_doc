@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 2. August 2026, commit e1eaf54) Dokumentation</title>
+  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 2. August 2026, commit 71bb2b5) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -5871,6 +5871,11 @@
 <span class="sd">    described if changed/overwritten.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">STANDALONE_HELP_OPTIONS</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;&#39;</span>  <span class="c1">#: extra text describing this plugin&#39;s own standalone options, inserted after the generic arg=value help</span>
+    <span class="p">)</span>
+    <span class="n">STANDALONE_HELP_EXTRA</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>  <span class="c1">#: free-form additional text, appended at the end of the standalone usage message</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sh</span><span class="p">:</span> <span class="n">SmartHome</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initalizes the plugin.</span>
@@ -7216,7 +7221,7 @@
             <span class="c1"># if the plugin works without a protocol layer (e.g. jsonrpc), so don&#39;t even try</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">proto_cls</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;protocol </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="s2">&quot;PLUGIN_ATTR_PROTOCOL&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1"> requested, but no protocol class returned. Giving up.&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;protocol </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="n">PLUGIN_ATTR_PROTOCOL</span><span class="p">]</span><span class="si">}</span><span class="s1"> requested, but no protocol class returned. Giving up.&#39;</span>
                 <span class="p">)</span>
 
             <span class="c1"># set connection class in self._parameters dict for protocol class to use</span>
@@ -7471,14 +7476,7 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">Standalone</span><span class="p">:</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_class</span><span class="p">,</span> <span class="n">plugin_file</span><span class="p">):</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">item_tree</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">item_templates</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">yaml</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cmdlist</span> <span class="o">=</span> <span class="p">[]</span>
-
-        <span class="n">usage</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+    <span class="n">HELP_USAGE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        Usage:</span>
 <span class="s2">        ------------------------------------------------------------------------</span>
 
@@ -7488,7 +7486,8 @@
 <span class="s2">        for diagnostic purposes - IF the plugin supports this mode.</span>
 
 <span class="s2">        ========================================================================</span>
-
+<span class="s2">        &quot;&quot;&quot;</span>
+    <span class="n">HELP_DEVICE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        If you call this plugin, any necessary configuration options can be</span>
 <span class="s2">        specified either as arg=value pairs or as a python dict(this needs to be</span>
 <span class="s2">        enclosed in quotes).</span>
@@ -7505,6 +7504,8 @@
 
 <span class="s2">        ``__init__.py -v``</span>
 
+<span class="s2">        &quot;&quot;&quot;</span>
+    <span class="n">HELP_STRUCT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        ========================================================================</span>
 
 <span class="s2">        If you call it with -s as a parameter, the plugin will insert the struct</span>
@@ -7522,6 +7523,19 @@
 <span class="s2">        If you add the -l parameter, all items will be lowercase.</span>
 
 <span class="s2">        &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_class</span><span class="p">,</span> <span class="n">plugin_file</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plugin_class</span> <span class="o">=</span> <span class="n">plugin_class</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">item_tree</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">item_templates</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yaml</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdlist</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">usage</span> <span class="o">=</span> <span class="s1">&#39;&lt;Error: Help text not set&gt;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_usage</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>
         <span class="n">ch</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
@@ -7571,7 +7585,7 @@
                             <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">usage</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">usage</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="c1"># make sure we are in shng base dir</span>
@@ -7614,6 +7628,11 @@
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;plugin doesn&#39;t have a standalone function.&quot;</span><span class="p">)</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Done.&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_class</span><span class="p">,</span> <span class="s1">&#39;STANDALONE_HELP_OPTIONS&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">extra</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_class</span><span class="p">,</span> <span class="s1">&#39;STANDALONE_HELP_EXTRA&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">usage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">HELP_USAGE</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">HELP_DEVICE</span> <span class="o">+</span> <span class="n">options</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">HELP_STRUCT</span> <span class="o">+</span> <span class="n">extra</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add_item_to_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_path</span><span class="p">,</span> <span class="n">item_dict</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;add entry for custom read group triggers&quot;&quot;&quot;</span>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.plugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 2. August 2026, commit e1eaf54) Dokumentation</title>
+  <title>lib.plugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 2. August 2026, commit 71bb2b5) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -6472,7 +6472,6 @@
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">, step 3: reload plugin code&#39;</span><span class="p">)</span>
-        <span class="n">myplugin</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reload_module_tree</span><span class="p">(</span><span class="n">classpath</span><span class="p">,</span> <span class="n">mymodule</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">: error reloading plugin code&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -6481,13 +6480,12 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_plugin</span><span class="p">(</span><span class="n">configname</span><span class="p">,</span> <span class="n">plg_conf</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">: load_plugin failed, aborting reload&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
-        <span class="n">myplugin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_plugin</span><span class="p">(</span><span class="n">configname</span><span class="p">)</span>
-
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">, step 5: (re)init items&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_parse_existing_items</span><span class="p">(</span><span class="n">myplugin</span><span class="p">)</span>
+        <span class="c1"># load_plugin() already calls _parse_existing_items() itself on</span>
+        <span class="c1"># success - a second, explicit call here used to double-register</span>
+        <span class="c1"># every matching item&#39;s trigger on the same instance</span>
 
         <span class="k">if</span> <span class="n">alive</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">, step 6: start plugin&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">, step 5: start plugin&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">start_plugin</span><span class="p">(</span><span class="n">configname</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1"> complete&#39;</span><span class="p">)</span>
