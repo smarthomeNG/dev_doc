@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 2. August 2026, commit a47e91a) Dokumentation</title>
+  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 3. August 2026, commit b2c51f1) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -5764,6 +5764,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">textwrap</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ruamel.yaml</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">yaml</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ast</span><span class="w"> </span><span class="kn">import</span> <span class="n">literal_eval</span>
@@ -7678,19 +7679,37 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_format_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Formats this plugin&#39;s declared parameters (name, type, default or</span>
-<span class="sd">        mandatory-flag, English description) from plugin.yaml, for</span>
-<span class="sd">        inclusion in the standalone usage text.</span>
+<span class="sd">        mandatory-flag, description) from plugin.yaml, for inclusion in the</span>
+<span class="sd">        standalone usage text.</span>
+
+<span class="sd">        Indentation matches HELP_USAGE/HELP_DEVICE/HELP_STRUCT (8 spaces),</span>
+<span class="sd">        since this is spliced in between them in set_usage() rather than</span>
+<span class="sd">        printed standalone. No separator line before the listing - it reads</span>
+<span class="sd">        as a continuation of the general option help above it, not a new</span>
+<span class="sd">        section (HELP_STRUCT&#39;s own topic change still gets one).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
             <span class="k">return</span> <span class="s1">&#39;&#39;</span>
 
-        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Available parameters (from plugin.yaml):&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span> <span class="o">*</span> <span class="mi">72</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
+        <span class="n">indent</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="mi">8</span>
+        <span class="n">desc_indent</span> <span class="o">=</span> <span class="n">indent</span> <span class="o">+</span> <span class="s1">&#39;      &#39;</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">indent</span><span class="si">}</span><span class="s1">Available parameters (from plugin.yaml):&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">]</span>
+
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">_paramlist</span><span class="p">:</span>
             <span class="n">definition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
-            <span class="n">ptype</span> <span class="o">=</span> <span class="n">definition</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">)</span>
+            <span class="n">ptype</span> <span class="o">=</span> <span class="n">definition</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="s1">&#39;?&#39;</span>
             <span class="n">description</span> <span class="o">=</span> <span class="n">definition</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">description</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="n">description</span> <span class="o">=</span> <span class="n">description</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;en&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">description</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;de&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">description</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s1">&#39;en&#39;</span> <span class="ow">in</span> <span class="n">description</span><span class="p">:</span>
+                    <span class="n">description</span> <span class="o">=</span> <span class="n">description</span><span class="p">[</span><span class="s1">&#39;en&#39;</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="n">description</span><span class="p">:</span>
+                    <span class="c1"># no English translation provided - fall back to</span>
+                    <span class="c1"># whatever&#39;s there, but say so instead of silently</span>
+                    <span class="c1"># mixing languages across the parameter list</span>
+                    <span class="n">lang</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">description</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+                    <span class="n">description</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s1"> [</span><span class="si">{</span><span class="n">lang</span><span class="si">}</span><span class="s1">]&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
             <span class="k">if</span> <span class="n">definition</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mandatory&#39;</span><span class="p">):</span>
                 <span class="n">info</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ptype</span><span class="si">}</span><span class="s1">, mandatory&#39;</span>
@@ -7698,11 +7717,13 @@
                 <span class="n">default</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">get_parameter_defaultvalue</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
                 <span class="n">info</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ptype</span><span class="si">}</span><span class="s1">, default: </span><span class="si">{</span><span class="n">default</span><span class="si">}</span><span class="s1">&#39;</span>
 
-            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;  </span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s1">&lt;24</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">info</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">indent</span><span class="si">}</span><span class="s1">  </span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s1">&lt;24</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">info</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">description</span><span class="p">:</span>
-                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;      </span><span class="si">{</span><span class="n">description</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">lines</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="n">textwrap</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">description</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">76</span><span class="p">,</span> <span class="n">initial_indent</span><span class="o">=</span><span class="n">desc_indent</span><span class="p">,</span> <span class="n">subsequent_indent</span><span class="o">=</span><span class="n">desc_indent</span><span class="p">)</span>
+                <span class="p">)</span>
 
-        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add_item_to_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item_path</span><span class="p">,</span> <span class="n">item_dict</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;add entry for custom read group triggers&quot;&quot;&quot;</span>
