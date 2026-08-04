@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>viessmann &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 3. August 2026, commit 5c91660) Dokumentation</title>
+  <title>viessmann &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 4. August 2026, commit 5c91660) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -1318,9 +1318,8 @@
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#funktionen">Funktionen</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="#update-all-read-items">update_all_read_items()</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#read-addr-addr">read_addr(addr)</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#read-temp-addr-addr-length-unit">read_temp_addr(addr, length, unit)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#read-temp-addr-addr-length-1-mult-0-signed-false">read_temp_addr(addr, length=1, mult=0, signed=False)</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#write-addr-addr-value">write_addr(addr, value)</a></li>
 </ul>
 </li>
@@ -3687,9 +3686,8 @@
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#funktionen">Funktionen</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="#update-all-read-items">update_all_read_items()</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#read-addr-addr">read_addr(addr)</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#read-temp-addr-addr-length-unit">read_temp_addr(addr, length, unit)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#read-temp-addr-addr-length-1-mult-0-signed-false">read_temp_addr(addr, length=1, mult=0, signed=False)</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#write-addr-addr-value">write_addr(addr, value)</a></li>
 </ul>
 </li>
@@ -5788,6 +5786,7 @@ Derzeit sind das P300- und das KW-Protokoll unterstützt. Weitere Gerätetypen, 
 <li><p>V200HO1C</p></li>
 <li><p>V200KW2</p></li>
 <li><p>V200WO1C</p></li>
+<li><p>VScotHO1_200_11</p></li>
 </ul>
 <p>Weitere Gerätetypen können problemlos hinzugefügt werden, wenn die entsprechenden Befehlsadressen bekannt sind.</p>
 </section>
@@ -5809,114 +5808,120 @@ unter <a class="reference internal" href="../../plugins_doc/config/viessmann.htm
 <h3>items.yaml<a class="headerlink" href="#items-yaml" title="Permalink to this heading"></a></h3>
 <p>Die Verknüfpung von SmartHomeNG-Items und Heizungsparametern ist vollständig flexibel und konfigurierbar. Mit den Item-Attributen kann das Verhalten des Plugins festgelegt werden.</p>
 <p>Die folgenden Attribute werden unterstützt:</p>
+<section id="viess-command">
+<h4>viess_command<a class="headerlink" href="#viess-command" title="Permalink to this heading"></a></h4>
+<p>Legt das Kommando aus der <code class="docutils literal notranslate"><span class="pre">commands.py</span></code> fest, mit dem dieses Item verknüpft ist. Wird zusammen mit <code class="docutils literal notranslate"><span class="pre">viess_read</span></code> und/oder <code class="docutils literal notranslate"><span class="pre">viess_write</span></code> verwendet.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">item</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">viess_command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Raumtemperatur_Soll_Normalbetrieb_A1M1</span>
+<span class="w">    </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+</section>
 <section id="viess-read">
 <h4>viess_read<a class="headerlink" href="#viess-read" title="Permalink to this heading"></a></h4>
-<p>Der Wert des angegebenen Parameters wird gelesen und dem Item zugewiesen.</p>
+<p>Aktiviert das Lesen des über <code class="docutils literal notranslate"><span class="pre">viess_command</span></code> angegebenen Parameters; der gelesene Wert wird dem Item zugewiesen.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">item</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Raumtemperatur_Soll_Normalbetrieb_A1M1</span>
+<span class="w">    </span><span class="nt">viess_command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Raumtemperatur_Soll_Normalbetrieb_A1M1</span>
+<span class="w">    </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
 </div>
 </section>
-<section id="viess-send">
-<h4>viess_send<a class="headerlink" href="#viess-send" title="Permalink to this heading"></a></h4>
-<p>Der angegebene Parameter wird bei Änderungen an diesem Item an die Heizung gesendet.</p>
+<section id="viess-write">
+<h4>viess_write<a class="headerlink" href="#viess-write" title="Permalink to this heading"></a></h4>
+<p>Aktiviert das Schreiben: Änderungen an diesem Item werden über das mit <code class="docutils literal notranslate"><span class="pre">viess_command</span></code> angegebene Kommando an die Heizung gesendet.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">item</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">viess_send</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Raumtemperatur_Soll_Normalbetrieb_A1M1</span>
-</pre></div>
-</div>
-<p>Sofern das Item sowohl zum Lesen als auch zum Schreiben eines Parameters konfiguriert wird, kann die vereinfachte Konfiguration mit <code class="docutils literal notranslate"><span class="pre">true</span></code> erfolgen:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">item</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Raumtemperatur_Soll_Normalbetrieb_A1M1</span>
-<span class="w">    </span><span class="nt">viess_send</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">viess_command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Raumtemperatur_Soll_Normalbetrieb_A1M1</span>
+<span class="w">    </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">viess_write</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
 </div>
 </section>
-<section id="viess-read-afterwrite">
-<h4>viess_read_afterwrite<a class="headerlink" href="#viess-read-afterwrite" title="Permalink to this heading"></a></h4>
-<p>Wenn dieses Attribut mit einer Dauer in Sekunden angegeben ist, wird nach eine Schreibvorgang die angegebene Anzahl an Sekunden gewartet und ein erneuter Lesevorgang ausgelöst.</p>
-<p>Damit dieses Attribut verwendet werden kann, muss das Item sowohl die Attribute <code class="docutils literal notranslate"><span class="pre">viess_read</span></code> als auch <code class="docutils literal notranslate"><span class="pre">viess_send</span></code> enthalten.</p>
+<section id="viess-readafterwrite">
+<h4>viess_readafterwrite<a class="headerlink" href="#viess-readafterwrite" title="Permalink to this heading"></a></h4>
+<p>Wenn dieses Attribut mit einer Dauer in Sekunden angegeben ist, wird nach einem Schreibvorgang die angegebene Anzahl an Sekunden gewartet und der Wert erneut vom Gerät gelesen.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">item</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Raumtemperatur_Soll_Normalbetrieb_A1M1</span>
-<span class="w">    </span><span class="nt">viess_send</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">    </span><span class="nt">viess_read_afterwrite</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w">  </span><span class="c1"># seconds</span>
+<span class="w">    </span><span class="nt">viess_command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Raumtemperatur_Soll_Normalbetrieb_A1M1</span>
+<span class="w">    </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">viess_write</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">viess_readafterwrite</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w">  </span><span class="c1"># seconds</span>
 </pre></div>
 </div>
 </section>
 <section id="viess-read-cycle">
 <h4>viess_read_cycle<a class="headerlink" href="#viess-read-cycle" title="Permalink to this heading"></a></h4>
-<p>Mit einer Angabe in Sekunden wird ein periodisches Lesen angefordert. <code class="docutils literal notranslate"><span class="pre">viess_read</span></code> muss zusätzlich konfiguriert sein.</p>
+<p>Mit einer Angabe in Sekunden wird ein individuelles periodisches Lesen für dieses Item angefordert.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">item</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Raumtemperatur_Soll_Normalbetrieb_A1M1</span>
+<span class="w">    </span><span class="nt">viess_command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Raumtemperatur_Soll_Normalbetrieb_A1M1</span>
+<span class="w">    </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">    </span><span class="nt">viess_read_cycle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3600</span><span class="w">  </span><span class="c1"># every hour</span>
 </pre></div>
 </div>
 </section>
-<section id="viess-init">
-<h4>viess_init<a class="headerlink" href="#viess-init" title="Permalink to this heading"></a></h4>
-<p>Wenn dieses Attribut vorhanden und auf <code class="docutils literal notranslate"><span class="pre">true</span></code> gesetzt ist, wird das Item nach dem Start von SmartHomeNG einmalig gelesen.
-<code class="docutils literal notranslate"><span class="pre">viess_read</span></code> muss zusätzlich konfiguriert sein.</p>
+<section id="viess-read-cyclic">
+<h4>viess_read_cyclic<a class="headerlink" href="#viess-read-cyclic" title="Permalink to this heading"></a></h4>
+<p>Aktiviert periodisches Lesen mit dem plugin-weiten Intervall (Parameter <code class="docutils literal notranslate"><span class="pre">cycle</span></code> in der <code class="docutils literal notranslate"><span class="pre">plugin.yaml</span></code>), als Alternative zu einem individuellen Intervall über <code class="docutils literal notranslate"><span class="pre">viess_read_cycle</span></code>.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">item</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Raumtemperatur_Soll_Normalbetrieb_A1M1</span>
-<span class="w">    </span><span class="nt">viess_init</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">viess_command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Raumtemperatur_Soll_Normalbetrieb_A1M1</span>
+<span class="w">    </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">viess_read_cyclic</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
 </div>
 </section>
-<section id="viess-trigger">
-<h4>viess_trigger<a class="headerlink" href="#viess-trigger" title="Permalink to this heading"></a></h4>
-<p>Enthält eine Liste von Parametern. Wenn dieses Item aktualisiert wird, wird ein Lesevorgang für jeden Eintrag in der Liste angestoßen. <code class="docutils literal notranslate"><span class="pre">viess_send</span></code> muss zusätzlich konfiguriert sein.</p>
-<p>Zwischen dem Schreibvorgang und den folgenden Lesevorgängen ist standardmäßig eine Verzögerung von 5 Sekunden eingestellt. Diese kann mit <code class="docutils literal notranslate"><span class="pre">viess_trigger_afterwrite</span></code> verändert werden.</p>
-<p>Beispiel: wenn der Betriebsmodus geändert wird, können neue Sollwerte für Raum- und Wassertemperaturen gelesen werden.</p>
+<section id="viess-read-initial">
+<h4>viess_read_initial<a class="headerlink" href="#viess-read-initial" title="Permalink to this heading"></a></h4>
+<p>Wenn dieses Attribut auf <code class="docutils literal notranslate"><span class="pre">true</span></code> gesetzt ist, wird das Item nach dem Start von SmartHomeNG einmalig gelesen.</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">item</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">viess_send</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Betriebsart_A1M1</span>
-<span class="w">    </span><span class="nt">viess_trigger</span><span class="p">:</span>
-<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Raumtemperatur_Soll</span>
-<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Wassertemperatur_Soll</span>
+<span class="w">    </span><span class="nt">viess_command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Raumtemperatur_Soll_Normalbetrieb_A1M1</span>
+<span class="w">    </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">viess_read_initial</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </pre></div>
 </div>
 </section>
-<section id="viess-trigger-afterwrite">
-<h4>viess_trigger_afterwrite<a class="headerlink" href="#viess-trigger-afterwrite" title="Permalink to this heading"></a></h4>
-<p>Wenn ein <code class="docutils literal notranslate"><span class="pre">viess_trigger</span></code> konfiguriert ist, kann mit diesem Attribut die Verzögerung zwischen Schreib- und Lesevorgang verändert werden.</p>
-<p>Standardmäßig beträgt diese Verzögerung 5 Sekunden.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">item</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">viess_send</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Betriebsart_A1M1</span>
-<span class="w">    </span><span class="nt">viess_trigger</span><span class="p">:</span>
-<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Raumtemperatur_Soll</span>
-<span class="w">       </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Wassertemperatur_Soll</span>
-<span class="w">    </span><span class="nt">viess_trigger_afterwrite</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span><span class="w"> </span><span class="c1"># seconds</span>
+<section id="viess-read-group-viess-read-group-trigger">
+<h4>viess_read_group / viess_read_group_trigger<a class="headerlink" href="#viess-read-group-viess-read-group-trigger" title="Permalink to this heading"></a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">viess_read_group</span></code> ordnet ein Item einer oder mehreren Gruppen (int, str oder Liste davon) zum gesammelten Lesen zu.</p>
+<p>Wird einem Item mit <code class="docutils literal notranslate"><span class="pre">viess_read_group_trigger</span></code> ein beliebiger Wert zugewiesen, werden alle zum Lesen konfigurierten Items der angegebenen Gruppe neu vom Gerät gelesen; bei Gruppe <code class="docutils literal notranslate"><span class="pre">0</span></code> werden alle zum Lesen konfigurierten Items aktualisiert. Ein Item mit <code class="docutils literal notranslate"><span class="pre">viess_read_group_trigger</span></code> darf nicht gleichzeitig <code class="docutils literal notranslate"><span class="pre">viess_command</span></code> verwenden.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">aussentemperatur</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">viess_command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Aussentemperatur</span>
+<span class="w">    </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">viess_read_group</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+
+<span class="nt">alles_neu_lesen</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
+<span class="w">    </span><span class="nt">viess_read_group_trigger</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 </pre></div>
 </div>
 </section>
-<section id="viess-update">
-<h4>viess_update<a class="headerlink" href="#viess-update" title="Permalink to this heading"></a></h4>
-<p>Das Zuweisen von <code class="docutils literal notranslate"><span class="pre">true</span></code> an ein Item mit diesem Attribut löst den Lesevorgang aller konfigurierter Items mit <code class="docutils literal notranslate"><span class="pre">viess_read</span></code> aus.</p>
-<p>Der in der Itemkonfiguration angegebene Wert wird nicht ausgewertet.</p>
+<section id="viess-lookup">
+<h4>viess_lookup<a class="headerlink" href="#viess-lookup" title="Permalink to this heading"></a></h4>
+<p>Der Inhalt der Lookup-Tabelle mit dem angegebenen Namen wird beim Start einmalig als dict oder list in das Item geschrieben. Durch Anhängen von <code class="docutils literal notranslate"><span class="pre">#&lt;mode&gt;</span></code> an den Namen der Tabelle kann die Art der Tabelle ausgewählt werden:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">fwd</span></code> liefert die Tabelle Gerät -&gt; SmartHomeNG (Standard)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rev</span></code> liefert die Tabelle SmartHomeNG -&gt; Gerät</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rci</span></code> liefert die Tabelle SmartHomeNG -&gt; Gerät in Kleinbuchstaben</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">list</span></code> liefert die Liste der Namen für SmartHomeNG</p></li>
+</ul>
+<p>Damit kann z.B. eine Liste der gültigen Betriebsarten für die Verwendung in SmartVISU bereitgestellt werden:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">item</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">viess_update</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;egal&#39;</span>
-</pre></div>
-</div>
-</section>
-<section id="viess-timer">
-<h4>viess_timer<a class="headerlink" href="#viess-timer" title="Permalink to this heading"></a></h4>
-<p>Das Item mit diesem Attribut übergibt als Attributwert den Namen einer Anwendung, z.B. Heizkreis_A1M1, und das Plugin gibt ein UZSU-formatiertes dict mit allen zugehörigen Timern der Heizung zurück
-Beim Schreiben wird das UZSU-dict in die einzelnen Tagestimer aufgeteilt und an die Heizung gesendet.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">item</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">viess_timer</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Heizkreis_A1M1&#39;</span>
-</pre></div>
-</div>
-</section>
-<section id="viess-ba-list">
-<h4>viess_ba_list<a class="headerlink" href="#viess-ba-list" title="Permalink to this heading"></a></h4>
-<p>Das Item mit diesem Attribut erhält einmalig beim Start des Plugins die Liste der für den konfigurierten Heizungstyp gültigen Betriebsarten.</p>
-<p>Diese kann z.B. in SmartVISU wie folgt eingebunden werden:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">item</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">viess_ba_list</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;egal&#39;</span>
+<span class="w">    </span><span class="nt">viess_lookup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">operatingmodes#list</span>
 </pre></div>
 </div>
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span>{{ basic.select(&#39;heizen_ba_item&#39;, &#39;heizung.betriebsart&#39;, &#39;menu&#39;, &#39;&#39;, &#39;&#39;, &#39;&#39;, &#39;&#39;, &#39;&#39;, &#39;heizung.ba_list&#39;) }}
 </pre></div>
 </div>
 <p>Dies erzeugt eine („Menü“-) Auswahlliste, aus der die Betriebsart ausgewählt werden kann, die dann vom Plugin an die Heizung übergeben wird.</p>
+</section>
+<section id="viess-custom1-viess-custom2-viess-custom3">
+<h4>viess_custom1 / viess_custom2 / viess_custom3<a class="headerlink" href="#viess-custom1-viess-custom2-viess-custom3" title="Permalink to this heading"></a></h4>
+<p>Der Inhalt dieses Items kann vom jeweiligen Gerät für spezielle Zwecke genutzt werden. Durch den Parameter <code class="docutils literal notranslate"><span class="pre">recursive_custom:</span> <span class="pre">1</span></code> (bzw. <code class="docutils literal notranslate"><span class="pre">2</span></code>/<code class="docutils literal notranslate"><span class="pre">3</span></code>) in der Geräte-Konfiguration wird der Wert rekursiv für alle Unteritems gesetzt.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">item</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">viess_custom1</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;wert&#39;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Bemerkung</p>
+<p>Die früher unterstützten Attribute <code class="docutils literal notranslate"><span class="pre">viess_trigger</span></code> (automatisches Nachlesen anderer Items nach einem Schreibvorgang) und <code class="docutils literal notranslate"><span class="pre">viess_timer</span></code> (Wochenschaltzeiten im UZSU-Format) werden von der aktuellen, auf dem SmartDevicePlugin-Framework basierenden Version des Plugins nicht unterstützt.</p>
+</div>
 </section>
 </section>
 <section id="beispiel">
@@ -5925,10 +5930,10 @@ Beim Schreiben wird das UZSU-dict in die einzelnen Tagestimer aufgeteilt und an 
 V200KO1B:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">viessmann</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">viessmann_update</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Update aller Items mit &#39;viess_read&#39;</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Update aller Items der Gruppe 0 (= alle lesbaren Items)</span>
 <span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
 <span class="w">        </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rw</span>
-<span class="w">        </span><span class="nt">viess_update</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">        </span><span class="nt">viess_read_group_trigger</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 <span class="w">        </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">        </span><span class="nt">autotimer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1 = false = latest</span>
 
@@ -5936,114 +5941,100 @@ V200KO1B:</p>
 <span class="w">        </span><span class="nt">aussentemp</span><span class="p">:</span>
 <span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Aussentemperatur</span>
 <span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
-<span class="w">            </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Aussentemperatur</span>
+<span class="w">            </span><span class="nt">viess_command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Aussentemperatur</span>
+<span class="w">            </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">            </span><span class="nt">viess_read_cycle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">300</span>
-<span class="w">            </span><span class="nt">viess_init</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">            </span><span class="nt">viess_read_initial</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">            </span><span class="nt">database</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 
 <span class="w">        </span><span class="nt">aussentemp_gedaempft</span><span class="p">:</span>
 <span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Aussentemperatur</span>
 <span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
-<span class="w">            </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Aussentemperatur_TP</span>
+<span class="w">            </span><span class="nt">viess_command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Aussentemperatur_TP</span>
+<span class="w">            </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">            </span><span class="nt">viess_read_cycle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">300</span>
-<span class="w">            </span><span class="nt">viess_init</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">            </span><span class="nt">viess_read_initial</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">            </span><span class="nt">database</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 
 <span class="w">    </span><span class="nt">kessel</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">kesseltemperatur_ist</span><span class="p">:</span>
 <span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Kesseltemperatur_Ist</span>
 <span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
-<span class="w">            </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Kesseltemperatur</span>
+<span class="w">            </span><span class="nt">viess_command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Kesseltemperatur</span>
+<span class="w">            </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">            </span><span class="nt">viess_read_cycle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">180</span>
-<span class="w">            </span><span class="nt">viess_init</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">            </span><span class="nt">viess_read_initial</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">            </span><span class="nt">database</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">init</span>
 <span class="w">        </span><span class="nt">kesseltemperatur_soll</span><span class="p">:</span>
 <span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Kesselsolltemperatur_Soll</span>
 <span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
-<span class="w">            </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Kesselsolltemperatur</span>
+<span class="w">            </span><span class="nt">viess_command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Kesselsolltemperatur</span>
+<span class="w">            </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">            </span><span class="nt">viess_read_cycle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">180</span>
-<span class="w">            </span><span class="nt">viess_init</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">            </span><span class="nt">viess_read_initial</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">        </span><span class="nt">abgastemperatur</span><span class="p">:</span>
 <span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Abgastemperatur</span>
 <span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
-<span class="w">            </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Abgastemperatur</span>
+<span class="w">            </span><span class="nt">viess_command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Abgastemperatur</span>
+<span class="w">            </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">            </span><span class="nt">viess_read_cycle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">180</span>
-<span class="w">            </span><span class="nt">viess_init</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">            </span><span class="nt">viess_read_initial</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">            </span><span class="nt">database</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">init</span>
 <span class="w">    </span><span class="nt">heizkreis_a1m1</span><span class="p">:</span>
 <span class="w">       </span><span class="nt">betriebsart</span><span class="p">:</span>
 <span class="w">            </span><span class="nt">betriebsart_aktuell</span><span class="p">:</span>
 <span class="w">                </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Aktuelle_Betriebsart_A1M1</span>
 <span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
-<span class="w">                </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Aktuelle_Betriebsart_A1M1</span>
+<span class="w">                </span><span class="nt">viess_command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Aktuelle_Betriebsart_A1M1</span>
+<span class="w">                </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">                </span><span class="nt">viess_read_cycle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3600</span>
-<span class="w">                </span><span class="nt">viess_init</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">                </span><span class="nt">viess_read_initial</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">            </span><span class="nt">betriebsart</span><span class="p">:</span>
 <span class="w">                </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Betriebsart_A1M1</span>
 <span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
-<span class="w">                </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Betriebsart_A1M1</span>
-<span class="w">                </span><span class="nt">viess_send</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">                </span><span class="nt">viess_read_afterwrite</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
-<span class="w">                </span><span class="nt">viess_init</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">                </span><span class="nt">viess_command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Betriebsart_A1M1</span>
+<span class="w">                </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">                </span><span class="nt">viess_write</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">                </span><span class="nt">viess_readafterwrite</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">                </span><span class="nt">viess_read_initial</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">                </span><span class="nt">cache</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">                </span><span class="nt">enforce_updates</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">                </span><span class="nt">viess_trigger</span><span class="p">:</span>
-<span class="w">                  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Aktuelle_Betriebsart_A1M1</span>
-<span class="w">                </span><span class="nt">struct</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">viessmann.betriebsart</span>
 <span class="w">                </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rw</span>
 <span class="w">            </span><span class="nt">sparbetrieb</span><span class="p">:</span>
 <span class="w">                </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Sparbetrieb_A1M1</span>
 <span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bool</span>
-<span class="w">                </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Sparbetrieb_A1M1</span>
-<span class="w">                </span><span class="nt">viess_send</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">                </span><span class="nt">viess_read_afterwrite</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
-<span class="w">                </span><span class="nt">viess_trigger</span><span class="p">:</span>
-<span class="w">                  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Betriebsart_A1M1</span>
-<span class="w">                  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Aktuelle_Betriebsart_A1M1</span>
-<span class="w">                </span><span class="nt">viess_init</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">                </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rw</span>
-<span class="w">       </span><span class="nt">schaltzeiten</span><span class="p">:</span>
-<span class="w">            </span><span class="nt">montag</span><span class="p">:</span>
-<span class="w">                </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Timer_A1M1_Mo</span>
-<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
-<span class="w">                </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Timer_A1M1_Mo</span>
-<span class="w">                </span><span class="nt">viess_send</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">                </span><span class="nt">viess_read_afterwrite</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
-<span class="w">                </span><span class="nt">viess_init</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">                </span><span class="nt">struct</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">viessmann.timer</span>
-<span class="w">                </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rw</span>
-<span class="w">            </span><span class="nt">dienstag</span><span class="p">:</span>
-<span class="w">                </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Timer_A1M1_Di</span>
-<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
-<span class="w">                </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Timer_A1M1_Di</span>
-<span class="w">                </span><span class="nt">viess_send</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">                </span><span class="nt">viess_read_afterwrite</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
-<span class="w">                </span><span class="nt">viess_init</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">                </span><span class="nt">struct</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">viessmann.timer</span>
+<span class="w">                </span><span class="nt">viess_command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Sparbetrieb_A1M1</span>
+<span class="w">                </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">                </span><span class="nt">viess_write</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">                </span><span class="nt">viess_readafterwrite</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">                </span><span class="nt">viess_read_initial</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">                </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rw</span>
 <span class="w">       </span><span class="nt">ferienprogramm</span><span class="p">:</span>
 <span class="w">            </span><span class="nt">status</span><span class="p">:</span>
 <span class="w">                </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ferienprogramm_A1M1</span>
 <span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
-<span class="w">                </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ferienprogramm_A1M1</span>
+<span class="w">                </span><span class="nt">viess_command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ferienprogramm_A1M1</span>
+<span class="w">                </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">                </span><span class="nt">viess_read_cycle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3600</span>
-<span class="w">                </span><span class="nt">viess_init</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">                </span><span class="nt">viess_read_initial</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">            </span><span class="nt">starttag</span><span class="p">:</span>
 <span class="w">                </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ferien_Abreisetag_A1M1</span>
 <span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
-<span class="w">                </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ferien_Abreisetag_A1M1</span>
-<span class="w">                </span><span class="nt">viess_send</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">                </span><span class="nt">viess_read_afterwrite</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
-<span class="w">                </span><span class="nt">viess_init</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">                </span><span class="nt">viess_command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ferien_Abreisetag_A1M1</span>
+<span class="w">                </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">                </span><span class="nt">viess_write</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">                </span><span class="nt">viess_readafterwrite</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">                </span><span class="nt">viess_read_initial</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">                </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rw</span>
 <span class="w">                </span><span class="nt">eval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">value[:10]</span>
 <span class="w">            </span><span class="nt">endtag</span><span class="p">:</span>
 <span class="w">                </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ferien_Rückreisetag_A1M1</span>
 <span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">str</span>
-<span class="w">                </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ferien_Rückreisetag_A1M1</span>
-<span class="w">                </span><span class="nt">viess_send</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">                </span><span class="nt">viess_read_afterwrite</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
-<span class="w">                </span><span class="nt">viess_init</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">                </span><span class="nt">viess_command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ferien_Rückreisetag_A1M1</span>
+<span class="w">                </span><span class="nt">viess_read</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">                </span><span class="nt">viess_write</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">                </span><span class="nt">viess_readafterwrite</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">                </span><span class="nt">viess_read_initial</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">                </span><span class="nt">visu_acl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rw</span>
 </pre></div>
 </div>
@@ -6051,18 +6042,14 @@ V200KO1B:</p>
 </section>
 <section id="funktionen">
 <h2>Funktionen<a class="headerlink" href="#funktionen" title="Permalink to this heading"></a></h2>
-<section id="update-all-read-items">
-<h3>update_all_read_items()<a class="headerlink" href="#update-all-read-items" title="Permalink to this heading"></a></h3>
-<p>Diese Funktion stößt den Lesevorgang aller konfigurierten Items mit <code class="docutils literal notranslate"><span class="pre">viess_read</span></code>-Attribut an.</p>
-</section>
 <section id="read-addr-addr">
 <h3>read_addr(addr)<a class="headerlink" href="#read-addr-addr" title="Permalink to this heading"></a></h3>
 <p>Diese Funktion löst das Lesen des Parameters mit der übergebenen Adresse <code class="docutils literal notranslate"><span class="pre">addr</span></code> aus. Die Adresse muss als vierstellige Hex-Zahl im String-Format übergeben werden. Es können nur Adressen ausgelesen werden, die im Befehlssatz für den aktiven Heizungstyp enthalten sind. Unabhängig von der Itemkonfiguration werden durch <code class="docutils literal notranslate"><span class="pre">read_addr()</span></code> keine Werte an Items zugewiesen.
 Der Rückgabewert ist das Ergebnis des Lesevorgangs oder None, wenn ein Fehler aufgetreten ist.</p>
 </section>
-<section id="read-temp-addr-addr-length-unit">
-<h3>read_temp_addr(addr, length, unit)<a class="headerlink" href="#read-temp-addr-addr-length-unit" title="Permalink to this heading"></a></h3>
-<p>Diese Funktion versucht, den Parameter an der Adresse <code class="docutils literal notranslate"><span class="pre">addr</span></code> zu lesen und einen Wert von <code class="docutils literal notranslate"><span class="pre">length</span></code> Bytes in die Einheit <code class="docutils literal notranslate"><span class="pre">unit</span></code> zu konvertieren. Die Adresse muss als vierstellige Hex-Zahl im String-Format übergeben werden, im Gegensatz zu <code class="docutils literal notranslate"><span class="pre">read_addr()</span></code> aber nicht im Befehlssatz definiert sein. <code class="docutils literal notranslate"><span class="pre">length</span></code> ist auf Werte zwischen 1 und 8 (Bytes) beschränkt. <code class="docutils literal notranslate"><span class="pre">unit</span></code> muss im aktuellen Befehlssatz definiert sein.
+<section id="read-temp-addr-addr-length-1-mult-0-signed-false">
+<h3>read_temp_addr(addr, length=1, mult=0, signed=False)<a class="headerlink" href="#read-temp-addr-addr-length-1-mult-0-signed-false" title="Permalink to this heading"></a></h3>
+<p>Diese Funktion versucht, den Parameter an der Adresse <code class="docutils literal notranslate"><span class="pre">addr</span></code> zu lesen, unabhängig davon, ob die Adresse im Befehlssatz für den aktiven Heizungstyp definiert ist. Die Adresse muss als vierstellige Hex-Zahl im String-Format übergeben werden. <code class="docutils literal notranslate"><span class="pre">length</span></code> gibt die erwartete Länge des Werts in Byte an, <code class="docutils literal notranslate"><span class="pre">mult</span></code> einen Multiplikator (Zehnerpotenz) und <code class="docutils literal notranslate"><span class="pre">signed</span></code>, ob der Wert vorzeichenbehaftet interpretiert werden soll.
 Der Rückgabewert ist das Ergebnis des Lesevorgangs oder None, wenn ein Fehler aufgetreten ist.</p>
 </section>
 <section id="write-addr-addr-value">
@@ -6076,7 +6063,7 @@ Der Rückgabewert ist das Ergebnis des Lesevorgangs oder None, wenn ein Fehler a
 <p class="admonition-title">Hinweis</p>
 <p>Wenn eine der Plugin-Funktionen in einer Logik verwendet werden sollen, kann dies in der folgenden Form erfolgen:</p>
 </div>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">result = sh.plugins.return_plugin(&#39;viessmann&#39;).read_temp_addr(&#39;00f8&#39;, 2, &#39;DT&#39;)</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">result = sh.plugins.return_plugin(&#39;viessmann&#39;).read_temp_addr(&#39;00f8&#39;, 2, 0, False)</span>
 </pre></div>
 </div>
 </section>
@@ -6091,10 +6078,11 @@ Der Rückgabewert ist das Ergebnis des Lesevorgangs oder None, wenn ein Fehler a
 <section id="standalone-modus">
 <h2>Standalone-Modus<a class="headerlink" href="#standalone-modus" title="Permalink to this heading"></a></h2>
 <p>Wenn der Heizungstyp nicht bekannt ist, kann das Plugin im Standalone-Modus (also ohne SmartHomeNG zu starten) genutzt werden. Es versucht dann, mit der Heizung zu kommunizieren und den Gerätetyp zu identizifieren.</p>
-<p>Dazu muss das Plugin im Plugin-Ordner direkt aufgerufen werden:</p>
-<p><code class="docutils literal notranslate"><span class="pre">./__init__.py</span> <span class="pre">&lt;serieller</span> <span class="pre">Port&gt;</span> <span class="pre">[-v]</span></code></p>
-<p>Der serielle Port ist dabei die Gerätedatei bzw. der entsprechende Port, an dem der Lesekopf angeschlossen ist, z.B. <code class="docutils literal notranslate"><span class="pre">/dev/ttyUSB0</span></code>. Dieses Argument ist verpflichtend.</p>
-<p>Das optionale zweite Argument <cite>-v</cite> weist das Plugin an, zusätzliche Debug-Ausgaben zu erzeugen. Solange keine Probleme beim Aufruf auftreten, ist das nicht erforderlich.</p>
+<p>Dazu muss das Plugin im Plugin-Ordner direkt aufgerufen werden. Die Konfiguration erfolgt über <code class="docutils literal notranslate"><span class="pre">schlüssel=wert</span></code>-Paare als Kommandozeilenargumente, analog zu den Parametern in der <code class="docutils literal notranslate"><span class="pre">plugin.yaml</span></code>:</p>
+<p><code class="docutils literal notranslate"><span class="pre">./__init__.py</span> <span class="pre">serialport=/dev/ttyUSB0</span></code></p>
+<p>Der serielle Port (<code class="docutils literal notranslate"><span class="pre">serialport</span></code>) ist dabei die Gerätedatei bzw. der entsprechende Port, an dem der Lesekopf angeschlossen ist, z.B. <code class="docutils literal notranslate"><span class="pre">/dev/ttyUSB0</span></code>. Dieser Parameter ist verpflichtend; fehlt er, bricht der Aufruf mit einer entsprechenden Fehlermeldung ab, statt mit einem unklaren Fehler tiefer im Code zu scheitern.</p>
+<p>Alle weiteren Parameter aus der <code class="docutils literal notranslate"><span class="pre">plugin.yaml</span></code> (z.B. <code class="docutils literal notranslate"><span class="pre">viess_proto</span></code> oder <code class="docutils literal notranslate"><span class="pre">p300_init_retries</span></code>) können auf die gleiche Weise gesetzt werden; ohne Angabe wird jeweils der Standardwert aus der <code class="docutils literal notranslate"><span class="pre">plugin.yaml</span></code> verwendet. Mit <code class="docutils literal notranslate"><span class="pre">./__init__.py</span> <span class="pre">-h</span></code> wird eine vollständige Liste aller verfügbaren Parameter mit Typ, Standardwert (bzw. Vermerk, falls verpflichtend) und Beschreibung ausgegeben.</p>
+<p>Das optionale Argument <code class="docutils literal notranslate"><span class="pre">-v</span></code> weist das Plugin an, zusätzliche Debug-Ausgaben zu erzeugen. Solange keine Probleme beim Aufruf auftreten, ist das nicht erforderlich.</p>
 <p>Sollte die Datei sich nicht starten lassen, muss ggf. der Dateimodus angepasst werden. Mit <code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">u+x</span> <span class="pre">__init__.py</span></code> kann die z.B. unter Linux erfolgen.</p>
 </section>
 </section>
