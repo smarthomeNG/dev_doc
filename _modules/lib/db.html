@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.db &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 5. August 2026, commit 32278ac) Dokumentation</title>
+  <title>lib.db &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 7. August 2026, commit accb98b) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5757,10 +5757,65 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">lib.shtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">Shtime</span>
+
+<span class="n">_DB_QUERY_TIMEOUT_DEFAULT</span> <span class="o">=</span> <span class="mi">60</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_sh_db_query_timeout</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return db_query_timeout from the running SmartHomeNG instance.</span>
+
+<span class="sd">    Falls back to _DB_QUERY_TIMEOUT_DEFAULT when called before SmartHomeNG</span>
+<span class="sd">    is initialised (tests, early startup) or when the config key is absent.</span>
+<span class="sd">    Lazy import avoids a circular dependency (lib.smarthome -&gt; many libs,</span>
+<span class="sd">    but none of them import lib.db at module level).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">lib.smarthome</span><span class="w"> </span><span class="kn">import</span> <span class="n">SmartHome</span>
+
+        <span class="n">sh</span> <span class="o">=</span> <span class="n">SmartHome</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">sh</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">sh</span><span class="p">,</span> <span class="s1">&#39;_db_query_timeout&#39;</span><span class="p">,</span> <span class="n">_DB_QUERY_TIMEOUT_DEFAULT</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">return</span> <span class="n">_DB_QUERY_TIMEOUT_DEFAULT</span>
+
+
+<span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_hang_watchdog</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Log a single WARNING partway through a bounded wait if it&#39;s still</span>
+<span class="sd">    running, so a genuinely wedged connection is visible in the log before</span>
+<span class="sd">    (not just after) the eventual timeout/error fires.</span>
+
+<span class="sd">    Not shutdown-specific - wraps any bounded wait in this module, including</span>
+<span class="sd">    live query execution while SmartHomeNG is running normally. A blocked</span>
+<span class="sd">    worker thread doesn&#39;t hold the GIL (it&#39;s parked in a socket read), so</span>
+<span class="sd">    this timer thread runs and logs regardless of what the blocked thread</span>
+<span class="sd">    is doing.</span>
+
+<span class="sd">    Fires once, at half of *timeout*. Cancelled harmlessly if the</span>
+<span class="sd">    operation finishes first - the normal/fast path never logs anything.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">warn_after</span> <span class="o">=</span> <span class="n">timeout</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_warn</span><span class="p">():</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s1">&#39;Database [</span><span class="si">{}</span><span class="s1">]: </span><span class="si">{}</span><span class="s1"> still running after </span><span class="si">{:.0f}</span><span class="s1">s - will give up in ~</span><span class="si">{:.0f}</span><span class="s1">s if unresponsive&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">name</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">warn_after</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">timeout</span> <span class="o">-</span> <span class="n">warn_after</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="n">timer</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="n">warn_after</span><span class="p">,</span> <span class="n">_warn</span><span class="p">)</span>
+    <span class="n">timer</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">timer</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="Database"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database">[Doku]</a><span class="k">class</span><span class="w"> </span><span class="nc">Database</span><span class="p">:</span>
@@ -5873,7 +5928,11 @@
     <span class="c1"># guessing types via int/float fallback for arbitrary keys previously</span>
     <span class="c1"># turned numeric-looking values (e.g. a numeric password) silently into</span>
     <span class="c1"># the wrong type.</span>
-    <span class="n">_numeric_connect_keys</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;port&#39;</span><span class="p">}</span>
+    <span class="n">_numeric_connect_keys</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;port&#39;</span><span class="p">,</span> <span class="s1">&#39;connect_timeout&#39;</span><span class="p">,</span> <span class="s1">&#39;read_timeout&#39;</span><span class="p">,</span> <span class="s1">&#39;write_timeout&#39;</span><span class="p">}</span>
+
+    <span class="c1"># DB-API driver __name__ values that accept pymysql-style timeout kwargs.</span>
+    <span class="c1"># These are injected as defaults in __init__ when not already in _params.</span>
+    <span class="n">_pymysql_driver_names</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s1">&#39;pymysql&#39;</span><span class="p">,</span> <span class="s1">&#39;MySQLdb&#39;</span><span class="p">,</span> <span class="s1">&#39;mysql.connector&#39;</span><span class="p">})</span>
 
     <span class="c1"># connect() kwargs that must be a real bool rather than the literal</span>
     <span class="c1"># string from config - a non-empty string like &#39;False&#39; is truthy in</span>
@@ -5968,6 +6027,18 @@
             <span class="c1"># check_same_thread in the connect config always wins.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="s1">&#39;check_same_thread&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
 
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dbapi</span><span class="p">,</span> <span class="s1">&#39;__name__&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pymysql_driver_names</span><span class="p">:</span>
+            <span class="c1"># Without explicit timeouts pymysql blocks indefinitely on a</span>
+            <span class="c1"># hung server, holding _fdb_lock and preventing shutdown.</span>
+            <span class="c1"># connect_timeout covers the TCP handshake; read/write_timeout</span>
+            <span class="c1"># cover query execution.  All three are user-overridable via the</span>
+            <span class="c1"># connect config; db_query_timeout in smarthome.yaml sets the</span>
+            <span class="c1"># read/write default (falls back to _DB_QUERY_TIMEOUT_DEFAULT).</span>
+            <span class="n">_qt</span> <span class="o">=</span> <span class="n">_sh_db_query_timeout</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;connect_timeout&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;read_timeout&#39;</span><span class="p">,</span> <span class="n">_qt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;write_timeout&#39;</span><span class="p">,</span> <span class="n">_qt</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_format_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbapi</span><span class="o">.</span><span class="n">paramstyle</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_output</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
@@ -5987,7 +6058,13 @@
 
 <div class="viewcode-block" id="Database.connect"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.connect">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Connects to the database&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">()</span>
+        <span class="n">timeout</span> <span class="o">=</span> <span class="n">_sh_db_query_timeout</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">_hang_watchdog</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="s1">&#39;connect() waiting for db lock&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+            <span class="n">locked</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">locked</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span>
+                <span class="s1">&#39;Database [</span><span class="si">{}</span><span class="s1">]: could not acquire lock within </span><span class="si">{}</span><span class="s1">s in connect()&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbapi</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -6006,15 +6083,47 @@
 
 <div class="viewcode-block" id="Database.close"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.close">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Closes the database connection&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">()</span>
+        <span class="n">timeout</span> <span class="o">=</span> <span class="n">_sh_db_query_timeout</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">_hang_watchdog</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="s1">&#39;close() waiting for db lock&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+            <span class="n">acquired</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">acquired</span><span class="p">:</span>
+            <span class="c1"># A worker thread is holding the lock while blocked on a query</span>
+            <span class="c1"># (e.g. waiting on a hung MySQL server).  We cannot wait forever</span>
+            <span class="c1"># during shutdown, so close the underlying connection anyway.</span>
+            <span class="c1"># The blocked thread will receive a broken-connection error,</span>
+            <span class="c1"># exit its except branch, and release the lock in its finally</span>
+            <span class="c1"># block.  _conn=None / _connected=False are written here so</span>
+            <span class="c1"># anything the worker tries after recovering fails gracefully.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s1">&#39;Database [</span><span class="si">{}</span><span class="s1">]: could not acquire lock within </span><span class="si">{}</span><span class="s1">s in close(); &#39;</span>
+                <span class="s1">&#39;force-closing connection to unblock hung thread&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reset_connection_locked</span><span class="p">()</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">acquired</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_reset_connection_locked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Discard the current connection and mark disconnected.</span>
+
+<span class="sd">        Callers must already hold self._fdb_lock (or, for the commit()/</span>
+<span class="sd">        rollback() failure path below, be the sole owner of a connection</span>
+<span class="sd">        that&#39;s already provably broken) - this method never acquires the</span>
+<span class="sd">        lock itself. commit()/rollback() are always called by code that</span>
+<span class="sd">        already holds the lock via its own lock()...release() block (see</span>
+<span class="sd">        _dump()/_compact_maxage() in the database plugin) - self._fdb_lock</span>
+<span class="sd">        is a plain, non-reentrant threading.Lock, so routing the failure</span>
+<span class="sd">        path through close()&#39;s own lock() call here would deadlock a</span>
+<span class="sd">        thread against itself.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">pass</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span> <span class="o">=</span> <span class="kc">False</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="Database.connected"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.connected">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">connected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the connected status&quot;&quot;&quot;</span>
@@ -6084,18 +6193,36 @@
 
 <div class="viewcode-block" id="Database.commit"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.commit">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">commit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Commit the current transaction&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="c1"># A failed commit means the underlying connection is dead (the</span>
+            <span class="c1"># driver already tore down its own socket/buffers internally -</span>
+            <span class="c1"># this is what turns one query&#39;s failure into confusing,</span>
+            <span class="c1"># unrelated-looking errors on whatever touches self._conn next:</span>
+            <span class="c1"># pymysql leaves attributes like _sock/_rfile set to None, so a</span>
+            <span class="c1"># later call fails with AttributeError instead of a clear</span>
+            <span class="c1"># &quot;not connected&quot;). Reset state immediately so the next caller</span>
+            <span class="c1"># (verify(), the next dump item, the next scheduled task) sees</span>
+            <span class="c1"># connected() == False right away instead of inheriting a</span>
+            <span class="c1"># corrupted connection object.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reset_connection_locked</span><span class="p">()</span>
+            <span class="k">raise</span></div>
 
 <div class="viewcode-block" id="Database.rollback"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.rollback">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">rollback</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Rollback the current transaction&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reset_connection_locked</span><span class="p">()</span>
+            <span class="k">raise</span></div>
 
 <div class="viewcode-block" id="Database.cursor"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.cursor">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">cursor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new cursor for executing statements&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span></div>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_cursor_op_with_reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">empty</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error_prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cursor_op_with_reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">empty</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error_prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">readonly</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Run *op(cursor)* against a fresh cursor of our own (the ``cur is</span>
 <span class="sd">        None`` case in execute()/fetchone()/fetchall()), retrying exactly</span>
 <span class="sd">        once after a reconnect if the connection has gone stale.</span>
@@ -6121,6 +6248,14 @@
 <span class="sd">        :param error_prefix: Message prefix to log on final failure (the</span>
 <span class="sd">                          final exception is appended); falls back to a</span>
 <span class="sd">                          generic message if omitted.</span>
+<span class="sd">        :param readonly:  If True, roll back after a successful op() while</span>
+<span class="sd">                          still holding the lock (see fetchone()/fetchall()).</span>
+<span class="sd">                          autocommit is off (see __init__), so even a bare</span>
+<span class="sd">                          SELECT opens a real transaction here; without this</span>
+<span class="sd">                          it sits open until some unrelated later write</span>
+<span class="sd">                          commits on the same connection, holding back</span>
+<span class="sd">                          InnoDB purge in the meantime. execute() does not</span>
+<span class="sd">                          set this - a write&#39;s caller owns its own commit.</span>
 
 <span class="sd">        Also closes a separate, longstanding gap: this cur=None path is</span>
 <span class="sd">        exactly what ItemStore/LogStore always use, and none of it was ever</span>
@@ -6134,6 +6269,13 @@
 <span class="sd">        those calls would deadlock).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">last_error</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">timeout</span> <span class="o">=</span> <span class="n">_sh_db_query_timeout</span><span class="p">()</span>
+        <span class="c1"># this used to be a hardcoded lock(300) independent of the</span>
+        <span class="c1"># configurable db_query_timeout - inconsistent with every other</span>
+        <span class="c1"># bounded wait in this file, and meant a hung server could still</span>
+        <span class="c1"># stall this specific path for up to 5 minutes regardless of what</span>
+        <span class="c1"># the user configured. Now tracks the same knob everywhere.</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">error_prefix</span> <span class="ow">or</span> <span class="sa">f</span><span class="s1">&#39;Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: query&#39;</span>
         <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># never connected, or a previous attempt already gave up</span>
@@ -6143,8 +6285,10 @@
                 <span class="c1"># job. Only an existing-but-broken connection gets retried.</span>
                 <span class="k">return</span> <span class="n">empty</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">(</span><span class="mi">300</span><span class="p">):</span>
-                <span class="n">last_error</span> <span class="o">=</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: could not acquire lock within 300s&#39;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">_hang_watchdog</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1"> - waiting for db lock&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+                <span class="n">locked</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">locked</span><span class="p">:</span>
+                <span class="n">last_error</span> <span class="o">=</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: could not acquire lock within </span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">)</span>
                 <span class="k">break</span>
 
             <span class="n">c</span> <span class="o">=</span> <span class="kc">None</span>
@@ -6155,8 +6299,16 @@
                 <span class="c1"># it&#39;s the same &quot;connection object present but unusable&quot;</span>
                 <span class="c1"># condition this retry exists for.</span>
                 <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="n">op</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+                <span class="k">with</span> <span class="n">_hang_watchdog</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">op</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
                 <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">readonly</span><span class="p">:</span>
+                    <span class="c1"># Best-effort: a cleanup failure here shouldn&#39;t turn an</span>
+                    <span class="c1"># already-successful read into an error for the caller.</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: could not close read-only transaction: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">result</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">last_error</span> <span class="o">=</span> <span class="n">e</span>
@@ -6255,6 +6407,16 @@
                     <span class="n">probe_cur</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">fetchone</span><span class="p">(</span><span class="s1">&#39;SELECT 1&#39;</span><span class="p">,</span> <span class="n">cur</span><span class="o">=</span><span class="n">probe_cur</span><span class="p">)</span>
                     <span class="n">probe_cur</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="c1"># autocommit is off (see __init__) - the probe above</span>
+                        <span class="c1"># opened a real transaction that would otherwise sit</span>
+                        <span class="c1"># idle indefinitely between verify() calls, holding</span>
+                        <span class="c1"># back InnoDB purge. Best-effort: a failure here</span>
+                        <span class="c1"># shouldn&#39;t turn a successful verify() into a</span>
+                        <span class="c1"># reported failure, since connectivity IS confirmed.</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: could not close verify() probe transaction: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
                     <span class="n">retry</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -6289,7 +6451,11 @@
             <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cursor_op_with_reconnect</span><span class="p">(</span>
-            <span class="n">op</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">,</span> <span class="n">empty</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">error_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;fetchone failed for stmt </span><span class="si">{</span><span class="n">stmt</span><span class="si">}</span><span class="s1"> with params </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">op</span><span class="p">,</span>
+            <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">,</span>
+            <span class="n">empty</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="n">error_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;fetchone failed for stmt </span><span class="si">{</span><span class="n">stmt</span><span class="si">}</span><span class="s1"> with params </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">readonly</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Database.fetchall"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.fetchall">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">fetchall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">formatting</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cur</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -6307,7 +6473,11 @@
             <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cursor_op_with_reconnect</span><span class="p">(</span>
-            <span class="n">op</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">,</span> <span class="n">empty</span><span class="o">=</span><span class="p">[],</span> <span class="n">error_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;fetchall failed for stmt </span><span class="si">{</span><span class="n">stmt</span><span class="si">}</span><span class="s1"> with params </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">op</span><span class="p">,</span>
+            <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">,</span>
+            <span class="n">empty</span><span class="o">=</span><span class="p">[],</span>
+            <span class="n">error_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;fetchall failed for stmt </span><span class="si">{</span><span class="n">stmt</span><span class="si">}</span><span class="s1"> with params </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">readonly</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span></div>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">formatting</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
