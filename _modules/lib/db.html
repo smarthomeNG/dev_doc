@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.db &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 7. August 2026, commit accb98b) Dokumentation</title>
+  <title>lib.db &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 8. August 2026, commit d793122) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -6248,14 +6248,27 @@
 <span class="sd">        :param error_prefix: Message prefix to log on final failure (the</span>
 <span class="sd">                          final exception is appended); falls back to a</span>
 <span class="sd">                          generic message if omitted.</span>
-<span class="sd">        :param readonly:  If True, roll back after a successful op() while</span>
-<span class="sd">                          still holding the lock (see fetchone()/fetchall()).</span>
+<span class="sd">        :param readonly:  If True, commit after a successful op() while still</span>
+<span class="sd">                          holding the lock (see fetchone()/fetchall()).</span>
 <span class="sd">                          autocommit is off (see __init__), so even a bare</span>
 <span class="sd">                          SELECT opens a real transaction here; without this</span>
-<span class="sd">                          it sits open until some unrelated later write</span>
-<span class="sd">                          commits on the same connection, holding back</span>
-<span class="sd">                          InnoDB purge in the meantime. execute() does not</span>
-<span class="sd">                          set this - a write&#39;s caller owns its own commit.</span>
+<span class="sd">                          it sits open indefinitely, holding back InnoDB</span>
+<span class="sd">                          purge. Deliberately commit(), not rollback():</span>
+<span class="sd">                          self._fdb_lock already serializes every caller, so</span>
+<span class="sd">                          any other write still pending on this connection</span>
+<span class="sd">                          already finished its own critical section before</span>
+<span class="sd">                          this read could acquire the lock - committing here</span>
+<span class="sd">                          only completes work that should already have been</span>
+<span class="sd">                          committed, never discards it. rollback() was tried</span>
+<span class="sd">                          first and reverted - it silently destroyed</span>
+<span class="sd">                          not-yet-committed writes made via the same cur=None</span>
+<span class="sd">                          convenience path (e.g. insertLog()/updateLog(),</span>
+<span class="sd">                          whose own default cur=None never self-commits),</span>
+<span class="sd">                          which a later unrelated cur=None read would then</span>
+<span class="sd">                          wipe out from underneath the caller. execute() does</span>
+<span class="sd">                          not set this - a write&#39;s own commit is explicit,</span>
+<span class="sd">                          this parameter only closes out what&#39;s left after a</span>
+<span class="sd">                          read.</span>
 
 <span class="sd">        Also closes a separate, longstanding gap: this cur=None path is</span>
 <span class="sd">        exactly what ItemStore/LogStore always use, and none of it was ever</span>
@@ -6303,10 +6316,12 @@
                     <span class="n">result</span> <span class="o">=</span> <span class="n">op</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
                 <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">readonly</span><span class="p">:</span>
-                    <span class="c1"># Best-effort: a cleanup failure here shouldn&#39;t turn an</span>
-                    <span class="c1"># already-successful read into an error for the caller.</span>
+                    <span class="c1"># commit(), not rollback() - see the readonly= docstring</span>
+                    <span class="c1"># above. Best-effort: a cleanup failure here shouldn&#39;t</span>
+                    <span class="c1"># turn an already-successful read into an error for the</span>
+                    <span class="c1"># caller.</span>
                     <span class="k">try</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
                     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: could not close read-only transaction: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">result</span>
@@ -6411,10 +6426,17 @@
                         <span class="c1"># autocommit is off (see __init__) - the probe above</span>
                         <span class="c1"># opened a real transaction that would otherwise sit</span>
                         <span class="c1"># idle indefinitely between verify() calls, holding</span>
-                        <span class="c1"># back InnoDB purge. Best-effort: a failure here</span>
-                        <span class="c1"># shouldn&#39;t turn a successful verify() into a</span>
-                        <span class="c1"># reported failure, since connectivity IS confirmed.</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+                        <span class="c1"># back InnoDB purge. commit(), not rollback() - see</span>
+                        <span class="c1"># _cursor_op_with_reconnect&#39;s readonly= docstring:</span>
+                        <span class="c1"># self._fdb_lock already serializes every caller, so</span>
+                        <span class="c1"># rollback() here could silently discard an</span>
+                        <span class="c1"># unrelated write still pending on this connection</span>
+                        <span class="c1"># from an earlier cur=None caller that never</span>
+                        <span class="c1"># explicitly committed (e.g. insertLog()). Best-</span>
+                        <span class="c1"># effort: a failure here shouldn&#39;t turn a successful</span>
+                        <span class="c1"># verify() into a reported failure, since</span>
+                        <span class="c1"># connectivity IS confirmed.</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
                     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: could not close verify() probe transaction: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
                     <span class="n">retry</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
