@@ -80,7 +80,16 @@ Parameter
 
 Das Plugin verfügt über folgende Parameter, die in der Datei ``../etc/plugin.yaml`` konfiguriert werden:
 
-**Keine**
+
+cycle
+=====
+
+
+Intervall in Sekunden für die periodische Erreichbarkeitsprüfung der konfigurierten Geräte (siehe Item-Attribut reachable).
+
+ - Datentyp: **int**
+ - Standardwert: **60**
+
 
 ==============
 Item Attribute
@@ -243,6 +252,14 @@ Klangfeld/DSP-Steuerung der aktuellen Zone (geräteabhängig).
          - :dir:`file` **update** (`bool`, Aktuelle DSP-Werte neu lesen.)
 
 
+isx-18
+======
+
+
+.. treeview::
+     - :dir:`file` **isx-18** (`foo`, ---)
+
+
 legacy_alarm
 ============
 
@@ -390,6 +407,15 @@ netusb
          - :dir:`file` **netusb** (`foo`, ---)
 
 
+rx-v483
+=======
+
+
+.. treeview::
+     - :dir:`folder` **rx-v483** (`foo`, ---)
+         - :dir:`file` **dsp** (`foo`, ---)
+
+
 tuner
 =====
 
@@ -397,6 +423,14 @@ tuner
 .. treeview::
      - :dir:`folder` **tuner** (`foo`, ---)
          - :dir:`file` **tuner** (`foo`, ---)
+
+
+wx-010
+======
+
+
+.. treeview::
+     - :dir:`file` **wx-010** (`foo`, ---)
 
 
 zone2
@@ -433,6 +467,11 @@ zone_amp
 .. treeview::
      - :dir:`folder` **zone_amp** (`foo`, ---)
          - :dir:`file` **power** (`bool`, Ein-/Ausschalter für die aktuelle Zone)
+         - :dir:`file` **reachable** (`bool`, Bool-Indikator, ob das Gerät aktuell erreichbar ist (geräteweit, nicht zonenspezifisch,
+siehe Plugin-Parameter "cycle"). Bei Nichterreichbarkeit behalten alle anderen Items ihren
+letzten bekannten Wert (kein automatisches Zurücksetzen). Nur-Lese-Zugriff.)
+         - :dir:`file` **last_seen** (`num`, Zeitpunkt des letzten erfolgreichen Kontakts zum Gerät (Unix-Timestamp, geräteweit).
+Nur-Lese-Zugriff.)
          - :dir:`folder` **volume** (`num`, Lautstärke der aktuellen Zone in Prozent)
              - :dir:`file` **min** (`num`, Minimaler Lautstärkewert für volume.raw. Nur-Lese-Zugriff.)
              - :dir:`file` **max** (`num`, Maximaler Lautstärkewert für volume.raw. Nur-Lese-Zugriff.)
