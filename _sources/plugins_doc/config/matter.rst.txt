@@ -1,0 +1,258 @@
+.. |_| unicode:: 0xA0
+
+
+=============================
+Plugin 'matter' Konfiguration
+=============================
+
+
+.. index:: Plugins; matter Konfiguration
+
+.. image:: /plugins/matter/webif/static/img/plugin_logo.svg
+   :alt: plugin logo
+   :width: 300px
+   :height: 300px
+   :scale: 50%
+   :align: left
+
+.. |br| raw:: html
+
+   <br />
+
+Im folgenden sind etwaige Anforderungen und unterstützte Hardware beschrieben. Danach folgt die               Beschreibung, wie das Plugin **matter** konfiguriert wird. Außerdem ist im folgenden               beschrieben, wie das Plugin in den Item Definitionen genutzt werden kann. [#f1]_ 
+
+Es handelt sich bei diesem Plugin um ein **gateway Plugin**.
+
+**ACHTUNG**: Dieses Plugin ist als develop gekennzeichnet. Es kann daher sein, dass es                  noch nicht sämtliche Funktionen unterstützt oder noch fehlerhaft ist.
+
+
+
+Beschreibung
+============
+
+Matter-Controller-Plugin: Verbindung zu Matter-Geräten.
+
+
+Anforderungen
+=============
+
+
+
+
+ - Minimum SmartHomeNG Version: **1.12**
+
+Konfiguration
+=============
+
+
+Im folgenden ist beschrieben, wie das Plugin **matter** konfiguriert wird. Außerdem ist im folgenden beschrieben, wie das Plugin in den Item Definitionen genutzt werden kann.
+
+
+=========
+Parameter
+=========
+
+
+Das Plugin verfügt über folgende Parameter, die in der Datei ``../etc/plugin.yaml`` konfiguriert werden:
+
+
+enable_test_net_dcl
+===================
+
+
+Testgeräte mit Entwicklungs-Zertifikaten zulassen (--enable-test-net-dcl). NICHT fuer echte Geräte aktivieren.
+
+ - Datentyp: **bool**
+ - Standardwert: **False**
+
+
+node_binary
+===========
+
+
+Pfad zum Node.js-Binary (muss die von matter-server geforderte Version erfüllen, siehe user_doc.rst)
+
+ - Datentyp: **str**
+ - Standardwert: **node**
+
+
+primary_interface
+=================
+
+
+Netzwerk-Interface fuer lokale Adressen (--primary-interface). Auf Hosts mit mehreren Interfaces auf demselben Subnetz kann die automatische Auswahl ein Interface wählen, über das das Zielgerät nicht erreichbar ist - dann explizit setzen (z.B. en0).
+
+ - Datentyp: **str**
+
+
+sidecar_entry
+=============
+
+
+Pfad (relativ zum Plugin-Verzeichnis) zur matter-server-Einstiegsdatei. matter-server hat kein CLI-Binary, daher wird die Datei direkt mit node ausgeführt.
+
+ - Datentyp: **str**
+ - Standardwert: **sidecar/node_modules/matter-server/dist/esm/MatterServer.js**
+
+
+sidecar_port
+============
+
+
+Port, auf dem der matter-server-Sidecar seine WebSocket-API anbietet (nur localhost)
+
+ - Datentyp: **int**
+ - Standardwert: **5580**
+
+
+storage_path
+============
+
+
+Verzeichnis (relativ zum shng-Arbeitsverzeichnis) für die Fabric-/Kommissionierungsdaten des Sidecars
+
+ - Datentyp: **str**
+ - Standardwert: **var/matter**
+
+
+==============
+Item Attribute
+==============
+
+
+Das Plugin unterstützt folgende Item Attribute, die in den Dateien im Verzeichnis  ``../items`` verwendet werden:
+
+
+matter_attribute
+================
+
+
+Attribut-ID innerhalb des Clusters. Das Item wird per Subscribe/Report aktuell gehalten (z.B. 0 fuer OnOff.OnOff)
+
+ - Datentyp: **int**
+
+
+matter_available
+================
+
+
+Nur-Lese-Item, das die von matter-server erkannte Erreichbarkeit des Node spiegelt (dieselbe Information wie die "verfuegbar"-Spalte im Webif, hier als echtes Item fuer eigene Logik/Struct/Visu). Braucht nur matter_node, kein Endpoint/Cluster.
+
+ - Datentyp: **bool**
+
+
+matter_cluster
+==============
+
+
+Matter-Cluster-ID (dezimal, z.B. 6 fuer OnOff)
+
+ - Datentyp: **int**
+
+
+matter_command
+==============
+
+
+Kommandoname innerhalb des Clusters, der bei einem Item-Write aufgerufen wird (z.B. toggle, on, off)
+
+ - Datentyp: **str**
+
+
+matter_command_false
+====================
+
+
+Optionales zweites Kommando fuer ein Bool-Item: bei falsy Wert wird dieses statt matter_command aufgerufen (z.B. matter_command=on, matter_command_false=off - ein Item spiegelt und steuert den Zustand statt zweier getrennter Trigger-Items).
+
+ - Datentyp: **str**
+
+
+matter_command_params
+=====================
+
+
+Optionale feste Parameter fuer matter_command. Der Platzhalter "$value" wird durch den geschriebenen Item-Wert ersetzt.
+
+ - Datentyp: **dict**
+
+
+matter_endpoint
+===============
+
+
+Endpoint-Nummer auf dem Matter-Node
+
+ - Datentyp: **int**
+
+
+matter_node
+===========
+
+
+Matter Node-ID des Geräts (wird bei der Kommissionierung vergeben)
+
+ - Datentyp: **int**
+
+
+matter_switch
+=============
+
+
+Kurzform fuer einen Bool-Schalter (z.B. OnOff): Attribut und beide Kommandos werden automatisch aus dem Cluster abgeleitet (siehe clusters.py SWITCH_CLUSTERS). Setzt matter_attribute/matter_command/matter_command_false nicht voraus. Fehlermeldung im Log, falls der Cluster (noch) nicht in der Tabelle steht - dann die low-level Attribute direkt verwenden.
+
+ - Datentyp: **bool**
+
+
+============
+Item-Structs
+============
+
+
+Das Plugin stellt die folgenden Item-Structs zur Verfügung. Diese Informationen sind aus der `plugin.yaml` entnommen und möglicherweise nicht vollständig.
+
+
+shelly_plug_m_3gen
+==================
+
+
+.. treeview::
+     - :dir:`folder` **shelly_plug_m_3gen** (`foo`, ---)
+         - :dir:`file` **toggle** (`bool`, auf True setzen, um den Schaltzustand zu wechseln)
+         - :dir:`folder` **power** (`num`, aktuelle Leistung in W)
+             - :dir:`file` **power_mw** (`num`, aktuelle Leistung in mW)
+         - :dir:`folder` **voltage** (`num`, aktuelle Spannung in V)
+             - :dir:`file` **voltage_mv** (`num`, aktuelle Spannung in mV)
+             - :dir:`file` **hinweis** (`foo`, In eigenen Tests wurde die Spannung nur einmalig beim Verbinden aktualisiert. Obwohl das Gerät die Spannung laufend misst, wird sie über Matter nicht mehr übertragen - z.B. über MQTT sehr wohl.)
+         - :dir:`folder` **current** (`num`, aktueller Strom in A)
+             - :dir:`file` **current_ma** (`num`, aktueller Strom in mA)
+
+
+shelly_plug_m_3gen_simple
+=========================
+
+
+.. treeview::
+     - :dir:`folder` **shelly_plug_m_3gen_simple** (`bool`, ---)
+         - :dir:`file` **available** (`bool`, Gerät erreichbar)
+
+
+===============
+Logik Parameter
+===============
+
+
+Das Plugin verfügt über folgende Parameter, die in der Datei ``../etc/logic.yaml`` konfiguriert werden:
+
+Keine Logik Parameter in den Metadaten beschrieben - **Bitte in der README nachsehen** (siehe Fußnote)
+
+================
+Plugin Functions
+================
+
+
+Das Plugin verfügt über folgende öffentliche Funktionen, die z.B. in Logiken aufgerufen werden können.
+
+**Keine**
+
+.. [#f1] Diese Seite wurde aus den Metadaten des Plugins erzeugt.
