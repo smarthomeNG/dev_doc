@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.item.items &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 12. August 2026, commit 13be02c) Dokumentation</title>
+  <title>lib.item.items &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 12. August 2026, commit f22c01e) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -6238,11 +6238,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">__items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__item_dict</span><span class="p">[</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span></div>
 
-    <span class="c1"># aus bin/smarthome.py</span>
-    <span class="c1">#    def __iter__(self):</span>
-    <span class="c1">#        for child in self.__children:</span>
-    <span class="c1">#            yield child</span>
-
 <div class="viewcode-block" id="Items.edit_item"><a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.edit_item">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">edit_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Edit an existing item&#39;s attributes at runtime, in place — preserves</span>
@@ -6271,47 +6266,57 @@
 <span class="sd">        :rtype: Item</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Undo this item&#39;s own OUTGOING trigger/hysteresis_input wiring</span>
-        <span class="c1"># (based on the OLD config) before re-parsing — otherwise a moved</span>
-        <span class="c1"># trigger leaves a stale registration on the old target. Incoming</span>
-        <span class="c1"># references (other items pointing AT this one) live on THIS</span>
-        <span class="c1"># item&#39;s own _items_to_trigger list, untouched here — that&#39;s the</span>
-        <span class="c1"># whole point of editing in place instead of remove+recreate.</span>
         <span class="n">_detach_from_other_items_triggers</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
         <span class="n">_remove_scheduler_jobs</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
         <span class="n">_stop_fading</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 
-        <span class="c1"># Undo old plugin bindings before re-parsing — without this, a</span>
-        <span class="c1"># plugin that appends to its own internal state in parse_item()</span>
-        <span class="c1"># (e.g. the database plugin) would double-register the same item</span>
-        <span class="c1"># object when parse_item() runs again below.</span>
-        <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">return_plugins</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="n">PLUGIN_REMOVE_ITEM</span><span class="p">):</span>
-                <span class="n">plugin</span><span class="o">.</span><span class="n">remove_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="c1"># Pause each STOP_ON_ITEM_CHANGE plugin bound to this item ONCE for</span>
+        <span class="c1"># the whole edit</span>
+        <span class="n">paused_plugins</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">return_plugins</span><span class="p">()</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s1">&#39;STOP_ON_ITEM_CHANGE&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">alive</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">paused_plugins</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">plugin</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plugin &#39;</span><span class="si">{</span><span class="n">plugin</span><span class="si">}</span><span class="s2">&#39; failed to stop for edit of item &#39;</span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="n">item</span><span class="o">.</span><span class="n">_apply_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Undo old plugin bindings before re-parsing</span>
+            <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">return_plugins</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="n">PLUGIN_REMOVE_ITEM</span><span class="p">):</span>
+                    <span class="n">plugin</span><span class="o">.</span><span class="n">remove_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 
-        <span class="c1"># Re-wire based on the NEW config (eval/trigger/hysteresis_input</span>
-        <span class="c1"># expansion, registers this item onto its new trigger targets).</span>
-        <span class="n">item</span><span class="o">.</span><span class="n">_init_prerun</span><span class="p">()</span>
-        <span class="n">item</span><span class="o">.</span><span class="n">_init_start_scheduler</span><span class="p">()</span>
-        <span class="n">item</span><span class="o">.</span><span class="n">_init_run</span><span class="p">()</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">_apply_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 
-        <span class="c1"># Rebind to plugins per the NEW config — mirrors the same loop</span>
-        <span class="c1"># Item.__init__ runs inline for a freshly constructed item.</span>
-        <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">return_plugins</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="n">PLUGIN_PARSE_ITEM</span><span class="p">):</span>
-                <span class="n">update</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="n">parse_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">update</span><span class="p">:</span>
+            <span class="c1"># Re-wire based on the NEW config (eval/trigger/hysteresis_input</span>
+            <span class="c1"># expansion, registers this item onto its new trigger targets).</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">_init_prerun</span><span class="p">()</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">_init_start_scheduler</span><span class="p">()</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">_init_run</span><span class="p">()</span>
+
+            <span class="c1"># Rebind to plugins per the NEW config — mirrors the same loop</span>
+            <span class="c1"># Item.__init__ runs inline for a freshly constructed item.</span>
+            <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">return_plugins</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="n">PLUGIN_PARSE_ITEM</span><span class="p">):</span>
+                    <span class="n">update</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="n">parse_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">update</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">plugin</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">updating</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                            <span class="k">pass</span>
+                        <span class="n">item</span><span class="o">.</span><span class="n">add_method_trigger</span><span class="p">(</span><span class="n">update</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">paused_plugins</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">plugin</span><span class="o">.</span><span class="n">alive</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
-                        <span class="n">plugin</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">updating</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                        <span class="k">pass</span>
-                    <span class="n">item</span><span class="o">.</span><span class="n">add_method_trigger</span><span class="p">(</span><span class="n">update</span><span class="p">)</span>
+                        <span class="n">plugin</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Plugin &#39;</span><span class="si">{</span><span class="n">plugin</span><span class="si">}</span><span class="s2">&#39; failed to resume after edit of item &#39;</span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
 
-        <span class="c1"># Preserved value may not be valid for a new type (e.g. num -&gt; str</span>
-        <span class="c1"># always works, str -&gt; num doesn&#39;t if the string isn&#39;t numeric).</span>
-        <span class="c1"># Same try-cast-with-fallback pattern as the existing cache-restore</span>
-        <span class="c1"># path (Item.__init__&#39;s &quot;Cache&quot; section) — not new logic.</span>
+        <span class="c1"># Preserved value may not be valid for a new type</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">item</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">_value</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -6460,10 +6465,7 @@
                 <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="p">,</span> <span class="n">leaf_attr</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
 
         <span class="n">rename_hook_plugins</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">return_plugins</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">PLUGIN_RENAME_ITEM</span><span class="p">)]</span>
-        <span class="c1"># Pause each affected plugin AT MOST ONCE for the whole rename, not</span>
-        <span class="c1"># once per descendant — STOP_ON_ITEM_CHANGE&#39;s stop()/run() cycle can</span>
-        <span class="c1"># be expensive (reconnecting to real hardware/network), and a</span>
-        <span class="c1"># renamed subtree may have many descendants.</span>
+        <span class="c1"># Pause each affected plugin only once for the whole rename</span>
         <span class="n">paused_plugins</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">rename_hook_plugins</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s1">&#39;STOP_ON_ITEM_CHANGE&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">alive</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">paused_plugins</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
