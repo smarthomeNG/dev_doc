@@ -984,7 +984,9 @@
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#requirements">Requirements</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#configuration">Configuration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#item-attributes">Item attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#surviving-recommissioning-matter-alias">Surviving recommissioning: matter_alias</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#item-structs">Item structs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#sharing-a-device-with-apple-home-google-home-etc">Sharing a device with Apple Home / Google Home / etc.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#phase-2-scope">Phase 2 scope</a></li>
 </ul>
 </li>
@@ -2777,7 +2779,9 @@
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#requirements">Requirements</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#configuration">Configuration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#item-attributes">Item attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#surviving-recommissioning-matter-alias">Surviving recommissioning: matter_alias</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#item-structs">Item structs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#sharing-a-device-with-apple-home-google-home-etc">Sharing a device with Apple Home / Google Home / etc.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#phase-2-scope">Phase 2 scope</a></li>
 </ul>
 </li>
@@ -5769,6 +5773,16 @@
 <section id="parameter">
 <h1>Parameter<a class="headerlink" href="#parameter" title="Permalink to this heading"></a></h1>
 <p>Das Plugin verfügt über folgende Parameter, die in der Datei <code class="docutils literal notranslate"><span class="pre">../etc/plugin.yaml</span></code> konfiguriert werden:</p>
+<section id="alias-base-item">
+<h2>alias_base_item<a class="headerlink" href="#alias-base-item" title="Permalink to this heading"></a></h2>
+<p>Item, unter dem Alias-Definitionen liegen (direkte Kind-Items, jeweils Typ num mit dem aktuellen node_id als Wert - siehe matter_alias). Muss bereits existieren, wird vom Plugin nicht angelegt. Fehlt es, bleibt die Alias-Funktion inaktiv, ohne den Rest des Plugins zu beeinträchtigen.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Datentyp: <strong>str</strong></p></li>
+<li><p>Standardwert: <strong>matter.aliases</strong></p></li>
+</ul>
+</div></blockquote>
+</section>
 <section id="enable-test-net-dcl">
 <h2>enable_test_net_dcl<a class="headerlink" href="#enable-test-net-dcl" title="Permalink to this heading"></a></h2>
 <p>Testgeräte mit Entwicklungs-Zertifikaten zulassen (–enable-test-net-dcl). NICHT fuer echte Geräte aktivieren.</p>
@@ -5832,6 +5846,15 @@
 <section id="item-attribute">
 <h1>Item Attribute<a class="headerlink" href="#item-attribute" title="Permalink to this heading"></a></h1>
 <p>Das Plugin unterstützt folgende Item Attribute, die in den Dateien im Verzeichnis  <code class="docutils literal notranslate"><span class="pre">../items</span></code> verwendet werden:</p>
+<section id="matter-alias">
+<h2>matter_alias<a class="headerlink" href="#matter-alias" title="Permalink to this heading"></a></h2>
+<p>Alternative zu matter_node: Name einer Alias-Definition unter alias_base_item. Löst node_id über die interne Alias-Tabelle des Plugins auf statt fest im Item-Wert - übersteht ein Rekommissionieren (neue node_id) ohne Änderung an diesem oder abhängigen Items, sobald der Alias über das Webif umgebogen wird.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Datentyp: <strong>str</strong></p></li>
+</ul>
+</div></blockquote>
+</section>
 <section id="matter-attribute">
 <h2>matter_attribute<a class="headerlink" href="#matter-attribute" title="Permalink to this heading"></a></h2>
 <p>Attribut-ID innerhalb des Clusters. Das Item wird per Subscribe/Report aktuell gehalten (z.B. 0 fuer OnOff.OnOff)</p>

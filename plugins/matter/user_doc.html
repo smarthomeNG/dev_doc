@@ -986,7 +986,9 @@
 <li class="toctree-l4"><a class="reference internal" href="#requirements">Requirements</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#configuration">Configuration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#item-attributes">Item attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#surviving-recommissioning-matter-alias">Surviving recommissioning: matter_alias</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#item-structs">Item structs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sharing-a-device-with-apple-home-google-home-etc">Sharing a device with Apple Home / Google Home / etc.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#phase-2-scope">Phase 2 scope</a></li>
 </ul>
 </li>
@@ -2779,7 +2781,9 @@
 <li class="toctree-l4"><a class="reference internal" href="#requirements">Requirements</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#configuration">Configuration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#item-attributes">Item attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#surviving-recommissioning-matter-alias">Surviving recommissioning: matter_alias</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#item-structs">Item structs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sharing-a-device-with-apple-home-google-home-etc">Sharing a device with Apple Home / Google Home / etc.</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#phase-2-scope">Phase 2 scope</a></li>
 </ul>
 </li>
@@ -5816,6 +5820,35 @@ here as a real item for your own logic/struct/visu. Only needs <code class="docu
 same ancestor inheritance as above), not an endpoint or cluster - availability isn’t attached to
 either.</p>
 </section>
+<section id="surviving-recommissioning-matter-alias">
+<h2>Surviving recommissioning: matter_alias<a class="headerlink" href="#surviving-recommissioning-matter-alias" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">node_id</span></code> is assigned by matter-server at commission time and is not guaranteed stable across a
+decommission/recommission cycle (factory-resetting a device, moving it off and back onto shng’s
+fabric, …). Every item addressed via a fixed <code class="docutils literal notranslate"><span class="pre">matter_node</span></code> then silently points at the wrong
+device until you go update it by hand, on every affected item.</p>
+<p><code class="docutils literal notranslate"><span class="pre">matter_alias</span></code> (str) is an indirection layer for this: use it instead of <code class="docutils literal notranslate"><span class="pre">matter_node</span></code>, giving
+the name of an <em>alias definition</em> - a plain shng item, <code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">num</span></code>, holding the current
+<code class="docutils literal notranslate"><span class="pre">node_id</span></code> as its value - living directly under <code class="docutils literal notranslate"><span class="pre">alias_base_item</span></code> (<code class="docutils literal notranslate"><span class="pre">plugin.yaml</span></code> parameter,
+default <code class="docutils literal notranslate"><span class="pre">matter.aliases</span></code>). Every direct child of that item is treated as one alias definition
+(name = child item’s own name). An item’s <code class="docutils literal notranslate"><span class="pre">node_id</span></code> is then resolved through this table at every
+access rather than baked in, so repointing one alias (webif <strong>Aliase</strong> tab, or editing the alias
+item’s value directly) takes effect for every item using that alias - none of them need touching.</p>
+<p>The base item itself must already exist; the plugin never creates it (not yet an established shng
+pattern) and just logs an example structure and stays inactive w.r.t. alias support until it does,
+without affecting the rest of the plugin. Each alias-definition item is validated on parse: must be
+<code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">num</span></code>, must have an explicit <code class="docutils literal notranslate"><span class="pre">value:</span></code> (the <code class="docutils literal notranslate"><span class="pre">node_id</span></code>), and must not be <code class="docutils literal notranslate"><span class="pre">cache</span></code>,
+<code class="docutils literal notranslate"><span class="pre">database</span></code>, or <code class="docutils literal notranslate"><span class="pre">eval</span></code>’d (an alias’s value is meant to change only via explicit repointing, never
+through those mechanisms) - every violation found is logged in one message rather than stopping at
+the first. If the base item has no <code class="docutils literal notranslate"><span class="pre">remark</span></code> set, the plugin sets a default one; an existing remark
+is left untouched.</p>
+<p>Defining a brand-new alias, or pointing an item’s <code class="docutils literal notranslate"><span class="pre">matter_alias</span></code> at a name that did not exist at
+parse time, needs a shng restart - same as any other structural item change. Repointing an
+<em>existing</em> alias to a different <code class="docutils literal notranslate"><span class="pre">node_id</span></code> is live, no restart needed, since that only changes the
+alias item’s own value.</p>
+<p>Removing an alias while other items still reference it does not touch those items - they keep their
+last-known (now orphaned) <code class="docutils literal notranslate"><span class="pre">node_id</span></code> until the alias is redefined or the items themselves are
+edited to point elsewhere. A warning naming every affected item is logged when this happens.</p>
+</section>
 <section id="item-structs">
 <h2>Item structs<a class="headerlink" href="#item-structs" title="Permalink to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">item_structs</span></code> in <code class="docutils literal notranslate"><span class="pre">plugin.yaml</span></code> is meant as a growing collection of ready-made templates for
@@ -5831,6 +5864,21 @@ attribute values through unconverted (see <code class="docutils literal notransl
 though its sibling attributes on the same cluster do - see
 <code class="docutils literal notranslate"><span class="pre">dev/matter/matter-integration-plan.md</span></code>’s „RMSVoltage never reports“ section before relying on it
 for anything time-sensitive.</p>
+</section>
+<section id="sharing-a-device-with-apple-home-google-home-etc">
+<h2>Sharing a device with Apple Home / Google Home / etc.<a class="headerlink" href="#sharing-a-device-with-apple-home-google-home-etc" title="Permalink to this heading"></a></h2>
+<p>Matter devices support multiple simultaneous „admins“ - a device commissioned by shng can also join
+another ecosystem on its own separate fabric, without shng losing its own pairing. The Devices tab’s
+<strong>Teilen</strong> (Share) button opens a fresh 15-minute commissioning window on that device and shows both
+a scannable QR code and the manual pairing code (and raw QR-content string) to enter in the other
+app.</p>
+<p>The <strong>Fabrics</strong> button lists every fabric currently on a device (vendor, label, fabric_id) with a
+per-fabric Remove option, backed by a real, spec-compliant device-side <code class="docutils literal notranslate"><span class="pre">RemoveFabric</span></code> command
+(<code class="docutils literal notranslate"><span class="pre">OperationalCredentialsClient.removeFabric</span></code>) - the device itself is cleanly notified, same as
+Unlink’s decommission path. Removing shng’s <em>own</em> fabric this way still isn’t recommended, though:
+it skips matter-server’s own node-removal bookkeeping that <cite>remove_node</cite>/Unlink performs, so its
+local record of that node would go stale instead of being cleaned up. Use Unlink for shng’s own
+pairing; use the Fabrics table for <em>other</em> controllers‘ fabrics.</p>
 </section>
 <section id="phase-2-scope">
 <h2>Phase 2 scope<a class="headerlink" href="#phase-2-scope" title="Permalink to this heading"></a></h2>
