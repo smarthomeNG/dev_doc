@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 12. August 2026, commit bb5c1b6) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 12. August 2026, commit 13be02c) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -6115,7 +6115,15 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_item_lookup_dict</span><span class="p">[</span><span class="n">mapping</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 
         <span class="c1"># unregister item update method</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">unparse_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unparse_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Error on unparsing item </span><span class="si">{</span><span class="n">item</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">remove_method_trigger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_item</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
 
         <span class="k">return</span> <span class="kc">True</span></div>
 
@@ -6370,24 +6378,16 @@
     <span class="c1"># by remove_item() (which itself must NOT be overwritten, see above). If a</span>
     <span class="c1"># plugin&#39;s parse_item() sets up plugin-specific bookkeeping beyond add_item()&#39;s</span>
     <span class="c1"># generic dicts, the matching teardown belongs here — not in remove_item().</span>
-    <span class="c1">#</span>
-    <span class="c1"># If overwritten, call super().unparse_item(item) too, since the base</span>
-    <span class="c1"># implementation removes the update_item method trigger that parse_item&#39;s</span>
-    <span class="c1"># `return self.update_item` registered.</span>
-    <span class="c1">#</span>
+    <span class="c1">#    #</span>
 
-<div class="viewcode-block" id="SmartPlugin.unparse_item"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.unparse_item">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">unparse_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="SmartPlugin.unparse_item"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.unparse_item">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">unparse_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Ensure that changes to &lt;item&gt; are no longer propagated to this plugin</span>
+<span class="sd">        Remove user-/plugin-specific bookkeeping of items. Overwrite as needed.</span>
 
 <span class="sd">        :param item: item to unparse</span>
 <span class="sd">        :type item: class Item</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">item</span><span class="o">.</span><span class="n">remove_method_trigger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_item</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span></div>
+        <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="SmartPlugin.get_configname"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_configname">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_configname</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
