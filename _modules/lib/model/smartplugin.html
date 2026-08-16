@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 16. August 2026, commit cc9472a) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 16. August 2026, commit 1958416) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -7230,6 +7230,10 @@
         <span class="n">tplenv</span><span class="o">.</span><span class="n">globals</span><span class="p">[</span><span class="s1">&#39;isfile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_staticfile</span>
         <span class="n">tplenv</span><span class="o">.</span><span class="n">globals</span><span class="p">[</span><span class="s1">&#39;_&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate</span>  <span class="c1"># use translate method of webinterface class</span>
         <span class="n">tplenv</span><span class="o">.</span><span class="n">globals</span><span class="p">[</span><span class="s1">&#39;len&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span>
+        <span class="c1"># last-resort dark-mode fallback for browsers without prefers-color-scheme support -</span>
+        <span class="c1"># mirrors AppConfigService.darkModeDefault in shngadmin; see base.html&#39;s inline theme script</span>
+        <span class="n">mod_admin</span> <span class="o">=</span> <span class="n">Modules</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span><span class="o">.</span><span class="n">get_module</span><span class="p">(</span><span class="s1">&#39;admin&#39;</span><span class="p">)</span>
+        <span class="n">tplenv</span><span class="o">.</span><span class="n">globals</span><span class="p">[</span><span class="s1">&#39;dark_mode_default&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">mod_admin</span><span class="p">,</span> <span class="s1">&#39;dark_mode&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">tplenv</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">is_staticfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
