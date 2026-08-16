@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 15. August 2026, commit 6de43df) Dokumentation</title>
+  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 16. August 2026, commit 03fde7b) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -5788,6 +5788,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">ast</span><span class="w"> </span><span class="kn">import</span> <span class="n">literal_eval</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">deque</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">lib.shyaml</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">shyaml</span>
@@ -5833,6 +5834,8 @@
     <span class="n">INDEX_MODEL</span><span class="p">,</span>
     <span class="n">ITEM_ATTR_COMMAND</span><span class="p">,</span>
     <span class="n">ITEM_ATTR_CUSTOM1</span><span class="p">,</span>
+    <span class="n">ITEM_ATTR_CUSTOM2</span><span class="p">,</span>
+    <span class="n">ITEM_ATTR_CUSTOM3</span><span class="p">,</span>
     <span class="n">ITEM_ATTR_CYCLE</span><span class="p">,</span>
     <span class="n">ITEM_ATTR_GROUP</span><span class="p">,</span>
     <span class="n">ITEM_ATTR_LOOKUP</span><span class="p">,</span>
@@ -7572,7 +7575,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">struct_mode</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">acl</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lc</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">indentwidth</span> <span class="o">=</span> <span class="mi">4</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>
@@ -7600,68 +7602,44 @@
         <span class="c1"># make sure we are in shng base dir - needed below to locate</span>
         <span class="c1"># plugin.yaml, for both the help text and actually running the</span>
         <span class="c1"># plugin, so this has to happen before either</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;bin&#39;</span><span class="p">,</span> <span class="s1">&#39;smarthome.py&#39;</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;bin&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="s1">&#39;smarthome.py&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Plugin needs to be called from SmartHomeNG base directory. Aborting.&#39;</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="c1"># make sure we are called with relative path</span>
-        <span class="n">rel_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">plugin_file</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">rel_file</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">):</span>
+        <span class="c1"># make sure plugin_file resolves inside the current directory tree</span>
+        <span class="c1"># - relpath() is always cwd-relative regardless of whether</span>
+        <span class="c1"># plugin_file itself was absolute, so a leading &#39;..&#39; is the only</span>
+        <span class="c1"># way this can mean &quot;outside of here&quot;</span>
+        <span class="n">rel_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">plugin_file</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">rel_file</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">()</span> <span class="ow">or</span> <span class="n">rel_file</span><span class="o">.</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;..&#39;</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Plugin needs to be called with relative path; called as </span><span class="si">{</span><span class="n">plugin_file</span><span class="si">}</span><span class="s1">. Aborting.&#39;</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="c1"># calculate files, paths and modules</span>
-        <span class="n">pfitems</span> <span class="o">=</span> <span class="n">plugin_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">plugin_mod_path</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pfitems</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">plugin_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">pfitems</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">plugin_file</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">plugin_path</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_path</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">plugin_name</span> <span class="o">=</span> <span class="n">pfitems</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="c1"># calculate files, paths and modules - from rel_file, not the raw</span>
+        <span class="c1"># (possibly absolute) plugin_file argument</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plugin_path</span> <span class="o">=</span> <span class="n">rel_file</span><span class="o">.</span><span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plugin_mod_path</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_path</span><span class="o">.</span><span class="n">parts</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plugin_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_path</span><span class="o">.</span><span class="n">name</span>
 
         <span class="c1"># no shng instance exists in standalone mode - Metadata tolerates</span>
         <span class="c1"># sh=None (falls back to cwd, which the base-dir check above just</span>
         <span class="c1"># verified, and skips the http-module-only global parameter)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_name</span><span class="p">,</span> <span class="s1">&#39;plugin&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_mod_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_name</span><span class="p">,</span> <span class="s1">&#39;plugin&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_path</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">usage</span> <span class="o">=</span> <span class="s1">&#39;&lt;Error: Help text not set&gt;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_usage</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;-h&#39;</span><span class="p">,</span> <span class="s1">&#39;--help&#39;</span><span class="p">,</span> <span class="s1">&#39;-?&#39;</span><span class="p">,</span> <span class="s1">&#39;/?&#39;</span><span class="p">,</span> <span class="s1">&#39;/h&#39;</span><span class="p">,</span> <span class="s1">&#39;/help&#39;</span><span class="p">]):</span>
-            <span class="c1"># check for further command line arguments</span>
-            <span class="n">raw_args</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)):</span>
-                <span class="n">arg_str</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="n">arg</span><span class="p">]</span>
+            <span class="n">flags</span><span class="p">,</span> <span class="n">raw_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_argv</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
 
-                <span class="k">if</span> <span class="n">arg_str</span> <span class="o">==</span> <span class="s1">&#39;-v&#39;</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Debug logging enabled&#39;</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
-                    <span class="n">root_logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">flags</span><span class="p">[</span><span class="s1">&#39;v&#39;</span><span class="p">]:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Debug logging enabled&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+                <span class="n">root_logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
 
-                <span class="k">elif</span> <span class="n">arg_str</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;-s&#39;</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">struct_mode</span> <span class="o">=</span> <span class="kc">True</span>
-
-                <span class="k">elif</span> <span class="n">arg_str</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;-a&#39;</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">acl</span> <span class="o">=</span> <span class="kc">True</span>
-
-                <span class="k">elif</span> <span class="n">arg_str</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;-l&#39;</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">lc</span> <span class="o">=</span> <span class="kc">True</span>
-
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">arg_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;--&#39;</span><span class="p">):</span>
-                        <span class="c1"># &#39;--key=val&#39; is just &#39;key=val&#39; with a friendlier,</span>
-                        <span class="c1"># more familiar-looking CLI flag prefix</span>
-                        <span class="n">arg_str</span> <span class="o">=</span> <span class="n">arg_str</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="c1"># convertible to dict?</span>
-                        <span class="n">raw_args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">arg_str</span><span class="p">))</span>
-                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                        <span class="c1"># if not: try to parse as &#39;name=value&#39;</span>
-                        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;([^= </span><span class="se">\n</span><span class="s1">]+)=([^= </span><span class="se">\n</span><span class="s1">]+)&#39;</span><span class="p">,</span> <span class="n">arg_str</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
-                            <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-                            <span class="n">raw_args</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">struct_mode</span> <span class="o">=</span> <span class="n">flags</span><span class="p">[</span><span class="s1">&#39;s&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">acl</span> <span class="o">=</span> <span class="n">flags</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lc</span> <span class="o">=</span> <span class="n">flags</span><span class="p">[</span><span class="s1">&#39;l&#39;</span><span class="p">]</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">usage</span><span class="p">)</span>
@@ -7699,6 +7677,47 @@
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;plugin doesn&#39;t have a standalone function.&quot;</span><span class="p">)</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Done.&#39;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_argv</span><span class="p">(</span><span class="n">argv</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parses standalone-mode CLI tokens (``sys.argv[1:]``) into mode</span>
+<span class="sd">        flags and raw plugin-parameter args.</span>
+
+<span class="sd">        Flags must match exactly (case-insensitive), not by prefix - a</span>
+<span class="sd">        param arg starting with &#39;-s&#39;/&#39;-a&#39;/&#39;-l&#39; (e.g. ``-serial=...``) must</span>
+<span class="sd">        not be misread as a mode flag.</span>
+
+<span class="sd">        Every other token is parsed as a python dict literal (quoted as a</span>
+<span class="sd">        single shell arg) or, failing that, a &#39;name=value&#39; pair; a</span>
+<span class="sd">        leading &#39;--&#39; is stripped first as a friendlier alias for either.</span>
+
+<span class="sd">        :param argv: command line arguments, excluding argv[0]</span>
+<span class="sd">        :return: (flags, raw_args); flags has keys &#39;v&#39;/&#39;s&#39;/&#39;a&#39;/&#39;l&#39; -&gt; bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">flags</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;v&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;l&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+        <span class="n">raw_args</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">arg_str</span> <span class="ow">in</span> <span class="n">argv</span><span class="p">:</span>
+            <span class="n">lowered</span> <span class="o">=</span> <span class="n">arg_str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">lowered</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;-v&#39;</span><span class="p">,</span> <span class="s1">&#39;-s&#39;</span><span class="p">,</span> <span class="s1">&#39;-a&#39;</span><span class="p">,</span> <span class="s1">&#39;-l&#39;</span><span class="p">):</span>
+                <span class="n">flags</span><span class="p">[</span><span class="n">lowered</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">arg_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;--&#39;</span><span class="p">):</span>
+                <span class="c1"># &#39;--key=val&#39; is just &#39;key=val&#39; with a friendlier,</span>
+                <span class="c1"># more familiar-looking CLI flag prefix</span>
+                <span class="n">arg_str</span> <span class="o">=</span> <span class="n">arg_str</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># convertible to dict?</span>
+                <span class="n">raw_args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">arg_str</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="c1"># if not: try to parse as &#39;name=value&#39;</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;([^= </span><span class="se">\n</span><span class="s1">]+)=([^= </span><span class="se">\n</span><span class="s1">]+)&#39;</span><span class="p">,</span> <span class="n">arg_str</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                    <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">raw_args</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="k">return</span> <span class="n">flags</span><span class="p">,</span> <span class="n">raw_args</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">set_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">options</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_class</span><span class="p">,</span> <span class="s1">&#39;STANDALONE_HELP_OPTIONS&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
@@ -7773,72 +7792,63 @@
 
         <span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">item_tree</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">walk</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">gpath</span><span class="p">,</span> <span class="n">gpathlist</span><span class="p">,</span> <span class="n">has_models</span><span class="p">,</span> <span class="n">func_first</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cut_levels</span><span class="o">=</span><span class="mi">0</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;traverses a nested dict</span>
+    <span class="c1">#: opaque per-command data, not further command-tree levels - must</span>
+    <span class="c1">#: not be descended into (a dict-valued custom attribute would else</span>
+    <span class="c1">#: be mistaken for a command-tree level of its own)</span>
+    <span class="n">CMD_STRUCTURAL_SKIP_KEYS</span> <span class="o">=</span> <span class="p">(</span><span class="n">CMD_ATTR_CMD_SETTINGS</span><span class="p">,</span> <span class="n">CMD_ATTR_PARAMS</span><span class="p">,</span> <span class="n">CMD_ATTR_ITEM_ATTRS</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">walk_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">gpathlist</span><span class="p">,</span> <span class="n">cut_levels</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;pre-order traversal of a (model/section-scoped) commands dict,</span>
+<span class="sd">        calling func(node, node_name, parent, path, gpathlist, cut_levels)</span>
+<span class="sd">        for every node before recursing into its structural child dicts.</span>
+<span class="sd">        Does not descend into CMD_STRUCTURAL_SKIP_KEYS children.</span>
 
 <span class="sd">        :param node: starting node</span>
 <span class="sd">        :param node_name: name of the starting node on parent level (&#39;key&#39;)</span>
 <span class="sd">        :param parent: parent node</span>
 <span class="sd">        :param func: function to call for each node</span>
-<span class="sd">        :param path: path of the current node (pparent.parent.node)</span>
-<span class="sd">        :param indent: indent level (indent is INDENT ** indent)</span>
-<span class="sd">        :param gpath: path of &#39;current&#39; (next above) read group</span>
-<span class="sd">        :param gpathlist: list of all current (above) read groups</span>
-<span class="sd">        :param has_models: True is command dict has models (&#39;ALL&#39;)</span>
-<span class="sd">        -&gt; include top level = model name in read groups and in command paths</span>
-<span class="sd">        :param func_first: order of work (func) and walk, True is work first</span>
+<span class="sd">        :param path: dotted command path of the current node</span>
+<span class="sd">        :param gpathlist: list of all read groups above the current node</span>
 <span class="sd">        :param cut_levels: cut &lt;n&gt; levels from front of path</span>
-<span class="sd">        :type node: dict</span>
-<span class="sd">        :type node_name: str</span>
-<span class="sd">        :type parent: dict</span>
-<span class="sd">        :type func: function</span>
-<span class="sd">        :type path: str</span>
-<span class="sd">        :type indent: int</span>
-<span class="sd">        :type gpath: str</span>
-<span class="sd">        :type gpathlist: list</span>
-<span class="sd">        :type has_models: bool</span>
-<span class="sd">        :type func_first: bool</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">func</span><span class="p">:</span>
+            <span class="n">func</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">gpathlist</span><span class="p">,</span> <span class="n">cut_levels</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">func</span> <span class="ow">and</span> <span class="n">func_first</span><span class="p">:</span>
-            <span class="c1"># first call func -&gt; print current node before descending</span>
-            <span class="n">func</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">gpath</span><span class="p">,</span> <span class="n">gpathlist</span><span class="p">,</span> <span class="n">cut_levels</span><span class="p">)</span>
-
-        <span class="c1"># iterate over all children who are dicts</span>
-        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="nb">dict</span><span class="p">)):</span>
-            <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
-                <span class="n">new_path</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="n">COMMAND_SEP</span>
-            <span class="k">elif</span> <span class="ow">not</span> <span class="n">has_models</span><span class="p">:</span>
-                <span class="n">new_path</span> <span class="o">=</span> <span class="n">node_name</span> <span class="o">+</span> <span class="n">COMMAND_SEP</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">new_path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-            <span class="n">new_path</span> <span class="o">+=</span> <span class="n">child</span>
-
-            <span class="c1"># and recursively walk them</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span>
-                <span class="n">node</span><span class="p">[</span><span class="n">child</span><span class="p">],</span>
-                <span class="n">child</span><span class="p">,</span>
-                <span class="n">node</span><span class="p">,</span>
-                <span class="n">func</span><span class="p">,</span>
-                <span class="n">new_path</span><span class="p">,</span>
-                <span class="n">indent</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
-                <span class="n">path</span><span class="p">,</span>
-                <span class="n">gpathlist</span> <span class="o">+</span> <span class="p">([</span><span class="n">path</span><span class="p">]</span> <span class="k">if</span> <span class="n">path</span> <span class="k">else</span> <span class="p">[]),</span>
-                <span class="n">has_models</span><span class="p">,</span>
-                <span class="n">func_first</span><span class="p">,</span>
-                <span class="n">cut_levels</span><span class="p">,</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">CMD_STRUCTURAL_SKIP_KEYS</span><span class="p">):</span>
+            <span class="n">new_path</span> <span class="o">=</span> <span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">COMMAND_SEP</span> <span class="k">if</span> <span class="n">path</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">child</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">walk_commands</span><span class="p">(</span>
+                <span class="n">node</span><span class="p">[</span><span class="n">child</span><span class="p">],</span> <span class="n">child</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">new_path</span><span class="p">,</span> <span class="n">gpathlist</span> <span class="o">+</span> <span class="p">([</span><span class="n">path</span><span class="p">]</span> <span class="k">if</span> <span class="n">path</span> <span class="k">else</span> <span class="p">[]),</span> <span class="n">cut_levels</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">func</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">func_first</span><span class="p">:</span>
-            <span class="c1"># last call func -&gt; process current node after descending</span>
-            <span class="n">func</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">gpath</span><span class="p">,</span> <span class="n">gpathlist</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prune</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">predicate</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;post-order traversal that deletes node from parent whenever</span>
+<span class="sd">        predicate(node, path) is True, after first recursing into all of</span>
+<span class="sd">        node&#39;s dict-valued children.</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">find_read_group_triggers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">gpath</span><span class="p">,</span> <span class="n">gpathlist</span><span class="p">,</span> <span class="n">cut_levels</span><span class="p">):</span>
+<span class="sd">        :param node: starting node</span>
+<span class="sd">        :param node_name: name of the starting node on parent level (&#39;key&#39;)</span>
+<span class="sd">        :param parent: parent node, from which node_name may be deleted</span>
+<span class="sd">        :param path: dotted command path of the current node</span>
+<span class="sd">        :param predicate: called as predicate(node, path) -&gt; bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="nb">dict</span><span class="p">)):</span>
+            <span class="n">new_path</span> <span class="o">=</span> <span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">COMMAND_SEP</span> <span class="k">if</span> <span class="n">path</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">child</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prune</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="n">child</span><span class="p">],</span> <span class="n">child</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">new_path</span><span class="p">,</span> <span class="n">predicate</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">predicate</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+            <span class="k">del</span> <span class="n">parent</span><span class="p">[</span><span class="n">node_name</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_undefined_for_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">CMD_ATTR_ITEM_TYPE</span> <span class="ow">in</span> <span class="n">node</span> <span class="ow">and</span> <span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdlist</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_empty_dict</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">find_read_group_triggers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">gpathlist</span><span class="p">,</span> <span class="n">cut_levels</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;find custom read trigger definitions, create trigger item</span>
 
-<span class="sd">        for params see walk() above, they are the same there</span>
+<span class="sd">        for params see walk_commands() above, they are the same there</span>
 
 <span class="sd">        To keep things manageable, we only support relative addressing in the</span>
 <span class="sd">        most simple form:</span>
@@ -7856,6 +7866,12 @@
                     <span class="n">rg_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">rg_list</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">rg_list</span><span class="p">:</span>
                     <span class="n">itempath</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;trigger&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">itempath</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Warning: read_groups entry for &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39; is missing &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;required &#39;trigger&#39; key, skipping: </span><span class="si">{</span><span class="n">entry</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+                        <span class="k">continue</span>
 
                     <span class="c1"># resolve relative item position</span>
                     <span class="n">lvl_up</span> <span class="o">=</span> <span class="mi">0</span>
@@ -7870,13 +7886,21 @@
                     <span class="n">item_path</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">src_path_elems</span><span class="p">),</span> <span class="n">itempath</span><span class="p">])</span>
 
                     <span class="bp">self</span><span class="o">.</span><span class="n">add_item_to_tree</span><span class="p">(</span>
-                        <span class="n">item_path</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span><span class="p">,</span> <span class="s1">&#39;enforce_updates&#39;</span><span class="p">:</span> <span class="s1">&#39;true&#39;</span><span class="p">,</span> <span class="n">ITEM_ATTR_READ_GRP</span><span class="p">:</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)}</span>
+                        <span class="n">item_path</span><span class="p">,</span>
+                        <span class="p">{</span>
+                            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;enforce_updates&#39;</span><span class="p">:</span> <span class="s1">&#39;true&#39;</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ITEM_ATTR_READ_GRP&#39;</span><span class="p">,</span> <span class="n">ITEM_ATTR_READ_GRP</span><span class="p">):</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">),</span>
+                        <span class="p">},</span>
                     <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">create_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">gpath</span><span class="p">,</span> <span class="n">gpathlist</span><span class="p">,</span> <span class="n">cut_levels</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">gpathlist</span><span class="p">,</span> <span class="n">cut_levels</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;create item or read item for current node/command</span>
 
-<span class="sd">        for params see walk() above, they are the same there</span>
+<span class="sd">        for params see walk_commands() above, they are the same there.</span>
+<span class="sd">        Only ever called for real command-tree nodes - walk_commands()</span>
+<span class="sd">        already filters out CMD_STRUCTURAL_SKIP_KEYS - so no need to</span>
+<span class="sd">        re-check for those here.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">node_name</span><span class="p">:</span>
             <span class="k">return</span>
@@ -7885,11 +7909,7 @@
         <span class="c1"># item contents goes in item</span>
         <span class="n">item</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="c1"># skip known command sub-dict nodes, but include command nodes</span>
-        <span class="k">if</span> <span class="n">CMD_ATTR_ITEM_TYPE</span> <span class="ow">in</span> <span class="n">node</span> <span class="ow">or</span> <span class="p">(</span>
-            <span class="n">node_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">CMD_ATTR_CMD_SETTINGS</span><span class="p">,</span> <span class="n">CMD_ATTR_PARAMS</span><span class="p">,</span> <span class="n">CMD_ATTR_ITEM_ATTRS</span><span class="p">,</span> <span class="n">CMD_IATTR_ATTRIBUTES</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="s1">&#39;type&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node</span>
-        <span class="p">):</span>
+        <span class="k">if</span> <span class="n">CMD_ATTR_ITEM_TYPE</span> <span class="ow">in</span> <span class="n">node</span> <span class="ow">or</span> <span class="s1">&#39;type&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node</span><span class="p">:</span>
             <span class="c1"># item -&gt; print item attributes</span>
             <span class="k">if</span> <span class="n">CMD_ATTR_ITEM_TYPE</span> <span class="ow">in</span> <span class="n">node</span><span class="p">:</span>
                 <span class="n">item</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_ATTR_ITEM_TYPE</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">)</span>
@@ -7897,9 +7917,13 @@
                 <span class="k">if</span> <span class="n">cut_levels</span><span class="p">:</span>
                     <span class="n">cmd</span> <span class="o">=</span> <span class="n">COMMAND_SEP</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cmd</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">COMMAND_SEP</span><span class="p">)[</span><span class="n">cut_levels</span><span class="p">:])</span>
                 <span class="c1"># add &#39;@instance&#39; to enable multi-instance usage</span>
-                <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_COMMAND</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cmd</span>
-                <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_READ</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_ATTR_READ</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-                <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_WRITE</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_ATTR_WRITE</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+                <span class="n">item</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ITEM_ATTR_COMMAND&#39;</span><span class="p">,</span> <span class="n">ITEM_ATTR_COMMAND</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cmd</span>
+                <span class="n">item</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ITEM_ATTR_READ&#39;</span><span class="p">,</span> <span class="n">ITEM_ATTR_READ</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="n">CMD_ATTR_READ</span><span class="p">,</span> <span class="kc">True</span>
+                <span class="p">)</span>
+                <span class="n">item</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ITEM_ATTR_WRITE&#39;</span><span class="p">,</span> <span class="n">ITEM_ATTR_WRITE</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="n">CMD_ATTR_WRITE</span><span class="p">,</span> <span class="kc">False</span>
+                <span class="p">)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">acl</span><span class="p">:</span>
                     <span class="n">item</span><span class="p">[</span><span class="s1">&#39;visu_acl&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;rw&#39;</span> <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_ATTR_WRITE</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;ro&#39;</span>
 
@@ -7930,28 +7954,28 @@
                             <span class="n">grps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">))</span>
                     <span class="c1"># only create read_groups if they actually exist</span>
                     <span class="k">if</span> <span class="n">grps</span><span class="p">:</span>
-                        <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_GROUP</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grps</span>
+                        <span class="n">item</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ITEM_ATTR_GROUP&#39;</span><span class="p">,</span> <span class="n">ITEM_ATTR_GROUP</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grps</span>
 
                 <span class="c1"># item attributes</span>
                 <span class="k">if</span> <span class="n">ia_node</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_ENFORCE</span><span class="p">):</span>
                         <span class="n">item</span><span class="p">[</span><span class="s1">&#39;enforce_updates&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="k">if</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_INITIAL</span><span class="p">):</span>
-                        <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_READ_INIT</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="n">item</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ITEM_ATTR_READ_INIT&#39;</span><span class="p">,</span> <span class="n">ITEM_ATTR_READ_INIT</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="k">if</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_CYCLIC</span><span class="p">):</span>
-                        <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_CYCLIC</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="n">item</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ITEM_ATTR_CYCLIC&#39;</span><span class="p">,</span> <span class="n">ITEM_ATTR_CYCLIC</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="n">cycle</span> <span class="o">=</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_CYCLE</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">cycle</span><span class="p">:</span>
-                        <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_CYCLE</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cycle</span>
+                        <span class="n">item</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ITEM_ATTR_CYCLE&#39;</span><span class="p">,</span> <span class="n">ITEM_ATTR_CYCLE</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cycle</span>
                     <span class="n">custom</span> <span class="o">=</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_CUSTOM1</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">custom</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_CUSTOM1</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">custom</span>
+                        <span class="n">item</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ITEM_ATTR_CUSTOM1&#39;</span><span class="p">,</span> <span class="n">ITEM_ATTR_CUSTOM1</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">custom</span>
                     <span class="n">custom</span> <span class="o">=</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_CUSTOM2</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">custom</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_CUSTOM1</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;2&#39;</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">custom</span>
+                        <span class="n">item</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ITEM_ATTR_CUSTOM2&#39;</span><span class="p">,</span> <span class="n">ITEM_ATTR_CUSTOM2</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">custom</span>
                     <span class="n">custom</span> <span class="o">=</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_CUSTOM3</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">custom</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">item</span><span class="p">[</span><span class="n">ITEM_ATTR_CUSTOM1</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;3&#39;</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">custom</span>
+                        <span class="n">item</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ITEM_ATTR_CUSTOM3&#39;</span><span class="p">,</span> <span class="n">ITEM_ATTR_CUSTOM3</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">custom</span>
 
                     <span class="c1"># custom item attributes: add 1:1</span>
                     <span class="n">attrs</span> <span class="o">=</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_ATTRIBUTES</span><span class="p">)</span>
@@ -7975,25 +7999,27 @@
                         <span class="k">if</span> <span class="n">ltyp</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
                             <span class="n">ltyp</span> <span class="o">=</span> <span class="s1">&#39;list&#39;</span>
                         <span class="n">item</span><span class="p">[</span><span class="s1">&#39;lookup&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;list&#39;</span> <span class="k">if</span> <span class="n">ltyp</span> <span class="o">==</span> <span class="s1">&#39;list&#39;</span> <span class="k">else</span> <span class="s1">&#39;dict&#39;</span><span class="p">}</span>
-                        <span class="n">item</span><span class="p">[</span><span class="s1">&#39;lookup&#39;</span><span class="p">][</span><span class="n">ITEM_ATTR_LOOKUP</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_ATTR_LOOKUP</span><span class="p">)</span><span class="si">}</span><span class="s1">#</span><span class="si">{</span><span class="n">ltyp</span><span class="si">}</span><span class="s1">&#39;</span>
+                        <span class="n">item</span><span class="p">[</span><span class="s1">&#39;lookup&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ITEM_ATTR_LOOKUP&#39;</span><span class="p">,</span> <span class="n">ITEM_ATTR_LOOKUP</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_ATTR_LOOKUP</span><span class="p">)</span><span class="si">}</span><span class="s1">#</span><span class="si">{</span><span class="n">ltyp</span><span class="si">}</span><span class="s1">&#39;</span>
+                        <span class="p">)</span>
 
             <span class="c1"># &#39;level node&#39; -&gt; print read item</span>
-            <span class="k">elif</span> <span class="n">node_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span>
-                <span class="n">CMD_ATTR_CMD_SETTINGS</span><span class="p">,</span>
-                <span class="n">CMD_ATTR_PARAMS</span><span class="p">,</span>
-                <span class="n">CMD_ATTR_ITEM_ATTRS</span><span class="p">,</span>
-                <span class="n">CMD_IATTR_ATTRIBUTES</span><span class="p">,</span>
-                <span class="n">CMD_IATTR_READ_GROUPS</span><span class="p">,</span>
-            <span class="p">):</span>
+            <span class="k">else</span><span class="p">:</span>
                 <span class="n">item</span><span class="p">[</span><span class="s1">&#39;read&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;bool&#39;</span><span class="p">,</span> <span class="s1">&#39;enforce_updates&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
-                <span class="n">item</span><span class="p">[</span><span class="s1">&#39;read&#39;</span><span class="p">][</span><span class="n">ITEM_ATTR_READ_GRP</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">path</span> <span class="k">if</span> <span class="n">path</span> <span class="k">else</span> <span class="n">node_name</span>
+                <span class="n">item</span><span class="p">[</span><span class="s1">&#39;read&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ITEM_ATTR_READ_GRP&#39;</span><span class="p">,</span> <span class="n">ITEM_ATTR_READ_GRP</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">path</span> <span class="k">if</span> <span class="n">path</span> <span class="k">else</span> <span class="n">node_name</span>
+                <span class="p">)</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="c1"># set sub-node for readability</span>
                     <span class="n">ia_node</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_ATTR_ITEM_ATTRS</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_INITIAL</span><span class="p">):</span>
-                        <span class="n">item</span><span class="p">[</span><span class="s1">&#39;read&#39;</span><span class="p">][</span><span class="n">ITEM_ATTR_READ_INIT</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="n">item</span><span class="p">[</span><span class="s1">&#39;read&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ITEM_ATTR_READ_INIT&#39;</span><span class="p">,</span> <span class="n">ITEM_ATTR_READ_INIT</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="kc">True</span>
+                        <span class="p">)</span>
                     <span class="k">if</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_CYCLE</span><span class="p">):</span>
-                        <span class="n">item</span><span class="p">[</span><span class="s1">&#39;read&#39;</span><span class="p">][</span><span class="n">ITEM_ATTR_CYCLE</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_CYCLE</span><span class="p">)</span>
+                        <span class="n">item</span><span class="p">[</span><span class="s1">&#39;read&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ITEM_ATTR_CYCLE&#39;</span><span class="p">,</span> <span class="n">ITEM_ATTR_CYCLE</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;@instance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">ia_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CMD_IATTR_CYCLE</span><span class="p">)</span>
+                        <span class="p">)</span>
                 <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
                     <span class="k">pass</span>
 
@@ -8001,34 +8027,32 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_item_to_tree</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">CMD_ATTR_ITEM_ATTRS</span> <span class="ow">in</span> <span class="n">node</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">find_read_group_triggers</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">gpath</span><span class="p">,</span> <span class="n">gpathlist</span><span class="p">,</span> <span class="n">cut_levels</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">remove_items_undef_cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">gpath</span><span class="p">,</span> <span class="n">gpathlist</span><span class="p">,</span> <span class="n">cut_levels</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">CMD_ATTR_ITEM_TYPE</span> <span class="ow">in</span> <span class="n">node</span> <span class="ow">and</span> <span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdlist</span><span class="p">:</span>
-            <span class="k">del</span> <span class="n">parent</span><span class="p">[</span><span class="n">node_name</span><span class="p">]</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">remove_empty_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">gpath</span><span class="p">,</span> <span class="n">gpathlist</span><span class="p">,</span> <span class="n">cut_levels</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">del</span> <span class="n">parent</span><span class="p">[</span><span class="n">node_name</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">find_read_group_triggers</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">node_name</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">gpathlist</span><span class="p">,</span> <span class="n">cut_levels</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">update_item_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">global_mod</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lib.model.sdp.globals&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-        <span class="n">global_vars</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()</span>
-        <span class="n">file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_path</span> <span class="o">+</span> <span class="s1">&#39;/plugin.yaml&#39;</span>
-        <span class="n">yaml</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
-        <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">yaml</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;item_attributes&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resolves this plugin&#39;s actual (possibly prefixed) item attribute</span>
+<span class="sd">        names from plugin.yaml&#39;s &#39;item_attributes&#39; section into</span>
+<span class="sd">        self._item_attrs, e.g. {&#39;ITEM_ATTR_COMMAND&#39;: &#39;viess_command&#39;}.</span>
 
+<span class="sd">        Same mechanism as SmartDevicePlugin._set_item_attributes() (this</span>
+<span class="sd">        module&#39;s runtime counterpart), just sourced from the plugin.yaml</span>
+<span class="sd">        file directly since no live Metadata/itemdefinitions exist in</span>
+<span class="sd">        standalone mode.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">global_mod</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lib.model.sdp.globals&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_path</span> <span class="o">/</span> <span class="s1">&#39;plugin.yaml&#39;</span>
+        <span class="n">yaml</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">((</span><span class="n">yaml</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;item_attributes&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">keys</span> <span class="ow">and</span> <span class="n">global_mod</span><span class="p">:</span>
-            <span class="n">new</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">ATTR_NAMES</span><span class="p">:</span>
                 <span class="n">attr_val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">global_mod</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">attr_val</span><span class="p">):</span>
-                        <span class="n">new</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_item_attrs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span>
                         <span class="k">break</span>
-
-            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">new</span><span class="p">:</span>
-                <span class="n">global_vars</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">new</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">create_struct_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;read commands.py and export struct.yaml&quot;&quot;&quot;</span>
@@ -8064,7 +8088,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">item_templates</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cmd_module</span><span class="p">,</span> <span class="s1">&#39;item_templates&#39;</span><span class="p">,</span> <span class="p">{})</span>
 
         <span class="c1"># load plugin&#39;s plugin.yaml</span>
-        <span class="n">file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_path</span><span class="p">,</span> <span class="s1">&#39;plugin.yaml&#39;</span><span class="p">)</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_path</span> <span class="o">/</span> <span class="s1">&#39;plugin.yaml&#39;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">yaml</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -8089,7 +8113,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">item_tree</span> <span class="o">=</span> <span class="p">{}</span>
 
                 <span class="c1"># create item tree</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="n">model</span><span class="p">],</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_item</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="p">[</span><span class="n">model</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">walk_commands</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="n">model</span><span class="p">],</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_item</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">model</span><span class="p">])</span>
 
                 <span class="c1"># easiest way to move dict to OrderedDict</span>
                 <span class="n">jdata</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">item_tree</span><span class="p">)</span>
@@ -8107,7 +8131,7 @@
                 <span class="n">obj</span> <span class="o">=</span> <span class="p">{</span><span class="n">section</span><span class="p">:</span> <span class="n">commands</span><span class="p">[</span><span class="n">section</span><span class="p">]}</span>
 
                 <span class="c1"># create item tree</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="n">section</span><span class="p">],</span> <span class="n">section</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_item</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="p">[],</span> <span class="kc">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">walk_commands</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="n">section</span><span class="p">],</span> <span class="n">section</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_item</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="p">[])</span>
 
                 <span class="c1"># easiest way to move dict to OrderedDict</span>
                 <span class="n">jdata</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">item_tree</span><span class="p">)</span>
@@ -8122,8 +8146,9 @@
             <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">item_tree</span> <span class="o">=</span> <span class="p">{}</span>
 
-                <span class="c1"># create list of valid commands</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">cmdlist</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">model</span><span class="p">]</span>
+                <span class="c1"># copy - models[model] is the commands.py module&#39;s own</span>
+                <span class="c1"># list; += below would otherwise mutate it in place</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cmdlist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">models</span><span class="p">[</span><span class="n">model</span><span class="p">])</span>
                 <span class="c1"># add generic commands to every other model</span>
                 <span class="k">if</span> <span class="n">model</span> <span class="o">!=</span> <span class="n">INDEX_GENERIC</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">cmdlist</span> <span class="o">+=</span> <span class="n">models</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">INDEX_GENERIC</span><span class="p">,</span> <span class="p">[])</span>
@@ -8134,13 +8159,13 @@
                 <span class="n">obj</span> <span class="o">=</span> <span class="p">{</span><span class="n">model</span><span class="p">:</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">commands</span><span class="p">)}</span>
 
                 <span class="c1"># remove all items with model-invalid &#39;xx_command&#39;</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="n">model</span><span class="p">],</span> <span class="n">model</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_items_undef_cmd</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="p">[</span><span class="n">model</span><span class="p">],</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">prune</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="n">model</span><span class="p">],</span> <span class="n">model</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_undefined_for_model</span><span class="p">)</span>
 
                 <span class="c1"># remove all empty items from obj</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="n">model</span><span class="p">],</span> <span class="n">model</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_empty_items</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="p">[</span><span class="n">model</span><span class="p">],</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">prune</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="n">model</span><span class="p">],</span> <span class="n">model</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_empty_dict</span><span class="p">)</span>
 
                 <span class="c1"># create item tree</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="n">model</span><span class="p">],</span> <span class="n">model</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_item</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="p">[],</span> <span class="kc">False</span><span class="p">,</span> <span class="n">cut_levels</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">walk_commands</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="n">model</span><span class="p">],</span> <span class="n">model</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_item</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="p">[],</span> <span class="n">cut_levels</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
                 <span class="n">jdata</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">item_tree</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">yaml</span><span class="p">[</span><span class="s1">&#39;item_structs&#39;</span><span class="p">][</span><span class="n">model</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">jdata</span><span class="p">,</span> <span class="n">object_pairs_hook</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">)[</span><span class="n">model</span><span class="p">]</span>

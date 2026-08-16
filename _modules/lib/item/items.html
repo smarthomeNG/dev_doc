@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.item.items &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 15. August 2026, commit 6de43df) Dokumentation</title>
+  <title>lib.item.items &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 16. August 2026, commit 03fde7b) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -6494,6 +6494,13 @@
 <span class="sd">        __item_dict; unlike edit_item(), the item&#39;s attribute config is</span>
 <span class="sd">        untouched, only its identity (path/parent).</span>
 
+<span class="sd">        The rename_item() plugin hook runs for every plugin that defines</span>
+<span class="sd">        one, unconditionally. Only the STOP_ON_ITEM_CHANGE pause/resume</span>
+<span class="sd">        bracket around it is scoped down, to plugins that plausibly have a</span>
+<span class="sd">        stake in this specific rename (see _plugin_is_touched() below) -</span>
+<span class="sd">        same scoping philosophy as edit_item(), adapted for the fact that</span>
+<span class="sd">        a rename has no old/new attribute config to diff.</span>
+
 <span class="sd">        If the item is persisted, its YAML node moves to: *filename* if</span>
 <span class="sd">        given explicitly; otherwise the new parent&#39;s file, if the new</span>
 <span class="sd">        parent is a real (non-top-level) Item with one; otherwise the</span>
@@ -6556,9 +6563,41 @@
             <span class="k">if</span> <span class="n">new_is_top_level</span><span class="p">:</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="p">,</span> <span class="n">leaf_attr</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
 
+        <span class="n">subtree</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">_flatten_with_children</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
         <span class="n">rename_hook_plugins</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">return_plugins</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">PLUGIN_RENAME_ITEM</span><span class="p">)]</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_plugin_is_touched</span><span class="p">(</span><span class="n">plugin_name</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            True if *plugin_name* plausibly has a stake in this rename -</span>
+<span class="sd">            used only to scope the pause/resume bracket, never to skip the</span>
+<span class="sd">            rename_item() hook itself (that still runs for every plugin</span>
+<span class="sd">            with one, unconditionally). Mirrors edit_item()&#39;s own</span>
+<span class="sd">            _plugin_is_touched(), adapted for the fact that a rename never</span>
+<span class="sd">            changes an attribute value - only path/parent - so there is no</span>
+<span class="sd">            old/new config to diff; the signal instead is whether the</span>
+<span class="sd">            plugin owns any attribute actually present, unchanged,</span>
+<span class="sd">            somewhere in the subtree being renamed. Deliberately</span>
+<span class="sd">            conservative: with no positive evidence a plugin is</span>
+<span class="sd">            unaffected, it&#39;s treated as touched.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">owned_keys</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_attributes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;plugin&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">plugin_name</span><span class="p">}</span>
+            <span class="n">owned_prefixes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin_attribute_prefixes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;plugin&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">plugin_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">owned_keys</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">owned_prefixes</span><span class="p">:</span>
+                <span class="c1"># plugin never declared item_attributes/item_attribute_prefixes at</span>
+                <span class="c1"># all - no signal either way, don&#39;t assume it&#39;s unaffected</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="nf">_owns</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">owned_keys</span> <span class="ow">or</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">owned_prefixes</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">_owns</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">descendant</span> <span class="ow">in</span> <span class="n">subtree</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">descendant</span><span class="o">.</span><span class="n">conf</span><span class="p">)</span>
+
         <span class="c1"># Pause each affected plugin only once for the whole rename</span>
-        <span class="n">paused_plugins</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">rename_hook_plugins</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s1">&#39;STOP_ON_ITEM_CHANGE&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">alive</span><span class="p">]</span>
+        <span class="n">paused_plugins</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">p</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">rename_hook_plugins</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s1">&#39;STOP_ON_ITEM_CHANGE&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">alive</span> <span class="ow">and</span> <span class="n">_plugin_is_touched</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">get_shortname</span><span class="p">())</span>
+        <span class="p">]</span>
         <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">paused_plugins</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">plugin</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
@@ -6566,7 +6605,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plugin &#39;</span><span class="si">{</span><span class="n">plugin</span><span class="si">}</span><span class="s2">&#39; failed to stop for rename of item &#39;</span><span class="si">{</span><span class="n">old_path</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">descendant</span> <span class="ow">in</span> <span class="n">_flatten_with_children</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">descendant</span> <span class="ow">in</span> <span class="n">subtree</span><span class="p">:</span>
                 <span class="n">descendant_old_path</span> <span class="o">=</span> <span class="n">descendant</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span>
                 <span class="n">descendant_new_path</span> <span class="o">=</span> <span class="n">new_path</span> <span class="o">+</span> <span class="n">descendant_old_path</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">old_path</span><span class="p">)</span> <span class="p">:]</span>
 

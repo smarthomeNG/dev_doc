@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Class Items &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 15. August 2026, commit 6de43df) Dokumentation</title>
+  <title>Class Items &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 16. August 2026, commit 03fde7b) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
@@ -6014,6 +6014,12 @@ removing anything.</p></li>
 own path (and, for a move, its parent) and re-keys it in
 __item_dict; unlike edit_item(), the item’s attribute config is
 untouched, only its identity (path/parent).</p>
+<p>The rename_item() plugin hook runs for every plugin that defines
+one, unconditionally. Only the STOP_ON_ITEM_CHANGE pause/resume
+bracket around it is scoped down, to plugins that plausibly have a
+stake in this specific rename (see _plugin_is_touched() below) -
+same scoping philosophy as edit_item(), adapted for the fact that
+a rename has no old/new attribute config to diff.</p>
 <p>If the item is persisted, its YAML node moves to: <em>filename</em> if
 given explicitly; otherwise the new parent’s file, if the new
 parent is a real (non-top-level) Item with one; otherwise the
