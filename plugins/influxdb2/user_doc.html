@@ -5833,22 +5833,22 @@ unter <a class="reference internal" href="../../plugins_doc/config/influxdb2.htm
 
 
 <span class="c1"># ----------------------------------------------</span>
-<span class="n">ip</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
+<span class="n">ip</span> <span class="o">=</span> <span class="s2">"localhost"</span>
 <span class="n">port</span> <span class="o">=</span> <span class="mi">8086</span>
-<span class="n">token</span> <span class="o">=</span> <span class="s2">&quot;******************&quot;</span>
-<span class="n">org</span> <span class="o">=</span> <span class="s2">&quot;smarthomeng&quot;</span>
-<span class="n">bucket</span> <span class="o">=</span> <span class="s2">&quot;shng&quot;</span>
-<span class="n">value_field</span> <span class="o">=</span> <span class="s2">&quot;value&quot;</span>
-<span class="n">str_value_field</span> <span class="o">=</span> <span class="s2">&quot;str_value&quot;</span>
+<span class="n">token</span> <span class="o">=</span> <span class="s2">"******************"</span>
+<span class="n">org</span> <span class="o">=</span> <span class="s2">"smarthomeng"</span>
+<span class="n">bucket</span> <span class="o">=</span> <span class="s2">"shng"</span>
+<span class="n">value_field</span> <span class="o">=</span> <span class="s2">"value"</span>
+<span class="n">str_value_field</span> <span class="o">=</span> <span class="s2">"str_value"</span>
 
-<span class="n">csvfile</span> <span class="o">=</span> <span class="s2">&quot;smarthomeng_dump.csv&quot;</span>
+<span class="n">csvfile</span> <span class="o">=</span> <span class="s2">"smarthomeng_dump.csv"</span>
 <span class="c1"># ----------------------------------------------</span>
 
 
-<span class="n">client</span> <span class="o">=</span> <span class="n">InfluxDBClient</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span> <span class="n">org</span><span class="o">=</span><span class="n">org</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">InfluxDBClient</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="sa">f</span><span class="s2">"http://</span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span> <span class="n">org</span><span class="o">=</span><span class="n">org</span><span class="p">)</span>
 <span class="n">write_api</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">write_api</span><span class="p">(</span><span class="n">write_options</span><span class="o">=</span><span class="n">SYNCHRONOUS</span><span class="p">)</span>
 
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">';'</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
 
 <span class="n">num_rows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
@@ -5857,12 +5857,12 @@ unter <a class="reference internal" href="../../plugins_doc/config/influxdb2.htm
 <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
   <span class="n">progress_percent</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">index</span><span class="o">/</span><span class="n">num_rows</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span>
   <span class="k">if</span> <span class="n">last_progress_percent</span> <span class="o">!=</span> <span class="n">progress_percent</span><span class="p">:</span>
-      <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">progress_percent</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+      <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">progress_percent</span><span class="si">}</span><span class="s2">%"</span><span class="p">)</span>
       <span class="n">last_progress_percent</span> <span class="o">=</span> <span class="n">progress_percent</span>
 
-  <span class="n">p</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;measurement&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;item_name&#39;</span><span class="p">],</span> <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="mi">1000000</span><span class="p">,</span>
-       <span class="s1">&#39;tags&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;item&#39;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;item_name&#39;</span><span class="p">]},</span>
-       <span class="s1">&#39;fields&#39;</span><span class="p">:</span> <span class="p">{</span><span class="n">value_field</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;val_num&#39;</span><span class="p">],</span> <span class="n">str_value_field</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;val_str&#39;</span><span class="p">]}</span>
+  <span class="n">p</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'measurement'</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">'item_name'</span><span class="p">],</span> <span class="s1">'time'</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">'time'</span><span class="p">])</span> <span class="o">*</span> <span class="mi">1000000</span><span class="p">,</span>
+       <span class="s1">'tags'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'item'</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">'item_name'</span><span class="p">]},</span>
+       <span class="s1">'fields'</span><span class="p">:</span> <span class="p">{</span><span class="n">value_field</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">'val_num'</span><span class="p">],</span> <span class="n">str_value_field</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">'val_str'</span><span class="p">]}</span>
        <span class="p">}</span>
   <span class="n">write_api</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">bucket</span><span class="o">=</span><span class="n">bucket</span><span class="p">,</span> <span class="n">record</span><span class="o">=</span><span class="n">p</span><span class="p">)</span>
 

@@ -5776,9 +5776,9 @@
 <span class="c1">#  along with SmartHomeNG. If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 <span class="c1">#########################################################################</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">This file implements scenes in SmartHomeNG</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os.path</span>
@@ -5801,15 +5801,15 @@
 
 
 <div class="viewcode-block" id="Scenes"><a class="viewcode-back" href="../../lib/scene.html#lib.scene.Scenes">[Doku]</a><span class="k">class</span><span class="w"> </span><span class="nc">Scenes</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This class loads all scene definitions from /scenes folder and adds the necessary triggers</span>
 <span class="sd">    for the scenes to function.</span>
 
-<span class="sd">    :Note: The scene definitions are stored in /scenes files with the extension .conf but don&#39;t follow the file format for conf-files of smarthome.py!</span>
+<span class="sd">    :Note: The scene definitions are stored in /scenes files with the extension .conf but don't follow the file format for conf-files of smarthome.py!</span>
 
 <span class="sd">    :param smarthome: Main SmartHomeNG object</span>
 <span class="sd">    :type smarthome: object</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">smarthome</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span> <span class="o">=</span> <span class="n">smarthome</span>
@@ -5822,8 +5822,8 @@
             <span class="n">calframe</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getouterframes</span><span class="p">(</span><span class="n">curframe</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
                 <span class="n">translate</span><span class="p">(</span>
-                    <span class="s2">&quot;A second &#39;scenes&#39; object has been created. There should only be ONE instance of class &#39;Scenes&#39;!!! Called from: </span><span class="si">{frame1}</span><span class="s2"> (</span><span class="si">{frame2}</span><span class="s2">)&quot;</span><span class="p">,</span>
-                    <span class="p">{</span><span class="s1">&#39;frame1&#39;</span><span class="p">:</span> <span class="n">calframe</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;frame2&#39;</span><span class="p">:</span> <span class="n">calframe</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]},</span>
+                    <span class="s2">"A second 'scenes' object has been created. There should only be ONE instance of class 'Scenes'!!! Called from: </span><span class="si">{frame1}</span><span class="s2"> (</span><span class="si">{frame2}</span><span class="s2">)"</span><span class="p">,</span>
+                    <span class="p">{</span><span class="s1">'frame1'</span><span class="p">:</span> <span class="n">calframe</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="s1">'frame2'</span><span class="p">:</span> <span class="n">calframe</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]},</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
@@ -5836,31 +5836,31 @@
         <span class="k">return</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_load_scenes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Load defined scenes with learned values from ../scene directory</span>
 
 <span class="sd">        :return:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_scenes</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_learned_values</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_scenes_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_config_dir</span><span class="p">(</span><span class="n">DIR_SCENES</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scenes_dir</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="n">translate</span><span class="p">(</span><span class="s2">&quot;Directory &#39;</span><span class="si">{scenes_dir}</span><span class="s2">&#39; not found. Ignoring scenes.&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;scenes_dir&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scenes_dir</span><span class="p">})</span>
+                <span class="n">translate</span><span class="p">(</span><span class="s2">"Directory '</span><span class="si">{scenes_dir}</span><span class="s2">' not found. Ignoring scenes."</span><span class="p">,</span> <span class="p">{</span><span class="s1">'scenes_dir'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scenes_dir</span><span class="p">})</span>
             <span class="p">)</span>
             <span class="k">return</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_learned_values</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="c1">#   for item in smarthome.return_items():</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">return_items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;scene&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'scene'</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">scene_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scenes_dir</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
 
                 <span class="n">scene_file_yaml</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">yaml_load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scene_file</span> <span class="o">+</span> <span class="n">YAML_FILE</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ignore_notfound</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">scene_file_yaml</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="c1"># Reading yaml file with scene definition</span>
                     <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">scene_file_yaml</span><span class="p">:</span>
-                        <span class="n">actions</span> <span class="o">=</span> <span class="n">scene_file_yaml</span><span class="p">[</span><span class="n">state</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;actions&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                        <span class="n">actions</span> <span class="o">=</span> <span class="n">scene_file_yaml</span><span class="p">[</span><span class="n">state</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'actions'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
                         <span class="k">if</span> <span class="n">actions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                                 <span class="n">actions</span> <span class="o">=</span> <span class="p">[</span><span class="n">actions</span><span class="p">]</span>
@@ -5870,44 +5870,44 @@
                                         <span class="bp">self</span><span class="o">.</span><span class="n">_add_scene_entry</span><span class="p">(</span>
                                             <span class="n">item</span><span class="p">,</span>
                                             <span class="nb">str</span><span class="p">(</span><span class="n">state</span><span class="p">),</span>
-                                            <span class="n">action</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;item&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
-                                            <span class="nb">str</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)),</span>
-                                            <span class="n">action</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;learn&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
-                                            <span class="n">scene_file_yaml</span><span class="p">[</span><span class="n">state</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                                            <span class="n">action</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'item'</span><span class="p">,</span> <span class="s1">''</span><span class="p">),</span>
+                                            <span class="nb">str</span><span class="p">(</span><span class="n">action</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'value'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)),</span>
+                                            <span class="n">action</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'learn'</span><span class="p">,</span> <span class="s1">''</span><span class="p">),</span>
+                                            <span class="n">scene_file_yaml</span><span class="p">[</span><span class="n">state</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">''</span><span class="p">),</span>
                                         <span class="p">)</span>
                                     <span class="k">else</span><span class="p">:</span>
                                         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                                             <span class="n">translate</span><span class="p">(</span>
-                                                <span class="s2">&quot;Scene </span><span class="si">{scene}</span><span class="s2">, state </span><span class="si">{state}</span><span class="s2">: action &#39;</span><span class="si">{action}</span><span class="s2">&#39; is not a dict&quot;</span><span class="p">,</span>
-                                                <span class="p">{</span><span class="s1">&#39;scene&#39;</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span> <span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="n">state</span><span class="p">,</span> <span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="n">action</span><span class="p">},</span>
+                                                <span class="s2">"Scene </span><span class="si">{scene}</span><span class="s2">, state </span><span class="si">{state}</span><span class="s2">: action '</span><span class="si">{action}</span><span class="s2">' is not a dict"</span><span class="p">,</span>
+                                                <span class="p">{</span><span class="s1">'scene'</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span> <span class="s1">'state'</span><span class="p">:</span> <span class="n">state</span><span class="p">,</span> <span class="s1">'action'</span><span class="p">:</span> <span class="n">action</span><span class="p">},</span>
                                             <span class="p">)</span>
                                         <span class="p">)</span>
                             <span class="k">else</span><span class="p">:</span>
                                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                                     <span class="n">translate</span><span class="p">(</span>
-                                        <span class="s1">&#39;Scene </span><span class="si">{scene}</span><span class="s1">, state </span><span class="si">{state}</span><span class="s1">: actions are not a list&#39;</span><span class="p">,</span>
-                                        <span class="p">{</span><span class="s1">&#39;scene&#39;</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span> <span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="n">state</span><span class="p">},</span>
+                                        <span class="s1">'Scene </span><span class="si">{scene}</span><span class="s1">, state </span><span class="si">{state}</span><span class="s1">: actions are not a list'</span><span class="p">,</span>
+                                        <span class="p">{</span><span class="s1">'scene'</span><span class="p">:</span> <span class="n">item</span><span class="p">,</span> <span class="s1">'state'</span><span class="p">:</span> <span class="n">state</span><span class="p">},</span>
                                     <span class="p">)</span>
                                 <span class="p">)</span>
 
                     <span class="bp">self</span><span class="o">.</span><span class="n">_load_learned_values</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># Trying to read conf file with scene definition</span>
-                    <span class="n">scene_conf_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene_file</span> <span class="o">+</span> <span class="s1">&#39;.conf&#39;</span>
+                    <span class="n">scene_conf_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene_file</span> <span class="o">+</span> <span class="s1">'.conf'</span>
                     <span class="k">try</span><span class="p">:</span>
-                        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">scene_conf_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;UTF-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                            <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+                        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">scene_conf_file</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'UTF-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                            <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">' '</span><span class="p">)</span>
                             <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
                                 <span class="k">if</span> <span class="n">row</span> <span class="o">==</span> <span class="p">[]:</span>  <span class="c1"># ignore empty lines</span>
                                     <span class="k">continue</span>
-                                <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;#&#39;</span><span class="p">:</span>  <span class="c1"># ignore comments</span>
+                                <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'#'</span><span class="p">:</span>  <span class="c1"># ignore comments</span>
                                     <span class="k">continue</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">_add_scene_entry</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
                     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                             <span class="n">translate</span><span class="p">(</span>
-                                <span class="s1">&#39;Problem reading scene file </span><span class="si">{file}</span><span class="s1">: No .yaml or .conf file found with this name&#39;</span><span class="p">,</span>
-                                <span class="p">{</span><span class="s1">&#39;file&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene_file</span><span class="p">},</span>
+                                <span class="s1">'Problem reading scene file </span><span class="si">{file}</span><span class="s1">: No .yaml or .conf file found with this name'</span><span class="p">,</span>
+                                <span class="p">{</span><span class="s1">'file'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene_file</span><span class="p">},</span>
                             <span class="p">)</span>
                         <span class="p">)</span>
                         <span class="k">continue</span>
@@ -5916,7 +5916,7 @@
         <span class="k">return</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Evaluate a scene value</span>
 
 <span class="sd">        :param value: value expression to evaluate</span>
@@ -5924,7 +5924,7 @@
 
 <span class="sd">        :return: evaluated value or None</span>
 <span class="sd">        :rtype: type of evaluated expression or None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">sh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span>  <span class="c1"># noqa: F841  # eval setup</span>
         <span class="n">shtime</span> <span class="o">=</span> <span class="n">Shtime</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>  <span class="c1"># noqa: F841  # eval setup</span>
         <span class="n">items</span> <span class="o">=</span> <span class="n">Items</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>  <span class="c1"># noqa: F841  # eval setup</span>
@@ -5935,76 +5935,76 @@
             <span class="n">rvalue</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="s1">&#39; - &#39;</span> <span class="o">+</span> <span class="n">translate</span><span class="p">(</span><span class="s1">&#39;Problem evaluating: </span><span class="si">{value}</span><span class="s1"> - </span><span class="si">{exception}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;exception&#39;</span><span class="p">:</span> <span class="n">e</span><span class="p">})</span>
+                <span class="s1">' - '</span> <span class="o">+</span> <span class="n">translate</span><span class="p">(</span><span class="s1">'Problem evaluating: </span><span class="si">{value}</span><span class="s1"> - </span><span class="si">{exception}</span><span class="s1">'</span><span class="p">,</span> <span class="p">{</span><span class="s1">'value'</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span> <span class="s1">'exception'</span><span class="p">:</span> <span class="n">e</span><span class="p">})</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">rvalue</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_learned_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scene</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">ditem</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">lvalue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_learned_values</span><span class="p">[</span><span class="n">scene</span> <span class="o">+</span> <span class="s1">&#39;#&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;#&#39;</span> <span class="o">+</span> <span class="n">ditem</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">]</span>
+            <span class="n">lvalue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_learned_values</span><span class="p">[</span><span class="n">scene</span> <span class="o">+</span> <span class="s1">'#'</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">+</span> <span class="s1">'#'</span> <span class="o">+</span> <span class="n">ditem</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="s1">&#39; - Return learned value </span><span class="si">{}</span><span class="s1"> for scene/state/ditem </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">lvalue</span><span class="p">,</span> <span class="n">scene</span> <span class="o">+</span> <span class="s1">&#39;#&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;#&#39;</span> <span class="o">+</span> <span class="n">ditem</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span>
+            <span class="s1">' - Return learned value </span><span class="si">{}</span><span class="s1"> for scene/state/ditem </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">lvalue</span><span class="p">,</span> <span class="n">scene</span> <span class="o">+</span> <span class="s1">'#'</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">+</span> <span class="s1">'#'</span> <span class="o">+</span> <span class="n">ditem</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span>
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">lvalue</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_set_learned_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scene</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">ditem</span><span class="p">,</span> <span class="n">lvalue</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_learned_values</span><span class="p">[</span><span class="n">scene</span> <span class="o">+</span> <span class="s1">&#39;#&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;#&#39;</span> <span class="o">+</span> <span class="n">ditem</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">lvalue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_learned_values</span><span class="p">[</span><span class="n">scene</span> <span class="o">+</span> <span class="s1">'#'</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">+</span> <span class="s1">'#'</span> <span class="o">+</span> <span class="n">ditem</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">]</span> <span class="o">=</span> <span class="n">lvalue</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="s1">&#39; - Learned value </span><span class="si">{}</span><span class="s1"> for scene/state/ditem </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">lvalue</span><span class="p">,</span> <span class="n">scene</span> <span class="o">+</span> <span class="s1">&#39;#&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;#&#39;</span> <span class="o">+</span> <span class="n">ditem</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span>
+            <span class="s1">' - Learned value </span><span class="si">{}</span><span class="s1"> for scene/state/ditem </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">lvalue</span><span class="p">,</span> <span class="n">scene</span> <span class="o">+</span> <span class="s1">'#'</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">+</span> <span class="s1">'#'</span> <span class="o">+</span> <span class="n">ditem</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_save_learned_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scene</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Save learned values for the scene to a file to make them persistant</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Saving learned values for scene </span><span class="si">{}</span><span class="s1">:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">scene</span><span class="p">))</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39; -&gt; from dict self._learned_values </span><span class="si">{}</span><span class="s1">:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_learned_values</span><span class="p">))</span>
+<span class="sd">        """</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Saving learned values for scene </span><span class="si">{}</span><span class="s1">:'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">scene</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">' -&gt; from dict self._learned_values </span><span class="si">{}</span><span class="s1">:'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_learned_values</span><span class="p">))</span>
         <span class="n">learned_dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_learned_values</span><span class="p">:</span>
             <span class="n">lvalue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_learned_values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-            <span class="n">kl</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)</span>
+            <span class="n">kl</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'#'</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">kl</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">scene</span><span class="p">:</span>
-                <span class="n">fkey</span> <span class="o">=</span> <span class="n">kl</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;#&#39;</span> <span class="o">+</span> <span class="n">kl</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">fkey</span> <span class="o">=</span> <span class="n">kl</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">'#'</span> <span class="o">+</span> <span class="n">kl</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
                 <span class="n">learned_dict</span><span class="p">[</span><span class="n">fkey</span><span class="p">]</span> <span class="o">=</span> <span class="n">lvalue</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39; - Saving value </span><span class="si">{}</span><span class="s1"> for state/ditem </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lvalue</span><span class="p">,</span> <span class="n">fkey</span><span class="p">))</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39; -&gt; to dict learned_dict </span><span class="si">{}</span><span class="s1">:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">learned_dict</span><span class="p">))</span>
-        <span class="n">scene_learnfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scenes_dir</span><span class="p">,</span> <span class="n">scene</span> <span class="o">+</span> <span class="s1">&#39;_learned&#39;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">' - Saving value </span><span class="si">{}</span><span class="s1"> for state/ditem </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lvalue</span><span class="p">,</span> <span class="n">fkey</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">' -&gt; to dict learned_dict </span><span class="si">{}</span><span class="s1">:'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">learned_dict</span><span class="p">))</span>
+        <span class="n">scene_learnfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scenes_dir</span><span class="p">,</span> <span class="n">scene</span> <span class="o">+</span> <span class="s1">'_learned'</span><span class="p">)</span>
         <span class="n">yaml</span><span class="o">.</span><span class="n">yaml_save</span><span class="p">(</span><span class="n">scene_learnfile</span> <span class="o">+</span> <span class="n">YAML_FILE</span><span class="p">,</span> <span class="n">learned_dict</span><span class="p">)</span>
         <span class="k">return</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_load_learned_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scene</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Load learned values for the scene from a file</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">scene_learnfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scenes_dir</span><span class="p">,</span> <span class="n">scene</span> <span class="o">+</span> <span class="s1">&#39;_learned&#39;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="n">scene_learnfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scenes_dir</span><span class="p">,</span> <span class="n">scene</span> <span class="o">+</span> <span class="s1">'_learned'</span><span class="p">)</span>
         <span class="n">learned_dict</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">yaml_load</span><span class="p">(</span><span class="n">scene_learnfile</span> <span class="o">+</span> <span class="n">YAML_FILE</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ignore_notfound</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Loading learned values for scene </span><span class="si">{}</span><span class="s1"> from file </span><span class="si">{}</span><span class="s1">:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">scene</span><span class="p">,</span> <span class="n">scene_learnfile</span><span class="p">))</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39; -&gt; loaded dict learned_dict </span><span class="si">{}</span><span class="s1">:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">learned_dict</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Loading learned values for scene </span><span class="si">{}</span><span class="s1"> from file </span><span class="si">{}</span><span class="s1">:'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">scene</span><span class="p">,</span> <span class="n">scene_learnfile</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">' -&gt; loaded dict learned_dict </span><span class="si">{}</span><span class="s1">:'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">learned_dict</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">learned_dict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">learned_dict</span> <span class="o">!=</span> <span class="p">{}:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Loading learned values for scene </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">scene</span><span class="p">))</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Loading learned values for scene </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">scene</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">fkey</span> <span class="ow">in</span> <span class="n">learned_dict</span><span class="p">:</span>
-                <span class="n">key</span> <span class="o">=</span> <span class="n">scene</span> <span class="o">+</span> <span class="s1">&#39;#&#39;</span> <span class="o">+</span> <span class="n">fkey</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">scene</span> <span class="o">+</span> <span class="s1">'#'</span> <span class="o">+</span> <span class="n">fkey</span>
                 <span class="n">lvalue</span> <span class="o">=</span> <span class="n">learned_dict</span><span class="p">[</span><span class="n">fkey</span><span class="p">]</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_learned_values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">lvalue</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39; - Loading value </span><span class="si">{}</span><span class="s1"> for state/ditem </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lvalue</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">' - Loading value </span><span class="si">{}</span><span class="s1"> for state/ditem </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lvalue</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39; -&gt; to dict self._learned_values </span><span class="si">{}</span><span class="s1">:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_learned_values</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">' -&gt; to dict self._learned_values </span><span class="si">{}</span><span class="s1">:'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_learned_values</span><span class="p">))</span>
         <span class="k">return</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_trigger_setstate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Trigger: set values for a scene state</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s1">&#39;Triggered scene </span><span class="si">{}</span><span class="s1"> (</span><span class="si">{}</span><span class="s1">) with state </span><span class="si">{}</span><span class="s1"> (</span><span class="si">{}</span><span class="s1">):&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s1">'Triggered scene </span><span class="si">{}</span><span class="s1"> (</span><span class="si">{}</span><span class="s1">) with state </span><span class="si">{}</span><span class="s1"> (</span><span class="si">{}</span><span class="s1">):'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">),</span> <span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_scene_action_name</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="p">)</span>
@@ -6019,21 +6019,21 @@
                 <span class="n">rvalue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">rvalue</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">rvalue</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39; - Item </span><span class="si">{}</span><span class="s1"> set to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ditem</span><span class="p">,</span> <span class="n">rvalue</span><span class="p">))</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">' - Item </span><span class="si">{}</span><span class="s1"> set to </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ditem</span><span class="p">,</span> <span class="n">rvalue</span><span class="p">))</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39; - Item </span><span class="si">{}</span><span class="s1"> set to </span><span class="si">{}</span><span class="s1"> ( from </span><span class="si">{}</span><span class="s1"> )&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ditem</span><span class="p">,</span> <span class="n">rvalue</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">' - Item </span><span class="si">{}</span><span class="s1"> set to </span><span class="si">{}</span><span class="s1"> ( from </span><span class="si">{}</span><span class="s1"> )'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ditem</span><span class="p">,</span> <span class="n">rvalue</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">ditem</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">rvalue</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="s1">&#39;Scene&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+                    <span class="n">ditem</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">rvalue</span><span class="p">,</span> <span class="n">caller</span><span class="o">=</span><span class="s1">'Scene'</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot; - ditem &#39;</span><span class="si">{}</span><span class="s2">&#39;, value &#39;</span><span class="si">{}</span><span class="s2">&#39;, exception </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ditem</span><span class="p">,</span> <span class="n">rvalue</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">" - ditem '</span><span class="si">{}</span><span class="s2">', value '</span><span class="si">{}</span><span class="s2">', exception </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ditem</span><span class="p">,</span> <span class="n">rvalue</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
         <span class="k">return</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_trigger_learnstate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Trigger: learn values for a scene state</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s2">&quot;Triggered &#39;learn&#39; for scene </span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">), state </span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">):&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s2">"Triggered 'learn' for scene </span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">), state </span><span class="si">{}</span><span class="s2"> (</span><span class="si">{}</span><span class="s2">):"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">),</span> <span class="n">state</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_scene_action_name</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="p">)</span>
@@ -6044,9 +6044,9 @@
         <span class="k">return</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">caller</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Trigger a scene</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scenes</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">()</span> <span class="o">&amp;</span> <span class="mi">127</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scenes</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">]:</span>
@@ -6056,7 +6056,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="n">translate</span><span class="p">(</span>
-                        <span class="s2">&quot;Invalid state &#39;</span><span class="si">{state}</span><span class="s2">&#39; for scene </span><span class="si">{scene}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="n">state</span><span class="p">,</span> <span class="s1">&#39;scene&#39;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">}</span>
+                        <span class="s2">"Invalid state '</span><span class="si">{state}</span><span class="s2">' for scene </span><span class="si">{scene}</span><span class="s2">"</span><span class="p">,</span> <span class="p">{</span><span class="s1">'state'</span><span class="p">:</span> <span class="n">state</span><span class="p">,</span> <span class="s1">'scene'</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">}</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
                 <span class="k">return</span>
@@ -6070,12 +6070,12 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="n">translate</span><span class="p">(</span>
-                        <span class="s2">&quot;Invalid state &#39;</span><span class="si">{state}</span><span class="s2">&#39; for scene </span><span class="si">{scene}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="n">state</span><span class="p">,</span> <span class="s1">&#39;scene&#39;</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">}</span>
+                        <span class="s2">"Invalid state '</span><span class="si">{state}</span><span class="s2">' for scene </span><span class="si">{scene}</span><span class="s2">"</span><span class="p">,</span> <span class="p">{</span><span class="s1">'state'</span><span class="p">:</span> <span class="n">state</span><span class="p">,</span> <span class="s1">'scene'</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">}</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_scene_entry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">ditemname</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">learn</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_scene_entry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">ditemname</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">learn</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">''</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Adds a single assignement entry to the loaded scenes</span>
 
 <span class="sd">        :param item: item defing the scene (type: scene)</span>
@@ -6084,23 +6084,23 @@
 <span class="sd">        :type item: item object</span>
 <span class="sd">        :type row: list (with 3 entries)</span>
 <span class="sd">        :type name: str</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="s1">&#39;_add_scene_entry: item = </span><span class="si">{}</span><span class="s1">, state = </span><span class="si">{}</span><span class="s1">, ditemname = </span><span class="si">{}</span><span class="s1">, value = </span><span class="si">{}</span><span class="s1">, learn = </span><span class="si">{}</span><span class="s1">, name = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s1">'_add_scene_entry: item = </span><span class="si">{}</span><span class="s1">, state = </span><span class="si">{}</span><span class="s1">, ditemname = </span><span class="si">{}</span><span class="s1">, value = </span><span class="si">{}</span><span class="s1">, learn = </span><span class="si">{}</span><span class="s1">, name = </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">ditemname</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">learn</span><span class="p">,</span> <span class="n">name</span>
             <span class="p">)</span>
         <span class="p">)</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get_stringwithabsolutepathes</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">&#39;sh.&#39;</span><span class="p">,</span> <span class="s1">&#39;(&#39;</span><span class="p">,</span> <span class="s1">&#39;scene&#39;</span><span class="p">)</span>
-        <span class="c1">#        ditem = self._sh.return_item(item.get_absolutepath(ditemname, attribute=&#39;scene&#39;))</span>
-        <span class="n">ditem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">return_item</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">get_absolutepath</span><span class="p">(</span><span class="n">ditemname</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="s1">&#39;scene&#39;</span><span class="p">))</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">get_stringwithabsolutepathes</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s1">'sh.'</span><span class="p">,</span> <span class="s1">'('</span><span class="p">,</span> <span class="s1">'scene'</span><span class="p">)</span>
+        <span class="c1">#        ditem = self._sh.return_item(item.get_absolutepath(ditemname, attribute='scene'))</span>
+        <span class="n">ditem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">return_item</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">get_absolutepath</span><span class="p">(</span><span class="n">ditemname</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="s1">'scene'</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">learn</span><span class="p">:</span>
             <span class="n">rvalue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">rvalue</span><span class="p">)</span> <span class="o">!=</span> <span class="n">value</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="n">translate</span><span class="p">(</span>
-                        <span class="s1">&#39;_add_scene_entry - &#39;</span> <span class="o">+</span> <span class="s2">&quot;Learn set to &#39;False&#39;, because &#39;</span><span class="si">{rvalue}</span><span class="s2">&#39; != &#39;</span><span class="si">{value}</span><span class="s2">&#39;&quot;</span><span class="p">,</span>
-                        <span class="p">{</span><span class="s1">&#39;rvalue&#39;</span><span class="p">:</span> <span class="n">rvalue</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">value</span><span class="p">},</span>
+                        <span class="s1">'_add_scene_entry - '</span> <span class="o">+</span> <span class="s2">"Learn set to 'False', because '</span><span class="si">{rvalue}</span><span class="s2">' != '</span><span class="si">{value}</span><span class="s2">'"</span><span class="p">,</span>
+                        <span class="p">{</span><span class="s1">'rvalue'</span><span class="p">:</span> <span class="n">rvalue</span><span class="p">,</span> <span class="s1">'value'</span><span class="p">:</span> <span class="n">value</span><span class="p">},</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
                 <span class="n">learn</span> <span class="o">=</span> <span class="kc">False</span>
@@ -6110,8 +6110,8 @@
             <span class="k">if</span> <span class="n">ditem</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="n">translate</span><span class="p">(</span>
-                        <span class="s2">&quot;Could not find item or logic &#39;</span><span class="si">{ditemname}</span><span class="s2">&#39; specified in </span><span class="si">{file}</span><span class="s2">&quot;</span><span class="p">,</span>
-                        <span class="p">{</span><span class="s1">&#39;ditemname&#39;</span><span class="p">:</span> <span class="n">ditemname</span><span class="p">,</span> <span class="s1">&#39;file&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene_file</span><span class="p">},</span>
+                        <span class="s2">"Could not find item or logic '</span><span class="si">{ditemname}</span><span class="s2">' specified in </span><span class="si">{file}</span><span class="s2">"</span><span class="p">,</span>
+                        <span class="p">{</span><span class="s1">'ditemname'</span><span class="p">:</span> <span class="n">ditemname</span><span class="p">,</span> <span class="s1">'file'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene_file</span><span class="p">},</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
                 <span class="k">return</span>
@@ -6131,7 +6131,7 @@
 
 <div class="viewcode-block" id="Scenes.get_instance"><a class="viewcode-back" href="../../lib/scene.html#lib.scene.Scenes.get_instance">[Doku]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_instance</span><span class="p">():</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the instance of the Scenes class, to be used to access the scene-api</span>
 
 <span class="sd">        Use it the following way to access the api:</span>
@@ -6148,19 +6148,19 @@
 
 <span class="sd">        :return: scenes instance</span>
 <span class="sd">        :rtype: object of None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">_scenes_instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_scenes_instance</span></div>
 
 <div class="viewcode-block" id="Scenes.get_loaded_scenes"><a class="viewcode-back" href="../../lib/scene.html#lib.scene.Scenes.get_loaded_scenes">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_loaded_scenes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns a list with the names of all scenes that are currently loaded</span>
 
 <span class="sd">        :return: list of scene names</span>
 <span class="sd">        :rtype: list</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">scene_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">scene</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scenes</span><span class="p">:</span>
@@ -6168,12 +6168,12 @@
         <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">scene_list</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Scenes.get_scene_actions"><a class="viewcode-back" href="../../lib/scene.html#lib.scene.Scenes.get_scene_actions">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_scene_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns a list with the the defined actions for a scene</span>
 
 <span class="sd">        :return: list of scene values</span>
 <span class="sd">        :rtype: list</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">value_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scenes</span><span class="p">[</span><span class="n">name</span><span class="p">]:</span>
@@ -6185,28 +6185,28 @@
         <span class="k">return</span> <span class="n">value_list2</span></div>
 
 <div class="viewcode-block" id="Scenes.get_scene_action_name"><a class="viewcode-back" href="../../lib/scene.html#lib.scene.Scenes.get_scene_action_name">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_scene_action_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenename</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the name of a scene-action</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">action</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scenes</span><span class="p">[</span><span class="n">scenename</span><span class="p">][</span><span class="n">action</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="n">translate</span><span class="p">(</span>
-                    <span class="s1">&#39;get_scene_action_name: &#39;</span> <span class="o">+</span> <span class="s2">&quot;unable to get self._scenes[&#39;</span><span class="si">{scenename}</span><span class="s2">&#39;][&#39;</span><span class="si">{action}</span><span class="s2">&#39;][0][2]: </span><span class="si">{e}</span><span class="s2">&quot;</span><span class="p">,</span>
-                    <span class="p">{</span><span class="s1">&#39;scenename&#39;</span><span class="p">:</span> <span class="n">scenename</span><span class="p">,</span> <span class="s1">&#39;action&#39;</span><span class="p">:</span> <span class="n">action</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">:</span> <span class="n">e</span><span class="p">},</span>
+                    <span class="s1">'get_scene_action_name: '</span> <span class="o">+</span> <span class="s2">"unable to get self._scenes['</span><span class="si">{scenename}</span><span class="s2">']['</span><span class="si">{action}</span><span class="s2">'][0][2]: </span><span class="si">{e}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="p">{</span><span class="s1">'scenename'</span><span class="p">:</span> <span class="n">scenename</span><span class="p">,</span> <span class="s1">'action'</span><span class="p">:</span> <span class="n">action</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">:</span> <span class="n">e</span><span class="p">},</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="s1">&#39;&#39;</span></div>
+            <span class="k">return</span> <span class="s1">''</span></div>
 
 <div class="viewcode-block" id="Scenes.return_scene_value_actions"><a class="viewcode-back" href="../../lib/scene.html#lib.scene.Scenes.return_scene_value_actions">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">return_scene_value_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns a list with the the defined actions for state of a scene</span>
 
 <span class="sd">        :return: list of value actions (destination item name, value to set)</span>
 <span class="sd">        :rtype: list</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">action_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scenes</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">state</span><span class="p">]:</span>
@@ -6218,14 +6218,14 @@
         <span class="k">return</span> <span class="n">action_list</span></div>
 
 <div class="viewcode-block" id="Scenes.reload_scenes"><a class="viewcode-back" href="../../lib/scene.html#lib.scene.Scenes.reload_scenes">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reload_scenes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Reload defined scenes with learned values from ../scene directory</span>
 
 <span class="sd">        :return:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_scenes</span><span class="p">()</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="n">translate</span><span class="p">(</span><span class="s1">&#39;Reloaded all scenes&#39;</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="n">translate</span><span class="p">(</span><span class="s1">'Reloaded all scenes'</span><span class="p">))</span>
         <span class="k">return</span> <span class="kc">True</span></div></div>
 </pre></div>
 

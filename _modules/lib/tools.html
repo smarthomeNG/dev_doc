@@ -5777,12 +5777,12 @@
 <span class="c1"># Anpassungen 2016 Michael Würtenberger</span>
 <span class="c1"># Error Item für Verbindungsfehler bei fetch_url</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">This library contains the Tools-class from the original smarthome.py</span>
 
 <span class="sd">:Note: These functions **should be concidered deprecated**. New helper-functions are going to be implemented in the utils.lib.</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">base64</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
@@ -5801,24 +5801,24 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_start</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Tools.ping"><a class="viewcode-back" href="../../lib/tools.html#lib.tools.Tools.ping">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">ping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;nt&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">'nt'</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">retcode</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-                    <span class="p">[</span><span class="s1">&#39;ping&#39;</span><span class="p">,</span> <span class="s1">&#39;-W&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;-c&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">host</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span>
+                    <span class="p">[</span><span class="s1">'ping'</span><span class="p">,</span> <span class="s1">'-W'</span><span class="p">,</span> <span class="s1">'1'</span><span class="p">,</span> <span class="s1">'-c'</span><span class="p">,</span> <span class="s1">'1'</span><span class="p">,</span> <span class="n">host</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span>
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="n">retcode</span> <span class="o">==</span> <span class="mi">0</span>
             <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">ping_response</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s1">&#39;ping&#39;</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="s1">&#39;-n&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+                <span class="n">ping_response</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s1">'ping'</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="s1">'-n'</span><span class="p">,</span> <span class="s1">'1'</span><span class="p">],</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">ping_response</span><span class="o">.</span><span class="n">returncode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="c1"># need to inspect the returned output since it could be that</span>
                     <span class="c1"># **destination is unreachable** anyway which does not generate an error code</span>
                     <span class="c1"># as the result is a bytearray which codepage might vary between cp850, cp1252 and utf8,</span>
                     <span class="c1"># it is a quick hack to just look if ms is inside this string.</span>
                     <span class="c1"># if not, it is sure that destination could not be reached</span>
-                    <span class="k">if</span> <span class="sa">b</span><span class="s1">&#39;ms&#39;</span> <span class="ow">in</span> <span class="n">ping_response</span><span class="o">.</span><span class="n">stdout</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="sa">b</span><span class="s1">'ms'</span> <span class="ow">in</span> <span class="n">ping_response</span><span class="o">.</span><span class="n">stdout</span><span class="p">:</span>
                         <span class="k">return</span> <span class="kc">True</span>
                     <span class="k">return</span> <span class="kc">False</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -5827,7 +5827,7 @@
                 <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Tools.dewpoint"><a class="viewcode-back" href="../../lib/tools.html#lib.tools.Tools.dewpoint">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">dewpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">rf</span><span class="p">):</span>
-        <span class="n">log</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="n">rf</span> <span class="o">+</span> <span class="mf">0.01</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>  <span class="c1"># + 0.01 to &#39;cast&#39; float</span>
+        <span class="n">log</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="n">rf</span> <span class="o">+</span> <span class="mf">0.01</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>  <span class="c1"># + 0.01 to 'cast' float</span>
         <span class="k">return</span> <span class="nb">round</span><span class="p">((</span><span class="mf">241.2</span> <span class="o">*</span> <span class="n">log</span> <span class="o">+</span> <span class="mf">4222.03716</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="p">(</span><span class="mf">241.2</span> <span class="o">+</span> <span class="n">t</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mf">17.5043</span> <span class="o">-</span> <span class="n">log</span> <span class="o">-</span> <span class="mf">17.5043</span> <span class="o">*</span> <span class="n">t</span> <span class="o">/</span> <span class="p">(</span><span class="mf">241.2</span> <span class="o">+</span> <span class="n">t</span><span class="p">)),</span> <span class="mi">2</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Tools.dt2js"><a class="viewcode-back" href="../../lib/tools.html#lib.tools.Tools.dt2js">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">dt2js</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
@@ -5839,38 +5839,38 @@
         <span class="k">return</span> <span class="n">dt</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Tools.fetch_url"><a class="viewcode-back" href="../../lib/tools.html#lib.tools.Tools.fetch_url">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">fetch_url</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">warn_no_connect</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">errorItem</span><span class="o">=</span><span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">warn_no_connect</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">'GET'</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">errorItem</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
-        <span class="n">connErrors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Host is down&#39;</span><span class="p">,</span> <span class="s1">&#39;timed out&#39;</span><span class="p">,</span> <span class="s1">&#39;[Errno 113] No route to host&#39;</span><span class="p">]</span>
-        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Accept&#39;</span><span class="p">:</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">}</span>
+        <span class="n">connErrors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Host is down'</span><span class="p">,</span> <span class="s1">'timed out'</span><span class="p">,</span> <span class="s1">'[Errno 113] No route to host'</span><span class="p">]</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'Accept'</span><span class="p">:</span> <span class="s1">'text/plain'</span><span class="p">}</span>
         <span class="n">plain</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">if</span> <span class="n">url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;https&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'https'</span><span class="p">):</span>
             <span class="n">plain</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">lurl</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+        <span class="n">lurl</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'/'</span><span class="p">)</span>
         <span class="n">host</span> <span class="o">=</span> <span class="n">lurl</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-        <span class="n">purl</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lurl</span><span class="p">[</span><span class="mi">3</span><span class="p">:])</span>
+        <span class="n">purl</span> <span class="o">=</span> <span class="s1">'/'</span> <span class="o">+</span> <span class="s1">'/'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lurl</span><span class="p">[</span><span class="mi">3</span><span class="p">:])</span>
         <span class="k">if</span> <span class="n">plain</span><span class="p">:</span>
             <span class="n">conn</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">HTTPConnection</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">conn</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">HTTPSConnection</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">username</span> <span class="ow">and</span> <span class="n">password</span><span class="p">:</span>
-            <span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Authorization&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Basic &#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="o">+</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">((</span><span class="n">username</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="n">password</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+            <span class="n">headers</span><span class="p">[</span><span class="s1">'Authorization'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'Basic '</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="o">+</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">((</span><span class="n">username</span> <span class="o">+</span> <span class="s1">':'</span> <span class="o">+</span> <span class="n">password</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">conn</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">purl</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">format</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="ow">in</span> <span class="n">connErrors</span><span class="p">:</span>
                 <span class="c1"># diese fehler bekommen einen status, der in der visu oder sonst genutzt werden kann</span>
                 <span class="k">if</span> <span class="n">errorItem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">errorItem</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;_fetch_url&#39;</span><span class="p">)</span>
+                    <span class="n">errorItem</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="s1">'_fetch_url'</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">warn_no_connect</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Problem fetching </span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'Problem fetching </span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
             <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="n">resp</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">getresponse</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
             <span class="n">content</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Problem fetching </span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1"> </span><span class="si">{2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">reason</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'Problem fetching </span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1"> </span><span class="si">{2}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">reason</span><span class="p">))</span>
             <span class="n">content</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">content</span></div>
@@ -5885,7 +5885,7 @@
         <span class="k">return</span> <span class="n">mix</span> <span class="o">*</span> <span class="n">rhov</span> <span class="o">*</span> <span class="mi">1000</span></div>
 
 <div class="viewcode-block" id="Tools.abs2rel"><a class="viewcode-back" href="../../lib/tools.html#lib.tools.Tools.abs2rel">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">abs2rel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">ah</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the relative humidity from the absolute humidity (g/cm3) and temperature (Celsius)</span>
 
 <span class="sd">        :param t: temperature in celsius</span>
@@ -5895,7 +5895,7 @@
 
 <span class="sd">        :return: val = relative humidity (in percent)</span>
 <span class="sd">        :rtype: dict</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">T</span> <span class="o">=</span> <span class="n">t</span> <span class="o">+</span> <span class="mf">273.15</span>
         <span class="n">ah</span> <span class="o">=</span> <span class="n">ah</span> <span class="o">/</span> <span class="mi">1000</span>
         <span class="n">sat_p</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">77.3450</span> <span class="o">+</span> <span class="mf">0.0057</span> <span class="o">*</span> <span class="n">T</span> <span class="o">-</span> <span class="mi">7235</span> <span class="o">/</span> <span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="mf">8.2</span><span class="p">)</span>

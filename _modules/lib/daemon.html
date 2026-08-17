@@ -5775,9 +5775,9 @@
 <span class="c1">#  along with SmartHomeNG.py. If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 <span class="c1">#########################################################################</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">This file contains the functions needed to run SmartHomeNG as a daemon</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -5789,35 +5789,35 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="daemonize"><a class="viewcode-back" href="../../lib/daemon.html#lib.daemon.daemonize">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">daemonize</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="n">stdin</span><span class="o">=</span><span class="s1">&#39;/dev/null&#39;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="s1">&#39;/dev/null&#39;</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="daemonize"><a class="viewcode-back" href="../../lib/daemon.html#lib.daemon.daemonize">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">daemonize</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="n">stdin</span><span class="o">=</span><span class="s1">'/dev/null'</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="s1">'/dev/null'</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This method daemonizes the sh.py process and redirects standard file descriptors.</span>
 
 <span class="sd">    :param pidfile: Path to pidfile</span>
-<span class="sd">    :param stdin: Path to new stdin, default value is &quot;/dev/null&quot;</span>
-<span class="sd">    :param stdout: Path to new stdout, default value is &quot;/dev/null&quot;</span>
+<span class="sd">    :param stdin: Path to new stdin, default value is "/dev/null"</span>
+<span class="sd">    :param stdout: Path to new stdout, default value is "/dev/null"</span>
 <span class="sd">    :param stderr: Path to new stderr, default value is None, but if stderr is None it is mapped to stdout</span>
 <span class="sd">    :type pidfile: string</span>
 <span class="sd">    :type stdin: string</span>
 <span class="sd">    :type stdout: string</span>
 <span class="sd">    :type stderr: string</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;nt&#39;</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'nt'</span><span class="p">:</span>
         <span class="k">return</span>
 
     <span class="c1"># use stdout file if stderr is none</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">stderr</span><span class="p">:</span>
         <span class="n">stderr</span> <span class="o">=</span> <span class="n">stdout</span>
 
-    <span class="c1"># do the UNIX double-fork magic, see Stevens&#39; &quot;Advanced</span>
-    <span class="c1"># Programming in the UNIX Environment&quot; for details (ISBN 0201563177)</span>
+    <span class="c1"># do the UNIX double-fork magic, see Stevens' "Advanced</span>
+    <span class="c1"># Programming in the UNIX Environment" for details (ISBN 0201563177)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">pid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fork</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">pid</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="c1"># exit first parent</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;fork #1 failed: </span><span class="si">%d</span><span class="s1"> (</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">errno</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">strerror</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'fork #1 failed: </span><span class="si">%d</span><span class="s1"> (</span><span class="si">%s</span><span class="s1">)'</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">errno</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">strerror</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="c1"># decouple from parent environment</span>
@@ -5829,19 +5829,19 @@
         <span class="n">pid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fork</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">pid</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="c1"># exit from second parent, print eventual PID before</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Daemon PID </span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">pid</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">'Daemon PID </span><span class="si">%d</span><span class="s1">'</span> <span class="o">%</span> <span class="n">pid</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">write_pidfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">(),</span> <span class="n">pidfile</span><span class="p">)</span>
 
     <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;fork #2 failed: </span><span class="si">%d</span><span class="s1"> (</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">errno</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">strerror</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'fork #2 failed: </span><span class="si">%d</span><span class="s1"> (</span><span class="si">%s</span><span class="s1">)'</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">errno</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">strerror</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="c1"># Redirect standard file descriptors.</span>
-    <span class="n">si</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">stdin</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
-    <span class="n">so</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="s1">&#39;a+&#39;</span><span class="p">)</span>
-    <span class="n">se</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s1">&#39;a+&#39;</span><span class="p">)</span>
+    <span class="n">si</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">stdin</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span>
+    <span class="n">so</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="s1">'a+'</span><span class="p">)</span>
+    <span class="n">se</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s1">'a+'</span><span class="p">)</span>
     <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">fileno</span><span class="p">())</span>
     <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">fileno</span><span class="p">())</span>
     <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">fileno</span><span class="p">())</span>
@@ -5851,50 +5851,50 @@
 
 
 <div class="viewcode-block" id="remove_pidfile"><a class="viewcode-back" href="../../lib/daemon.html#lib.daemon.remove_pidfile">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">remove_pidfile</span><span class="p">(</span><span class="n">pidfile</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This method removes the pidfile.</span>
 
 <span class="sd">    :param pidfile: Name of the pidfile to write to</span>
 <span class="sd">    :type pidfile: str</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">pidfile</span><span class="p">):</span>
         <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">pidfile</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="write_pidfile"><a class="viewcode-back" href="../../lib/daemon.html#lib.daemon.write_pidfile">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">write_pidfile</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">pidfile</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This method writes the PID to the pidfile and locks it while the process is running.</span>
 
 <span class="sd">    :param pid: PID of SmartHomeNG</span>
 <span class="sd">    :param pidfile: Name of the pidfile to write to</span>
 <span class="sd">    :type pid: int</span>
 <span class="sd">    :type pidfile: str</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;nt&#39;</span><span class="p">:</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'nt'</span><span class="p">:</span>
         <span class="k">return</span>
 
     <span class="c1"># make dirs if not already present, e.g. in smarthome -d</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">pidfile</span><span class="p">)):</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">pidfile</span><span class="p">))</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="s1">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
-        <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">pid</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="s1">'w+'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+        <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'</span><span class="si">%s</span><span class="s1">'</span> <span class="o">%</span> <span class="n">pid</span><span class="p">)</span>
 
     <span class="k">global</span> <span class="n">_pidfile_handle</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">_pidfile_handle</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
-        <span class="c1"># print(f&quot;_pidfile_handle = &#39;{_pidfile_handle}&#39;&quot;)</span>
+        <span class="n">_pidfile_handle</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span>
+        <span class="c1"># print(f"_pidfile_handle = '{_pidfile_handle}'")</span>
         <span class="c1"># LOCK_EX - acquire an exclusive lock</span>
         <span class="c1"># LOCK_NB - non blocking</span>
         <span class="n">portalocker</span><span class="o">.</span><span class="n">lock</span><span class="p">(</span><span class="n">_pidfile_handle</span><span class="p">,</span> <span class="n">portalocker</span><span class="o">.</span><span class="n">LOCK_EX</span> <span class="o">|</span> <span class="n">portalocker</span><span class="o">.</span><span class="n">LOCK_NB</span><span class="p">)</span>
-    <span class="c1"># don&#39;t close _pidfile_handle or lock is gone!!!</span>
+    <span class="c1"># don't close _pidfile_handle or lock is gone!!!</span>
     <span class="k">except</span> <span class="n">portalocker</span><span class="o">.</span><span class="n">AlreadyLocked</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Could not lock pid file: </span><span class="si">%d</span><span class="s1"> (</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">errno</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">strerror</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'Could not lock pid file: </span><span class="si">%d</span><span class="s1"> (</span><span class="si">%s</span><span class="s1">)'</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">errno</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">strerror</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="read_pidfile"><a class="viewcode-back" href="../../lib/daemon.html#lib.daemon.read_pidfile">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">read_pidfile</span><span class="p">(</span><span class="n">pidfile</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This method reads the pidfile and returns the PID.</span>
 
 <span class="sd">    :param pidfile: Name of the pidfile to check</span>
@@ -5902,23 +5902,23 @@
 
 <span class="sd">    :return: PID of SmartHomeNG or 0 if it is not running</span>
 <span class="sd">    :rtype: int</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">pidfile</span><span class="p">):</span>
-            <span class="n">fd</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+            <span class="n">fd</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span>
             <span class="n">line</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
             <span class="n">pid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">pid</span>
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="s1">&#39;PID could not be read, maybe a false write or a corrupt filesystem? Please check the file system ASAP!&#39;</span>
+            <span class="s1">'PID could not be read, maybe a false write or a corrupt filesystem? Please check the file system ASAP!'</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="mi">0</span></div>
 
 
 <div class="viewcode-block" id="check_sh_is_running"><a class="viewcode-back" href="../../lib/daemon.html#lib.daemon.check_sh_is_running">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">check_sh_is_running</span><span class="p">(</span><span class="n">pidfile</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This method checks whether another smarthome process process is already running.</span>
 
 <span class="sd">    :param pidfile: Name of the pidfile to check</span>
@@ -5926,19 +5926,19 @@
 
 <span class="sd">    :return: True: if SmartHomeNG is running, False: if SmartHome is not running</span>
 <span class="sd">    :rtype: bool</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">pid</span> <span class="o">=</span> <span class="n">read_pidfile</span><span class="p">(</span><span class="n">pidfile</span><span class="p">)</span>
-    <span class="c1"># print(&quot;daemon.check_sh_is_running: pidfile={}, pid={}, psutil.pid_exists(pid)={}&quot;.format(pidfile, pid, psutil.pid_exists(pid)))</span>
+    <span class="c1"># print("daemon.check_sh_is_running: pidfile={}, pid={}, psutil.pid_exists(pid)={}".format(pidfile, pid, psutil.pid_exists(pid)))</span>
     <span class="n">isRunning</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="n">pid</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">psutil</span><span class="o">.</span><span class="n">pid_exists</span><span class="p">(</span><span class="n">pid</span><span class="p">):</span>
-        <span class="c1"># print(&quot;daemon.check_sh_is_running: pid={}, psutil.pid_exists(pid)={}&quot;.format(pid, psutil.pid_exists(pid)))</span>
+        <span class="c1"># print("daemon.check_sh_is_running: pid={}, psutil.pid_exists(pid)={}".format(pid, psutil.pid_exists(pid)))</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+            <span class="n">fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span>
             <span class="c1"># LOCK_EX - acquire an exclusive lock</span>
             <span class="c1"># LOCK_NB - non blocking</span>
             <span class="n">portalocker</span><span class="o">.</span><span class="n">lock</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="n">portalocker</span><span class="o">.</span><span class="n">LOCK_EX</span> <span class="o">|</span> <span class="n">portalocker</span><span class="o">.</span><span class="n">LOCK_NB</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;daemon.check_sh_is_running: portalocker.lock erfolgreich&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">'daemon.check_sh_is_running: portalocker.lock erfolgreich'</span><span class="p">)</span>
             <span class="c1"># pidfile not locked, so sh is terminated</span>
         <span class="k">except</span> <span class="n">portalocker</span><span class="o">.</span><span class="n">LockException</span><span class="p">:</span>
             <span class="n">isRunning</span> <span class="o">=</span> <span class="kc">True</span>
@@ -5949,23 +5949,23 @@
 
 
 <div class="viewcode-block" id="kill"><a class="viewcode-back" href="../../lib/daemon.html#lib.daemon.kill">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">kill</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="n">waittime</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">pid0_warning</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    This method kills the process identified by pidfile.</span>
 
 <span class="sd">    :param pidfile: Name of the pidfile identifying the process to kill</span>
 <span class="sd">    :param waittime: Number of seconds to wait before killing the process</span>
 <span class="sd">    :type pidfile: str</span>
 <span class="sd">    :type waittime: int</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">pid</span> <span class="o">=</span> <span class="n">read_pidfile</span><span class="p">(</span><span class="n">pidfile</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">pid</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">pid0_warning</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-            <span class="s1">&#39;SmartHomeNG cannot run with a process ID of 0, probably no instance of SmartHomeNG running otherwise kill SmartHomeNG manually&#39;</span>
+            <span class="s1">'SmartHomeNG cannot run with a process ID of 0, probably no instance of SmartHomeNG running otherwise kill SmartHomeNG manually'</span>
         <span class="p">)</span>
         <span class="k">return</span>
     <span class="k">if</span> <span class="n">psutil</span><span class="o">.</span><span class="n">pid_exists</span><span class="p">(</span><span class="n">pid</span><span class="p">):</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Stopping SmartHomeNG, please wait...&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'Stopping SmartHomeNG, please wait...'</span><span class="p">)</span>
         <span class="n">p</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">p</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
@@ -5974,14 +5974,14 @@
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="k">pass</span>
             <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_running</span><span class="p">():</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Trying to terminate SmartHomeNG timed out, killing process&#39;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'Trying to terminate SmartHomeNG timed out, killing process'</span><span class="p">)</span>
                 <span class="n">p</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">p</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                     <span class="k">pass</span>
     <span class="k">elif</span> <span class="n">pid</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No instance of SmartHomeNG running&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'No instance of SmartHomeNG running'</span><span class="p">)</span>
     <span class="k">return</span></div>
 </pre></div>
 

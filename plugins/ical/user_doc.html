@@ -5801,37 +5801,37 @@
 <span class="c1"># To check a calendar file use one of the following three options:</span>
     <span class="c1"># a) Local file</span>
     <span class="nb">dir</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">get_basedir</span><span class="p">()</span>
-<span class="n">calendarfile</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/var/ical/holidays.ics&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
+<span class="n">calendarfile</span> <span class="o">=</span> <span class="s1">'</span><span class="si">{}</span><span class="s1">/var/ical/holidays.ics'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
 <span class="n">holidays</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">ical</span><span class="p">(</span><span class="n">calendarfile</span><span class="p">)</span>
 
 <span class="c1"># b) Reference a calendar defined in the etc/plugin.yaml. Query tomorrow</span>
     <span class="c1"># The second found entry for an event should be considered.</span>
-    <span class="n">holidays</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">ical</span><span class="p">(</span><span class="s1">&#39;holidays&#39;</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">prio</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">holidays</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">ical</span><span class="p">(</span><span class="s1">'holidays'</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">prio</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
 <span class="c1"># c) http(s) file, disabled https verification.</span>
-    <span class="n">holidays</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">ical</span><span class="p">(</span><span class="s1">&#39;https://cal.server/holidays.ics&#39;</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="n">false</span><span class="p">)</span>
+    <span class="n">holidays</span> <span class="o">=</span> <span class="n">sh</span><span class="o">.</span><span class="n">ical</span><span class="p">(</span><span class="s1">'https://cal.server/holidays.ics'</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="n">false</span><span class="p">)</span>
 
 <span class="c1"># Test if there is an entry for today or not.</span>
     <span class="k">if</span> <span class="n">today</span> <span class="ow">in</span> <span class="n">holidays</span><span class="p">:</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;There is a calendar entry for today.&#39;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'There is a calendar entry for today.'</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No entry for today.&#39;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'No entry for today.'</span><span class="p">)</span>
 
 <span class="c1"># list all events of online calendar using given or default delta and offset</span>
     <span class="k">for</span> <span class="n">day</span> <span class="ow">in</span> <span class="n">holidays</span><span class="p">:</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Date: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">day</span><span class="p">))</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Date: </span><span class="si">{0}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">day</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">holidays</span><span class="p">[</span><span class="n">day</span><span class="p">]:</span>
         <span class="c1">#The folloging code extracts the start time in python datetime format, already converted into the local time zone configured for smarthomeNG.</span>
-        <span class="n">start</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s1">&#39;Start&#39;</span><span class="p">]</span>
-        <span class="n">summary</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s1">&#39;Summary&#39;</span><span class="p">]</span>
-        <span class="n">cal_class</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s1">&#39;Class&#39;</span><span class="p">]</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Time: </span><span class="si">{0}</span><span class="s2"> </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">summary</span><span class="p">))</span>
-        <span class="k">if</span> <span class="s1">&#39;testword&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;calendar entry with testword found&#39;</span><span class="p">)</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s1">'Start'</span><span class="p">]</span>
+        <span class="n">summary</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s1">'Summary'</span><span class="p">]</span>
+        <span class="n">cal_class</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s1">'Class'</span><span class="p">]</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Time: </span><span class="si">{0}</span><span class="s2"> </span><span class="si">{1}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">summary</span><span class="p">))</span>
+        <span class="k">if</span> <span class="s1">'testword'</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'calendar entry with testword found'</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">start</span><span class="o">.</span><span class="n">date</span><span class="p">()</span> <span class="o">==</span> <span class="n">tomorrow</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Testword calendar entry starts tommorrow&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s1">&#39;private&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">cal_class</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Private calendar entry found.&#39;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Testword calendar entry starts tommorrow'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">'private'</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">cal_class</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Private calendar entry found.'</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

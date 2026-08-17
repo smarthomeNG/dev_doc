@@ -6100,14 +6100,14 @@ frontend (a separate repository). The full endpoint-by-endpoint reference — ev
 method, query/body params, and auth requirement — lives in
 [openapi.yaml](openapi.yaml); this section is a grouped overview, reconstructed 2026-07-20
 from the actual handler code in `api_*.py` and cross-checked against every call site in
-shngadmin. Where this file and `openapi.yaml` disagree, trust `openapi.yaml` — it&#39;s the
+shngadmin. Where this file and `openapi.yaml` disagree, trust `openapi.yaml` — it's the
 more detailed source.
 
 **`openapi.yaml` is generated, not hand-edited** — same convention as `requirements/*.txt`
 (see `lib/shpypi.py`). Its actual source of truth is the `ApiDoc`/`ApiParam` metadata
-attached directly to each route&#39;s handler method in `api_*.py` (see `rest.py` for the
+attached directly to each route's handler method in `api_*.py` (see `rest.py` for the
 type definitions) — e.g. `read.api_doc = [ApiDoc(...)]` sitting right next to that same
-method&#39;s existing `read.expose_resource = True` line. This replaced a hand-maintained
+method's existing `read.expose_resource = True` line. This replaced a hand-maintained
 `api.raml` that went stale because nothing forced it to change alongside the code; putting
 the metadata in the same few lines as the route it documents is the actual fix, not just a
 different file format. After changing a route (or its `ApiDoc`), regenerate with:
@@ -6116,8 +6116,8 @@ different file format. After changing a route (or its `ApiDoc`), regenerate with
 python tools/build_openapi.py
 ```
 
-Note: `/admin/` (without `/api`) is *not* part of this API — it&#39;s the suburl the built
-Angular frontend&#39;s static files are served from. An older, unauthenticated set of
+Note: `/admin/` (without `/api`) is *not* part of this API — it's the suburl the built
+Angular frontend's static files are served from. An older, unauthenticated set of
 JSON/HTML endpoints used to live there before shngadmin migrated to this REST API; they
 have since been removed (see the `WebInterface` class docstring in `__init__.py`).
 
@@ -6144,18 +6144,18 @@ header.
 - `GET /api/items/attributes` — core item-attribute catalog.
 - `GET /api/items/structs/` — item struct templates (`etc/struct.yaml`).
 - `GET /api/items/{itemPath}` — full detail for one item.
-- `PUT /api/items/{itemPath}` — live-set an item&#39;s value.
+- `PUT /api/items/{itemPath}` — live-set an item's value.
 - `POST /api/items/{itemPath}` — create a new item.
-- `PATCH /api/items/{itemPath}` — replace an item&#39;s config (full replace, not a partial patch despite the verb).
+- `PATCH /api/items/{itemPath}` — replace an item's config (full replace, not a partial patch despite the verb).
 - `DELETE /api/items/{itemPath}?persist=&amp;recursive=` — delete an item.
 - `POST /api/items/{itemPath}/rename` — rename or move an item (same endpoint for both).
 - `POST /api/items/{itemPath}/copy` — copy an item, subtree included by default.
 - `GET /api/items/{itemPath}/references` — what references this item (pre-delete check).
-- `POST /api/items/{itemPath}/remove_references` — strip other items&#39;/plugins&#39; references to this item.
+- `POST /api/items/{itemPath}/remove_references` — strip other items'/plugins' references to this item.
 
 ### PLUGINS API — read-only plugin discovery/info
 
-- `GET /api/plugins/` — **deactivated 2026-07-20** (now 404s). Was an installed-plugin-name → type map, a strict subset of `GET /api/plugins/installed/`, which shngadmin already fetches. Being test-run as removed — see `api_plugins.py`&#39;s `PluginsController.read`.
+- `GET /api/plugins/` — **deactivated 2026-07-20** (now 404s). Was an installed-plugin-name → type map, a strict subset of `GET /api/plugins/installed/`, which shngadmin already fetches. Being test-run as removed — see `api_plugins.py`'s `PluginsController.read`.
 - `GET /api/plugins/installed/` — full metadata for every plugin in the `plugins/` directory.
 - `GET /api/plugins/config/` — configuration of all currently configured plugins.
 - `GET /api/plugins/info/` — plugin metadata for the plugin-list page.
@@ -6164,7 +6164,7 @@ header.
 
 ### PLUGIN API — single-plugin config CRUD and lifecycle control
 
-- `PUT /api/plugin/{pluginSection}/` — update one plugin&#39;s config section.
+- `PUT /api/plugin/{pluginSection}/` — update one plugin's config section.
 - `POST /api/plugin/{pluginSection}/` — add a new plugin config section.
 - `DELETE /api/plugin/{pluginSection}/` — delete a plugin config section.
 - `PUT /api/plugin/{pluginConfigName}?action={start|stop|load|unload|reload}[&amp;filename=]` — lifecycle/state control.
@@ -6172,9 +6172,9 @@ header.
 ### LOGICS API — logic list, detail, lifecycle, groups, parameters
 
 - `GET /api/logics/[?infotype=groups]` — flat list, or the logic-group tree.
-- `GET /api/logics/{logicName}[?infotype=status]` — one logic&#39;s detail, or its runtime status.
-- `PUT /api/logics/{logicName}?action={trigger|enable|disable|load|unload|reload|delete|create|rename}[&amp;filename=][&amp;newfilename=]` — lifecycle/state actions and rename. (`delete_with_code` is a backend-only variant, also deletes the logic&#39;s `.py` file — not currently called by shngadmin.)
-- `PUT /api/logics/{logicName}?action=saveparameters` — save the logic&#39;s parameter section.
+- `GET /api/logics/{logicName}[?infotype=status]` — one logic's detail, or its runtime status.
+- `PUT /api/logics/{logicName}?action={trigger|enable|disable|load|unload|reload|delete|create|rename}[&amp;filename=][&amp;newfilename=]` — lifecycle/state actions and rename. (`delete_with_code` is a backend-only variant, also deletes the logic's `.py` file — not currently called by shngadmin.)
+- `PUT /api/logics/{logicName}?action=saveparameters` — save the logic's parameter section.
 - `PUT /api/logics/{groupName}?action=savegroup` — save a logic group.
 - `PUT /api/logics/{groupName}?action=deletegroup` — delete a logic group.
 
@@ -6210,7 +6210,7 @@ header.
 of that type, or read/write one with `?filename=`), plus the special cases `logging`
 (`etc/logging.yaml`) and `backup` (GET only, returns a zip of the whole `etc/` dir).
 
-- `GET /api/files/{filetype}/[?filename=]` — file list, or one file&#39;s raw text.
+- `GET /api/files/{filetype}/[?filename=]` — file list, or one file's raw text.
 - `POST /api/files/{filetype}/?filename=` — create a new file (409 if it already exists).
 - `PUT /api/files/{filetype}/[?filename=]` — save/overwrite a file. For `logging`, the response includes `config_reloaded`/`config_restored` flags — bad YAML is auto-rolled back server-side.
 - `DELETE /api/files/{filetype}/[?filename=]` — delete a file.
@@ -6220,19 +6220,19 @@ of that type, or read/write one with `?filename=`), plus the special cases `logg
 ### LOGGERS API — logger list, level/handler control
 
 - `GET /api/loggers/` — all loggers with current levels.
-- `PUT /api/loggers/{logger}?level=` — set a logger&#39;s level.
-- `PUT /api/loggers/{logger}?handlers=` — set a logger&#39;s handler list.
+- `PUT /api/loggers/{logger}?level=` — set a logger's level.
+- `PUT /api/loggers/{logger}?handlers=` — set a logger's handler list.
 - `POST /api/loggers/{logger}/` — add a new logger.
 - `DELETE /api/loggers/{logger}/` — delete a logger.
 
 ### LOGS API — log file list and chunked reading
 
 - `GET /api/logs/` — list of available log files.
-- `GET /api/logs/{filename}?chunk=` — one chunk of a log file (`chunk=1` first, `chunk=0` is the server convention for &quot;last chunk&quot;).
+- `GET /api/logs/{filename}?chunk=` — one chunk of a log file (`chunk=1` first, `chunk=0` is the server convention for "last chunk").
 
 ### SERVER API — bootstrap info, status, restart, PyPI check
 
-- `GET /api/server/` — basic info (`default_language`, `client_ip`, `login_required`, `websocket_host`, `websocket_port`). *No auth required* even though it&#39;s flagged `authentication_needed` in code — exempted via `public_root` for exactly this bare path. Also (ab)used as a lightweight reachability heartbeat by shngadmin.
+- `GET /api/server/` — basic info (`default_language`, `client_ip`, `login_required`, `websocket_host`, `websocket_port`). *No auth required* even though it's flagged `authentication_needed` in code — exempted via `public_root` for exactly this bare path. Also (ab)used as a lightweight reachability heartbeat by shngadmin.
 - `GET /api/server/info` — extended info: timezone, core/plugins git branch, `developer_mode`, `dark_mode` default, `resource_graph_period`, `restart_stops_only`, and more.
 - `GET /api/server/status/` — shng core running/stopped status.
 - `PUT /api/server/restart/` — restart shng core.
@@ -6245,9 +6245,9 @@ of that type, or read/write one with `?filename=`), plus the special cases `logg
 ### WebSocket API — live item values and time-series charts
 
 Separate from the REST API above: `ws(s)://{host}:{ws_port}/adm`, handled by the
-`websocket` module&#39;s admin protocol (`modules/websocket/admin.py`), documented in
+`websocket` module's admin protocol (`modules/websocket/admin.py`), documented in
 [websocket_admingui_requests.rst](websocket_admingui_requests.rst). Used for live item
-value monitoring and the System Overview page&#39;s resource-usage graphs. No JWT is used on
+value monitoring and the System Overview page's resource-usage graphs. No JWT is used on
 this channel.
 
 ##
@@ -6261,14 +6261,14 @@ this channel.
 self.classname = self.__class__.__name__
 
 try:
-    self.mod_admin = self._sh.get_module(&#39;admin&#39;)
+    self.mod_admin = self._sh.get_module('admin')
 except:
     self.mod_admin = None
     
 if self.mod_admin == None:
-    # Do what is necessary if you can&#39;t use the admin interface
+    # Do what is necessary if you can't use the admin interface
     # for your plugin. For example:
-    self.logger.error(&#39;{}: Module &#39;&#39;admin&#39;&#39; not loaded - Abort loading of plugin {0}&#39;.format(self.classname))
+    self.logger.error('{}: Module ''admin'' not loaded - Abort loading of plugin {0}'.format(self.classname))
     return
 ```
 
@@ -6290,52 +6290,52 @@ wird im Rahmen der Weiterentwicklung von SmartHomeNG erfolgen:</p>
     <span class="n">sh_minversion</span><span class="p">:</span> <span class="mf">1.12.0</span>
 <span class="c1">#    sh_maxversion: 1.3             # maximum shNG version to use this plugin (leave empty if latest)</span>
     <span class="n">description</span><span class="p">:</span>
-        <span class="n">de</span><span class="p">:</span> <span class="s1">&#39;Dieses Modul implementiert das Administrationsinterface von SmartHomeNG&#39;</span>
-        <span class="n">en</span><span class="p">:</span> <span class="s1">&#39;This module implements the administration interface for SmartHomeNG&#39;</span>
-        <span class="n">fr</span><span class="p">:</span> <span class="s2">&quot;Ce module implémente l&#39;interface d&#39;administration pour SmartHomeNG&quot;</span>
+        <span class="n">de</span><span class="p">:</span> <span class="s1">'Dieses Modul implementiert das Administrationsinterface von SmartHomeNG'</span>
+        <span class="n">en</span><span class="p">:</span> <span class="s1">'This module implements the administration interface for SmartHomeNG'</span>
+        <span class="n">fr</span><span class="p">:</span> <span class="s2">"Ce module implémente l'interface d'administration pour SmartHomeNG"</span>
 
 <span class="n">parameters</span><span class="p">:</span>
     <span class="n">login_expiration</span><span class="p">:</span>
         <span class="nb">type</span><span class="p">:</span> <span class="n">num</span>
         <span class="n">default</span><span class="p">:</span> <span class="mi">48</span>
         <span class="n">description</span><span class="p">:</span>
-            <span class="n">de</span><span class="p">:</span> <span class="s1">&#39;Ablaufdauer des Logins in Stunden (ab Loginzeitpunkt)&#39;</span>
-            <span class="n">en</span><span class="p">:</span> <span class="s1">&#39;Expiration time of the login in hours (counting from time of login)&#39;</span>
-            <span class="n">fr</span><span class="p">:</span> <span class="s2">&quot;Temps d&#39;expiration de l&#39;identification en heures (à partir du moment de l&#39;identification)&quot;</span>
+            <span class="n">de</span><span class="p">:</span> <span class="s1">'Ablaufdauer des Logins in Stunden (ab Loginzeitpunkt)'</span>
+            <span class="n">en</span><span class="p">:</span> <span class="s1">'Expiration time of the login in hours (counting from time of login)'</span>
+            <span class="n">fr</span><span class="p">:</span> <span class="s2">"Temps d'expiration de l'identification en heures (à partir du moment de l'identification)"</span>
 
     <span class="n">login_autorenew</span><span class="p">:</span>
         <span class="nb">type</span><span class="p">:</span> <span class="nb">bool</span>
         <span class="n">gui_type</span><span class="p">:</span> <span class="n">yes_no</span>
         <span class="n">default</span><span class="p">:</span> <span class="kc">True</span>
         <span class="n">description</span><span class="p">:</span>
-            <span class="n">de</span><span class="p">:</span> <span class="s1">&#39;Bestehendes Login-Token automatisch verlängern&#39;</span>
-            <span class="n">en</span><span class="p">:</span> <span class="s1">&#39;Automatically extend an existing login-token&#39;</span>
-<span class="c1">#            fr: &quot;&quot;</span>
+            <span class="n">de</span><span class="p">:</span> <span class="s1">'Bestehendes Login-Token automatisch verlängern'</span>
+            <span class="n">en</span><span class="p">:</span> <span class="s1">'Automatically extend an existing login-token'</span>
+<span class="c1">#            fr: ""</span>
 
     <span class="n">itemtree_fullpath</span><span class="p">:</span>
         <span class="nb">type</span><span class="p">:</span> <span class="nb">bool</span>
         <span class="n">gui_type</span><span class="p">:</span> <span class="n">yes_no</span>
         <span class="n">default</span><span class="p">:</span> <span class="kc">True</span>
         <span class="n">description</span><span class="p">:</span>
-            <span class="n">de</span><span class="p">:</span> <span class="s1">&#39;Im Item-Tree die Items mit vollem Pfad-Namen anzeigen&#39;</span>
-            <span class="n">en</span><span class="p">:</span> <span class="s1">&#39;Display items with full path in item tree&#39;</span>
-            <span class="n">fr</span><span class="p">:</span> <span class="s2">&quot;Afficher le chemin complèt des objets dans l&#39;arborescence&quot;</span>
+            <span class="n">de</span><span class="p">:</span> <span class="s1">'Im Item-Tree die Items mit vollem Pfad-Namen anzeigen'</span>
+            <span class="n">en</span><span class="p">:</span> <span class="s1">'Display items with full path in item tree'</span>
+            <span class="n">fr</span><span class="p">:</span> <span class="s2">"Afficher le chemin complèt des objets dans l'arborescence"</span>
 
     <span class="n">itemtree_searchstart</span><span class="p">:</span>
         <span class="nb">type</span><span class="p">:</span> <span class="n">num</span>
         <span class="n">default</span><span class="p">:</span> <span class="mi">2</span>
         <span class="n">description</span><span class="p">:</span>
-            <span class="n">de</span><span class="p">:</span> <span class="s1">&#39;Minimale Anzahl eingegebener Zeichen ab denen die Suche im Item-Tree beginnt&#39;</span>
-            <span class="n">en</span><span class="p">:</span> <span class="s1">&#39;Minimum number of entered characters to start searching the item tree&#39;</span>
-            <span class="n">fr</span><span class="p">:</span> <span class="s2">&quot;Nombre minimum de caractères entrés pour démarrer la recherche dans l&#39;arborescence&quot;</span>
+            <span class="n">de</span><span class="p">:</span> <span class="s1">'Minimale Anzahl eingegebener Zeichen ab denen die Suche im Item-Tree beginnt'</span>
+            <span class="n">en</span><span class="p">:</span> <span class="s1">'Minimum number of entered characters to start searching the item tree'</span>
+            <span class="n">fr</span><span class="p">:</span> <span class="s2">"Nombre minimum de caractères entrés pour démarrer la recherche dans l'arborescence"</span>
 
     <span class="n">websocket_host</span><span class="p">:</span>
         <span class="nb">type</span><span class="p">:</span> <span class="n">ip</span>
-        <span class="n">default</span><span class="p">:</span> <span class="s1">&#39;None*&#39;</span>
+        <span class="n">default</span><span class="p">:</span> <span class="s1">'None*'</span>
         <span class="n">description</span><span class="p">:</span>
-            <span class="n">de</span><span class="p">:</span> <span class="s1">&#39;VERALTET: IP Adresse für den Websocket Zugriff - bitte im Websocket-Modul konfigurieren&#39;</span>
-            <span class="n">en</span><span class="p">:</span> <span class="s1">&#39;DEPRECATED: ip address for websocket access - configure in the websocket module instead&#39;</span>
-            <span class="n">fr</span><span class="p">:</span> <span class="s2">&quot;OBSOLÈTE: Adresse IP pour l&#39;accès websocket - à configurer dans le module websocket&quot;</span>
+            <span class="n">de</span><span class="p">:</span> <span class="s1">'VERALTET: IP Adresse für den Websocket Zugriff - bitte im Websocket-Modul konfigurieren'</span>
+            <span class="n">en</span><span class="p">:</span> <span class="s1">'DEPRECATED: ip address for websocket access - configure in the websocket module instead'</span>
+            <span class="n">fr</span><span class="p">:</span> <span class="s2">"OBSOLÈTE: Adresse IP pour l'accès websocket - à configurer dans le module websocket"</span>
 
     <span class="n">websocket_port</span><span class="p">:</span>
         <span class="nb">type</span><span class="p">:</span> <span class="nb">int</span>
@@ -6343,9 +6343,9 @@ wird im Rahmen der Weiterentwicklung von SmartHomeNG erfolgen:</p>
         <span class="n">valid_max</span><span class="p">:</span> <span class="mi">65535</span>
         <span class="n">default</span><span class="p">:</span> <span class="mi">2424</span>
         <span class="n">description</span><span class="p">:</span>
-            <span class="n">de</span><span class="p">:</span> <span class="s1">&#39;VERALTET: Port für den Websocket Zugriff - bitte im Websocket-Modul konfigurieren&#39;</span>
-            <span class="n">en</span><span class="p">:</span> <span class="s1">&#39;DEPRECATED: port for websocket access - configure in the websocket module instead&#39;</span>
-            <span class="n">fr</span><span class="p">:</span> <span class="s2">&quot;OBSOLÈTE: Port pour l&#39;accès websocket - à configurer dans le module websocket&quot;</span>
+            <span class="n">de</span><span class="p">:</span> <span class="s1">'VERALTET: Port für den Websocket Zugriff - bitte im Websocket-Modul konfigurieren'</span>
+            <span class="n">en</span><span class="p">:</span> <span class="s1">'DEPRECATED: port for websocket access - configure in the websocket module instead'</span>
+            <span class="n">fr</span><span class="p">:</span> <span class="s2">"OBSOLÈTE: Port pour l'accès websocket - à configurer dans le module websocket"</span>
 
     <span class="n">log_chunksize</span><span class="p">:</span>
         <span class="nb">type</span><span class="p">:</span> <span class="nb">int</span>
@@ -6353,9 +6353,9 @@ wird im Rahmen der Weiterentwicklung von SmartHomeNG erfolgen:</p>
         <span class="n">valid_max</span><span class="p">:</span> <span class="mi">5000</span>
         <span class="n">default</span><span class="p">:</span> <span class="mi">1000</span>
         <span class="n">description</span><span class="p">:</span>
-            <span class="n">de</span><span class="p">:</span> <span class="s1">&#39;Größe der gelesenen Blöcke bei der Anzeige großer Logdateien&#39;</span>
-            <span class="n">en</span><span class="p">:</span> <span class="s1">&#39;Size of blocks (chunks) read when displaying large logfiles&#39;</span>
-            <span class="n">fr</span><span class="p">:</span> <span class="s2">&quot;Taille des morceaux lus lors de l&#39;affichage de fichiers journaux volumineux&quot;</span>
+            <span class="n">de</span><span class="p">:</span> <span class="s1">'Größe der gelesenen Blöcke bei der Anzeige großer Logdateien'</span>
+            <span class="n">en</span><span class="p">:</span> <span class="s1">'Size of blocks (chunks) read when displaying large logfiles'</span>
+            <span class="n">fr</span><span class="p">:</span> <span class="s2">"Taille des morceaux lus lors de l'affichage de fichiers journaux volumineux"</span>
 
     <span class="n">developer_mode</span><span class="p">:</span>
         <span class="nb">type</span><span class="p">:</span> <span class="nb">bool</span>
@@ -6363,54 +6363,54 @@ wird im Rahmen der Weiterentwicklung von SmartHomeNG erfolgen:</p>
         <span class="n">gui_type</span><span class="p">:</span> <span class="n">on_off</span>
 
         <span class="n">description</span><span class="p">:</span>
-            <span class="n">de</span><span class="p">:</span> <span class="s1">&#39;Entwickler Modus aktivieren (Ist für das Core Entwickler Team gedacht)&#39;</span>
-            <span class="n">en</span><span class="p">:</span> <span class="s1">&#39;Activate developer mode&#39;</span>
+            <span class="n">de</span><span class="p">:</span> <span class="s1">'Entwickler Modus aktivieren (Ist für das Core Entwickler Team gedacht)'</span>
+            <span class="n">en</span><span class="p">:</span> <span class="s1">'Activate developer mode'</span>
 
     <span class="n">rest_dispatch_force_exception</span><span class="p">:</span>
         <span class="nb">type</span><span class="p">:</span> <span class="nb">bool</span>
         <span class="n">gui_type</span><span class="p">:</span> <span class="n">yes_no</span>
         <span class="n">default</span><span class="p">:</span> <span class="kc">False</span>
         <span class="n">description</span><span class="p">:</span>
-            <span class="n">de</span><span class="p">:</span> <span class="s1">&#39;Sollen WARNINGs aus REST_dispatch_execute als EXECPTION geloggt werden?&#39;</span>
-            <span class="n">en</span><span class="p">:</span> <span class="s1">&#39;Activate developer mode&#39;</span>
+            <span class="n">de</span><span class="p">:</span> <span class="s1">'Sollen WARNINGs aus REST_dispatch_execute als EXECPTION geloggt werden?'</span>
+            <span class="n">en</span><span class="p">:</span> <span class="s1">'Activate developer mode'</span>
 
     <span class="n">click_dropdown_header</span><span class="p">:</span>
         <span class="nb">type</span><span class="p">:</span> <span class="nb">bool</span>
         <span class="n">gui_type</span><span class="p">:</span> <span class="n">yes_no</span>
         <span class="n">default</span><span class="p">:</span> <span class="kc">False</span>
         <span class="n">description</span><span class="p">:</span>
-            <span class="n">de</span><span class="p">:</span> <span class="s1">&#39;Click auf Kopfeintrag von Dropdown Menüs erlauben&#39;</span>
-            <span class="n">en</span><span class="p">:</span> <span class="s1">&#39;Allow click on header of dropdown menus&#39;</span>
+            <span class="n">de</span><span class="p">:</span> <span class="s1">'Click auf Kopfeintrag von Dropdown Menüs erlauben'</span>
+            <span class="n">en</span><span class="p">:</span> <span class="s1">'Allow click on header of dropdown menus'</span>
 
     <span class="n">dark_mode</span><span class="p">:</span>
         <span class="nb">type</span><span class="p">:</span> <span class="nb">bool</span>
         <span class="n">gui_type</span><span class="p">:</span> <span class="n">on_off</span>
         <span class="n">default</span><span class="p">:</span> <span class="kc">False</span>
         <span class="n">description</span><span class="p">:</span>
-            <span class="n">de</span><span class="p">:</span> <span class="s1">&#39;Dark Mode als Standard für das Administrations-Interface aktivieren (kann pro Browser über den</span>
-                 <span class="n">Schalter</span> <span class="ow">in</span> <span class="n">der</span> <span class="n">Navigationsleiste</span> <span class="n">übersteuert</span> <span class="n">werden</span><span class="p">)</span><span class="s1">&#39;</span>
-            <span class="n">en</span><span class="p">:</span> <span class="s1">&#39;Activate dark mode as the default for the admin interface (can be overridden per browser via the</span>
-                 <span class="n">toggle</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">navigation</span> <span class="n">bar</span><span class="p">)</span><span class="s1">&#39;</span>
+            <span class="n">de</span><span class="p">:</span> <span class="s1">'Dark Mode als Standard für das Administrations-Interface aktivieren (kann pro Browser über den</span>
+                 <span class="n">Schalter</span> <span class="ow">in</span> <span class="n">der</span> <span class="n">Navigationsleiste</span> <span class="n">übersteuert</span> <span class="n">werden</span><span class="p">)</span><span class="s1">'</span>
+            <span class="n">en</span><span class="p">:</span> <span class="s1">'Activate dark mode as the default for the admin interface (can be overridden per browser via the</span>
+                 <span class="n">toggle</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">navigation</span> <span class="n">bar</span><span class="p">)</span><span class="s1">'</span>
 
     <span class="n">resource_graph_period</span><span class="p">:</span>
         <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span>
-        <span class="n">default</span><span class="p">:</span> <span class="s1">&#39;24h&#39;</span>
+        <span class="n">default</span><span class="p">:</span> <span class="s1">'24h'</span>
         <span class="n">description</span><span class="p">:</span>
-            <span class="n">de</span><span class="p">:</span> <span class="s1">&#39;Zeitraum, den die Ressourcen-Graphen (Systemeigenschaften) initial anzeigen, z.B. &quot;1h&quot;, &quot;6h&quot;, &quot;24h&quot;.</span>
+            <span class="n">de</span><span class="p">:</span> <span class="s1">'Zeitraum, den die Ressourcen-Graphen (Systemeigenschaften) initial anzeigen, z.B. "1h", "6h", "24h".</span>
                  <span class="n">Ein</span> <span class="n">kürzerer</span> <span class="n">Zeitraum</span> <span class="n">lässt</span> <span class="n">die</span> <span class="n">Graphen</span> <span class="n">häufiger</span> <span class="n">live</span> <span class="n">aktualisieren</span><span class="p">,</span> <span class="n">da</span> <span class="n">das</span> <span class="n">Aktualisierungsintervall</span>
-                 <span class="n">an</span> <span class="n">die</span> <span class="n">Anzahl</span> <span class="n">der</span> <span class="n">dargestellten</span> <span class="n">Messpunkte</span> <span class="n">gekoppelt</span> <span class="n">ist</span><span class="o">.</span><span class="s1">&#39;</span>
-            <span class="n">en</span><span class="p">:</span> <span class="s1">&#39;Time span initially shown by the resource graphs (System properties), e.g. &quot;1h&quot;, &quot;6h&quot;, &quot;24h&quot;.</span>
+                 <span class="n">an</span> <span class="n">die</span> <span class="n">Anzahl</span> <span class="n">der</span> <span class="n">dargestellten</span> <span class="n">Messpunkte</span> <span class="n">gekoppelt</span> <span class="n">ist</span><span class="o">.</span><span class="s1">'</span>
+            <span class="n">en</span><span class="p">:</span> <span class="s1">'Time span initially shown by the resource graphs (System properties), e.g. "1h", "6h", "24h".</span>
                  <span class="n">A</span> <span class="n">shorter</span> <span class="n">span</span> <span class="n">makes</span> <span class="n">the</span> <span class="n">graphs</span> <span class="n">update</span> <span class="n">live</span> <span class="n">more</span> <span class="n">often</span><span class="p">,</span> <span class="n">since</span> <span class="n">the</span> <span class="n">update</span> <span class="n">interval</span> <span class="ow">is</span> <span class="n">tied</span> <span class="n">to</span> <span class="n">the</span>
-                 <span class="n">number</span> <span class="n">of</span> <span class="n">plotted</span> <span class="n">data</span> <span class="n">points</span><span class="o">.</span><span class="s1">&#39;</span>
+                 <span class="n">number</span> <span class="n">of</span> <span class="n">plotted</span> <span class="n">data</span> <span class="n">points</span><span class="o">.</span><span class="s1">'</span>
 
     <span class="n">start_page</span><span class="p">:</span>
         <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span>
-        <span class="n">default</span><span class="p">:</span> <span class="s1">&#39;dashboard&#39;</span>
-        <span class="n">valid_list</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;dashboard&#39;</span><span class="p">,</span> <span class="s1">&#39;system&#39;</span><span class="p">,</span> <span class="s1">&#39;items&#39;</span><span class="p">,</span> <span class="s1">&#39;logics&#39;</span><span class="p">,</span> <span class="s1">&#39;plugins&#39;</span><span class="p">,</span> <span class="s1">&#39;scenes&#39;</span><span class="p">,</span> <span class="s1">&#39;schedulers&#39;</span><span class="p">,</span> <span class="s1">&#39;services&#39;</span><span class="p">,</span> <span class="s1">&#39;logs&#39;</span><span class="p">]</span>
+        <span class="n">default</span><span class="p">:</span> <span class="s1">'dashboard'</span>
+        <span class="n">valid_list</span><span class="p">:</span> <span class="p">[</span><span class="s1">'dashboard'</span><span class="p">,</span> <span class="s1">'system'</span><span class="p">,</span> <span class="s1">'items'</span><span class="p">,</span> <span class="s1">'logics'</span><span class="p">,</span> <span class="s1">'plugins'</span><span class="p">,</span> <span class="s1">'scenes'</span><span class="p">,</span> <span class="s1">'schedulers'</span><span class="p">,</span> <span class="s1">'services'</span><span class="p">,</span> <span class="s1">'logs'</span><span class="p">]</span>
         <span class="n">description</span><span class="p">:</span>
-            <span class="n">de</span><span class="p">:</span> <span class="s1">&#39;Seite, die nach dem Login im Administrations-Interface angezeigt wird&#39;</span>
-            <span class="n">en</span><span class="p">:</span> <span class="s1">&#39;Page shown after login in the admin interface&#39;</span>
-            <span class="n">fr</span><span class="p">:</span> <span class="s2">&quot;Page affichée après la connexion dans l&#39;interface d&#39;administration&quot;</span>
+            <span class="n">de</span><span class="p">:</span> <span class="s1">'Seite, die nach dem Login im Administrations-Interface angezeigt wird'</span>
+            <span class="n">en</span><span class="p">:</span> <span class="s1">'Page shown after login in the admin interface'</span>
+            <span class="n">fr</span><span class="p">:</span> <span class="s2">"Page affichée après la connexion dans l'interface d'administration"</span>
 
 </pre></div>
 </div>

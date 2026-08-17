@@ -5780,7 +5780,7 @@
 <span class="c1"># - consolidate with plugin.py</span>
 
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="sd">This library implements loading and starting of core modules of SmartHomeNG.</span>
 
 <span class="sd">The methods of the class Modules implement the API for modules.</span>
@@ -5797,7 +5797,7 @@
 
 <span class="sd">:Warning: This library is part of the core of SmartHomeNG. It **should not be called directly** from plugins!</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
@@ -5821,7 +5821,7 @@
 
 
 <div class="viewcode-block" id="Modules"><a class="viewcode-back" href="../../lib/module.html#lib.module.Modules">[Doku]</a><span class="k">class</span><span class="w"> </span><span class="nc">Modules</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Module loader class. Parses config file and creates an instance for each module.</span>
 <span class="sd">    To start the modules, the start() method has to be called.</span>
 
@@ -5829,7 +5829,7 @@
 <span class="sd">    :param configfile: Basename of the module configuration file</span>
 <span class="sd">    :type samrthome: object</span>
 <span class="sd">    :type configfile: str</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">_modules</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">_moduledict</span> <span class="o">=</span> <span class="p">{}</span>
@@ -5846,20 +5846,20 @@
             <span class="n">curframe</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
             <span class="n">calframe</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getouterframes</span><span class="p">(</span><span class="n">curframe</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;A second &#39;modules&#39; object has been created. There should only be ONE instance of class &#39;Modules&#39;!!! Called from: </span><span class="si">{</span><span class="n">calframe</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">calframe</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="sa">f</span><span class="s2">"A second 'modules' object has been created. There should only be ONE instance of class 'Modules'!!! Called from: </span><span class="si">{</span><span class="n">calframe</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">calframe</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">)"</span>
             <span class="p">)</span>
 
         <span class="n">_modules_instance</span> <span class="o">=</span> <span class="bp">self</span>
 
         <span class="c1"># read module configuration (from etc/module.yaml)</span>
-        <span class="n">_conf</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">parse_basename</span><span class="p">(</span><span class="n">configfile</span><span class="p">,</span> <span class="n">configtype</span><span class="o">=</span><span class="s1">&#39;module&#39;</span><span class="p">)</span>
+        <span class="n">_conf</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">parse_basename</span><span class="p">(</span><span class="n">configfile</span><span class="p">,</span> <span class="n">configtype</span><span class="o">=</span><span class="s1">'module'</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">_conf</span> <span class="o">==</span> <span class="p">{}:</span>
             <span class="k">return</span>
 
         <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">_conf</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Modules, section: </span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Modules, section: </span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
             <span class="n">module_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_modulename_and_metadata</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">_conf</span><span class="p">[</span><span class="n">module</span><span class="p">])</span>
-            <span class="k">if</span> <span class="n">module_name</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">module_name</span> <span class="o">!=</span> <span class="s1">''</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">test_shngcompatibility</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">test_pythoncompatibility</span><span class="p">():</span>
                     <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_conf_args</span><span class="p">(</span><span class="n">_conf</span><span class="p">[</span><span class="n">module</span><span class="p">])</span>
                     <span class="n">classname</span><span class="p">,</span> <span class="n">classpath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_classname_and_classpath</span><span class="p">(</span><span class="n">_conf</span><span class="p">[</span><span class="n">module</span><span class="p">],</span> <span class="n">module_name</span><span class="p">)</span>
@@ -5867,11 +5867,11 @@
                         <span class="k">try</span><span class="p">:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">_load_module</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">classname</span><span class="p">,</span> <span class="n">classpath</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
                         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Module </span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s1"> exception: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Module </span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s1"> exception: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Section &#39;</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2">&#39; ignored&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Section '</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2">' ignored"</span><span class="p">)</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Loaded Modules: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">return_modules</span><span class="p">())</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Loaded Modules: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">return_modules</span><span class="p">())</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
         <span class="c1"># clean up (module configuration from module.yaml)</span>
         <span class="k">del</span> <span class="n">_conf</span>  <span class="c1"># clean up</span>
@@ -5879,7 +5879,7 @@
         <span class="k">return</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_modulename_and_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">mod_conf</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the actual module name and the metadata instance</span>
 
 <span class="sd">        :param mod_conf: loaded section of the module.yaml for the actual module</span>
@@ -5887,29 +5887,29 @@
 
 <span class="sd">        :return: module_name and metadata_instance</span>
 <span class="sd">        :rtype: string, object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">module_name</span> <span class="o">=</span> <span class="n">mod_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;module_name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+<span class="sd">        """</span>
+        <span class="n">module_name</span> <span class="o">=</span> <span class="n">mod_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'module_name'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="n">meta</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">module_name</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">module_name</span> <span class="o">!=</span> <span class="s1">''</span><span class="p">:</span>
             <span class="n">module_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_config_dir</span><span class="p">(</span><span class="n">DIR_MODULES</span><span class="p">),</span> <span class="n">module_name</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">module_dir</span><span class="p">):</span>
-                <span class="n">meta</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="s1">&#39;module&#39;</span><span class="p">)</span>
+                <span class="n">meta</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="s1">'module'</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Section &#39;</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2">&#39;: No module directory </span><span class="si">{</span><span class="n">module_dir</span><span class="si">}</span><span class="s2"> found&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Section '</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2">': No module directory </span><span class="si">{</span><span class="n">module_dir</span><span class="si">}</span><span class="s2"> found"</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">classpath</span> <span class="o">=</span> <span class="n">mod_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">KEY_CLASS_PATH</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">classpath</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-                <span class="n">module_name</span> <span class="o">=</span> <span class="n">classpath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="nb">len</span><span class="p">(</span><span class="n">classpath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">classpath</span> <span class="o">=</span> <span class="n">mod_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">KEY_CLASS_PATH</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">classpath</span> <span class="o">!=</span> <span class="s1">''</span><span class="p">:</span>
+                <span class="n">module_name</span> <span class="o">=</span> <span class="n">classpath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)[</span><span class="nb">len</span><span class="p">(</span><span class="n">classpath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Section &#39;</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2">&#39;: module_name &#39;</span><span class="si">{</span><span class="n">module_name</span><span class="si">}</span><span class="s2">&#39; was extracted from classpath &#39;</span><span class="si">{</span><span class="n">classpath</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Section '</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2">': module_name '</span><span class="si">{</span><span class="n">module_name</span><span class="si">}</span><span class="s2">' was extracted from classpath '</span><span class="si">{</span><span class="n">classpath</span><span class="si">}</span><span class="s2">'"</span>
                 <span class="p">)</span>
-                <span class="n">meta</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="s1">&#39;module&#39;</span><span class="p">,</span> <span class="n">classpath</span><span class="p">)</span>
+                <span class="n">meta</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="s1">'module'</span><span class="p">,</span> <span class="n">classpath</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Section &#39;</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2">&#39;: No attribute &#39;module_name&#39; found in configuration&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Section '</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2">': No attribute 'module_name' found in configuration"</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="n">meta</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_conf_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mod_conf</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the parameters/values for the actual module as args-dict</span>
 
 <span class="sd">        :param mod_conf: loaded section of the module.yaml for the actual module</span>
@@ -5917,18 +5917,18 @@
 
 <span class="sd">        :return: args = specified parameters and their values</span>
 <span class="sd">        :rtype: dict</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">args</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">mod_conf</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">arg</span> <span class="o">!=</span> <span class="n">KEY_CLASS_NAME</span> <span class="ow">and</span> <span class="n">arg</span> <span class="o">!=</span> <span class="n">KEY_CLASS_PATH</span> <span class="ow">and</span> <span class="n">arg</span> <span class="o">!=</span> <span class="n">KEY_INSTANCE</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="n">mod_conf</span><span class="p">[</span><span class="n">arg</span><span class="p">]</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                    <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">'"</span>
                 <span class="n">args</span><span class="p">[</span><span class="n">arg</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">return</span> <span class="n">args</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_classname_and_classpath</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mod_conf</span><span class="p">,</span> <span class="n">module_name</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the classname and the classpath for the actual module</span>
 
 <span class="sd">        :param mod_conf: loaded section of the module.yaml for the actual module</span>
@@ -5938,18 +5938,18 @@
 
 <span class="sd">        :return: classname, classpass</span>
 <span class="sd">        :rtype: str, str</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">classname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="s1">&#39;classname&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">classname</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
-            <span class="n">classname</span> <span class="o">=</span> <span class="n">mod_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">KEY_CLASS_NAME</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="n">classname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="s1">'classname'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">classname</span> <span class="o">==</span> <span class="s1">''</span><span class="p">:</span>
+            <span class="n">classname</span> <span class="o">=</span> <span class="n">mod_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">KEY_CLASS_NAME</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">classpath</span> <span class="o">=</span> <span class="n">mod_conf</span><span class="p">[</span><span class="n">KEY_CLASS_PATH</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="n">classpath</span> <span class="o">=</span> <span class="n">DIR_MODULES</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">module_name</span>
+            <span class="n">classpath</span> <span class="o">=</span> <span class="n">DIR_MODULES</span> <span class="o">+</span> <span class="s1">'.'</span> <span class="o">+</span> <span class="n">module_name</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">classname</span><span class="p">,</span> <span class="n">classpath</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_test_duplicate_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">classname</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns True, if a module instance of the classname is already loaded by another configuration section</span>
 
 <span class="sd">        :param module: Name of the configuration</span>
@@ -5959,34 +5959,34 @@
 
 <span class="sd">        :return: True, if module is already loaded</span>
 <span class="sd">        :rtype: bool</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># give a warning if a module uses the same class twice</span>
         <span class="n">duplicate</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_modules</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="n">classname</span><span class="p">:</span>
                 <span class="n">duplicate</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Modules, section &#39;</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2">&#39;: Multiple module instances of class &#39;</span><span class="si">{</span><span class="n">classname</span><span class="si">}</span><span class="s2">&#39; detected, additional instance not initialized&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Modules, section '</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2">': Multiple module instances of class '</span><span class="si">{</span><span class="n">classname</span><span class="si">}</span><span class="s2">' detected, additional instance not initialized"</span>
                 <span class="p">)</span>
         <span class="k">return</span> <span class="n">duplicate</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_unwrap_conf_string</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        _get_conf_args() wraps original string config values as &quot;&#39;value&#39;&quot; (for the</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        _get_conf_args() wraps original string config values as "'value'" (for the</span>
 <span class="sd">        old exec()-based call-string builder this method used to feed). Undo that</span>
 <span class="sd">        wrapping to recover the real string for use as an actual keyword argument</span>
 <span class="sd">        value. Non-string values (bool/int/list/dict/... from YAML) pass through</span>
 <span class="sd">        unchanged -- _get_conf_args() never wraps those.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;&#39;&quot;</span> <span class="ow">and</span> <span class="n">value</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">:</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"'"</span> <span class="ow">and</span> <span class="n">value</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"'"</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">value</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_load_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">classname</span><span class="p">,</span> <span class="n">classpath</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Module Loader. Loads one module defined by the parameters classname and classpath.</span>
-<span class="sd">        Parameters defined in the configuration file are passed to this function as &#39;args&#39;</span>
+<span class="sd">        Parameters defined in the configuration file are passed to this function as 'args'</span>
 
 <span class="sd">        :param name: Section name in module configuration file (etc/module.yaml)</span>
 <span class="sd">        :param classname: Name of the (main) class in the module</span>
@@ -5999,44 +5999,44 @@
 
 <span class="sd">        :return: loaded module</span>
 <span class="sd">        :rtype: object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
-        <span class="n">enabled</span> <span class="o">=</span> <span class="n">Utils</span><span class="o">.</span><span class="n">strip_quotes</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;enabled&#39;</span><span class="p">,</span> <span class="s1">&#39;true&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
-        <span class="k">if</span> <span class="n">enabled</span> <span class="o">==</span> <span class="s1">&#39;false&#39;</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Not loading module </span><span class="si">{</span><span class="n">classname</span><span class="si">}</span><span class="s2"> from section &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;: Module is disabled&quot;</span><span class="p">)</span>
+        <span class="n">enabled</span> <span class="o">=</span> <span class="n">Utils</span><span class="o">.</span><span class="n">strip_quotes</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'enabled'</span><span class="p">,</span> <span class="s1">'true'</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">enabled</span> <span class="o">==</span> <span class="s1">'false'</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Not loading module </span><span class="si">{</span><span class="n">classname</span><span class="si">}</span><span class="s2"> from section '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">': Module is disabled"</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading module &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;: args = &#39;</span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Loading module '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">': args = '</span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
         <span class="c1"># Load an instance of the module</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">module_obj</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">classpath</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Module &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; (</span><span class="si">{</span><span class="n">classpath</span><span class="si">}</span><span class="s2">) exception during import of __init__.py: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Module '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">' (</span><span class="si">{</span><span class="n">classpath</span><span class="si">}</span><span class="s2">) exception during import of __init__.py: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">module_cls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module_obj</span><span class="p">,</span> <span class="n">classname</span><span class="p">)</span>
             <span class="n">loadedmodule</span> <span class="o">=</span> <span class="n">module_cls</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="n">module_cls</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Module &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; (</span><span class="si">{</span><span class="n">classpath</span><span class="si">}</span><span class="s2">) exception during initialization (__new__): </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Module '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">' (</span><span class="si">{</span><span class="n">classpath</span><span class="si">}</span><span class="s2">) exception during initialization (__new__): </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="c1"># load module-specific translations</span>
-        <span class="n">translation</span><span class="o">.</span><span class="n">load_translations</span><span class="p">(</span><span class="s1">&#39;module&#39;</span><span class="p">,</span> <span class="n">classpath</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">),</span> <span class="s1">&#39;module/&#39;</span> <span class="o">+</span> <span class="n">classpath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
-        <span class="c1">#        translation.load_translations(&#39;global&#39;, classpath.replace(&#39;.&#39;, &#39;/&#39;), &#39;module/&#39;+classpath.split(&#39;.&#39;)[1])</span>
+        <span class="n">translation</span><span class="o">.</span><span class="n">load_translations</span><span class="p">(</span><span class="s1">'module'</span><span class="p">,</span> <span class="n">classpath</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'.'</span><span class="p">,</span> <span class="s1">'/'</span><span class="p">),</span> <span class="s1">'module/'</span> <span class="o">+</span> <span class="n">classpath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="c1">#        translation.load_translations('global', classpath.replace('.', '/'), 'module/'+classpath.split('.')[1])</span>
 
-        <span class="c1"># get arguments defined in __init__ of module&#39;s class</span>
+        <span class="c1"># get arguments defined in __init__ of module's class</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getfullargspec</span><span class="p">(</span><span class="n">module_cls</span><span class="o">.</span><span class="fm">__init__</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Module &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; exception during &#39;inspect.getfullargspec(</span><span class="si">{</span><span class="n">classpath</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">classname</span><span class="si">}</span><span class="s2">.__init__)[0][1:]&#39;: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"Module '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">' exception during 'inspect.getfullargspec(</span><span class="si">{</span><span class="n">classpath</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">classname</span><span class="si">}</span><span class="s2">.__init__)[0][1:]': </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="c1"># logger.notice(&quot;- self.args = &#39;{self.args}&#39;&quot;)</span>
+        <span class="c1"># logger.notice("- self.args = '{self.args}'")</span>
 
-        <span class="c1"># get list of argument used names, if they are defined in the module&#39;s class</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Module &#39;</span><span class="si">{</span><span class="n">classname</span><span class="si">}</span><span class="s2">&#39;: args = &#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="c1"># get list of argument used names, if they are defined in the module's class</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Module '</span><span class="si">{</span><span class="n">classname</span><span class="si">}</span><span class="s2">': args = '</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
         <span class="n">arglist</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span>
 
         <span class="n">loadedmodule</span><span class="o">.</span><span class="n">_init_complete</span> <span class="o">=</span> <span class="kc">False</span>
@@ -6045,7 +6045,7 @@
             <span class="k">if</span> <span class="n">module_params</span> <span class="o">!=</span> <span class="p">{}:</span>
                 <span class="c1"># module_params values are already cast to their declared type by</span>
                 <span class="c1"># check_parameters(), use them as-is</span>
-                <span class="n">init_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">module_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">arglist</span><span class="p">}</span>
+                <span class="n">init_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">module_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">arglist</span><span class="p">}</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># no module metadata parameters declared: fall back to the raw config args</span>
                 <span class="n">init_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unwrap_conf_string</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="n">n</span><span class="p">])</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">arglist</span><span class="p">}</span>
@@ -6065,16 +6065,16 @@
                 <span class="n">code_version</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># if module code without version</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">test_version</span><span class="p">(</span><span class="n">code_version</span><span class="p">):</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Modules: Loaded module &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; (class &#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">loadedmodule</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;) v</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">get_mlstring</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Modules: Loaded module '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">' (class '</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">loadedmodule</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span><span class="si">}</span><span class="s2">') v</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">get_version</span><span class="p">()</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">get_mlstring</span><span class="p">(</span><span class="s1">'description'</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_moduledict</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">loadedmodule</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_modules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_moduledict</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
                 <span class="k">return</span> <span class="n">loadedmodule</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Module </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> not started: Module version mismatch&#39;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Module </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> not started: Module version mismatch'</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Modules: Module &#39;</span><span class="si">{</span><span class="n">classpath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; initialization failed, module not loaded&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Modules: Module '</span><span class="si">{</span><span class="n">classpath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">' initialization failed, module not loaded"</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
 
     <span class="c1"># ------------------------------------------------------------------------------------</span>
@@ -6083,7 +6083,7 @@
 
 <div class="viewcode-block" id="Modules.get_instance"><a class="viewcode-back" href="../../lib/module.html#lib.module.Modules.get_instance">[Doku]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_instance</span><span class="p">():</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the instance of the Modules class, to be used to access the modules-api</span>
 
 <span class="sd">        Use it the following way to access the api:</span>
@@ -6100,26 +6100,26 @@
 
 <span class="sd">        :return: modules instance</span>
 <span class="sd">        :rtype: object of None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">_modules_instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_modules_instance</span></div>
 
 <div class="viewcode-block" id="Modules.return_modules"><a class="viewcode-back" href="../../lib/module.html#lib.module.Modules.return_modules">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">return_modules</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns a list with the names of all loaded modules</span>
 
 <span class="sd">        :return: list of module names</span>
 <span class="sd">        :rtype: list</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">module_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_moduledict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">module_key</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="Modules.get_module"><a class="viewcode-back" href="../../lib/module.html#lib.module.Modules.get_module">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the module object for the module named by the parameter</span>
 <span class="sd">        or None, if the named module is not loaded</span>
 
@@ -6128,42 +6128,42 @@
 
 <span class="sd">        :return: list of module names</span>
 <span class="sd">        :rtype: object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_moduledict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Modules.start"><a class="viewcode-back" href="../../lib/module.html#lib.module.Modules.start">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Start all modules</span>
 
 <span class="sd">        Call start routine of module in case the module wants to start any threads</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start Modules&#39;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Start Modules'</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_modules</span><span class="p">():</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Starting </span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s1"> Module&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Starting </span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s1"> Module'</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_module</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Modules.stop"><a class="viewcode-back" href="../../lib/module.html#lib.module.Modules.stop">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Stop all modules</span>
 
 <span class="sd">        Call stop routine of module to clean up in case the module has started any threads</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Stop Modules&#39;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Stop Modules'</span><span class="p">)</span>
 
         <span class="n">module_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_modules</span><span class="p">()</span>
         <span class="c1"># stop modules in revered order (module started first is stopped last)</span>
         <span class="n">module_list</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">module_list</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Stopping </span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s1"> Module&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Stopping </span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s1"> Module'</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_module</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
             <span class="c1">#            except:</span>
             <span class="c1">#                pass</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error while stopping module &#39;</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">-&gt; </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div></div>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error while stopping module '</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2">'</span><span class="se">\n</span><span class="s2">-&gt; </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

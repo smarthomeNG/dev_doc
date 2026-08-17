@@ -5862,22 +5862,22 @@ Diese Funktion steht allerdings nur bei Nutzung einer SQLite3 Datenbank zur Verf
 <p>Die heruntergeladene Datei hat dabei folgendes Format:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>BEGIN TRANSACTION;
 CREATE TABLE database_version(version NUMERIC, updated BIGINT, rollout TEXT, rollback TEXT);
-INSERT INTO &quot;database_version&quot; VALUES(1,1518289184830,&#39;CREATE TABLE log (time BIGINT, item_id INTEGER, duration BIGINT, val_str TEXT, val_num REAL, val_bool BOOLEAN, changed BIGINT);&#39;,&#39;DROP TABLE log;&#39;);
-INSERT INTO &quot;database_version&quot; VALUES(2,1518289184835,&#39;CREATE TABLE item (id INTEGER, name varchar(255), time BIGINT, val_str TEXT, val_num REAL, val_bool BOOLEAN, changed BIGINT);&#39;,&#39;DROP TABLE item;&#39;);
-INSERT INTO &quot;database_version&quot; VALUES(3,1518289184840,&#39;CREATE UNIQUE INDEX log_item_id_time ON log (item_id, time);&#39;,&#39;DROP INDEX log_item_id_time;&#39;);
-INSERT INTO &quot;database_version&quot; VALUES(4,1518289184845,&#39;CREATE INDEX log_item_id_changed ON log (item_id, changed);&#39;,&#39;DROP INDEX log_item_id_changed;&#39;);
-INSERT INTO &quot;database_version&quot; VALUES(5,1518289184849,&#39;CREATE UNIQUE INDEX item_id ON item (id);&#39;,&#39;DROP INDEX item_id;&#39;);
-INSERT INTO &quot;database_version&quot; VALUES(6,1518289184854,&#39;CREATE INDEX item_name ON item (name);&#39;,&#39;DROP INDEX item_name;&#39;);
+INSERT INTO "database_version" VALUES(1,1518289184830,'CREATE TABLE log (time BIGINT, item_id INTEGER, duration BIGINT, val_str TEXT, val_num REAL, val_bool BOOLEAN, changed BIGINT);','DROP TABLE log;');
+INSERT INTO "database_version" VALUES(2,1518289184835,'CREATE TABLE item (id INTEGER, name varchar(255), time BIGINT, val_str TEXT, val_num REAL, val_bool BOOLEAN, changed BIGINT);','DROP TABLE item;');
+INSERT INTO "database_version" VALUES(3,1518289184840,'CREATE UNIQUE INDEX log_item_id_time ON log (item_id, time);','DROP INDEX log_item_id_time;');
+INSERT INTO "database_version" VALUES(4,1518289184845,'CREATE INDEX log_item_id_changed ON log (item_id, changed);','DROP INDEX log_item_id_changed;');
+INSERT INTO "database_version" VALUES(5,1518289184849,'CREATE UNIQUE INDEX item_id ON item (id);','DROP INDEX item_id;');
+INSERT INTO "database_version" VALUES(6,1518289184854,'CREATE INDEX item_name ON item (name);','DROP INDEX item_name;');
 CREATE TABLE item (id INTEGER, name varchar(255), time BIGINT, val_str TEXT, val_num REAL, val_bool BOOLEAN, changed BIGINT);
-INSERT INTO &quot;item&quot; VALUES(3,&#39;wohnung.kochen.kochfeldg.ma&#39;,1669554322161,NULL,202.0,1,1669554363596);
+INSERT INTO "item" VALUES(3,'wohnung.kochen.kochfeldg.ma',1669554322161,NULL,202.0,1,1669554363596);
 
 ...
 
-INSERT INTO &quot;log&quot; VALUES(1669557938064,101,NULL,NULL,527.0,1,1669557938992);
-INSERT INTO &quot;log&quot; VALUES(1669557928298,105,NULL,NULL,230.0,1,1669557939008);
-INSERT INTO &quot;log&quot; VALUES(1669557928356,107,NULL,NULL,227.0,1,1669557939032);
-INSERT INTO &quot;log&quot; VALUES(1669557906685,1446,NULL,&#39;1.45&#39;,NULL,1,1669557939063);
-INSERT INTO &quot;log&quot; VALUES(1669557906694,1447,NULL,&#39;1.45&#39;,NULL,1,1669557939071);
+INSERT INTO "log" VALUES(1669557938064,101,NULL,NULL,527.0,1,1669557938992);
+INSERT INTO "log" VALUES(1669557928298,105,NULL,NULL,230.0,1,1669557939008);
+INSERT INTO "log" VALUES(1669557928356,107,NULL,NULL,227.0,1,1669557939032);
+INSERT INTO "log" VALUES(1669557906685,1446,NULL,'1.45',NULL,1,1669557939063);
+INSERT INTO "log" VALUES(1669557906694,1447,NULL,'1.45',NULL,1,1669557939071);
 CREATE UNIQUE INDEX log_item_id_time ON log (item_id, time);
 CREATE INDEX log_item_id_changed ON log (item_id, changed);
 CREATE UNIQUE INDEX item_id ON item (id);
@@ -5935,11 +5935,11 @@ Energieberechnungen.</p>
 automatisch auf allen registrierten Items verfügbar gemacht werden.</p>
 <p><strong>Verwendung im Plugin:</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Verbindung verloren — Lücke öffnen</span>
-<span class="n">sh</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">power</span><span class="o">.</span><span class="n">db_mark_invalid</span><span class="p">(</span><span class="n">caller</span><span class="o">=</span><span class="s1">&#39;solar_plugin&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">&#39;connection_lost&#39;</span><span class="p">)</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">power</span><span class="o">.</span><span class="n">db_mark_invalid</span><span class="p">(</span><span class="n">caller</span><span class="o">=</span><span class="s1">'solar_plugin'</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">'connection_lost'</span><span class="p">)</span>
 
 <span class="c1"># Verbindung wiederhergestellt — Lücke schließen, dann neuen Wert setzen</span>
-<span class="n">sh</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">power</span><span class="o">.</span><span class="n">db_mark_valid</span><span class="p">(</span><span class="n">caller</span><span class="o">=</span><span class="s1">&#39;solar_plugin&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">&#39;connection_restored&#39;</span><span class="p">)</span>
-<span class="n">sh</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">new_value</span><span class="p">,</span> <span class="s1">&#39;solar_plugin&#39;</span><span class="p">)</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">power</span><span class="o">.</span><span class="n">db_mark_valid</span><span class="p">(</span><span class="n">caller</span><span class="o">=</span><span class="s1">'solar_plugin'</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">'connection_restored'</span><span class="p">)</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">new_value</span><span class="p">,</span> <span class="s1">'solar_plugin'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Lückeneinträge (<code class="docutils literal notranslate"><span class="pre">val_quality</span> <span class="pre">=</span> <span class="pre">1</span></code>) werden bei Aggregationsabfragen (<code class="docutils literal notranslate"><span class="pre">avg</span></code>, <code class="docutils literal notranslate"><span class="pre">sum</span></code>,
@@ -6195,11 +6195,11 @@ Beispiele finden sich in der SmartVisu Dokumentation unter plot.period.</p>
 </table>
 <p>Beispiele:</p>
 <p>Integral aller Werte der letzten Woche, z.B. um Leistungen zu einem Verbrauch aufzuintegrieren</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">item.db(&#39;integrate&#39;,&#39;1w&#39;)</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">item.db('integrate','1w')</span>
 </pre></div>
 </div>
 <p>Differenz der Datenbank zwischen heute und vor einem Jahr:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">item.db(&#39;diff&#39;,&#39;365d&#39;, &#39;now&#39;)</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">item.db('diff','365d', 'now')</span>
 </pre></div>
 </div>
 </section>
@@ -6237,7 +6237,7 @@ Verbindung zur Datenquelle unterbrochen wird.</p>
 <p>Der Python-Wert des Items bleibt dabei <strong>unverändert</strong> — die Methode wirkt
 ausschließlich auf den Datenbankpuffer.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Beispiel: im solar-Plugin, wenn die Verbindung verloren geht</span>
-<span class="n">sh</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">leistung</span><span class="o">.</span><span class="n">db_mark_invalid</span><span class="p">(</span><span class="n">caller</span><span class="o">=</span><span class="s1">&#39;solar_plugin&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">&#39;connection_lost&#39;</span><span class="p">)</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">leistung</span><span class="o">.</span><span class="n">db_mark_invalid</span><span class="p">(</span><span class="n">caller</span><span class="o">=</span><span class="s1">'solar_plugin'</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">'connection_lost'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>Parameter:</strong></p>
@@ -6257,8 +6257,8 @@ ausschließlich auf den Datenbankpuffer.</p>
 Die offene Lücke erhält die berechnete Dauer zugewiesen.  Anschließend sollte
 der neue Messwert normal gesetzt werden.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Beispiel: im solar-Plugin, wenn die Verbindung wieder besteht</span>
-<span class="n">sh</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">leistung</span><span class="o">.</span><span class="n">db_mark_valid</span><span class="p">(</span><span class="n">caller</span><span class="o">=</span><span class="s1">&#39;solar_plugin&#39;</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">&#39;connection_restored&#39;</span><span class="p">)</span>
-<span class="n">sh</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">leistung</span><span class="p">(</span><span class="n">neuer_wert</span><span class="p">,</span> <span class="s1">&#39;solar_plugin&#39;</span><span class="p">)</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">leistung</span><span class="o">.</span><span class="n">db_mark_valid</span><span class="p">(</span><span class="n">caller</span><span class="o">=</span><span class="s1">'solar_plugin'</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s1">'connection_restored'</span><span class="p">)</span>
+<span class="n">sh</span><span class="o">.</span><span class="n">solar</span><span class="o">.</span><span class="n">leistung</span><span class="p">(</span><span class="n">neuer_wert</span><span class="p">,</span> <span class="s1">'solar_plugin'</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>Parameter:</strong></p>

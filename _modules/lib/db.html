@@ -5793,19 +5793,19 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_sh_db_query_timeout</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return db_query_timeout from the running SmartHomeNG instance.</span>
+<span class="w">    </span><span class="sd">"""Return db_query_timeout from the running SmartHomeNG instance.</span>
 
 <span class="sd">    Falls back to _DB_QUERY_TIMEOUT_DEFAULT when called before SmartHomeNG</span>
 <span class="sd">    is initialised (tests, early startup) or when the config key is absent.</span>
 <span class="sd">    Lazy import avoids a circular dependency (lib.smarthome -&gt; many libs,</span>
 <span class="sd">    but none of them import lib.db at module level).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">lib.smarthome</span><span class="w"> </span><span class="kn">import</span> <span class="n">SmartHome</span>
 
         <span class="n">sh</span> <span class="o">=</span> <span class="n">SmartHome</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">sh</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">sh</span><span class="p">,</span> <span class="s1">&#39;_db_query_timeout&#39;</span><span class="p">,</span> <span class="n">_DB_QUERY_TIMEOUT_DEFAULT</span><span class="p">))</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">sh</span><span class="p">,</span> <span class="s1">'_db_query_timeout'</span><span class="p">,</span> <span class="n">_DB_QUERY_TIMEOUT_DEFAULT</span><span class="p">))</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
         <span class="k">pass</span>
     <span class="k">return</span> <span class="n">_DB_QUERY_TIMEOUT_DEFAULT</span>
@@ -5813,24 +5813,24 @@
 
 <span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">_hang_watchdog</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Log a single WARNING partway through a bounded wait if it&#39;s still</span>
+<span class="w">    </span><span class="sd">"""Log a single WARNING partway through a bounded wait if it's still</span>
 <span class="sd">    running, so a genuinely wedged connection is visible in the log before</span>
 <span class="sd">    (not just after) the eventual timeout/error fires.</span>
 
 <span class="sd">    Not shutdown-specific - wraps any bounded wait in this module, including</span>
 <span class="sd">    live query execution while SmartHomeNG is running normally. A blocked</span>
-<span class="sd">    worker thread doesn&#39;t hold the GIL (it&#39;s parked in a socket read), so</span>
+<span class="sd">    worker thread doesn't hold the GIL (it's parked in a socket read), so</span>
 <span class="sd">    this timer thread runs and logs regardless of what the blocked thread</span>
 <span class="sd">    is doing.</span>
 
 <span class="sd">    Fires once, at half of *timeout*. Cancelled harmlessly if the</span>
 <span class="sd">    operation finishes first - the normal/fast path never logs anything.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">warn_after</span> <span class="o">=</span> <span class="n">timeout</span> <span class="o">/</span> <span class="mi">2</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_warn</span><span class="p">():</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="s1">&#39;Database [</span><span class="si">{}</span><span class="s1">]: </span><span class="si">{}</span><span class="s1"> still running after </span><span class="si">{:.0f}</span><span class="s1">s - will give up in ~</span><span class="si">{:.0f}</span><span class="s1">s if unresponsive&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: </span><span class="si">{}</span><span class="s1"> still running after </span><span class="si">{:.0f}</span><span class="s1">s - will give up in ~</span><span class="si">{:.0f}</span><span class="s1">s if unresponsive'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">name</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">warn_after</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">timeout</span> <span class="o">-</span> <span class="n">warn_after</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="p">)</span>
@@ -5845,36 +5845,36 @@
 
 
 <div class="viewcode-block" id="Database"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database">[Doku]</a><span class="k">class</span><span class="w"> </span><span class="nc">Database</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A database abstraction layer based on DB-API2 specification.</span>
+<span class="w">    </span><span class="sd">"""A database abstraction layer based on DB-API2 specification.</span>
 
 <span class="sd">    It provides basic functionality to access databases using Python driver</span>
 <span class="sd">    implementations based on the DB-API2 specification (PEP 249).</span>
 
 <span class="sd">    The following methods are provided:</span>
-<span class="sd">    &#39;__init__()&#39; - create a new database object</span>
-<span class="sd">    &#39;connect()&#39; - establish the connection to the database</span>
-<span class="sd">    &#39;close()&#39; - close the connection to the database</span>
-<span class="sd">    &#39;setup()&#39; - check/update/upgrade database structure</span>
-<span class="sd">    &#39;execute()&#39; - execute statement (no result returned)</span>
-<span class="sd">    &#39;fetchone()&#39; - execute statement and return first row from result</span>
-<span class="sd">    &#39;fetchall()&#39; - execute statement and reeturn all rows from result</span>
-<span class="sd">    &#39;cursor()&#39; - create a cursor object to execute multiple statements</span>
-<span class="sd">    &#39;commit()&#39; - commit a transaction (if the selcted database supports it)</span>
-<span class="sd">    &#39;rollback()&#39; - rollback a transaction (if the selcted database supports it)</span>
-<span class="sd">    &#39;lock()&#39; - acquire the database lock (prevent simultaneous reads/writes)</span>
-<span class="sd">    &#39;release()&#39; - release the database lock</span>
-<span class="sd">    &#39;verify()&#39; - check database connection and reconnect if required</span>
-<span class="sd">    &#39;connected()&#39; - check if database is connected</span>
+<span class="sd">    '__init__()' - create a new database object</span>
+<span class="sd">    'connect()' - establish the connection to the database</span>
+<span class="sd">    'close()' - close the connection to the database</span>
+<span class="sd">    'setup()' - check/update/upgrade database structure</span>
+<span class="sd">    'execute()' - execute statement (no result returned)</span>
+<span class="sd">    'fetchone()' - execute statement and return first row from result</span>
+<span class="sd">    'fetchall()' - execute statement and reeturn all rows from result</span>
+<span class="sd">    'cursor()' - create a cursor object to execute multiple statements</span>
+<span class="sd">    'commit()' - commit a transaction (if the selcted database supports it)</span>
+<span class="sd">    'rollback()' - rollback a transaction (if the selcted database supports it)</span>
+<span class="sd">    'lock()' - acquire the database lock (prevent simultaneous reads/writes)</span>
+<span class="sd">    'release()' - release the database lock</span>
+<span class="sd">    'verify()' - check database connection and reconnect if required</span>
+<span class="sd">    'connected()' - check if database is connected</span>
 
 
 <span class="sd">    The SQL statements executed may have placeholders and parameters which</span>
 <span class="sd">    are passed to the execution methods listed above. The following DB-API</span>
 <span class="sd">    driver implementations are supported:</span>
-<span class="sd">    - qmark: Specify placeholders as &quot;?&quot; and parameters as list</span>
-<span class="sd">    - format: Specify placeholders as &quot;%s&quot; and parameters as list</span>
-<span class="sd">    - numeric: Specify placeholders as &quot;:1&quot; and parameters as list</span>
-<span class="sd">    - named: Specify placeholders as &quot;:name&quot; and parameters as dict</span>
-<span class="sd">    - pyformat: Specify placeholders as &quot;%(arg)s&quot; and parameters as dict</span>
+<span class="sd">    - qmark: Specify placeholders as "?" and parameters as list</span>
+<span class="sd">    - format: Specify placeholders as "%s" and parameters as list</span>
+<span class="sd">    - numeric: Specify placeholders as ":1" and parameters as list</span>
+<span class="sd">    - named: Specify placeholders as ":name" and parameters as dict</span>
+<span class="sd">    - pyformat: Specify placeholders as "%(arg)s" and parameters as dict</span>
 
 <span class="sd">    Further you can choose a different formatting style in your code when</span>
 <span class="sd">    using this class. Specify one of the formatting listed above or use</span>
@@ -5882,10 +5882,10 @@
 
 <span class="sd">    In case the driver implementation uses a different formatting it</span>
 <span class="sd">    will be converted transparently!</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># Supported formatting styles</span>
-    <span class="n">_styles</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;qmark&#39;</span><span class="p">,</span> <span class="s1">&#39;format&#39;</span><span class="p">,</span> <span class="s1">&#39;numeric&#39;</span><span class="p">,</span> <span class="s1">&#39;named&#39;</span><span class="p">,</span> <span class="s1">&#39;pyformat&#39;</span><span class="p">)</span>
+    <span class="n">_styles</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'qmark'</span><span class="p">,</span> <span class="s1">'format'</span><span class="p">,</span> <span class="s1">'numeric'</span><span class="p">,</span> <span class="s1">'named'</span><span class="p">,</span> <span class="s1">'pyformat'</span><span class="p">)</span>
 
     <span class="c1"># Supported formatting translations:</span>
     <span class="c1"># - input_token: The token in source query to replace with output token</span>
@@ -5896,94 +5896,94 @@
     <span class="c1"># - {0}: Number of parameter (counting from 1 for first parameter)</span>
     <span class="c1"># - {1}: First match of input_token regex (use 2 for second, 3 for third, etc)</span>
     <span class="n">_translations</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;qmark&#39;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s1">&#39;qmark&#39;</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;input_token&#39;</span><span class="p">:</span> <span class="s1">&#39;?&#39;</span><span class="p">,</span> <span class="s1">&#39;output_token&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">},</span>
-            <span class="s1">&#39;numeric&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;input_token&#39;</span><span class="p">:</span> <span class="s1">&#39;?&#39;</span><span class="p">,</span> <span class="s1">&#39;output_token&#39;</span><span class="p">:</span> <span class="s1">&#39;:</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="p">},</span>
-            <span class="s1">&#39;named&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;input_token&#39;</span><span class="p">:</span> <span class="s1">&#39;?&#39;</span><span class="p">,</span> <span class="s1">&#39;output_token&#39;</span><span class="p">:</span> <span class="s1">&#39;:arg</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;output_name&#39;</span><span class="p">:</span> <span class="s1">&#39;arg</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="p">},</span>
-            <span class="s1">&#39;pyformat&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;input_token&#39;</span><span class="p">:</span> <span class="s1">&#39;?&#39;</span><span class="p">,</span> <span class="s1">&#39;output_token&#39;</span><span class="p">:</span> <span class="s1">&#39;%(arg</span><span class="si">{0}</span><span class="s1">)s&#39;</span><span class="p">,</span> <span class="s1">&#39;output_name&#39;</span><span class="p">:</span> <span class="s1">&#39;arg</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="p">},</span>
+        <span class="s1">'qmark'</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">'qmark'</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s1">'format'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'input_token'</span><span class="p">:</span> <span class="s1">'?'</span><span class="p">,</span> <span class="s1">'output_token'</span><span class="p">:</span> <span class="s1">'</span><span class="si">%s</span><span class="s1">'</span><span class="p">},</span>
+            <span class="s1">'numeric'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'input_token'</span><span class="p">:</span> <span class="s1">'?'</span><span class="p">,</span> <span class="s1">'output_token'</span><span class="p">:</span> <span class="s1">':</span><span class="si">{0}</span><span class="s1">'</span><span class="p">},</span>
+            <span class="s1">'named'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'input_token'</span><span class="p">:</span> <span class="s1">'?'</span><span class="p">,</span> <span class="s1">'output_token'</span><span class="p">:</span> <span class="s1">':arg</span><span class="si">{0}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'output_name'</span><span class="p">:</span> <span class="s1">'arg</span><span class="si">{0}</span><span class="s1">'</span><span class="p">},</span>
+            <span class="s1">'pyformat'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'input_token'</span><span class="p">:</span> <span class="s1">'?'</span><span class="p">,</span> <span class="s1">'output_token'</span><span class="p">:</span> <span class="s1">'%(arg</span><span class="si">{0}</span><span class="s1">)s'</span><span class="p">,</span> <span class="s1">'output_name'</span><span class="p">:</span> <span class="s1">'arg</span><span class="si">{0}</span><span class="s1">'</span><span class="p">},</span>
         <span class="p">},</span>
-        <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s1">&#39;qmark&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;input_token&#39;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\w+&#39;</span><span class="p">),</span> <span class="s1">&#39;output_token&#39;</span><span class="p">:</span> <span class="s1">&#39;?&#39;</span><span class="p">},</span>
-            <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="s1">&#39;numeric&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;input_token&#39;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\w+&#39;</span><span class="p">),</span> <span class="s1">&#39;output_token&#39;</span><span class="p">:</span> <span class="s1">&#39;:</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="p">},</span>
-            <span class="s1">&#39;named&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;input_token&#39;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\w+&#39;</span><span class="p">),</span> <span class="s1">&#39;output_token&#39;</span><span class="p">:</span> <span class="s1">&#39;:arg</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;output_name&#39;</span><span class="p">:</span> <span class="s1">&#39;arg</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="p">},</span>
-            <span class="s1">&#39;pyformat&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;input_token&#39;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\w+&#39;</span><span class="p">),</span> <span class="s1">&#39;output_token&#39;</span><span class="p">:</span> <span class="s1">&#39;%(arg</span><span class="si">{0}</span><span class="s1">)s&#39;</span><span class="p">,</span> <span class="s1">&#39;output_name&#39;</span><span class="p">:</span> <span class="s1">&#39;arg</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="p">},</span>
+        <span class="s1">'format'</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">'qmark'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'input_token'</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'%\w+'</span><span class="p">),</span> <span class="s1">'output_token'</span><span class="p">:</span> <span class="s1">'?'</span><span class="p">},</span>
+            <span class="s1">'format'</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s1">'numeric'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'input_token'</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'%\w+'</span><span class="p">),</span> <span class="s1">'output_token'</span><span class="p">:</span> <span class="s1">':</span><span class="si">{0}</span><span class="s1">'</span><span class="p">},</span>
+            <span class="s1">'named'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'input_token'</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'%\w+'</span><span class="p">),</span> <span class="s1">'output_token'</span><span class="p">:</span> <span class="s1">':arg</span><span class="si">{0}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'output_name'</span><span class="p">:</span> <span class="s1">'arg</span><span class="si">{0}</span><span class="s1">'</span><span class="p">},</span>
+            <span class="s1">'pyformat'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'input_token'</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'%\w+'</span><span class="p">),</span> <span class="s1">'output_token'</span><span class="p">:</span> <span class="s1">'%(arg</span><span class="si">{0}</span><span class="s1">)s'</span><span class="p">,</span> <span class="s1">'output_name'</span><span class="p">:</span> <span class="s1">'arg</span><span class="si">{0}</span><span class="s1">'</span><span class="p">},</span>
         <span class="p">},</span>
-        <span class="s1">&#39;numeric&#39;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s1">&#39;qmark&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;input_token&#39;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;:(\d+)&#39;</span><span class="p">),</span> <span class="s1">&#39;output_token&#39;</span><span class="p">:</span> <span class="s1">&#39;?&#39;</span><span class="p">,</span> <span class="s1">&#39;input_name&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="p">},</span>
-            <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;input_token&#39;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;:(\d+)&#39;</span><span class="p">),</span> <span class="s1">&#39;output_token&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;input_name&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="p">},</span>
-            <span class="s1">&#39;numeric&#39;</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="s1">&#39;named&#39;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s1">&#39;input_token&#39;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;:(\d+)&#39;</span><span class="p">),</span>
-                <span class="s1">&#39;output_token&#39;</span><span class="p">:</span> <span class="s1">&#39;:arg</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;input_name&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;output_name&#39;</span><span class="p">:</span> <span class="s1">&#39;arg</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">'numeric'</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">'qmark'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'input_token'</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">':(\d+)'</span><span class="p">),</span> <span class="s1">'output_token'</span><span class="p">:</span> <span class="s1">'?'</span><span class="p">,</span> <span class="s1">'input_name'</span><span class="p">:</span> <span class="s1">'</span><span class="si">{1}</span><span class="s1">'</span><span class="p">},</span>
+            <span class="s1">'format'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'input_token'</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">':(\d+)'</span><span class="p">),</span> <span class="s1">'output_token'</span><span class="p">:</span> <span class="s1">'</span><span class="si">%s</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'input_name'</span><span class="p">:</span> <span class="s1">'</span><span class="si">{1}</span><span class="s1">'</span><span class="p">},</span>
+            <span class="s1">'numeric'</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s1">'named'</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">'input_token'</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">':(\d+)'</span><span class="p">),</span>
+                <span class="s1">'output_token'</span><span class="p">:</span> <span class="s1">':arg</span><span class="si">{1}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="s1">'input_name'</span><span class="p">:</span> <span class="s1">'</span><span class="si">{1}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="s1">'output_name'</span><span class="p">:</span> <span class="s1">'arg</span><span class="si">{1}</span><span class="s1">'</span><span class="p">,</span>
             <span class="p">},</span>
-            <span class="s1">&#39;pyformat&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;input_token&#39;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;:(\d+)&#39;</span><span class="p">),</span> <span class="s1">&#39;output_token&#39;</span><span class="p">:</span> <span class="s1">&#39;%(arg</span><span class="si">{1}</span><span class="s1">)s&#39;</span><span class="p">,</span> <span class="s1">&#39;output_name&#39;</span><span class="p">:</span> <span class="s1">&#39;arg</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="p">},</span>
+            <span class="s1">'pyformat'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'input_token'</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">':(\d+)'</span><span class="p">),</span> <span class="s1">'output_token'</span><span class="p">:</span> <span class="s1">'%(arg</span><span class="si">{1}</span><span class="s1">)s'</span><span class="p">,</span> <span class="s1">'output_name'</span><span class="p">:</span> <span class="s1">'arg</span><span class="si">{1}</span><span class="s1">'</span><span class="p">},</span>
         <span class="p">},</span>
-        <span class="s1">&#39;named&#39;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s1">&#39;qmark&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;input_token&#39;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;:(\w+)&#39;</span><span class="p">),</span> <span class="s1">&#39;output_token&#39;</span><span class="p">:</span> <span class="s1">&#39;?&#39;</span><span class="p">,</span> <span class="s1">&#39;input_name&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="p">},</span>
-            <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;input_token&#39;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;:(\w+)&#39;</span><span class="p">),</span> <span class="s1">&#39;output_token&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;input_name&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="p">},</span>
-            <span class="s1">&#39;numeric&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;input_token&#39;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;:(\w+)&#39;</span><span class="p">),</span> <span class="s1">&#39;output_token&#39;</span><span class="p">:</span> <span class="s1">&#39;:</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;input_name&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="p">},</span>
-            <span class="s1">&#39;named&#39;</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="s1">&#39;pyformat&#39;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s1">&#39;input_token&#39;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;:(\w+)&#39;</span><span class="p">),</span>
-                <span class="s1">&#39;output_token&#39;</span><span class="p">:</span> <span class="s1">&#39;%(</span><span class="si">{1}</span><span class="s1">)s&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;input_name&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;output_name&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">'named'</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">'qmark'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'input_token'</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">':(\w+)'</span><span class="p">),</span> <span class="s1">'output_token'</span><span class="p">:</span> <span class="s1">'?'</span><span class="p">,</span> <span class="s1">'input_name'</span><span class="p">:</span> <span class="s1">'</span><span class="si">{1}</span><span class="s1">'</span><span class="p">},</span>
+            <span class="s1">'format'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'input_token'</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">':(\w+)'</span><span class="p">),</span> <span class="s1">'output_token'</span><span class="p">:</span> <span class="s1">'</span><span class="si">%s</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'input_name'</span><span class="p">:</span> <span class="s1">'</span><span class="si">{1}</span><span class="s1">'</span><span class="p">},</span>
+            <span class="s1">'numeric'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'input_token'</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">':(\w+)'</span><span class="p">),</span> <span class="s1">'output_token'</span><span class="p">:</span> <span class="s1">':</span><span class="si">{0}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'input_name'</span><span class="p">:</span> <span class="s1">'</span><span class="si">{1}</span><span class="s1">'</span><span class="p">},</span>
+            <span class="s1">'named'</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s1">'pyformat'</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">'input_token'</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">':(\w+)'</span><span class="p">),</span>
+                <span class="s1">'output_token'</span><span class="p">:</span> <span class="s1">'%(</span><span class="si">{1}</span><span class="s1">)s'</span><span class="p">,</span>
+                <span class="s1">'input_name'</span><span class="p">:</span> <span class="s1">'</span><span class="si">{1}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="s1">'output_name'</span><span class="p">:</span> <span class="s1">'</span><span class="si">{1}</span><span class="s1">'</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">},</span>
-        <span class="s1">&#39;pyformat&#39;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s1">&#39;qmark&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;input_token&#39;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\((\w+)\)\w+&#39;</span><span class="p">),</span> <span class="s1">&#39;output_token&#39;</span><span class="p">:</span> <span class="s1">&#39;?&#39;</span><span class="p">,</span> <span class="s1">&#39;input_name&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="p">},</span>
-            <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;input_token&#39;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\((\w+)\)\w+&#39;</span><span class="p">),</span> <span class="s1">&#39;output_token&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;input_name&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="p">},</span>
-            <span class="s1">&#39;numeric&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;input_token&#39;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\((\w+)\)\w+&#39;</span><span class="p">),</span> <span class="s1">&#39;output_token&#39;</span><span class="p">:</span> <span class="s1">&#39;:</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;input_name&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="p">},</span>
-            <span class="s1">&#39;named&#39;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s1">&#39;input_token&#39;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;%\((\w+)\)\w+&#39;</span><span class="p">),</span>
-                <span class="s1">&#39;output_token&#39;</span><span class="p">:</span> <span class="s1">&#39;:</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;input_name&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="p">,</span>
-                <span class="s1">&#39;output_name&#39;</span><span class="p">:</span> <span class="s1">&#39;</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">'pyformat'</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">'qmark'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'input_token'</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'%\((\w+)\)\w+'</span><span class="p">),</span> <span class="s1">'output_token'</span><span class="p">:</span> <span class="s1">'?'</span><span class="p">,</span> <span class="s1">'input_name'</span><span class="p">:</span> <span class="s1">'</span><span class="si">{1}</span><span class="s1">'</span><span class="p">},</span>
+            <span class="s1">'format'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'input_token'</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'%\((\w+)\)\w+'</span><span class="p">),</span> <span class="s1">'output_token'</span><span class="p">:</span> <span class="s1">'</span><span class="si">%s</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'input_name'</span><span class="p">:</span> <span class="s1">'</span><span class="si">{1}</span><span class="s1">'</span><span class="p">},</span>
+            <span class="s1">'numeric'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'input_token'</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'%\((\w+)\)\w+'</span><span class="p">),</span> <span class="s1">'output_token'</span><span class="p">:</span> <span class="s1">':</span><span class="si">{0}</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'input_name'</span><span class="p">:</span> <span class="s1">'</span><span class="si">{1}</span><span class="s1">'</span><span class="p">},</span>
+            <span class="s1">'named'</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">'input_token'</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'%\((\w+)\)\w+'</span><span class="p">),</span>
+                <span class="s1">'output_token'</span><span class="p">:</span> <span class="s1">':</span><span class="si">{1}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="s1">'input_name'</span><span class="p">:</span> <span class="s1">'</span><span class="si">{1}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="s1">'output_name'</span><span class="p">:</span> <span class="s1">'</span><span class="si">{1}</span><span class="s1">'</span><span class="p">,</span>
             <span class="p">},</span>
-            <span class="s1">&#39;pyformat&#39;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s1">'pyformat'</span><span class="p">:</span> <span class="p">{},</span>
         <span class="p">},</span>
     <span class="p">}</span>
-    <span class="n">_translation_param_types</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;qmark&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="s1">&#39;numeric&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="s1">&#39;named&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="s1">&#39;pyformat&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">}</span>
+    <span class="n">_translation_param_types</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'qmark'</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="s1">'format'</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="s1">'numeric'</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="s1">'named'</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="s1">'pyformat'</span><span class="p">:</span> <span class="nb">dict</span><span class="p">}</span>
 
     <span class="c1"># connect() kwargs that must be an int rather than the literal string from</span>
-    <span class="c1"># config (e.g. pymysql&#39;s port=). Every other key is passed through as-is -</span>
+    <span class="c1"># config (e.g. pymysql's port=). Every other key is passed through as-is -</span>
     <span class="c1"># guessing types via int/float fallback for arbitrary keys previously</span>
     <span class="c1"># turned numeric-looking values (e.g. a numeric password) silently into</span>
     <span class="c1"># the wrong type.</span>
-    <span class="n">_numeric_connect_keys</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;port&#39;</span><span class="p">,</span> <span class="s1">&#39;connect_timeout&#39;</span><span class="p">,</span> <span class="s1">&#39;read_timeout&#39;</span><span class="p">,</span> <span class="s1">&#39;write_timeout&#39;</span><span class="p">}</span>
+    <span class="n">_numeric_connect_keys</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'port'</span><span class="p">,</span> <span class="s1">'connect_timeout'</span><span class="p">,</span> <span class="s1">'read_timeout'</span><span class="p">,</span> <span class="s1">'write_timeout'</span><span class="p">}</span>
 
     <span class="c1"># DB-API driver __name__ values that accept pymysql-style timeout kwargs.</span>
     <span class="c1"># These are injected as defaults in __init__ when not already in _params.</span>
-    <span class="n">_pymysql_driver_names</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s1">&#39;pymysql&#39;</span><span class="p">,</span> <span class="s1">&#39;MySQLdb&#39;</span><span class="p">,</span> <span class="s1">&#39;mysql.connector&#39;</span><span class="p">})</span>
+    <span class="n">_pymysql_driver_names</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s1">'pymysql'</span><span class="p">,</span> <span class="s1">'MySQLdb'</span><span class="p">,</span> <span class="s1">'mysql.connector'</span><span class="p">})</span>
 
     <span class="c1"># connect() kwargs that must be a real bool rather than the literal</span>
-    <span class="c1"># string from config - a non-empty string like &#39;False&#39; is truthy in</span>
+    <span class="c1"># string from config - a non-empty string like 'False' is truthy in</span>
     <span class="c1"># Python and would silently defeat an explicit override.</span>
-    <span class="n">_bool_connect_keys</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;check_same_thread&#39;</span><span class="p">}</span>
+    <span class="n">_bool_connect_keys</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'check_same_thread'</span><span class="p">}</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">dbapi</span><span class="p">,</span> <span class="n">connect</span><span class="p">,</span> <span class="n">formatting</span><span class="o">=</span><span class="s1">&#39;named&#39;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new database instance</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">dbapi</span><span class="p">,</span> <span class="n">connect</span><span class="p">,</span> <span class="n">formatting</span><span class="o">=</span><span class="s1">'named'</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Create a new database instance</span>
 
-<span class="sd">        The &#39;name&#39; parameter identifies the name for the database access .</span>
+<span class="sd">        The 'name' parameter identifies the name for the database access .</span>
 <span class="sd">        It is also used internally to create versions table (to keep track</span>
 <span class="sd">        if the database structure is up to date) and logging.</span>
 
-<span class="sd">        Use the &#39;dbapi&#39; parameter to specify the DB-API2 module of the</span>
+<span class="sd">        Use the 'dbapi' parameter to specify the DB-API2 module of the</span>
 <span class="sd">        database type to use (e.g. import the sqlite3 module and pass it</span>
-<span class="sd">        directly as parameter or as name &#39;sqlite3&#39;).</span>
+<span class="sd">        directly as parameter or as name 'sqlite3').</span>
 
-<span class="sd">        How the database is accessed is specified by the &#39;connect&#39; parameter</span>
+<span class="sd">        How the database is accessed is specified by the 'connect' parameter</span>
 <span class="sd">        which supports key/value pairs specified as dict. These named</span>
-<span class="sd">        parameters will be used as &#39;connect()&#39; parameters of the DB-API driver</span>
+<span class="sd">        parameters will be used as 'connect()' parameters of the DB-API driver</span>
 <span class="sd">        implementation.</span>
 
-<span class="sd">        The &#39;formatting&#39; parameter can be used to specify a different type</span>
-<span class="sd">        of formatting (see DB-API spec) which defaults to &#39;pyformat&#39;.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        The 'formatting' parameter can be used to specify a different type</span>
+<span class="sd">        of formatting (see DB-API spec) which defaults to 'pyformat'.</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span> <span class="o">=</span> <span class="n">Shtime</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>
 
@@ -6004,12 +6004,12 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_dbapi</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">dbapi</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;DB-API import failed for &quot;</span><span class="si">{}</span><span class="s1">&quot;: </span><span class="si">{}</span><span class="s1"> - module installed?&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dbapi</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">'DB-API import failed for "</span><span class="si">{}</span><span class="s1">": </span><span class="si">{}</span><span class="s1"> - module installed?'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dbapi</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
                 <span class="k">return</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_input</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s1">&#39;Database [</span><span class="si">{}</span><span class="s1">]: SQL format style </span><span class="si">{}</span><span class="s1"> not supported (only </span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: SQL format style </span><span class="si">{}</span><span class="s1"> not supported (only </span><span class="si">{}</span><span class="s1">)'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_styles</span>
                 <span class="p">)</span>
             <span class="p">)</span>
@@ -6019,20 +6019,20 @@
 
         <span class="c1"># Deprecated, remove with 1.7 or 1.8</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">connect</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
-            <span class="n">connect</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">connect</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="p">)]</span>
+            <span class="n">connect</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">connect</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'|'</span><span class="p">)]</span>
 
-        <span class="c1"># -&gt; but keep list of ordered dict as &quot;default&quot; returned by yaml parser!</span>
+        <span class="c1"># -&gt; but keep list of ordered dict as "default" returned by yaml parser!</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">connect</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">connect</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">connect</span><span class="p">:</span>
-                    <span class="n">key</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+                    <span class="n">key</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">':'</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_numeric_connect_keys</span><span class="p">:</span>
                         <span class="k">try</span><span class="p">:</span>
                             <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
                         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                             <span class="k">pass</span>
                     <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bool_connect_keys</span><span class="p">:</span>
-                        <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;false&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                        <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'false'</span><span class="p">,</span> <span class="s1">'0'</span><span class="p">,</span> <span class="s1">'no'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">connect</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">OrderedDict</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_params</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">connect</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
@@ -6040,20 +6040,20 @@
         <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">connect</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_params</span> <span class="o">=</span> <span class="n">connect</span>
 
-        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dbapi</span><span class="p">,</span> <span class="s1">&#39;__name__&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;sqlite3&#39;</span> <span class="ow">and</span> <span class="s1">&#39;check_same_thread&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dbapi</span><span class="p">,</span> <span class="s1">'__name__'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span> <span class="o">==</span> <span class="s1">'sqlite3'</span> <span class="ow">and</span> <span class="s1">'check_same_thread'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">:</span>
             <span class="c1"># This class already serializes every connection access via</span>
-            <span class="c1"># self._fdb_lock below - sqlite3&#39;s own check_same_thread=True</span>
+            <span class="c1"># self._fdb_lock below - sqlite3's own check_same_thread=True</span>
             <span class="c1"># default (which rejects any cross-thread use of the connection</span>
             <span class="c1"># object) is therefore redundant, and actively breaks the</span>
             <span class="c1"># scheduler-driven access pattern every caller assumes: connect()</span>
             <span class="c1"># typically runs once on the main thread at startup, while</span>
-            <span class="c1"># periodic maintenance tasks (e.g. the database plugin&#39;s</span>
+            <span class="c1"># periodic maintenance tasks (e.g. the database plugin's</span>
             <span class="c1"># remove_older_than_maxage/build_orphanlist) run on a scheduler</span>
             <span class="c1"># thread. Only applied as a default - an explicit</span>
             <span class="c1"># check_same_thread in the connect config always wins.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="s1">&#39;check_same_thread&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="s1">'check_same_thread'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
 
-        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dbapi</span><span class="p">,</span> <span class="s1">&#39;__name__&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pymysql_driver_names</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dbapi</span><span class="p">,</span> <span class="s1">'__name__'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pymysql_driver_names</span><span class="p">:</span>
             <span class="c1"># Without explicit timeouts pymysql blocks indefinitely on a</span>
             <span class="c1"># hung server, holding _fdb_lock and preventing shutdown.</span>
             <span class="c1"># connect_timeout covers the TCP handshake; read/write_timeout</span>
@@ -6061,14 +6061,14 @@
             <span class="c1"># connect config; db_query_timeout in smarthome.yaml sets the</span>
             <span class="c1"># read/write default (falls back to _DB_QUERY_TIMEOUT_DEFAULT).</span>
             <span class="n">_qt</span> <span class="o">=</span> <span class="n">_sh_db_query_timeout</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;connect_timeout&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;read_timeout&#39;</span><span class="p">,</span> <span class="n">_qt</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;write_timeout&#39;</span><span class="p">,</span> <span class="n">_qt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">'connect_timeout'</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">'read_timeout'</span><span class="p">,</span> <span class="n">_qt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">'write_timeout'</span><span class="p">,</span> <span class="n">_qt</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_format_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbapi</span><span class="o">.</span><span class="n">paramstyle</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_output</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_styles</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s1">&#39;Database [</span><span class="si">{}</span><span class="s1">]: DB-API driver format style </span><span class="si">{}</span><span class="s1"> not supported (only </span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: DB-API driver format style </span><span class="si">{}</span><span class="s1"> not supported (only </span><span class="si">{}</span><span class="s1">)'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_output</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_styles</span>
                 <span class="p">)</span>
             <span class="p">)</span>
@@ -6083,19 +6083,19 @@
         <span class="k">return</span>
 
 <div class="viewcode-block" id="Database.connect"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.connect">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Connects to the database&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Connects to the database"""</span>
         <span class="n">timeout</span> <span class="o">=</span> <span class="n">_sh_db_query_timeout</span><span class="p">()</span>
-        <span class="k">with</span> <span class="n">_hang_watchdog</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="s1">&#39;connect() waiting for db lock&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">_hang_watchdog</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="s1">'connect() waiting for db lock'</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
             <span class="n">locked</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">locked</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span>
-                <span class="s1">&#39;Database [</span><span class="si">{}</span><span class="s1">]: could not acquire lock within </span><span class="si">{}</span><span class="s1">s in connect()&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+                <span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: could not acquire lock within </span><span class="si">{}</span><span class="s1">s in connect()'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbapi</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;Database [</span><span class="si">{}</span><span class="s2">]: Could not connect to the database using &#39;</span><span class="si">{}</span><span class="s2">&#39;: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="s2">"Database [</span><span class="si">{}</span><span class="s2">]: Could not connect to the database using '</span><span class="si">{}</span><span class="s2">': </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbapi_name</span><span class="p">,</span> <span class="n">e</span>
                 <span class="p">)</span>
             <span class="p">)</span>
@@ -6104,13 +6104,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s1">&#39;Database [</span><span class="si">{}</span><span class="s1">]: Connected with </span><span class="si">{}</span><span class="s1"> using &quot;</span><span class="si">{}</span><span class="s1">&quot; style&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_output</span><span class="p">)</span>
+            <span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: Connected with </span><span class="si">{}</span><span class="s1"> using "</span><span class="si">{}</span><span class="s1">" style'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_output</span><span class="p">)</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Database.close"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.close">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Closes the database connection&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Closes the database connection"""</span>
         <span class="n">timeout</span> <span class="o">=</span> <span class="n">_sh_db_query_timeout</span><span class="p">()</span>
-        <span class="k">with</span> <span class="n">_hang_watchdog</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="s1">&#39;close() waiting for db lock&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">_hang_watchdog</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="s1">'close() waiting for db lock'</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
             <span class="n">acquired</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">acquired</span><span class="p">:</span>
             <span class="c1"># A worker thread is holding the lock while blocked on a query</span>
@@ -6121,8 +6121,8 @@
             <span class="c1"># block.  _conn=None / _connected=False are written here so</span>
             <span class="c1"># anything the worker tries after recovering fails gracefully.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="s1">&#39;Database [</span><span class="si">{}</span><span class="s1">]: could not acquire lock within </span><span class="si">{}</span><span class="s1">s in close(); &#39;</span>
-                <span class="s1">&#39;force-closing connection to unblock hung thread&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+                <span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: could not acquire lock within </span><span class="si">{}</span><span class="s1">s in close(); '</span>
+                <span class="s1">'force-closing connection to unblock hung thread'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_reset_connection_locked</span><span class="p">()</span>
@@ -6131,18 +6131,18 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_reset_connection_locked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Discard the current connection and mark disconnected.</span>
+<span class="w">        </span><span class="sd">"""Discard the current connection and mark disconnected.</span>
 
 <span class="sd">        Callers must already hold self._fdb_lock (or, for the commit()/</span>
 <span class="sd">        rollback() failure path below, be the sole owner of a connection</span>
-<span class="sd">        that&#39;s already provably broken) - this method never acquires the</span>
+<span class="sd">        that's already provably broken) - this method never acquires the</span>
 <span class="sd">        lock itself. commit()/rollback() are always called by code that</span>
 <span class="sd">        already holds the lock via its own lock()...release() block (see</span>
 <span class="sd">        _dump()/_compact_maxage() in the database plugin) - self._fdb_lock</span>
 <span class="sd">        is a plain, non-reentrant threading.Lock, so routing the failure</span>
-<span class="sd">        path through close()&#39;s own lock() call here would deadlock a</span>
+<span class="sd">        path through close()'s own lock() call here would deadlock a</span>
 <span class="sd">        thread against itself.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -6152,11 +6152,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="Database.connected"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.connected">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">connected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the connected status&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Return the connected status"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span></div>
 
 <div class="viewcode-block" id="Database.setup"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.setup">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queries</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup or update the database structure.</span>
+<span class="w">        </span><span class="sd">"""Setup or update the database structure.</span>
 
 <span class="sd">        This method can be used to setup the database structure by providing</span>
 <span class="sd">        the SQL statements to this method. Additionally it will check if the</span>
@@ -6165,42 +6165,42 @@
 <span class="sd">        already).</span>
 
 <span class="sd">        To setup the database you need to specify the required SQL statements</span>
-<span class="sd">        (e.g. &#39;CREATE TABLE&#39;, &#39;CREATE INDEX&#39; etc.) in the &#39;queries&#39; parameter.</span>
+<span class="sd">        (e.g. 'CREATE TABLE', 'CREATE INDEX' etc.) in the 'queries' parameter.</span>
 <span class="sd">        This will be a dictionary where the keys are simple version numbers</span>
 <span class="sd">        and values are a two-item list for a rollout and rollback statement.</span>
 
 <span class="sd">        E.g.::</span>
-<span class="sd">           db.setup({1: [&#39;CREATE TABLE xyz (...)&#39;, &#39;DROP TABLE xyz&#39;], 2: [...]})</span>
+<span class="sd">           db.setup({1: ['CREATE TABLE xyz (...)', 'DROP TABLE xyz'], 2: [...]})</span>
 
-<span class="sd">        For an extended example take a look into the &#39;database&#39; plugin.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        For an extended example take a look into the 'database' plugin.</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">cur</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-            <span class="n">version_table</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;[^a-z0-9_]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="o">+</span> <span class="s1">&#39;_version&#39;</span>
+            <span class="n">version_table</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">'[^a-z0-9_]'</span><span class="p">,</span> <span class="s1">''</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="o">+</span> <span class="s1">'_version'</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="p">(</span><span class="n">version</span><span class="p">,)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetchone</span><span class="p">(</span><span class="s1">&#39;SELECT MAX(version) FROM &#39;</span> <span class="o">+</span> <span class="n">version_table</span> <span class="o">+</span> <span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">cur</span><span class="o">=</span><span class="n">cur</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="p">(</span><span class="n">version</span><span class="p">,)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetchone</span><span class="p">(</span><span class="s1">'SELECT MAX(version) FROM '</span> <span class="o">+</span> <span class="n">version_table</span> <span class="o">+</span> <span class="s1">';'</span><span class="p">,</span> <span class="n">cur</span><span class="o">=</span><span class="n">cur</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">version</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">version</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Missing table &#39;</span> <span class="o">+</span> <span class="n">version_table</span> <span class="o">+</span> <span class="s1">&#39; error can be ignored, will be created now!&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Missing table '</span> <span class="o">+</span> <span class="n">version_table</span> <span class="o">+</span> <span class="s1">' error can be ignored, will be created now!'</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
-                    <span class="s1">&#39;CREATE TABLE &#39;</span> <span class="o">+</span> <span class="n">version_table</span> <span class="o">+</span> <span class="s1">&#39;(version NUMERIC, updated BIGINT, rollout TEXT, rollback TEXT)&#39;</span><span class="p">,</span>
+                    <span class="s1">'CREATE TABLE '</span> <span class="o">+</span> <span class="n">version_table</span> <span class="o">+</span> <span class="s1">'(version NUMERIC, updated BIGINT, rollout TEXT, rollback TEXT)'</span><span class="p">,</span>
                     <span class="n">cur</span><span class="o">=</span><span class="n">cur</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="n">version</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Database [</span><span class="si">{}</span><span class="s1">]: Version </span><span class="si">{}</span><span class="s1"> found&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">version</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: Version </span><span class="si">{}</span><span class="s1"> found'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">version</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">queries</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
                 <span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">version</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Database [</span><span class="si">{}</span><span class="s1">]: Upgrading to version </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: Upgrading to version </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">queries</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">cur</span><span class="o">=</span><span class="n">cur</span><span class="p">)</span>
 
                     <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>  <span class="c1"># type: ignore (shtime is set dynamically)</span>
                     <span class="n">ts</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">mktime</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">timetuple</span><span class="p">())</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">+</span> <span class="n">dt</span><span class="o">.</span><span class="n">microsecond</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
-                        <span class="s1">&#39;INSERT INTO &#39;</span> <span class="o">+</span> <span class="n">version_table</span> <span class="o">+</span> <span class="s1">&#39;(version, updated, rollout, rollback) VALUES(?, ?, ?, ?);&#39;</span><span class="p">,</span>
+                        <span class="s1">'INSERT INTO '</span> <span class="o">+</span> <span class="n">version_table</span> <span class="o">+</span> <span class="s1">'(version, updated, rollout, rollback) VALUES(?, ?, ?, ?);'</span><span class="p">,</span>
                         <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">queries</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">queries</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="mi">1</span><span class="p">]),</span>
-                        <span class="n">formatting</span><span class="o">=</span><span class="s1">&#39;qmark&#39;</span><span class="p">,</span>
+                        <span class="n">formatting</span><span class="o">=</span><span class="s1">'qmark'</span><span class="p">,</span>
                         <span class="n">cur</span><span class="o">=</span><span class="n">cur</span><span class="p">,</span>
                     <span class="p">)</span>
 
@@ -6210,25 +6210,25 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Database.lock"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.lock">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">lock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Acquire a database lock&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Acquire a database lock"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fdb_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Database.release"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.release">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Release the database lock&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Release the database lock"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fdb_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Database.commit"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.commit">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">commit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Commit the current transaction&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Commit the current transaction"""</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="c1"># A failed commit means the underlying connection is dead (the</span>
             <span class="c1"># driver already tore down its own socket/buffers internally -</span>
-            <span class="c1"># this is what turns one query&#39;s failure into confusing,</span>
+            <span class="c1"># this is what turns one query's failure into confusing,</span>
             <span class="c1"># unrelated-looking errors on whatever touches self._conn next:</span>
             <span class="c1"># pymysql leaves attributes like _sock/_rfile set to None, so a</span>
             <span class="c1"># later call fails with AttributeError instead of a clear</span>
-            <span class="c1"># &quot;not connected&quot;). Reset state immediately so the next caller</span>
+            <span class="c1"># "not connected"). Reset state immediately so the next caller</span>
             <span class="c1"># (verify(), the next dump item, the next scheduled task) sees</span>
             <span class="c1"># connected() == False right away instead of inheriting a</span>
             <span class="c1"># corrupted connection object.</span>
@@ -6236,7 +6236,7 @@
             <span class="k">raise</span></div>
 
 <div class="viewcode-block" id="Database.rollback"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.rollback">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">rollback</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Rollback the current transaction&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Rollback the current transaction"""</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -6244,12 +6244,12 @@
             <span class="k">raise</span></div>
 
 <div class="viewcode-block" id="Database.cursor"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.cursor">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">cursor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new cursor for executing statements&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Create a new cursor for executing statements"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span></div>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_cursor_op_with_reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">empty</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error_prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">readonly</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run *op(cursor)* against a fresh cursor of our own (the ``cur is</span>
+<span class="w">        </span><span class="sd">"""Run *op(cursor)* against a fresh cursor of our own (the ``cur is</span>
 <span class="sd">        None`` case in execute()/fetchone()/fetchall()), retrying exactly</span>
 <span class="sd">        once after a reconnect if the connection has gone stale.</span>
 
@@ -6258,19 +6258,19 @@
 <span class="sd">        LogStore CRUD layer (store.py) always call execute()/fetchone()/</span>
 <span class="sd">        fetchall() with ``cur=None`` and never call verify() themselves.</span>
 <span class="sd">        Without this, a single dropped connection (network blip, MySQL</span>
-<span class="sd">        restarting, &quot;Lost connection to MySQL server during query&quot;) leaves</span>
+<span class="sd">        restarting, "Lost connection to MySQL server during query") leaves</span>
 <span class="sd">        ``self._conn`` in a broken-but-not-None state that nothing ever</span>
 <span class="sd">        resets - every subsequent cur=None call fails identically until</span>
 <span class="sd">        something unrelated happens to call verify() or the process</span>
-<span class="sd">        restarts. This mirrors verify()&#39;s own close-then-reconnect recovery,</span>
+<span class="sd">        restarts. This mirrors verify()'s own close-then-reconnect recovery,</span>
 <span class="sd">        scoped to the one statement actually being run instead of a</span>
 <span class="sd">        separate probe query.</span>
 
 <span class="sd">        :param op:        Callable taking a cursor, returning the result.</span>
 <span class="sd">        :param quiet:     Suppress the error-level log entry on final failure.</span>
 <span class="sd">        :param empty:     Value to return if no cursor could be obtained at</span>
-<span class="sd">                          all (mirrors execute()&#39;s ``result = []`` /</span>
-<span class="sd">                          fetchone()&#39;s ``result = &#39;&#39;`` no-cursor fallbacks).</span>
+<span class="sd">                          all (mirrors execute()'s ``result = []`` /</span>
+<span class="sd">                          fetchone()'s ``result = ''`` no-cursor fallbacks).</span>
 <span class="sd">        :param error_prefix: Message prefix to log on final failure (the</span>
 <span class="sd">                          final exception is appended); falls back to a</span>
 <span class="sd">                          generic message if omitted.</span>
@@ -6292,13 +6292,13 @@
 <span class="sd">                          whose own default cur=None never self-commits),</span>
 <span class="sd">                          which a later unrelated cur=None read would then</span>
 <span class="sd">                          wipe out from underneath the caller. execute() does</span>
-<span class="sd">                          not set this - a write&#39;s own commit is explicit,</span>
-<span class="sd">                          this parameter only closes out what&#39;s left after a</span>
+<span class="sd">                          not set this - a write's own commit is explicit,</span>
+<span class="sd">                          this parameter only closes out what's left after a</span>
 <span class="sd">                          read.</span>
 
 <span class="sd">        Also closes a separate, longstanding gap: this cur=None path is</span>
 <span class="sd">        exactly what ItemStore/LogStore always use, and none of it was ever</span>
-<span class="sd">        wrapped in self._fdb_lock - unlike the plugin&#39;s older _query()</span>
+<span class="sd">        wrapped in self._fdb_lock - unlike the plugin's older _query()</span>
 <span class="sd">        wrapper, which always locked before a cur=None call. Concurrent</span>
 <span class="sd">        threads (the scheduler running maxage/orphan cleanup, live item</span>
 <span class="sd">        writes, WebIf/logic reads) could hit the same self._conn/cursor at</span>
@@ -6306,7 +6306,7 @@
 <span class="sd">        before close()/connect() run (both lock internally, and</span>
 <span class="sd">        self._fdb_lock is a plain, non-reentrant Lock - holding it across</span>
 <span class="sd">        those calls would deadlock).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">last_error</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">timeout</span> <span class="o">=</span> <span class="n">_sh_db_query_timeout</span><span class="p">()</span>
         <span class="c1"># this used to be a hardcoded lock(300) independent of the</span>
@@ -6314,20 +6314,20 @@
         <span class="c1"># bounded wait in this file, and meant a hung server could still</span>
         <span class="c1"># stall this specific path for up to 5 minutes regardless of what</span>
         <span class="c1"># the user configured. Now tracks the same knob everywhere.</span>
-        <span class="n">label</span> <span class="o">=</span> <span class="n">error_prefix</span> <span class="ow">or</span> <span class="sa">f</span><span class="s1">&#39;Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: query&#39;</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">error_prefix</span> <span class="ow">or</span> <span class="sa">f</span><span class="s1">'Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: query'</span>
         <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># never connected, or a previous attempt already gave up</span>
-                <span class="c1"># and closed us - not a &quot;stale&quot; condition, just not</span>
-                <span class="c1"># connected right now. Preserve today&#39;s behaviour: no</span>
-                <span class="c1"># reconnect storm here, that&#39;s _initialize_db()&#39;s throttled</span>
+                <span class="c1"># and closed us - not a "stale" condition, just not</span>
+                <span class="c1"># connected right now. Preserve today's behaviour: no</span>
+                <span class="c1"># reconnect storm here, that's _initialize_db()'s throttled</span>
                 <span class="c1"># job. Only an existing-but-broken connection gets retried.</span>
                 <span class="k">return</span> <span class="n">empty</span>
 
-            <span class="k">with</span> <span class="n">_hang_watchdog</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1"> - waiting for db lock&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">_hang_watchdog</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1"> - waiting for db lock'</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
                 <span class="n">locked</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">locked</span><span class="p">:</span>
-                <span class="n">last_error</span> <span class="o">=</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: could not acquire lock within </span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">)</span>
+                <span class="n">last_error</span> <span class="o">=</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: could not acquire lock within </span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s1">s'</span><span class="p">)</span>
                 <span class="k">break</span>
 
             <span class="n">c</span> <span class="o">=</span> <span class="kc">None</span>
@@ -6335,7 +6335,7 @@
                 <span class="c1"># sqlite3 raises immediately on .cursor() against an</span>
                 <span class="c1"># already-closed connection; pymysql instead tends to</span>
                 <span class="c1"># return a cursor that only fails on first use. Either way</span>
-                <span class="c1"># it&#39;s the same &quot;connection object present but unusable&quot;</span>
+                <span class="c1"># it's the same "connection object present but unusable"</span>
                 <span class="c1"># condition this retry exists for.</span>
                 <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
                 <span class="k">with</span> <span class="n">_hang_watchdog</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
@@ -6343,13 +6343,13 @@
                 <span class="n">c</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">readonly</span><span class="p">:</span>
                     <span class="c1"># commit(), not rollback() - see the readonly= docstring</span>
-                    <span class="c1"># above. Best-effort: a cleanup failure here shouldn&#39;t</span>
+                    <span class="c1"># above. Best-effort: a cleanup failure here shouldn't</span>
                     <span class="c1"># turn an already-successful read into an error for the</span>
                     <span class="c1"># caller.</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
                     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: could not close read-only transaction: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: could not close read-only transaction: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">result</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">last_error</span> <span class="o">=</span> <span class="n">e</span>
@@ -6368,37 +6368,37 @@
                 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                     <span class="k">break</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">quiet</span><span class="p">:</span>
-            <span class="n">prefix</span> <span class="o">=</span> <span class="n">error_prefix</span> <span class="ow">or</span> <span class="sa">f</span><span class="s1">&#39;Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: query failed after reconnect attempt&#39;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">last_error</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="n">error_prefix</span> <span class="ow">or</span> <span class="sa">f</span><span class="s1">'Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: query failed after reconnect attempt'</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">last_error</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="k">raise</span> <span class="n">last_error</span>
 
 <div class="viewcode-block" id="Database.execute"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.execute">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">formatting</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cur</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute the given statement</span>
+<span class="w">        </span><span class="sd">"""Execute the given statement</span>
 
-<span class="sd">        This will execute the statement specified in the &#39;stmt&#39; parameter</span>
+<span class="sd">        This will execute the statement specified in the 'stmt' parameter</span>
 <span class="sd">        which may contain parameter placeholders (depending on selected</span>
 <span class="sd">        formatting style given in constructor).</span>
 
-<span class="sd">        The parameters can be specified in &#39;params&#39; parameter as list or</span>
+<span class="sd">        The parameters can be specified in 'params' parameter as list or</span>
 <span class="sd">        dict depending on selected formatting style.</span>
 
 <span class="sd">        To overwrite the global formatting style given in constructor, the</span>
-<span class="sd">        parameter &#39;formatting&#39; can be used to change the style for the</span>
+<span class="sd">        parameter 'formatting' can be used to change the style for the</span>
 <span class="sd">        given statement.</span>
 
 <span class="sd">        If already aqcuired a cursor you can use this cursor by using the</span>
-<span class="sd">        &#39;cur&#39; parameter. If omitted a new cursor will be aqcuire for this</span>
+<span class="sd">        'cur' parameter. If omitted a new cursor will be aqcuire for this</span>
 <span class="sd">        statement and released afterwards.</span>
 
-<span class="sd">        Set &#39;quiet&#39; to True to suppress the error-level log entry for an</span>
-<span class="sd">        expected failure (e.g. a first-run &quot;table does not exist yet&quot; probe).</span>
-<span class="sd">        The exception is always raised regardless of &#39;quiet&#39; - only the log</span>
+<span class="sd">        Set 'quiet' to True to suppress the error-level log entry for an</span>
+<span class="sd">        expected failure (e.g. a first-run "table does not exist yet" probe).</span>
+<span class="sd">        The exception is always raised regardless of 'quiet' - only the log</span>
 <span class="sd">        entry is conditional.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">stmt</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">formatting</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Can not prepare query: </span><span class="si">{}</span><span class="s1"> (args </span><span class="si">{}</span><span class="s1">): </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">'Can not prepare query: </span><span class="si">{}</span><span class="s1"> (args </span><span class="si">{}</span><span class="s1">): </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
             <span class="k">raise</span>
 
         <span class="k">if</span> <span class="n">cur</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -6406,18 +6406,18 @@
                 <span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">quiet</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Can not execute query: </span><span class="si">{</span><span class="n">stmt</span><span class="si">}</span><span class="s1"> (args </span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s1">): </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Can not execute query: </span><span class="si">{</span><span class="n">stmt</span><span class="si">}</span><span class="s1"> (args </span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s1">): </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
                 <span class="k">raise</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cursor_op_with_reconnect</span><span class="p">(</span>
             <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">args</span><span class="p">),</span>
             <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">,</span>
             <span class="n">empty</span><span class="o">=</span><span class="p">[],</span>
-            <span class="n">error_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Can not execute query: </span><span class="si">{</span><span class="n">stmt</span><span class="si">}</span><span class="s1"> (args </span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">,</span>
+            <span class="n">error_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'Can not execute query: </span><span class="si">{</span><span class="n">stmt</span><span class="si">}</span><span class="s1"> (args </span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s1">)'</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Database.verify"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.verify">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">retry</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Verifies the connection status and reconnets if required</span>
+<span class="w">        </span><span class="sd">"""Verifies the connection status and reconnets if required</span>
 
 <span class="sd">        The connected status of the connection will be checked by executing</span>
 <span class="sd">        a simple SQL statement. If this fails or the connection is not</span>
@@ -6425,11 +6425,11 @@
 
 <span class="sd">        In case the reconnect fails you can specify how many times a</span>
 <span class="sd">        reconnect will be executed until it will give up. This can be</span>
-<span class="sd">        specified by the &#39;retry&#39; parameter.</span>
+<span class="sd">        specified by the 'retry' parameter.</span>
 
 <span class="sd">        To specify the delay between retries use the `delay` parameter,</span>
 <span class="sd">        which defaults to 5 seconds.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">while</span> <span class="n">retry</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">locked</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -6442,37 +6442,37 @@
                 <span class="k">if</span> <span class="n">locked</span><span class="p">:</span>
                     <span class="c1"># explicit cursor: fetchone(cur=None) now locks</span>
                     <span class="c1"># internally too (see _cursor_op_with_reconnect) - we</span>
-                    <span class="c1"># already hold self._fdb_lock here, and it&#39;s a plain</span>
+                    <span class="c1"># already hold self._fdb_lock here, and it's a plain</span>
                     <span class="c1"># non-reentrant Lock, so a cur=None call from the same</span>
                     <span class="c1"># thread would deadlock against itself.</span>
                     <span class="n">probe_cur</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">fetchone</span><span class="p">(</span><span class="s1">&#39;SELECT 1&#39;</span><span class="p">,</span> <span class="n">cur</span><span class="o">=</span><span class="n">probe_cur</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">fetchone</span><span class="p">(</span><span class="s1">'SELECT 1'</span><span class="p">,</span> <span class="n">cur</span><span class="o">=</span><span class="n">probe_cur</span><span class="p">)</span>
                     <span class="n">probe_cur</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="c1"># autocommit is off (see __init__) - the probe above</span>
                         <span class="c1"># opened a real transaction that would otherwise sit</span>
                         <span class="c1"># idle indefinitely between verify() calls, holding</span>
                         <span class="c1"># back InnoDB purge. commit(), not rollback() - see</span>
-                        <span class="c1"># _cursor_op_with_reconnect&#39;s readonly= docstring:</span>
+                        <span class="c1"># _cursor_op_with_reconnect's readonly= docstring:</span>
                         <span class="c1"># self._fdb_lock already serializes every caller, so</span>
                         <span class="c1"># rollback() here could silently discard an</span>
                         <span class="c1"># unrelated write still pending on this connection</span>
                         <span class="c1"># from an earlier cur=None caller that never</span>
                         <span class="c1"># explicitly committed (e.g. insertLog()). Best-</span>
-                        <span class="c1"># effort: a failure here shouldn&#39;t turn a successful</span>
+                        <span class="c1"># effort: a failure here shouldn't turn a successful</span>
                         <span class="c1"># verify() into a reported failure, since</span>
                         <span class="c1"># connectivity IS confirmed.</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
                     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: could not close verify() probe transaction: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: could not close verify() probe transaction: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
                     <span class="n">retry</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Database [</span><span class="si">{}</span><span class="s1">]: Could not acquire lock to verify connection&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: Could not acquire lock to verify connection'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">))</span>
                     <span class="n">retry</span> <span class="o">=</span> <span class="n">retry</span> <span class="o">-</span> <span class="mi">1</span>
 
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Database [</span><span class="si">{}</span><span class="s1">]: Connection error </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: Connection error </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
                 <span class="k">if</span> <span class="n">locked</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -6484,12 +6484,12 @@
         <span class="k">return</span> <span class="n">retry</span></div>
 
 <div class="viewcode-block" id="Database.fetchone"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.fetchone">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">fetchone</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">formatting</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cur</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute given statement and fetch one row from result</span>
+<span class="w">        </span><span class="sd">"""Execute given statement and fetch one row from result</span>
 
 <span class="sd">        This method can be used in case you only want to fetch one row from</span>
 <span class="sd">        the result. It accepts the same arguments as mentioned in the</span>
-<span class="sd">        &#39;execute()&#39; method.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        'execute()' method.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">cur</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">formatting</span><span class="o">=</span><span class="n">formatting</span><span class="p">,</span> <span class="n">cur</span><span class="o">=</span><span class="n">cur</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
@@ -6501,17 +6501,17 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cursor_op_with_reconnect</span><span class="p">(</span>
             <span class="n">op</span><span class="p">,</span>
             <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">,</span>
-            <span class="n">empty</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-            <span class="n">error_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;fetchone failed for stmt </span><span class="si">{</span><span class="n">stmt</span><span class="si">}</span><span class="s1"> with params </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">empty</span><span class="o">=</span><span class="s1">''</span><span class="p">,</span>
+            <span class="n">error_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'fetchone failed for stmt </span><span class="si">{</span><span class="n">stmt</span><span class="si">}</span><span class="s1"> with params </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
             <span class="n">readonly</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Database.fetchall"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.fetchall">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">fetchall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">(),</span> <span class="n">formatting</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cur</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute given statement and fetch all rows from result</span>
+<span class="w">        </span><span class="sd">"""Execute given statement and fetch all rows from result</span>
 
 <span class="sd">        This method can be used to fetch all rows from the result. It accepts</span>
-<span class="sd">        the same arguments as mentioned in the &#39;execute()&#39; method.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        the same arguments as mentioned in the 'execute()' method.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">cur</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">formatting</span><span class="o">=</span><span class="n">formatting</span><span class="p">,</span> <span class="n">cur</span><span class="o">=</span><span class="n">cur</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
@@ -6524,12 +6524,12 @@
             <span class="n">op</span><span class="p">,</span>
             <span class="n">quiet</span><span class="o">=</span><span class="n">quiet</span><span class="p">,</span>
             <span class="n">empty</span><span class="o">=</span><span class="p">[],</span>
-            <span class="n">error_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;fetchall failed for stmt </span><span class="si">{</span><span class="n">stmt</span><span class="si">}</span><span class="s1"> with params </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="n">error_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'fetchall failed for stmt </span><span class="si">{</span><span class="n">stmt</span><span class="si">}</span><span class="s1"> with params </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
             <span class="n">readonly</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span></div>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">formatting</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Internal helper method to convert the statement and parameter list&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Internal helper method to convert the statement and parameter list"""</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="n">param_dict</span> <span class="o">=</span> <span class="n">params</span>
@@ -6550,8 +6550,8 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_translation_param_type</span> <span class="ow">is</span> <span class="nb">dict</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span><span class="n">stmt_result</span><span class="p">,</span> <span class="n">param_result</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">input_token</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_token</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">input_name</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">output_name</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Internal helper method to convert the statement from input format to output format&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">input_token</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_token</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">input_name</span><span class="o">=</span><span class="s1">'</span><span class="si">{0}</span><span class="s1">'</span><span class="p">,</span> <span class="n">output_name</span><span class="o">=</span><span class="s1">'</span><span class="si">{0}</span><span class="s1">'</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Internal helper method to convert the statement from input format to output format"""</span>
 
         <span class="k">if</span> <span class="n">input_token</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">output_token</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
