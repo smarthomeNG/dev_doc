@@ -56,24 +56,74 @@ Parameter
 Das Plugin verfügt über folgende Parameter, die in der Datei ``../etc/plugin.yaml`` konfiguriert werden:
 
 
-alias_base_item
-===============
-
-
-Item, unter dem Alias-Definitionen liegen (direkte Kind-Items, jeweils Typ num mit dem aktuellen node_id als Wert - siehe matter_alias). Muss bereits existieren, wird vom Plugin nicht angelegt. Fehlt es, bleibt die Alias-Funktion inaktiv, ohne den Rest des Plugins zu beeinträchtigen.
-
- - Datentyp: **str**
- - Standardwert: **matter.aliases**
-
-
-enable_test_net_dcl
+bridge_control_port
 ===================
 
 
-Testgeräte mit Entwicklungs-Zertifikaten zulassen (--enable-test-net-dcl). NICHT fuer echte Geräte aktivieren.
+Port, auf dem bridge.js seine WebSocket-Steuer-API anbietet (nur localhost, eigenes Protokoll dieses Plugins - siehe matter-integration-plan.md). Muss sich zwischen mehreren Instanzen unterscheiden, aus demselben Grund wie bridge_matter_port.
 
- - Datentyp: **bool**
- - Standardwert: **False**
+ - Datentyp: **int**
+ - Standardwert: **5561**
+
+
+bridge_discriminator
+====================
+
+
+Kommissionierungs-Diskriminator der Bridge (12 Bit). Fest vergeben, siehe bridge_passcode. Sollte sich zwischen mehreren Instanzen unterscheiden, aus demselben Grund wie bridge_passcode.
+
+ - Datentyp: **int**
+ - Standardwert: **3840**
+
+
+bridge_matter_port
+==================
+
+
+Netzwerk-Port, auf dem die Bridge ihre eigene Matter-Fabric anbietet (fuer Kommissionierung durch andere Controller wie Apple Home). Muss sich von server_sidecar_port unterscheiden, sowie zwischen mehreren Instanzen - sonst kollidieren die bridge.js-Prozesse beim Binden des Ports.
+
+ - Datentyp: **int**
+ - Standardwert: **5560**
+
+
+bridge_passcode
+===============
+
+
+Kommissionierungs-Passcode der Bridge. Fest vergeben (v1 hat noch keine Webif-UI fuer eine pro-Kommissionierung generierte Kombination) - siehe matter-integration-plan.md. Sollte sich zwischen mehreren Instanzen unterscheiden - sonst werben zwei Bridges mit identischen Kommissionierungsdaten gleichzeitig im selben LAN, was beim Scannen/Eingeben nicht mehr eindeutig einer bestimmten Instanz zuzuordnen ist.
+
+ - Datentyp: **int**
+ - Standardwert: **20202021**
+
+
+bridge_sidecar_entry
+====================
+
+
+Pfad (relativ zum Plugin-Verzeichnis) zur bridge.js-Datei - dem eigenen @matter/node-Programm des Plugins fuer die Bridge-Rolle (nicht matter-server). Liegt im sidecar/-Verzeichnis, nicht bridge/, da es sich die dortigen Node.js-Abhaengigkeiten mit der Server-Rolle teilt - ein einziges npm install in plugins/matter/sidecar/ deckt beide Rollen ab.
+
+ - Datentyp: **str**
+ - Standardwert: **sidecar/bridge.js**
+
+
+bridge_storage_path
+===================
+
+
+Verzeichnis (relativ zum shng-Arbeitsverzeichnis) fuer die Kommissionierungsdaten der Bridge - eine eigene Matter-Identitaet, getrennt von storage_path (Server-Rolle). Muss sich zwischen mehreren Instanzen unterscheiden, aus demselben Grund wie storage_path.
+
+ - Datentyp: **str**
+ - Standardwert: **var/matter/bridge**
+
+
+bridge_vendor_id
+================
+
+
+Vendor-ID der Bridge (--vendorid-Aequivalent fuer die eigene Geraete-Identitaet, nicht die Fabric wie bei server_fabric_vendor_id). Default 65521 (0xFFF1) ist der von der Matter-Spec reservierte Test-Vendor-Bereich.
+
+ - Datentyp: **int**
+ - Standardwert: **65521**
 
 
 node_binary
@@ -95,8 +145,58 @@ Netzwerk-Interface fuer lokale Adressen (--primary-interface). Auf Hosts mit meh
  - Datentyp: **str**
 
 
-sidecar_entry
-=============
+server_alias_base_item
+======================
+
+
+Item, unter dem Alias-Definitionen liegen (direkte Kind-Items, jeweils Typ num mit dem aktuellen node_id als Wert - siehe matter_alias). Muss bereits existieren, wird vom Plugin nicht angelegt. Fehlt es, bleibt die Alias-Funktion inaktiv, ohne den Rest des Plugins zu beeinträchtigen. Sollte sich zwischen mehreren Instanzen unterscheiden, falls beide matter_alias nutzen - ein node_id ist nur innerhalb der Fabric der jeweiligen Instanz gueltig, ein geteiltes Basis-Item wuerde Aliase beider Fabrics ununterscheidbar vermischen.
+
+ - Datentyp: **str**
+ - Standardwert: **matter.aliases**
+
+
+server_commission_timeout
+=========================
+
+
+Wartezeit (Sekunden) auf die Antwort von matter-server auf einen Kopplungsversuch (commission_with_code), bevor das Plugin selbst aufgibt. matter-server versucht dabei jede bekannte Netzwerkadresse des Geräts mit bis zu 30s Timeout und plant intern bis zu 255s für einen Kopplungsversuch ein - ein realer Versuch dauerte schon einmal ca. 3 Minuten bis zur echten Antwort. Kommt die Antwort trotzdem später als dieser Timeout, wird sie nicht verworfen, sondern im Webif nachträglich als Hinweis angezeigt. Für Tests kann ein kürzerer Wert sinnvoll sein, um schneller ein Fehlschlagen zu sehen - auf Kosten davon, öfter in den verzögerten Hinweis statt die direkte Fehlermeldung zu laufen.
+
+ - Datentyp: **int**
+ - Standardwert: **300**
+
+
+server_enable_test_net_dcl
+==========================
+
+
+Testgeräte mit Entwicklungs-Zertifikaten zulassen (--enable-test-net-dcl). NICHT fuer echte Geräte aktivieren.
+
+ - Datentyp: **bool**
+ - Standardwert: **False**
+
+
+server_fabric_label
+===================
+
+
+Fabric-Label (--default-fabric-label), das andere Controller (z.B. Apple Home, das Fabrics-Webif-Tab) für shngs eigene Fabric anzeigen. Ohne dies wäre matter-servers eigener Default "HomeAssistant" sichtbar.
+
+ - Datentyp: **str**
+ - Standardwert: **SmartHomeNG**
+
+
+server_fabric_vendor_id
+=======================
+
+
+Vendor-ID (--vendorid) für shngs eigene Fabric. Wirkt nur beim allerersten Anlegen der Fabric (in vorhandenen Installationen bereits in den Node-Zertifikaten verankert) - Änderung erfordert Storage-Reset und Neukopplung aller Geräte. Default 65521 (0xFFF1) ist der von der Matter-Spec reservierte Test-Vendor-Bereich; echte Vendor-IDs werden von der CSA vergeben.
+
+ - Datentyp: **int**
+ - Standardwert: **65521**
+
+
+server_sidecar_entry
+====================
 
 
 Pfad (relativ zum Plugin-Verzeichnis) zur matter-server-Einstiegsdatei. matter-server hat kein CLI-Binary, daher wird die Datei direkt mit node ausgeführt.
@@ -105,11 +205,11 @@ Pfad (relativ zum Plugin-Verzeichnis) zur matter-server-Einstiegsdatei. matter-s
  - Standardwert: **sidecar/node_modules/matter-server/dist/esm/MatterServer.js**
 
 
-sidecar_port
-============
+server_sidecar_port
+===================
 
 
-Port, auf dem der matter-server-Sidecar seine WebSocket-API anbietet (nur localhost)
+Port, auf dem der matter-server-Sidecar seine WebSocket-API anbietet (nur localhost). Muss sich zwischen mehreren Instanzen unterscheiden - sonst kollidieren die Sidecar-Prozesse beim Binden des Ports.
 
  - Datentyp: **int**
  - Standardwert: **5580**
@@ -119,7 +219,7 @@ storage_path
 ============
 
 
-Verzeichnis (relativ zum shng-Arbeitsverzeichnis) für die Fabric-/Kommissionierungsdaten des Sidecars
+Verzeichnis (relativ zum shng-Arbeitsverzeichnis) für die Fabric-/Kommissionierungsdaten des Sidecars. Muss sich zwischen mehreren Instanzen unterscheiden - jede Instanz ist eine eigene Fabric, geteilter Storage wuerde die Kommissionierungsdaten der anderen Instanz beschaedigen.
 
  - Datentyp: **str**
  - Standardwert: **var/matter**
@@ -137,7 +237,7 @@ matter_alias
 ============
 
 
-Alternative zu matter_node: Name einer Alias-Definition unter alias_base_item. Löst node_id über die interne Alias-Tabelle des Plugins auf statt fest im Item-Wert - übersteht ein Rekommissionieren (neue node_id) ohne Änderung an diesem oder abhängigen Items, sobald der Alias über das Webif umgebogen wird.
+Alternative zu matter_node: Name einer Alias-Definition unter server_alias_base_item. Löst node_id über die interne Alias-Tabelle des Plugins auf statt fest im Item-Wert - übersteht ein Rekommissionieren (neue node_id) ohne Änderung an diesem oder abhängigen Items, sobald der Alias über das Webif umgeleitet wird.
 
  - Datentyp: **str**
 
@@ -205,6 +305,30 @@ Endpoint-Nummer auf dem Matter-Node
  - Datentyp: **int**
 
 
+matter_expose_name
+==================
+
+
+Bridge-Rolle: Anzeigename fuer den anderen Controller. Default: voller Item-Pfad (strukturell eindeutig; remark/Item-Name koennten mehrfach vorkommen und waeren dann in einer flachen Zubehoerliste nicht unterscheidbar). Max. 32 Zeichen (Matter-Spezifikationslimit) - laengere Werte (oder ein zu langer Item-Pfad als Default) lassen das Item unsichtbar fuer die Bridge-Rolle, mit Fehlermeldung im Log.
+
+ - Datentyp: **str**
+
+
+matter_expose_type
+==================
+
+
+Bridge-Rolle: macht dieses Item als Matter-Bridge-Gerät fuer andere Matter-Controller (Apple Home, Google Home, ...) sichtbar. switch = steuerbarer Bool-Aktor, contact = Nur-Lese-Bool-Sensor (z.B. Tuerkontakt), temperature_sensor = Nur-Lese-Zahlensensor (Grad Celsius).
+
+ - Datentyp: **str**
+
+ - Mögliche Werte:
+
+   - **switch**
+   - **contact**
+   - **temperature_sensor**
+
+
 matter_node
 ===========
 
@@ -231,13 +355,21 @@ Item-Structs
 Das Plugin stellt die folgenden Item-Structs zur Verfügung. Diese Informationen sind aus der `plugin.yaml` entnommen und möglicherweise nicht vollständig.
 
 
-shelly_plug_m_3gen
-==================
+contact
+=======
+
+Kontaktzustand (BooleanState.StateValue)
+
+.. treeview::
+     - :dir:`file` **contact** (`bool`, Kontaktzustand (BooleanState.StateValue))
+
+
+electrical_power_measurement
+============================
 
 
 .. treeview::
-     - :dir:`folder` **shelly_plug_m_3gen** (`foo`, ---)
-         - :dir:`file` **toggle** (`bool`, auf True setzen, um den Schaltzustand zu wechseln)
+     - :dir:`folder` **electrical_power_measurement** (`foo`, ---)
          - :dir:`folder` **power** (`num`, aktuelle Leistung in W)
              - :dir:`file` **power_mw** (`num`, aktuelle Leistung in mW)
          - :dir:`folder` **voltage** (`num`, aktuelle Spannung in V)
@@ -247,13 +379,40 @@ shelly_plug_m_3gen
              - :dir:`file` **current_ma** (`num`, aktueller Strom in mA)
 
 
+shelly_plug_m_3gen
+==================
+
+
+.. treeview::
+     - :dir:`file` **shelly_plug_m_3gen** (`foo`, ---)
+
+
 shelly_plug_m_3gen_simple
 =========================
 
 
 .. treeview::
-     - :dir:`folder` **shelly_plug_m_3gen_simple** (`bool`, ---)
+     - :dir:`folder` **shelly_plug_m_3gen_simple** (`foo`, ---)
          - :dir:`file` **available** (`bool`, Gerät erreichbar)
+
+
+switch
+======
+
+
+.. treeview::
+     - :dir:`folder` **switch** (`bool`, ---)
+         - :dir:`file` **toggle** (`bool`, auf True setzen, um den Schaltzustand zu wechseln)
+
+
+temperature_sensor
+==================
+
+aktuelle Temperatur in °C
+
+.. treeview::
+     - :dir:`folder` **temperature_sensor** (`num`, aktuelle Temperatur in °C)
+         - :dir:`file` **temperature_raw** (`num`, aktuelle Temperatur in 1/100 °C (Roh-Wert))
 
 
 ===============
