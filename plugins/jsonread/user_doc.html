@@ -1963,6 +1963,17 @@
 <li class="toctree-l5"><a class="reference internal" href="#items-yaml">items.yaml</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="#von-jq-dialekt-zu-jmespath">Von jq-Dialekt zu JMESPath</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#grundidee-beider-dialekte">Grundidee beider Dialekte</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#der-fuhrende-punkt-entfallt">1. Der führende Punkt entfällt</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#array-indizes-ohne-anfuhrungszeichen">2. Array-Indizes ohne Anführungszeichen</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#zum-aufklappen-eines-arrays-bleibt-gleich">3. <code class="docutils literal notranslate"><span class="pre">[]</span></code> zum „Aufklappen“ eines Arrays bleibt gleich</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#pipe-bleibt-syntaktisch-gleich-aber-ohne-fuhrenden-punkt">4. Pipe (<code class="docutils literal notranslate"><span class="pre">|</span></code>) bleibt syntaktisch gleich, aber ohne führenden Punkt</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#select-bedingung-wird-zur-filter-projektion-bedingung">5. <code class="docutils literal notranslate"><span class="pre">select(Bedingung)</span></code> wird zur Filter-Projektion <code class="docutils literal notranslate"><span class="pre">[?Bedingung]</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#ergebnis-einer-filter-projektion-ist-immer-eine-liste">6. Ergebnis einer Filter-Projektion ist immer eine Liste</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#zusammenfassung-ubersetzungstabelle">Zusammenfassung: Übersetzungstabelle</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="#web-interface">Web Interface</a></li>
 </ul>
 </li>
@@ -2713,6 +2724,17 @@
 <li class="toctree-l4"><a class="reference internal" href="#konfiguration">Konfiguration</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#plugin-yaml">plugin.yaml</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#items-yaml">items.yaml</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#von-jq-dialekt-zu-jmespath">Von jq-Dialekt zu JMESPath</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#grundidee-beider-dialekte">Grundidee beider Dialekte</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#der-fuhrende-punkt-entfallt">1. Der führende Punkt entfällt</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#array-indizes-ohne-anfuhrungszeichen">2. Array-Indizes ohne Anführungszeichen</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#zum-aufklappen-eines-arrays-bleibt-gleich">3. <code class="docutils literal notranslate"><span class="pre">[]</span></code> zum „Aufklappen“ eines Arrays bleibt gleich</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#pipe-bleibt-syntaktisch-gleich-aber-ohne-fuhrenden-punkt">4. Pipe (<code class="docutils literal notranslate"><span class="pre">|</span></code>) bleibt syntaktisch gleich, aber ohne führenden Punkt</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#select-bedingung-wird-zur-filter-projektion-bedingung">5. <code class="docutils literal notranslate"><span class="pre">select(Bedingung)</span></code> wird zur Filter-Projektion <code class="docutils literal notranslate"><span class="pre">[?Bedingung]</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#ergebnis-einer-filter-projektion-ist-immer-eine-liste">6. Ergebnis einer Filter-Projektion ist immer eine Liste</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#zusammenfassung-ubersetzungstabelle">Zusammenfassung: Übersetzungstabelle</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#web-interface">Web Interface</a></li>
@@ -5761,12 +5783,11 @@
 <span id="index-1"></span><h1>jsonread<a class="headerlink" href="#jsonread" title="Permalink to this heading"></a></h1>
 <a class="reference internal image-reference" href="../../_images/plugin_logo5.svg"><img alt="plugin logo" class="align-left" height="150px" src="../../_images/plugin_logo5.svg" width="150px" /></a>
 <p>Das vorliegende Plugin ist in der Lage aus einer Datei oder von einer
-URL JSON Daten zu lesen und anhand einer Abfrageanweisung einen
+URL JSON-Daten zu lesen und anhand einer Abfrageanweisung einen
 Datenpunkt an ein Item zu übergeben.</p>
 <section id="anforderungen">
 <h2>Anforderungen<a class="headerlink" href="#anforderungen" title="Permalink to this heading"></a></h2>
-<p>Jede Webseite, die JSON formatierte Daten liefern kann oder
-jede Datei die JSON formatierte
+<p>Jede Webseite, die JSON-formatierte Daten liefern kann oder jede Datei, die JSON-formatierte
 Daten enthält, kann als Datenquelle für das Plugin verwendet werden.</p>
 </section>
 <section id="konfiguration">
@@ -5777,15 +5798,61 @@ Daten enthält, kann als Datenquelle für das Plugin verwendet werden.</p>
 </div>
 <section id="plugin-yaml">
 <h3>plugin.yaml<a class="headerlink" href="#plugin-yaml" title="Permalink to this heading"></a></h3>
-<p>Es können beliebig viele Instanzen des Plugins erstellt werden.
-Für jede Datenquelle muß eine Instanz konfiguriert werden.</p>
+<p>Es können beliebig viele Instanzen des Plugins erstellt werden. Für jede Datenquelle muß eine Instanz konfiguriert werden.</p>
 <section id="url">
 <h4>URL<a class="headerlink" href="#url" title="Permalink to this heading"></a></h4>
-<p>Der Ursprung der Daten. Aktuell werden <code class="docutils literal notranslate"><span class="pre">http://</span></code>, <code class="docutils literal notranslate"><span class="pre">https://</span></code> und <code class="docutils literal notranslate"><span class="pre">file://</span></code> Schemen unterstützt.</p>
+<p>Der Ursprung der Daten. Aktuell werden <code class="docutils literal notranslate"><span class="pre">http://</span></code>, <code class="docutils literal notranslate"><span class="pre">https://</span></code> und <code class="docutils literal notranslate"><span class="pre">file://</span></code> als Schemata unterstützt.</p>
 <div class="admonition note">
 <p class="admonition-title">Bemerkung</p>
 <p>Absolute Pfadangabe für Dateien wie in <code class="docutils literal notranslate"><span class="pre">file:///absoluter/pfad/hier</span></code> enthalten <strong>3</strong> Schrägstriche
 relative Pfadangabe für Dateien wie in <code class="docutils literal notranslate"><span class="pre">file://relativer/pfad/hier</span></code> enthalten <strong>2</strong> Schrägstriche</p>
+</div>
+</section>
+<section id="jq-syntax">
+<h4>jq_syntax<a class="headerlink" href="#jq-syntax" title="Permalink to this heading"></a></h4>
+<p>Ab Plugin-Version 2.1.0 gibt es den Parameter <code class="docutils literal notranslate"><span class="pre">jq_syntax</span></code> (Standard: <code class="docutils literal notranslate"><span class="pre">True</span></code>).</p>
+<p>Er entscheidet, in welchem Dialekt die <code class="docutils literal notranslate"><span class="pre">jsonread_filter</span></code>-Ausdrücke in
+<code class="docutils literal notranslate"><span class="pre">items.yaml</span></code> geschrieben werden — und damit, welche Bibliothek die
+Ausdrücke tatsächlich auswertet:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">jq_syntax:</span> <span class="pre">True</span></code> (Standard, keine Änderung nötig): Ausdrücke werden
+wie bisher im plugin-eigenen, an <a class="reference external" href="https://jqlang.github.io/jq/">jq</a>
+angelehnten Dialekt geschrieben (siehe Beispiele weiter unten). Intern
+übersetzt das Plugin diese Ausdrücke automatisch in
+<a class="reference external" href="https://jmespath.org/">JMESPath</a>-Syntax und wertet sie mit der
+JMESPath-Bibliothek aus. <strong>Bestehende Konfigurationen funktionieren
+unverändert weiter</strong>, ein Update auf 2.1.0 erfordert keine Anpassung an
+<code class="docutils literal notranslate"><span class="pre">items.yaml</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">jq_syntax:</span> <span class="pre">False</span></code>: Ausdrücke werden <strong>direkt</strong> als native
+JMESPath-Syntax interpretiert, ohne Übersetzungsschritt. Das ist
+sinnvoll, wenn eine neue Konfiguration von Grund auf aufgebaut wird,
+oder wenn bestehende Filter schrittweise auf JMESPath umgestellt werden
+sollen. Der Abschnitt <a class="reference internal" href="#jq-zu-jmespath"><span class="std std-ref">Von jq-Dialekt zu JMESPath</span></a> weiter unten zeigt, wie sich
+ein Ausdruck von einem Dialekt in den anderen übersetzen lässt, anhand
+der bereits in diesem Dokument verwendeten Beispiele.</p></li>
+</ul>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">myinstance</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">plugin_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jsonread</span>
+<span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">file:///path/to/data.json</span>
+<span class="w">    </span><span class="nt">cycle</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
+<span class="w">    </span><span class="nt">jq_syntax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">False</span>
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Wichtig</p>
+<p>Warum überhaupt zwei Modi? Der jq-Dialekt, den dieses Plugin bis
+Version 1.0.4 über die externe Bibliothek <code class="docutils literal notranslate"><span class="pre">pyjq</span></code> auswertete, wurde
+unter Python 3.13 unbrauchbar (<code class="docutils literal notranslate"><span class="pre">pyjq</span></code> ist eine C-Erweiterung, die
+dort nicht mehr baut). Ab Version 2.0.0 wertet das Plugin diesen
+Dialekt stattdessen mit einer selbstgeschriebenen, eingeschränkten
+Nachbildung aus — funktional ausreichend für die meisten bisherigen
+Konfigurationen, aber ohne die Testabdeckung und Robustheit einer
+etablierten Bibliothek. JMESPath ist eine reine Python-Bibliothek
+(keine Kompilierung nötig, läuft z.B. auch auf einem Raspberry Pi
+ohne Probleme) und deutlich ausführlicher spezifiziert und getestet
+als die plugin-eigene Nachbildung. <code class="docutils literal notranslate"><span class="pre">jq_syntax:</span> <span class="pre">False</span></code> erlaubt es,
+direkt auf diese solidere Grundlage zu wechseln, ohne auf den
+weiterhin unterstützten alten Dialekt verzichten zu müssen.</p>
 </div>
 </section>
 <section id="beispiele-verschiedener-datenquellen">
@@ -5881,6 +5948,22 @@ ergibt ein Ergebnis in etwa wie folgt:</p>
 </pre></div>
 </div>
 <p>werden den entsprechenden Items die Temperatur und die Windgeschwindigkeit zugewiesen.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tipp</p>
+<p><strong>Mit</strong> <code class="docutils literal notranslate"><span class="pre">jq_syntax:</span> <span class="pre">False</span></code> (native JMESPath-Syntax, siehe oben)
+sähe die gleiche Definition so aus:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">temperature</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">    </span><span class="nt">jsonread_filter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">main.temp</span>
+
+<span class="nt">windspeed</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">    </span><span class="nt">jsonread_filter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wind.speed</span>
+</pre></div>
+</div>
+<p>Der einzige Unterschied für diesen einfachen Fall: kein führender
+Punkt vor dem Pfad. Mehr dazu im Abschnitt <a class="reference internal" href="#jq-zu-jmespath"><span class="std std-ref">Von jq-Dialekt zu JMESPath</span></a>.</p>
+</div>
 <p>Wenn mehrere Instanzen für das Plugin definiert werden,
 so muss das <code class="docutils literal notranslate"><span class="pre">jsonread_filter</span></code> Attribut
 erweitert werden mit <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> und dem Instanznamen</p>
@@ -5900,6 +5983,9 @@ zurückgegeben werden darf.</p>
 <a class="reference external" href="https://jqlang.github.io/jq/tutorial/">Tutorial für jq</a>
 um für die Verwendung der Filter einen Eindruck zu bekommen.
 Allerdings kann sein, dass das Plugin nicht mit allen Filtern klarkommt!</p>
+<p>Alternativ (und mit weniger Einschränkungen) kann direkt mit
+<a class="reference external" href="https://jmespath.org/">JMESPath</a>-Syntax gearbeitet werden — siehe
+<a class="reference internal" href="#jq-zu-jmespath"><span class="std std-ref">Von jq-Dialekt zu JMESPath</span></a>.</p>
 </section>
 <section id="beispiel-batteriedaten">
 <h4>Beispiel Batteriedaten<a class="headerlink" href="#beispiel-batteriedaten" title="Permalink to this heading"></a></h4>
@@ -5943,6 +6029,19 @@ die Instanz <code class="docutils literal notranslate"><span class="pre">myreser
 <span class="w">        </span><span class="nt">jsonread_filter@myreserve</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.FData.IBat</span>
 </pre></div>
 </div>
+<div class="admonition tip">
+<p class="admonition-title">Tipp</p>
+<p>Native JMESPath-Syntax (<code class="docutils literal notranslate"><span class="pre">jq_syntax:</span> <span class="pre">False</span></code>) für dasselbe Beispiel:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">battery</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">u</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">        </span><span class="nt">jsonread_filter@myreserve</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FData.VBat</span>
+<span class="w">    </span><span class="nt">i</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">        </span><span class="nt">jsonread_filter@myreserve</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FData.IBat</span>
+</pre></div>
+</div>
+</div>
 </section>
 <section id="beispiel-energiemanager">
 <h4>Beispiel Energiemanager<a class="headerlink" href="#beispiel-energiemanager" title="Permalink to this heading"></a></h4>
@@ -5985,6 +6084,26 @@ dann Auswählen des Zweiges, bei dem das Element <code class="docutils literal n
 <code class="docutils literal notranslate"><span class="pre">your-inverter-guid</span></code> übereinstimmt, und im Zweig weitergehen
 und den Wert von <code class="docutils literal notranslate"><span class="pre">.tagValues.PowerACOut.value</span></code>
 abfragen und ins Item schreiben.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tipp</p>
+<p>Native JMESPath-Syntax (<code class="docutils literal notranslate"><span class="pre">jq_syntax:</span> <span class="pre">False</span></code>) für dasselbe Beispiel:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">inverter</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">    </span><span class="nt">jsonread_filter@swem</span><span class="p">:</span><span class="w"> </span><span class="s">"result.items[?guid=='urn:your-inverter-guid'].tagValues.PowerACOut.value</span><span class="nv"> </span><span class="s">|</span><span class="nv"> </span><span class="s">[0]"</span>
+</pre></div>
+</div>
+<p>JMESPath nennt das Auswählen von Array-Elementen anhand einer
+Bedingung eine <em>Filter-Projektion</em> — geschrieben als <code class="docutils literal notranslate"><span class="pre">[?Bedingung]</span></code>
+direkt hinter dem Array, statt als eigener <code class="docutils literal notranslate"><span class="pre">select(...)</span></code>-Schritt in
+einer Pipe. Das Ergebnis einer Filter-Projektion ist immer eine
+Liste (auch wenn nur ein Element übrig bleibt) — deshalb hängt
+<code class="docutils literal notranslate"><span class="pre">|</span> <span class="pre">[0]</span></code> (erstes Element der Ergebnisliste) am Ende, um wieder einen
+einzelnen Wert für das Item zu erhalten. Zeichenketten in Bedingungen
+werden mit einfachen Anführungszeichen geschrieben (<code class="docutils literal notranslate"><span class="pre">'...'</span></code>), da
+JMESPath doppelte Anführungszeichen für Feldnamen reserviert — daher
+steht der gesamte Ausdruck hier in YAML in doppelten
+Anführungszeichen.</p>
+</div>
 <p>Das <code class="docutils literal notranslate"><span class="pre">jsonread_filter</span></code> Attribut kann mit Hilfe des
 <a class="reference external" href="https://yaml-multiline.info/">Blockstils für mehrzeilige Strings</a>
 eben auf mehrere Zeilen aufgeteilt werden. Arithmetische Berechnungen
@@ -5996,7 +6115,225 @@ sind nur in der älteren Pluginversion möglich.</p>
 <span class="w">        </span><span class="no">select(.deviceModel[].deviceClass == "com.kiwigrid.devices.solarwatt.MyReservePowermeter").tagValues.PowerOut.value)</span>
 </pre></div>
 </div>
+<div class="admonition tip">
+<p class="admonition-title">Tipp</p>
+<p>Native JMESPath-Syntax (<code class="docutils literal notranslate"><span class="pre">jq_syntax:</span> <span class="pre">False</span></code>) für dasselbe Beispiel:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">grid</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">num</span>
+<span class="w">    </span><span class="nt">jsonread_filter@swem</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;</span>
+<span class="w">        </span><span class="no">result.items[?deviceModel[?deviceClass=='com.kiwigrid.devices.solarwatt.MyReservePowermeter']].tagValues.PowerOut.value | [0]</span>
+</pre></div>
+</div>
+<p>Hier steckt eine Filter-Projektion in einer weiteren
+Filter-Projektion: die äußere (<code class="docutils literal notranslate"><span class="pre">items[?...]</span></code>) prüft für jedes
+Element in <code class="docutils literal notranslate"><span class="pre">items</span></code>, ob die innere Bedingung
+(<code class="docutils literal notranslate"><span class="pre">deviceModel[?deviceClass=='...']</span></code>) mindestens ein Ergebnis
+liefert — also ob irgendein Eintrag im <code class="docutils literal notranslate"><span class="pre">deviceModel</span></code>-Array die
+gesuchte <code class="docutils literal notranslate"><span class="pre">deviceClass</span></code> hat. Das entspricht in etwa jq’s
+<code class="docutils literal notranslate"><span class="pre">select(.deviceModel[].deviceClass</span> <span class="pre">==</span> <span class="pre">&quot;...&quot;)</span></code>, nur dass JMESPath
+das „gibt es mindestens ein Treffer“ explizit über eine verschachtelte
+Filter-Projektion statt über eine implizite Broadcast-Regel ausdrückt.</p>
+</div>
 </section>
+</section>
+</section>
+<section id="von-jq-dialekt-zu-jmespath">
+<span id="jq-zu-jmespath"></span><h2>Von jq-Dialekt zu JMESPath<a class="headerlink" href="#von-jq-dialekt-zu-jmespath" title="Permalink to this heading"></a></h2>
+<p>Dieser Abschnitt erklärt die wichtigsten Unterschiede zwischen dem
+bisherigen <code class="docutils literal notranslate"><span class="pre">jsonread_filter</span></code>-Dialekt (<code class="docutils literal notranslate"><span class="pre">jq_syntax:</span> <span class="pre">True</span></code>, Standard) und
+nativer <a class="reference external" href="https://jmespath.org/">JMESPath</a>-Syntax (<code class="docutils literal notranslate"><span class="pre">jq_syntax:</span> <span class="pre">False</span></code>),
+ohne Vorkenntnisse in einer der beiden Sprachen vorauszusetzen. Alle
+Beispiele beziehen sich auf die JSON-Datensätze weiter oben in diesem
+Dokument.</p>
+<section id="grundidee-beider-dialekte">
+<h3>Grundidee beider Dialekte<a class="headerlink" href="#grundidee-beider-dialekte" title="Permalink to this heading"></a></h3>
+<p>Beide Sprachen tun im Kern dasselbe: Sie beschreiben einen <strong>Pfad durch
+ein JSON-Dokument</strong> (verschachtelte Objekte und Listen) und liefern den
+Wert zurück, der an diesem Pfad steht. Der Unterschied liegt vor allem in
+der Schreibweise dieses Pfades.</p>
+<dl>
+<dt>Feld <code class="docutils literal notranslate"><span class="pre">temp</span></code> im Objekt <code class="docutils literal notranslate"><span class="pre">main</span></code></dt><dd><p>jq-Dialekt: <code class="docutils literal notranslate"><span class="pre">.main.temp</span></code></p>
+<p>JMESPath: <code class="docutils literal notranslate"><span class="pre">main.temp</span></code></p>
+</dd>
+<dt>Drittes Element (Index 2) eines Arrays <code class="docutils literal notranslate"><span class="pre">Data</span></code></dt><dd><p>jq-Dialekt: <code class="docutils literal notranslate"><span class="pre">.Data[&quot;2&quot;]</span></code> oder <code class="docutils literal notranslate"><span class="pre">.Data[2]</span></code></p>
+<p>JMESPath: <code class="docutils literal notranslate"><span class="pre">Data[2]</span></code></p>
+</dd>
+<dt>Alle Elemente eines Arrays „aufklappen“</dt><dd><p>jq-Dialekt: <code class="docutils literal notranslate"><span class="pre">.Data[]</span></code></p>
+<p>JMESPath: <code class="docutils literal notranslate"><span class="pre">Data[]</span></code></p>
+</dd>
+<dt>Mehrere Schritte hintereinander ausführen („Pipe“)</dt><dd><p>jq-Dialekt: <code class="docutils literal notranslate"><span class="pre">.a</span> <span class="pre">|</span> <span class="pre">.b</span></code></p>
+<p>JMESPath: <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">|</span> <span class="pre">b</span></code></p>
+</dd>
+<dt>Nur Elemente auswählen, die eine Bedingung erfüllen</dt><dd><p>jq-Dialekt: <code class="docutils literal notranslate"><span class="pre">.items[]</span> <span class="pre">|</span> <span class="pre">select(.id==2)</span></code></p>
+<p>JMESPath (Zahlen-Literale stehen in Backticks, siehe Regel 5 weiter unten):</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>items[?id==`2`]
+</pre></div>
+</div>
+</dd>
+</dl>
+</section>
+<section id="der-fuhrende-punkt-entfallt">
+<h3>1. Der führende Punkt entfällt<a class="headerlink" href="#der-fuhrende-punkt-entfallt" title="Permalink to this heading"></a></h3>
+<p>Im jq-Dialekt beginnt praktisch jeder Ausdruck mit einem Punkt
+(<code class="docutils literal notranslate"><span class="pre">.main.temp</span></code>) — dieser Punkt bedeutet „starte an der Wurzel des
+Dokuments“. JMESPath kennt dieses Konzept nicht: Ausdrücke beginnen
+direkt mit dem ersten Feldnamen.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>jq-Dialekt:  .main.temp
+JMESPath:    main.temp
+</pre></div>
+</div>
+</section>
+<section id="array-indizes-ohne-anfuhrungszeichen">
+<h3>2. Array-Indizes ohne Anführungszeichen<a class="headerlink" href="#array-indizes-ohne-anfuhrungszeichen" title="Permalink to this heading"></a></h3>
+<p>Im jq-Dialekt dieses Plugins kann ein Array-Index sowohl als Zahl
+(<code class="docutils literal notranslate"><span class="pre">[0]</span></code>) als auch als Zeichenkette (<code class="docutils literal notranslate"><span class="pre">[&quot;0&quot;]</span></code>) geschrieben werden — beide
+Formen wurden bisher gleich behandelt. JMESPath erlaubt für Array-Indizes
+<strong>nur</strong> die unquotierte Zahl.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>jq-Dialekt:  .Body.Data["0"].Current_AC_Phase_1
+jq-Dialekt:  .Body.Data[0].Current_AC_Phase_1     (äquivalent)
+JMESPath:    Body.Data[0].Current_AC_Phase_1
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warnung</p>
+<p>Ein in Anführungszeichen gesetzter Index wie <code class="docutils literal notranslate"><span class="pre">[&quot;0&quot;]</span></code> ist in
+nativer JMESPath-Syntax <strong>kein gültiger Ausdruck</strong> und führt zu
+einem Parse-Fehler. Beim Umstieg auf <code class="docutils literal notranslate"><span class="pre">jq_syntax:</span> <span class="pre">False</span></code> müssen
+alle <code class="docutils literal notranslate"><span class="pre">[&quot;N&quot;]</span></code>-Indizes zu <code class="docutils literal notranslate"><span class="pre">[N]</span></code> (ohne Anführungszeichen) werden.</p>
+</div>
+</section>
+<section id="zum-aufklappen-eines-arrays-bleibt-gleich">
+<h3>3. <code class="docutils literal notranslate"><span class="pre">[]</span></code> zum „Aufklappen“ eines Arrays bleibt gleich<a class="headerlink" href="#zum-aufklappen-eines-arrays-bleibt-gleich" title="Permalink to this heading"></a></h3>
+<p>Ein leeres Klammernpaar <code class="docutils literal notranslate"><span class="pre">[]</span></code> hinter einem Feldnamen bedeutet in beiden
+Dialekten dasselbe: „gehe für <strong>jedes</strong> Element dieses Arrays weiter“ —
+in JMESPath heißt das eine <em>Projektion</em>. Diese Schreibweise ist in
+beiden Sprachen identisch, hier muss nichts übersetzt werden.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>jq-Dialekt:  .Data[].x
+JMESPath:    Data[].x
+</pre></div>
+</div>
+</section>
+<section id="pipe-bleibt-syntaktisch-gleich-aber-ohne-fuhrenden-punkt">
+<h3>4. Pipe (<code class="docutils literal notranslate"><span class="pre">|</span></code>) bleibt syntaktisch gleich, aber ohne führenden Punkt<a class="headerlink" href="#pipe-bleibt-syntaktisch-gleich-aber-ohne-fuhrenden-punkt" title="Permalink to this heading"></a></h3>
+<p>Mit einer Pipe <code class="docutils literal notranslate"><span class="pre">|</span></code> werden mehrere Auswertungsschritte hintereinander
+ausgeführt — das Ergebnis des einen Schritts wird zum Eingang des
+nächsten. Das Zeichen <code class="docutils literal notranslate"><span class="pre">|</span></code> selbst bedeutet in JMESPath dasselbe wie im
+jq-Dialekt; es müssen nur die einzelnen Pipe-Abschnitte jeweils nach
+Regel 1 (kein führender Punkt) angepasst werden.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>jq-Dialekt:  .items[] | .name
+JMESPath:    items[] | name
+</pre></div>
+</div>
+</section>
+<section id="select-bedingung-wird-zur-filter-projektion-bedingung">
+<h3>5. <code class="docutils literal notranslate"><span class="pre">select(Bedingung)</span></code> wird zur Filter-Projektion <code class="docutils literal notranslate"><span class="pre">[?Bedingung]</span></code><a class="headerlink" href="#select-bedingung-wird-zur-filter-projektion-bedingung" title="Permalink to this heading"></a></h3>
+<p>Das ist der größte syntaktische Unterschied. Im jq-Dialekt wird eine
+Bedingung als eigener Pipe-Schritt geschrieben: <code class="docutils literal notranslate"><span class="pre">select(.feld</span> <span class="pre">==</span> <span class="pre">wert)</span></code>.
+JMESPath schreibt dieselbe Bedingung direkt <strong>innerhalb der eckigen
+Klammern</strong> hinter dem Array, eingeleitet mit einem Fragezeichen:
+<code class="docutils literal notranslate"><span class="pre">[?feld</span> <span class="pre">==</span> <span class="pre">wert]</span></code>.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>jq-Dialekt:  .items[] | select(.id == 2) | .name
+JMESPath:    items[?id == `2`].name
+</pre></div>
+</div>
+<p>Zwei Dinge fallen dabei auf:</p>
+<ul class="simple">
+<li><p>Die Bedingung braucht in JMESPath keinen eigenen Pipe-Schritt mehr —
+sie steht direkt in den eckigen Klammern des Arrays, auf das sie sich
+bezieht.</p></li>
+<li><p>Zahlen- und Wahrheitswert-Literale (<code class="docutils literal notranslate"><span class="pre">2</span></code>, <code class="docutils literal notranslate"><span class="pre">true</span></code>, <code class="docutils literal notranslate"><span class="pre">false</span></code>) müssen
+in JMESPath-Bedingungen in <em>Backticks</em> (das Zeichen, das in einer
+deutschen Tastaturbelegung meist über der Taste für <code class="docutils literal notranslate"><span class="pre">ß</span></code> liegt)
+eingeschlossen werden — nicht in normale Anführungszeichen. Im
+Codeblock oben ist das Zeichen um die <code class="docutils literal notranslate"><span class="pre">2</span></code> herum zu sehen.
+Zeichenketten-Literale werden
+dagegen in einfache Anführungszeichen (<code class="docutils literal notranslate"><span class="pre">'...'</span></code>) gesetzt. Das ist eine
+reine JMESPath-Eigenheit ohne Entsprechung im jq-Dialekt dieses
+Plugins.</p></li>
+</ul>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Zahl:            [?id == `2`]
+Wahrheitswert:   [?enabled == `true`]
+Zeichenkette:    [?name == 'Fronius']
+</pre></div>
+</div>
+</section>
+<section id="ergebnis-einer-filter-projektion-ist-immer-eine-liste">
+<h3>6. Ergebnis einer Filter-Projektion ist immer eine Liste<a class="headerlink" href="#ergebnis-einer-filter-projektion-ist-immer-eine-liste" title="Permalink to this heading"></a></h3>
+<p>Ein wichtiger praktischer Unterschied: Während der jq-Dialekt dieses
+Plugins das Ergebnis automatisch „auspackt“, wenn nur ein einzelner Wert
+übrig bleibt, liefert eine JMESPath-Filter-Projektion (<code class="docutils literal notranslate"><span class="pre">[?...]</span></code>)
+<strong>immer</strong> eine Liste zurück — auch wenn nur ein Element die Bedingung
+erfüllt. Um trotzdem einen einzelnen Wert für das Item zu erhalten, wird
+üblicherweise <code class="docutils literal notranslate"><span class="pre">|</span> <span class="pre">[0]</span></code> (erstes Element der Ergebnisliste) angehängt.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>JMESPath ohne [0]:  items[?id == `2`].name      → ["b"]   (Liste!)
+JMESPath mit [0]:   items[?id == `2`].name | [0] → "b"    (Einzelwert)
+</pre></div>
+</div>
+</section>
+<section id="zusammenfassung-ubersetzungstabelle">
+<h3>Zusammenfassung: Übersetzungstabelle<a class="headerlink" href="#zusammenfassung-ubersetzungstabelle" title="Permalink to this heading"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>jq-Dialekt (<code class="docutils literal notranslate"><span class="pre">jq_syntax:</span> <span class="pre">True</span></code>)</p></th>
+<th class="head"><p>JMESPath (<code class="docutils literal notranslate"><span class="pre">jq_syntax:</span> <span class="pre">False</span></code>)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.feld</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">feld</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.a.b.c</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">a.b.c</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.a[&quot;0&quot;]</span></code> bzw. <code class="docutils literal notranslate"><span class="pre">.a[0]</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">a[0]</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.a[]</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">a[]</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.a</span> <span class="pre">|</span> <span class="pre">.b</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">|</span> <span class="pre">b</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">select(.id</span> <span class="pre">==</span> <span class="pre">2)</span></code></p></td>
+<td><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[?id == `2`]
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">select(.name</span> <span class="pre">==</span> <span class="pre">&quot;x&quot;)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[?name</span> <span class="pre">==</span> <span class="pre">'x']</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">Tipp</p>
+<p>Wer nicht sicher ist, ob eine Übersetzung korrekt ist: Beide
+Filter-Varianten können parallel in <code class="docutils literal notranslate"><span class="pre">items.yaml</span></code> stehenbleiben,
+solange sie auf unterschiedliche Items zeigen — es ist also möglich,
+Item für Item schrittweise auf <code class="docutils literal notranslate"><span class="pre">jq_syntax:</span> <span class="pre">False</span></code> umzustellen,
+indem für jede Instanz getrennt getestet wird, statt alles auf
+einmal umzuschreiben. Da <code class="docutils literal notranslate"><span class="pre">jq_syntax</span></code> ein Parameter der
+<strong>Plugin-Instanz</strong> ist (nicht des einzelnen Items), betrifft ein
+Wechsel jeweils alle Items einer Instanz gemeinsam — bei einem
+schrittweisen Umstieg empfiehlt es sich daher, eine zweite,
+testweise Instanz mit <code class="docutils literal notranslate"><span class="pre">jq_syntax:</span> <span class="pre">False</span></code> auf dieselbe Datenquelle
+anzusetzen und die übersetzten Filter dort zu verifizieren, bevor die
+produktive Instanz umgestellt wird.</p>
+</div>
+<p>Ausführliche Referenzen zu beiden Sprachen:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://jqlang.github.io/jq/tutorial/">jq-Tutorial</a> (für den
+bisherigen, plugin-eigenen Dialekt als Orientierung — das Plugin
+unterstützt nicht den vollen jq-Sprachumfang)</p></li>
+<li><p><a class="reference external" href="https://jmespath.org/tutorial.html">JMESPath-Tutorial</a> und
+<a class="reference external" href="https://jmespath.org/specification.html">JMESPath-Specification</a>
+(für <code class="docutils literal notranslate"><span class="pre">jq_syntax:</span> <span class="pre">False</span></code> — das Plugin nutzt hier die echte,
+vollständige JMESPath-Bibliothek ohne Einschränkungen)</p></li>
+</ul>
 </section>
 </section>
 <section id="web-interface">
