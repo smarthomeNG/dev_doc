@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.db &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 17. August 2026, commit 1958416) Dokumentation</title>
+  <title>lib.db &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 27. August 2026, commit 72250de) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
@@ -4987,6 +4987,7 @@
 <li class="toctree-l5"><a class="reference internal" href="#lib.db.Database.release"><code class="docutils literal notranslate"><span class="pre">Database.release()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib.db.Database.rollback"><code class="docutils literal notranslate"><span class="pre">Database.rollback()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib.db.Database.setup"><code class="docutils literal notranslate"><span class="pre">Database.setup()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#lib.db.Database.transaction"><code class="docutils literal notranslate"><span class="pre">Database.transaction()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib.db.Database.verify"><code class="docutils literal notranslate"><span class="pre">Database.verify()</span></code></a></li>
 </ul>
 </li>
@@ -5803,7 +5804,11 @@ implementations based on the DB-API2 specification (PEP 249).</p>
 ‚rollback()‘ - rollback a transaction (if the selcted database supports it)
 ‚lock()‘ - acquire the database lock (prevent simultaneous reads/writes)
 ‚release()‘ - release the database lock
-‚verify()‘ - check database connection and reconnect if required
+‚transaction()‘ - context manager: run several statements as one</p>
+<blockquote>
+<div><p>commit/rollback unit, using lock()/release() internally</p>
+</div></blockquote>
+<p>‚verify()‘ - check database connection and reconnect if required
 ‚connected()‘ - check if database is connected</p>
 <p>The SQL statements executed may have placeholders and parameters which
 are passed to the execution methods listed above. The following DB-API
@@ -5890,6 +5895,24 @@ the result. It accepts the same arguments as mentioned in the
 <dt class="sig sig-object py" id="lib.db.Database.lock">
 <span class="sig-name descname"><span class="pre">lock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/db.html#Database.lock"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.db.Database.lock" title="Link zu dieser Definition"></a></dt>
 <dd><p>Acquire a database lock</p>
+<p>Raises RuntimeError immediately - never waits out timeout - if the
+calling thread already holds this lock. self._fdb_lock is a plain,
+non-reentrant threading.Lock: without this check a same-thread
+re-entry would just block until timeout, indistinguishable from
+genuine cross-thread contention. This is what makes transaction()‘s
+non-reentrancy hazard (see its docstring for what triggers it) fail
+loud and immediately instead of silently hanging.</p>
+<p>Tracks threading.current_thread() (the Thread object), not
+threading.get_ident() (a small OS-recyclable int) - an owner marker
+holding a live reference to the actual Thread object can’t collide
+with an unrelated later thread the way a recycled ident could once
+the original owner had already exited without releasing.</p>
+<p>A stale read of the owner marker (benign: plain attribute read
+under the GIL, no separate synchronization) can only cause a false
+negative here - falling through to the real self._fdb_lock.acquire()
+call, which then behaves exactly as it did before this check
+existed. It can never falsely raise for a thread that doesn’t
+actually hold the lock.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -5922,11 +5945,68 @@ and values are a two-item list for a rollout and rollback statement.</p>
 </dd>
 </dl>
 <p>For an extended example take a look into the ‚database‘ plugin.</p>
+<p>Each version’s rollout statement and its version-row bookkeeping
+commit as their own transaction(), not one commit for the whole
+migration - MySQL/MariaDB DDL (CREATE TABLE/ALTER TABLE/…)
+commits implicitly as a side effect regardless of any wrapping
+transaction, so a single end-of-loop commit couldn’t make a
+multi-step migration atomic there anyway; on a crash between one
+step’s DDL and its own version-row commit, only that one step
+needs to be figured out by hand on restart (the DDL re-running
+and failing with „already exists“), not the whole remaining
+migration. On sqlite, Python’s sqlite3 module autocommits DDL
+anyway under its default (legacy) isolation handling - an implicit
+BEGIN is only issued before DML - so per-step commits match what
+actually happens there too; neither backend gets multi-step
+atomicity.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.db.Database.transaction">
+<span class="sig-name descname"><span class="pre">transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/db.html#Database.transaction"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.db.Database.transaction" title="Link zu dieser Definition"></a></dt>
+<dd><p>Run a block of statements as one transaction.</p>
+<p>Acquires self._fdb_lock, yields a cursor for the caller to run
+multiple statements against, commits on clean exit, rolls back
+(best-effort) on any exception and re-raises it, always releases
+the lock. Use this instead of hand-rolling
+lock()/cursor()/commit()/rollback()/release() at each call site -
+a hand-rolled block that omits cleanup on failure leaves a
+corrupted connection for the next caller to inherit.</p>
+<p>Rolling back unconditionally on any exception is always safe here
+- no DB-API2 exception-class distinction needed. If the connection
+is genuinely dead, the rollback attempt itself fails, which
+triggers the existing self-healing reset in rollback() and
+re-raises - so this gets „reset on real connection failure“ for
+free, without a fragile classification heuristic.</p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">transaction</span><span class="p">()</span> <span class="k">as</span> <span class="n">cur</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_log_store</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">item_id</span><span class="p">,</span> <span class="n">entry</span><span class="p">,</span> <span class="n">item_type</span><span class="p">,</span> <span class="n">now_ms</span><span class="p">,</span> <span class="n">cur</span><span class="o">=</span><span class="n">cur</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>IMPORTANT - non-reentrancy: self._fdb_lock is a plain,
+non-reentrant threading.Lock, held for the entire block. Two
+hazards follow from this, both enforced by lock() itself raising
+RuntimeError immediately on a same-thread re-entry (see lock())
+rather than deadlocking/timing out:</p>
+<ul class="simple">
+<li><p>transaction() cannot be nested.</p></li>
+<li><p>Any call from inside the block that acquires the lock
+internally - a cur=None execute()/fetchone()/fetchall() call, or
+connect()/close()/verify()/setup() - hits the same wall. Always
+pass the yielded cur through explicitly to statements run inside
+the block.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameter<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>timeout</strong> – Seconds to wait for the lock; defaults to the
+configured db_query_timeout.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lib.db.Database.verify">
-<span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">retry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/db.html#Database.verify"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.db.Database.verify" title="Link zu dieser Definition"></a></dt>
+<span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">retry</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probe_timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/db.html#Database.verify"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.db.Database.verify" title="Link zu dieser Definition"></a></dt>
 <dd><p>Verifies the connection status and reconnets if required</p>
 <p>The connected status of the connection will be checked by executing
 a simple SQL statement. If this fails or the connection is not
@@ -5936,6 +6016,22 @@ reconnect will be executed until it will give up. This can be
 specified by the ‚retry‘ parameter.</p>
 <p>To specify the delay between retries use the <cite>delay</cite> parameter,
 which defaults to 5 seconds.</p>
+<p>Cost note: each attempt can cost up to <cite>probe_timeout</cite> (see
+below) even against a completely unresponsive server, and retry
+multiplies that. A caller whose own failure path already gets
+retried on its own cadence (e.g. a scheduled cycle) should still
+pass a low <cite>retry</cite> here rather than relying on this loop alone.</p>
+<p>probe_timeout (pymysql only, default 5s): a „SELECT 1“ probe
+doesn’t need the full db_query_timeout (60s default) a real query
+gets. Overrides pymysql’s read_timeout/write_timeout for the
+duration of this call, then restores them (finally block below) -
+including on an already-open connection, since pymysql applies
+these fresh on every read/write rather than caching them at
+connect time. hasattr-guarded: read_timeout is not part of
+pymysql’s public API and could be renamed in a future version, in
+which case this silently no-ops instead of raising. Scoped to the
+‚pymysql‘ driver name, not the wider _pymysql_driver_names set -
+MySQLdb/mysql.connector may name this attribute differently.</p>
 </dd></dl>
 
 </dd></dl>
