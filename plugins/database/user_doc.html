@@ -5798,6 +5798,19 @@ welches bereits mit Python oder MySQL gebundeled ist, und über das
 <strong>KEIN</strong> <strong>instance</strong> Attribut konfiguriert werden darf, da sonst die Systemdaten nicht gespeichert werden und
 Abfragen aus dem Admin Interface und der smartVISU ins Leere laufen und Fehlermeldungen produzieren.</p>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Bemerkung</p>
+<p>Hinweise für MySQL/MariaDB:</p>
+<ul class="simple">
+<li><p>Textwerte (<code class="docutils literal notranslate"><span class="pre">val_str</span></code>) sind auf 64 KB begrenzt (Spaltentyp <code class="docutils literal notranslate"><span class="pre">TEXT</span></code>). SQLite hat diese
+Grenze nicht.</p></li>
+<li><p>Beim ersten Start nach einem Update kann die Schema-Migration auf Version 7 (neue Spalte
+<code class="docutils literal notranslate"><span class="pre">val_quality</span></code>) auf MariaDB vor 10.3 lange dauern, da die komplette Log-Tabelle neu
+aufgebaut wird.</p></li>
+<li><p>Die Auswertungsfunktionen <code class="docutils literal notranslate"><span class="pre">diff</span></code> und <code class="docutils literal notranslate"><span class="pre">differentiate</span></code> benötigen Window-Funktionen:
+MariaDB ab 10.2, MySQL ab 8.0, SQLite ab 3.25.</p></li>
+</ul>
+</div>
 <p>Standarmäßig schreibt das Plugin vor dem Beenden von SmarthomeNG alle am Plugin registrierten Items nochmal mit aktuellem
 Wert in die Datenbank. Die kann durch Setzen des Item Attributes database_write_on_shutdown: False unterdrückt werden.
 Ein typischer Anwendungsfall sind zum Beispiel monoton steigende Werte wie Zählerstände, die selten geschrieben werden
@@ -6026,7 +6039,7 @@ und arbeitet sich - genau wie das Löschen - in begrenzten Schritten durch alte 
 </tr>
 <tr class="row-even"><td><p>on</p></td>
 <td><p>Prozentzahl der Werte &gt; 0 (zeitgewichtet)</p></td>
-<td><p>bool, str</p></td>
+<td><p>bool</p></td>
 </tr>
 <tr class="row-odd"><td><p>countall</p></td>
 <td><p>Anzahl der Rohwerte im Intervall</p></td>
