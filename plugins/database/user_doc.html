@@ -527,6 +527,7 @@
 <li class="toctree-l5"><a class="reference internal" href="#item-db-mark-invalid">item.db_mark_invalid()</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#item-db-mark-valid">item.db_mark_valid()</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#auswirkung-auf-abfragen">Auswirkung auf Abfragen</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#einzelnen-datensatz-ungultig-markieren-webinterface">Einzelnen Datensatz ungültig markieren (Webinterface)</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#implizite-revalidierung">Implizite Revalidierung</a></li>
 </ul>
 </li>
@@ -2417,6 +2418,7 @@
 <li class="toctree-l5"><a class="reference internal" href="#item-db-mark-invalid">item.db_mark_invalid()</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#item-db-mark-valid">item.db_mark_valid()</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#auswirkung-auf-abfragen">Auswirkung auf Abfragen</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#einzelnen-datensatz-ungultig-markieren-webinterface">Einzelnen Datensatz ungültig markieren (Webinterface)</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#implizite-revalidierung">Implizite Revalidierung</a></li>
 </ul>
 </li>
@@ -6263,6 +6265,11 @@ Eintrag in der <code class="docutils literal notranslate"><span class="pre">log<
 <td><p>Keine Daten verfügbar (Lücke).  Alle <code class="docutils literal notranslate"><span class="pre">val_*</span></code> Spalten
 sind <code class="docutils literal notranslate"><span class="pre">NULL</span></code>.  Wird bei Aggregationen ausgeschlossen.</p></td>
 </tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">2</span></code></p></td>
+<td><p>Manuell als ungültig markiert.  Der ursprüngliche Wert
+bleibt erhalten, wird aber wie eine Lücke behandelt und
+kann jederzeit wiederhergestellt werden.</p></td>
+</tr>
 </tbody>
 </table>
 <section id="item-db-mark-invalid">
@@ -6315,6 +6322,24 @@ der neue Messwert normal gesetzt werden.</p>
 <p><code class="docutils literal notranslate"><span class="pre">avg</span></code>, <code class="docutils literal notranslate"><span class="pre">sum</span></code>, <code class="docutils literal notranslate"><span class="pre">integrate</span></code>, <code class="docutils literal notranslate"><span class="pre">on</span></code>, <code class="docutils literal notranslate"><span class="pre">min</span></code>, <code class="docutils literal notranslate"><span class="pre">max</span></code></p>
 <p>Bei Rohwertabfragen (<code class="docutils literal notranslate"><span class="pre">raw</span></code>) erscheinen Lückeneinträge als <code class="docutils literal notranslate"><span class="pre">NULL</span></code>, damit
 Visualisierungen die Unterbrechung als echte Lücke darstellen können.</p>
+</section>
+<section id="einzelnen-datensatz-ungultig-markieren-webinterface">
+<h3>Einzelnen Datensatz ungültig markieren (Webinterface)<a class="headerlink" href="#einzelnen-datensatz-ungultig-markieren-webinterface" title="Permalink to this heading"></a></h3>
+<p>In der Detailansicht eines Items (<code class="docutils literal notranslate"><span class="pre">log</span></code>-Tabelle) lässt sich ein einzelner
+Datensatz über das Papierkorb-Symbol als ungültig markieren, statt ihn zu
+löschen. Der Wert bleibt in der Datenbank erhalten, zählt aber ab sofort nicht
+mehr bei <code class="docutils literal notranslate"><span class="pre">avg</span></code>, <code class="docutils literal notranslate"><span class="pre">sum</span></code>, <code class="docutils literal notranslate"><span class="pre">integrate</span></code>, <code class="docutils literal notranslate"><span class="pre">on</span></code>, <code class="docutils literal notranslate"><span class="pre">min</span></code> und <code class="docutils literal notranslate"><span class="pre">max</span></code> mit.</p>
+<p>Ein hartes Löschen einzelner Datensätze würde die Dauer des vorherigen Eintrags
+verfälschen, da die Summe aller Dauern nicht mehr der tatsächlich vergangenen
+Zeit entspräche. Das Markieren als ungültig vermeidet das: Die Dauer des
+vorherigen Eintrags bleibt unangetastet, und der markierte Datensatz lässt
+sich über das Wiederherstellen-Symbol jederzeit zurücksetzen.</p>
+<p>Diese Aktion steht nur für die letzten beiden, noch offenen Werte eines Items
+nicht zur Verfügung (Schaltfläche ist deaktiviert), da diese den aktuell
+gültigen Wert des Items abbilden.</p>
+<p>Das vollständige Löschen der Werthistorie eines Items (Papierkorb-Symbol in der
+Übersicht) ist davon nicht betroffen und bleibt ein echtes, unwiderrufliches
+Löschen.</p>
 </section>
 <section id="implizite-revalidierung">
 <h3>Implizite Revalidierung<a class="headerlink" href="#implizite-revalidierung" title="Permalink to this heading"></a></h3>
