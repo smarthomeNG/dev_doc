@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.db &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 29. August 2026, commit 56b7609) Dokumentation</title>
+  <title>lib.db &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 30. August 2026, commit d758552) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
@@ -4987,11 +4987,13 @@
 <li class="toctree-l5"><a class="reference internal" href="#lib.db.Database.fetchone"><code class="docutils literal notranslate"><span class="pre">Database.fetchone()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib.db.Database.is_connection_error"><code class="docutils literal notranslate"><span class="pre">Database.is_connection_error()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib.db.Database.lock"><code class="docutils literal notranslate"><span class="pre">Database.lock()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#lib.db.Database.lock_holder_description"><code class="docutils literal notranslate"><span class="pre">Database.lock_holder_description()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib.db.Database.release"><code class="docutils literal notranslate"><span class="pre">Database.release()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib.db.Database.rollback"><code class="docutils literal notranslate"><span class="pre">Database.rollback()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib.db.Database.setup"><code class="docutils literal notranslate"><span class="pre">Database.setup()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib.db.Database.transaction"><code class="docutils literal notranslate"><span class="pre">Database.transaction()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib.db.Database.verify"><code class="docutils literal notranslate"><span class="pre">Database.verify()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#lib.db.Database.version"><code class="docutils literal notranslate"><span class="pre">Database.version()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -5928,6 +5930,19 @@ actually hold the lock.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="lib.db.Database.lock_holder_description">
+<span class="sig-name descname"><span class="pre">lock_holder_description</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/db.html#Database.lock_holder_description"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.db.Database.lock_holder_description" title="Link zu dieser Definition"></a></dt>
+<dd><p>‚ (lock currently held by thread &lt;name&gt;)‘, or ‚‘ if unheld.</p>
+<p>For a log message reporting a failed lock acquisition - names the
+cause instead of just the symptom, e.g. distinguishing „someone
+else is mid-compaction“ from a genuine connection failure. Safe to
+call from a different thread than the one that failed to acquire:
+same benign, unsynchronized attribute read as lock()‘s own
+reentrancy check (see its docstring) - at worst one step stale,
+never wrong about a thread that doesn’t actually hold the lock.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="lib.db.Database.release">
 <span class="sig-name descname"><span class="pre">release</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/db.html#Database.release"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.db.Database.release" title="Link zu dieser Definition"></a></dt>
 <dd><p>Release the database lock</p>
@@ -6044,6 +6059,17 @@ pymysql’s public API and could be renamed in a future version, in
 which case this silently no-ops instead of raising. Scoped to the
 ‚pymysql‘ driver name, not the wider _pymysql_driver_names set -
 MySQLdb/mysql.connector may name this attribute differently.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.db.Database.version">
+<span class="sig-name descname"><span class="pre">version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/db.html#Database.version"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.db.Database.version" title="Link zu dieser Definition"></a></dt>
+<dd><p>Best-effort database engine/server version string, or None on failure.</p>
+<p>Cached after a successful lookup - the engine version can only
+change via a server restart, which always tears down and
+reconnects this object’s connection (see
+_reset_connection_locked()), so that’s the only point the cache
+needs to be invalidated.</p>
 </dd></dl>
 
 </dd></dl>

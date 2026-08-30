@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.db &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 29. August 2026, commit 56b7609) Dokumentation</title>
+  <title>lib.db &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 30. August 2026, commit d758552) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -4984,11 +4984,13 @@
 <li class="toctree-l5"><a class="reference internal" href="../../lib/db.html#lib.db.Database.fetchone"><code class="docutils literal notranslate"><span class="pre">Database.fetchone()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/db.html#lib.db.Database.is_connection_error"><code class="docutils literal notranslate"><span class="pre">Database.is_connection_error()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/db.html#lib.db.Database.lock"><code class="docutils literal notranslate"><span class="pre">Database.lock()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/db.html#lib.db.Database.lock_holder_description"><code class="docutils literal notranslate"><span class="pre">Database.lock_holder_description()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/db.html#lib.db.Database.release"><code class="docutils literal notranslate"><span class="pre">Database.release()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/db.html#lib.db.Database.rollback"><code class="docutils literal notranslate"><span class="pre">Database.rollback()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/db.html#lib.db.Database.setup"><code class="docutils literal notranslate"><span class="pre">Database.setup()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/db.html#lib.db.Database.transaction"><code class="docutils literal notranslate"><span class="pre">Database.transaction()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/db.html#lib.db.Database.verify"><code class="docutils literal notranslate"><span class="pre">Database.verify()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/db.html#lib.db.Database.version"><code class="docutils literal notranslate"><span class="pre">Database.version()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -6025,6 +6027,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_format_input</span> <span class="o">=</span> <span class="n">formatting</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">api_initialized</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -6149,7 +6152,9 @@
             <span class="n">locked</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">locked</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span>
-                <span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: could not acquire lock within </span><span class="si">{}</span><span class="s1">s in connect()'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+                <span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: could not acquire lock within </span><span class="si">{}</span><span class="s1">s in connect()</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock_holder_description</span><span class="p">()</span>
+                <span class="p">)</span>
             <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbapi</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">)</span>
@@ -6181,8 +6186,10 @@
             <span class="c1"># block.  _conn=None / _connected=False are written here so</span>
             <span class="c1"># anything the worker tries after recovering fails gracefully.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: could not acquire lock within </span><span class="si">{}</span><span class="s1">s in close(); '</span>
-                <span class="s1">'force-closing connection to unblock hung thread'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+                <span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: could not acquire lock within </span><span class="si">{}</span><span class="s1">s in close()</span><span class="si">{}</span><span class="s1">; '</span>
+                <span class="s1">'force-closing connection to unblock hung thread'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock_holder_description</span><span class="p">()</span>
+                <span class="p">)</span>
             <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_reset_connection_locked</span><span class="p">()</span>
@@ -6210,6 +6217,7 @@
             <span class="k">pass</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="Database.connected"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.connected">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">connected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Return the connected status"""</span>
@@ -6330,6 +6338,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_fdb_lock_owner</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fdb_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
 
+<div class="viewcode-block" id="Database.lock_holder_description"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.lock_holder_description">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">lock_holder_description</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""' (lock currently held by thread &lt;name&gt;)', or '' if unheld.</span>
+
+<span class="sd">        For a log message reporting a failed lock acquisition - names the</span>
+<span class="sd">        cause instead of just the symptom, e.g. distinguishing "someone</span>
+<span class="sd">        else is mid-compaction" from a genuine connection failure. Safe to</span>
+<span class="sd">        call from a different thread than the one that failed to acquire:</span>
+<span class="sd">        same benign, unsynchronized attribute read as lock()'s own</span>
+<span class="sd">        reentrancy check (see its docstring) - at worst one step stale,</span>
+<span class="sd">        never wrong about a thread that doesn't actually hold the lock.</span>
+<span class="sd">        """</span>
+        <span class="n">owner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fdb_lock_owner</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">' (lock currently held by thread </span><span class="si">{</span><span class="n">owner</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s1">)'</span> <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">''</span></div>
+
 <div class="viewcode-block" id="Database.transaction"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.transaction">[Doku]</a>    <span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Run a block of statements as one transaction.</span>
@@ -6377,7 +6399,9 @@
             <span class="n">locked</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">locked</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span>
-                <span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: could not acquire lock within </span><span class="si">{}</span><span class="s1">s in transaction()'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+                <span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: could not acquire lock within </span><span class="si">{}</span><span class="s1">s in transaction()</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock_holder_description</span><span class="p">()</span>
+                <span class="p">)</span>
             <span class="p">)</span>
 
         <span class="n">cur</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
@@ -6513,7 +6537,9 @@
             <span class="k">with</span> <span class="n">_hang_watchdog</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1"> - waiting for db lock'</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
                 <span class="n">locked</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">locked</span><span class="p">:</span>
-                <span class="n">last_error</span> <span class="o">=</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: could not acquire lock within </span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s1">s'</span><span class="p">)</span>
+                <span class="n">last_error</span> <span class="o">=</span> <span class="ne">TimeoutError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: could not acquire lock within </span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s1">s</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lock_holder_description</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span>
+                <span class="p">)</span>
                 <span class="k">break</span>
 
             <span class="n">c</span> <span class="o">=</span> <span class="kc">None</span>
@@ -6712,7 +6738,9 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                            <span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: Could not acquire lock to verify connection'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">)</span>
+                            <span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: Could not acquire lock to verify connection</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock_holder_description</span><span class="p">()</span>
+                            <span class="p">)</span>
                         <span class="p">)</span>
                         <span class="n">retry</span> <span class="o">=</span> <span class="n">retry</span> <span class="o">-</span> <span class="mi">1</span>
 
@@ -6785,6 +6813,27 @@
             <span class="n">error_prefix</span><span class="o">=</span><span class="sa">f</span><span class="s1">'fetchall failed for stmt </span><span class="si">{</span><span class="n">stmt</span><span class="si">}</span><span class="s1"> with params </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
             <span class="n">readonly</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Database.version"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.version">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Best-effort database engine/server version string, or None on failure.</span>
+
+<span class="sd">        Cached after a successful lookup - the engine version can only</span>
+<span class="sd">        change via a server restart, which always tears down and</span>
+<span class="sd">        reconnects this object's connection (see</span>
+<span class="sd">        _reset_connection_locked()), so that's the only point the cache</span>
+<span class="sd">        needs to be invalidated.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version</span>
+        <span class="n">stmt</span> <span class="o">=</span> <span class="s1">'SELECT sqlite_version()'</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dbapi</span><span class="p">,</span> <span class="s1">'__name__'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span> <span class="o">==</span> <span class="s1">'sqlite3'</span> <span class="k">else</span> <span class="s1">'SELECT VERSION()'</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetchone</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: version lookup failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stmt</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">formatting</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Internal helper method to convert the statement and parameter list"""</span>
