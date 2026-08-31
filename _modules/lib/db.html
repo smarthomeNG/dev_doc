@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.db &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 31. August 2026, commit 48e676d) Dokumentation</title>
+  <title>lib.db &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 31. August 2026, commit 7dd7a4e) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -6589,8 +6589,13 @@
                     <span class="k">break</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">quiet</span><span class="p">:</span>
             <span class="n">prefix</span> <span class="o">=</span> <span class="n">error_prefix</span> <span class="ow">or</span> <span class="sa">f</span><span class="s1">'Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: query failed after reconnect attempt'</span>
-            <span class="c1"># Same reasoning as execute()'s cur-provided branch below.</span>
-            <span class="n">level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_connection_error</span><span class="p">(</span><span class="n">last_error</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_connection_error</span><span class="p">(</span><span class="n">last_error</span><span class="p">):</span>
+                <span class="n">level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">last_error</span><span class="p">,</span> <span class="ne">TimeoutError</span><span class="p">):</span>
+                <span class="c1"># Own lock timeout (not a DB-API error) - WARNING, not INFO like a connection drop.</span>
+                <span class="n">level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span>
             <span class="n">level</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">last_error</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="k">raise</span> <span class="n">last_error</span>
 
@@ -6684,8 +6689,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="s1">'read_timeout'</span><span class="p">]</span> <span class="o">=</span> <span class="n">probe_timeout</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="s1">'write_timeout'</span><span class="p">]</span> <span class="o">=</span> <span class="n">probe_timeout</span>
 
+        <span class="n">attempts</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">last_reason</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">while</span> <span class="n">retry</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">attempts</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">locked</span> <span class="o">=</span> <span class="kc">False</span>
 
                 <span class="k">try</span><span class="p">:</span>
@@ -6711,10 +6719,8 @@
                         <span class="k">if</span> <span class="n">probe_cur</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                             <span class="c1"># connection was closed by another thread in between</span>
                             <span class="c1"># us verifying and using it</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                                <span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: connection was closed between connect() and lock() '</span>
-                                <span class="s1">'acquisition, retrying'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">)</span>
-                            <span class="p">)</span>
+                            <span class="n">last_reason</span> <span class="o">=</span> <span class="s1">'connection closed between connect() and lock() acquisition'</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: </span><span class="si">{</span><span class="n">last_reason</span><span class="si">}</span><span class="s1">, retrying'</span><span class="p">)</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
                             <span class="n">retry</span> <span class="o">=</span> <span class="n">retry</span> <span class="o">-</span> <span class="mi">1</span>
                         <span class="k">else</span><span class="p">:</span>
@@ -6730,7 +6736,8 @@
                             <span class="n">retry</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="n">last_reason</span> <span class="o">=</span> <span class="s1">'could not acquire lock'</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                             <span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: Could not acquire lock to verify connection</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock_holder_description</span><span class="p">()</span>
                             <span class="p">)</span>
@@ -6738,7 +6745,8 @@
                         <span class="n">retry</span> <span class="o">=</span> <span class="n">retry</span> <span class="o">-</span> <span class="mi">1</span>
 
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: Connection error </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+                    <span class="n">last_reason</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'connection error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: Connection error </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
                     <span class="k">if</span> <span class="n">locked</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -6746,6 +6754,13 @@
 
                 <span class="k">if</span> <span class="n">retry</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">retry</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: verify() gave up after </span><span class="si">{}</span><span class="s1"> attempt(s) (</span><span class="si">{}</span><span class="s1">)</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">attempts</span><span class="p">,</span> <span class="n">last_reason</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock_holder_description</span><span class="p">()</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">is_pymysql</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="s1">'read_timeout'</span><span class="p">]</span> <span class="o">=</span> <span class="n">saved_read_timeout</span>
