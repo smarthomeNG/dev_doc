@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 1. September 2026, commit 7cedcf9) Dokumentation</title>
+  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 1. September 2026, commit 3db61d7) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -6817,7 +6817,9 @@
 
         <span class="k">return</span> <span class="n">resend_info</span>
 
-<div class="viewcode-block" id="SmartDevicePlugin.send_command"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#lib.model.smartdeviceplugin.SmartDevicePlugin.send_command">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_result</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="SmartDevicePlugin.send_command"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#lib.model.smartdeviceplugin.SmartDevicePlugin.send_command">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_command</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_result</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">raise_on_error</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Sends the specified command to the device providing &lt;value&gt; as data</span>
 <span class="sd">        Not providing data will issue a read command, trying to read the value</span>
@@ -6825,7 +6827,9 @@
 
 <span class="sd">        :param command: the command to send</span>
 <span class="sd">        :param value: the data to send, if applicable</span>
+<span class="sd">        :param raise_on_error: re-raise the underlying error instead of returning False on failure</span>
 <span class="sd">        :type command: str</span>
+<span class="sd">        :type raise_on_error: bool</span>
 <span class="sd">        :return: True if send was successful, False otherwise</span>
 <span class="sd">        :rtype: bool</span>
 <span class="sd">        """</span>
@@ -6843,17 +6847,26 @@
                 <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">alive</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'trying to send command </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1"> with value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">, but plugin is not active.'</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'trying to send command </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1"> with value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">, but plugin is not active.'</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">raise_on_error</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">SDPError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">suspended</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'trying to send command </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1"> with value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">, but plugin is suspended.'</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'trying to send command </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1"> with value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">, but plugin is suspended.'</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">raise_on_error</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">SDPError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="sa">f</span><span class="s2">"trying to send command </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2"> with value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">, but connection is None. This shouldn't happen..."</span>
             <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">raise_on_error</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">SDPError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">)</span>
@@ -6872,9 +6885,12 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="o">.</span><span class="n">connected</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="sa">f</span><span class="s1">'trying to send command </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1"> with value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">, but connection could not be re-established.'</span>
                 <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">raise_on_error</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">SDPError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
         <span class="c1"># enable doing something before sending data normally</span>
@@ -6889,10 +6905,15 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'command </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1"> with value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1"> produced error on converting value, aborting. Error was: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span>
             <span class="p">)</span>
+            <span class="k">if</span> <span class="n">raise_on_error</span><span class="p">:</span>
+                <span class="k">raise</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="n">data_dict</span><span class="p">[</span><span class="s1">'payload'</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">data_dict</span><span class="p">[</span><span class="s1">'payload'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">''</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'command </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1"> with value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1"> yielded empty command payload, aborting'</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'command </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1"> with value </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1"> yielded empty command payload, aborting'</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">raise_on_error</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">SDPError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="n">data_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform_send_data</span><span class="p">(</span><span class="n">data_dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -6906,6 +6927,8 @@
             <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send</span><span class="p">(</span><span class="n">data_dict</span><span class="p">,</span> <span class="n">resend_info</span><span class="o">=</span><span class="n">resend_info</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="n">SDPError</span><span class="p">,</span> <span class="ne">RuntimeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'error on sending command </span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">raise_on_error</span><span class="p">:</span>
+                <span class="k">raise</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
             <span class="n">by</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'by'</span><span class="p">)</span>
