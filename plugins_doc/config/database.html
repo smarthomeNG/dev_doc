@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plugin ‚database‘ Konfiguration &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 31. August 2026, commit 7dd7a4e) Dokumentation</title>
+  <title>Plugin ‚database‘ Konfiguration &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 1. September 2026, commit 05cfbd9) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -5871,7 +5871,7 @@
 </section>
 <section id="default-maxage-action">
 <h2>default_maxage_action<a class="headerlink" href="#default-maxage-action" title="Permalink to this heading"></a></h2>
-<p>Standard-Aktion für Items mit database_maxage, die kein eigenes database_maxage_action gesetzt haben</p>
+<p>Standard-Aktion für Items mit database_maxage, die kein eigenes database_maxage_action gesetzt haben. ‚on‘ ist ein veralteter Alias für ‚duty_cycle‘ und wird nur aus Kompatibilitätsgründen noch akzeptiert - unquoted ‚on‘ wird von YAML als bool True interpretiert, daher ‚duty_cycle‘ verwenden.</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>str</strong></p></li>
@@ -5896,6 +5896,28 @@
 <div><ul class="simple">
 <li><p>Datentyp: <strong>str</strong></p></li>
 <li><p>Standardwert: <strong>sqlite3</strong></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="invalid-check-cycle">
+<h2>invalid_check_cycle<a class="headerlink" href="#invalid-check-cycle" title="Permalink to this heading"></a></h2>
+<p>Bestimmt, wie oft (in Sekunden) auf Items mit database_invalid_after geprüft wird, die seither still geblieben sind. Nur relevant, falls mindestens ein Item database_invalid_after gesetzt hat.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Datentyp: <strong>int</strong></p></li>
+<li><p>Standardwert: <strong>60</strong></p></li>
+<li><p>Minimalwert: <strong>1</strong></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="invalid-check-grace-time">
+<h2>invalid_check_grace_time<a class="headerlink" href="#invalid-check-grace-time" title="Permalink to this heading"></a></h2>
+<p>Zusätzliche Karenzzeit (in Sekunden), die nach dem Start des Plugins zum database_invalid_after-Wert eines Items addiert wird, bevor es als ungültig markiert werden kann - deckt DB-Lesezeit, Startup-Verzögerungen und Scheduler-Streuung ab. Für die meisten Konfigurationen ist der Standardwert ausreichend.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Datentyp: <strong>int</strong></p></li>
+<li><p>Standardwert: <strong>60</strong></p></li>
+<li><p>Minimalwert: <strong>0</strong></p></li>
 </ul>
 </div></blockquote>
 </section>
@@ -5996,6 +6018,15 @@
 </ul>
 </div></blockquote>
 </section>
+<section id="database-invalid-after">
+<h2>database_invalid_after<a class="headerlink" href="#database-invalid-after" title="Permalink to this heading"></a></h2>
+<p>Opt-in, pro Item: Maximale Stillezeit (Format wie ‚cycle‘/‘autotimer‘, z.B. ‚5m‘, ‚30s‘), nach der ein Item ohne Update automatisch als ungültig markiert wird (siehe db_mark_invalid() - Lücke statt gerader Interpolationslinie in Plots). Kein Standardwert und kein Plugin-Fallback - jedes Item muss dies explizit selbst setzen, da die richtige Schwelle von der jeweiligen Datenquelle abhängt. Erfordert das item-Attribut ‚enforce_updates‘, sonst wird eine unveränderte Wiederholung desselben Werts nicht als Lebenszeichen erkannt (nur die periodische Prüfung bleibt dann voll wirksam). Nicht mit database_acl: ro kombinierbar.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Datentyp: <strong>str</strong></p></li>
+</ul>
+</div></blockquote>
+</section>
 <section id="database-maxage">
 <h2>database_maxage<a class="headerlink" href="#database-maxage" title="Permalink to this heading"></a></h2>
 <p>Maximales Alter (in Tagen) der Logeinträge, die für dieses Item gespeichert werden sollen. Falls nicht angegeben, werden die Werte unbegrenzt gespeichert.</p>
@@ -6008,7 +6039,7 @@
 </section>
 <section id="database-maxage-action">
 <h2>database_maxage_action<a class="headerlink" href="#database-maxage-action" title="Permalink to this heading"></a></h2>
-<p>Aktion, die beim Erreichen von database_maxage auf ältere Logeinträge angewendet wird. ‚delete‘ (Standardverhalten) löscht die Einträge ersatzlos; jeder andere Wert ersetzt sie durch einen Kompaktierungswert pro database_maxage_interval, statt sie zu löschen. Kein Standardwert hier gesetzt, damit default_maxage_action als Fallback greifen kann, wenn das Attribut nicht gesetzt ist.</p>
+<p>Aktion, die beim Erreichen von database_maxage auf ältere Logeinträge angewendet wird. ‚delete‘ (Standardverhalten) löscht die Einträge ersatzlos; jeder andere Wert ersetzt sie durch einen Kompaktierungswert pro database_maxage_interval, statt sie zu löschen. ‚duty_cycle‘ (nur bool-Items) berechnet den zeitgewichteten Ein-Anteil. ‚on‘ ist ein veralteter Alias für ‚duty_cycle‘, nur aus Kompatibilitätsgründen noch akzeptiert - unquoted ‚on‘ wird von YAML als bool True interpretiert, daher ‚duty_cycle‘ verwenden. Kein Standardwert hier gesetzt, damit default_maxage_action als Fallback greifen kann, wenn das Attribut nicht gesetzt ist.</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>str</strong></p></li>
