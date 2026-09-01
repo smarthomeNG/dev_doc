@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.db &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 1. September 2026, commit 482ff1b) Dokumentation</title>
+  <title>lib.db &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 1. September 2026, commit 7cedcf9) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -6003,7 +6003,7 @@
     <span class="c1"># config string.</span>
     <span class="n">_bool_connect_keys</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'check_same_thread'</span><span class="p">}</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">dbapi</span><span class="p">,</span> <span class="n">connect</span><span class="p">,</span> <span class="n">formatting</span><span class="o">=</span><span class="s1">'named'</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">dbapi</span><span class="p">,</span> <span class="n">connect</span><span class="p">,</span> <span class="n">formatting</span><span class="o">=</span><span class="s1">'named'</span><span class="p">,</span> <span class="n">wal_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Create a new database instance</span>
 
 <span class="sd">        The 'name' parameter identifies the name for the database access .</span>
@@ -6021,6 +6021,17 @@
 
 <span class="sd">        The 'formatting' parameter can be used to specify a different type</span>
 <span class="sd">        of formatting (see DB-API spec) which defaults to 'named'.</span>
+
+<span class="sd">        The 'wal_mode' parameter (sqlite3 only, ignored for other drivers)</span>
+<span class="sd">        switches the database file to WAL journal mode on every successful</span>
+<span class="sd">        connect() - see _apply_wal_mode_locked() for what that means and</span>
+<span class="sd">        why it's checked on every connect, not just the first one. WAL is</span>
+<span class="sd">        a property of the database FILE, not of any one connection: once</span>
+<span class="sd">        set, it persists across process restarts and is picked up by any</span>
+<span class="sd">        future connection - including ones opened by other tools - until</span>
+<span class="sd">        something explicitly switches it back. Callers exposing this as a</span>
+<span class="sd">        user-facing setting should treat enabling it as a one-way decision,</span>
+<span class="sd">        not a toggle to flip back and forth.</span>
 <span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shtime</span> <span class="o">=</span> <span class="n">Shtime</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>
@@ -6036,6 +6047,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wal_mode</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">wal_mode</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">api_initialized</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -6100,6 +6112,9 @@
             <span class="c1"># connect config always wins.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="s1">'check_same_thread'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wal_mode</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dbapi</span><span class="p">,</span> <span class="s1">'__name__'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span> <span class="o">!=</span> <span class="s1">'sqlite3'</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: wal_mode requested but driver is not sqlite3 - ignored'</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dbapi</span><span class="p">,</span> <span class="s1">'__name__'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pymysql_driver_names</span><span class="p">:</span>
             <span class="c1"># Without explicit timeouts pymysql blocks indefinitely on a</span>
             <span class="c1"># hung server, holding _fdb_lock and preventing shutdown.</span>
@@ -6153,6 +6168,10 @@
             <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dbapi</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wal_mode</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_apply_wal_mode_locked</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_check_unrequested_wal_mode_locked</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="s2">"Database [</span><span class="si">{}</span><span class="s2">]: Could not connect to the database using '</span><span class="si">{}</span><span class="s2">': </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -6166,6 +6185,71 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
             <span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: Connected with </span><span class="si">{}</span><span class="s1"> using "</span><span class="si">{}</span><span class="s1">" style'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_output</span><span class="p">)</span>
         <span class="p">)</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_apply_wal_mode_locked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Switch this connection's database file to WAL journal mode.</span>
+
+<span class="sd">        Called from connect(), while still holding self._fdb_lock - uses</span>
+<span class="sd">        the raw connection cursor directly rather than self.execute(), which</span>
+<span class="sd">        would try to re-acquire the same (non-reentrant) lock and raise.</span>
+
+<span class="sd">        Runs on every connect(), not just the first: WAL is a property of</span>
+<span class="sd">        the database file, so a file already in WAL mode makes this a</span>
+<span class="sd">        harmless no-op - but it's the only way to guarantee the very first</span>
+<span class="sd">        connect() after enabling the setting actually converts the file,</span>
+<span class="sd">        across every driver/reconnect path that calls connect(). A failure</span>
+<span class="sd">        here is not fatal - the connection stays usable in whatever journal</span>
+<span class="sd">        mode SQLite falls back to, just without WAL's concurrency benefit.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dbapi</span><span class="p">,</span> <span class="s1">'__name__'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span> <span class="o">!=</span> <span class="s1">'sqlite3'</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cur</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">'PRAGMA journal_mode=WAL;'</span><span class="p">)</span>
+                <span class="n">row</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="n">cur</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">row</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'wal'</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: journal_mode=WAL active'</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: requested journal_mode=WAL but sqlite reports '</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">mode</span><span class="si">!r}</span><span class="s1"> - continuing in that mode instead'</span>
+                <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: could not set journal_mode=WAL: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_unrequested_wal_mode_locked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Log if the database file is already in WAL mode despite wal_mode</span>
+<span class="sd">        not being requested on this instance.</span>
+
+<span class="sd">        Read-only - never issues 'PRAGMA journal_mode=WAL', only reads the</span>
+<span class="sd">        current mode. Same locking reasoning as _apply_wal_mode_locked().</span>
+<span class="sd">        Surfaces the one-way nature documented on wal_mode: this is exactly</span>
+<span class="sd">        what a file left over from an earlier run with wal_mode enabled,</span>
+<span class="sd">        or converted by another tool, looks like - disabling the setting</span>
+<span class="sd">        does not revert it.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dbapi</span><span class="p">,</span> <span class="s1">'__name__'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span> <span class="o">!=</span> <span class="s1">'sqlite3'</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cur</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">'PRAGMA journal_mode;'</span><span class="p">)</span>
+                <span class="n">row</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="n">cur</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">row</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'wal'</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: journal_mode is WAL even though wal_mode was not requested - '</span>
+                    <span class="s1">'likely left over from an earlier run with it enabled (or another tool); WAL persists in '</span>
+                    <span class="s1">'the file until explicitly switched back, this setting alone does not revert it'</span>
+                <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: could not check journal_mode: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Database.close"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.close">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Closes the database connection"""</span>
