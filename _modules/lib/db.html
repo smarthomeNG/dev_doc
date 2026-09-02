@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.db &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 1. September 2026, commit 3c8040f) Dokumentation</title>
+  <title>lib.db &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 2. September 2026, commit ffbad09) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -4982,11 +4982,13 @@
 <li class="toctree-l5"><a class="reference internal" href="../../lib/db.html#lib.db.Database.commit"><code class="docutils literal notranslate"><span class="pre">Database.commit()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/db.html#lib.db.Database.connect"><code class="docutils literal notranslate"><span class="pre">Database.connect()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/db.html#lib.db.Database.connected"><code class="docutils literal notranslate"><span class="pre">Database.connected()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/db.html#lib.db.Database.current_journal_mode"><code class="docutils literal notranslate"><span class="pre">Database.current_journal_mode()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/db.html#lib.db.Database.cursor"><code class="docutils literal notranslate"><span class="pre">Database.cursor()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/db.html#lib.db.Database.execute"><code class="docutils literal notranslate"><span class="pre">Database.execute()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/db.html#lib.db.Database.fetchall"><code class="docutils literal notranslate"><span class="pre">Database.fetchall()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/db.html#lib.db.Database.fetchone"><code class="docutils literal notranslate"><span class="pre">Database.fetchone()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/db.html#lib.db.Database.is_connection_error"><code class="docutils literal notranslate"><span class="pre">Database.is_connection_error()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/db.html#lib.db.Database.last_verify_reason"><code class="docutils literal notranslate"><span class="pre">Database.last_verify_reason()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/db.html#lib.db.Database.lock"><code class="docutils literal notranslate"><span class="pre">Database.lock()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/db.html#lib.db.Database.lock_holder_description"><code class="docutils literal notranslate"><span class="pre">Database.lock_holder_description()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/db.html#lib.db.Database.release"><code class="docutils literal notranslate"><span class="pre">Database.release()</span></code></a></li>
@@ -6055,6 +6057,7 @@
         <span class="c1"># return early</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fdb_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fdb_lock_owner</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_verify_reason</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">dbapi</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -6251,6 +6254,19 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: could not check journal_mode: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
+<div class="viewcode-block" id="Database.current_journal_mode"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.current_journal_mode">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">current_journal_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Live sqlite journal_mode ('wal', 'delete', 'truncate', ...).</span>
+
+<span class="sd">        None if this isn't a sqlite3 connection, it isn't connected, or the</span>
+<span class="sd">        query itself fails. Not cached - reflects the file's actual current</span>
+<span class="sd">        state, unlike wal_mode (the constructor argument), which only says</span>
+<span class="sd">        what was requested.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dbapi</span><span class="p">,</span> <span class="s1">'__name__'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span> <span class="o">!=</span> <span class="s1">'sqlite3'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetchone</span><span class="p">(</span><span class="s1">'PRAGMA journal_mode;'</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">row</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span></div>
+
 <div class="viewcode-block" id="Database.close"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.close">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Closes the database connection"""</span>
         <span class="n">timeout</span> <span class="o">=</span> <span class="n">_sh_db_query_timeout</span><span class="p">()</span>
@@ -6426,6 +6442,16 @@
 <span class="sd">        """</span>
         <span class="n">owner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fdb_lock_owner</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">' (lock currently held by thread </span><span class="si">{</span><span class="n">owner</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s1">)'</span> <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">''</span></div>
+
+<div class="viewcode-block" id="Database.last_verify_reason"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.last_verify_reason">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">last_verify_reason</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Why the most recent verify() call's last attempt failed.</span>
+
+<span class="sd">        Updated at the end of every verify() call. None if that call's first</span>
+<span class="sd">        attempt succeeded outright; otherwise the reason its last failed</span>
+<span class="sd">        attempt gave, regardless of whether verify() ultimately succeeded</span>
+<span class="sd">        on a later retry or gave up.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_verify_reason</span></div>
 
 <div class="viewcode-block" id="Database.transaction"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.transaction">[Doku]</a>    <span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -6804,7 +6830,7 @@
                             <span class="c1"># connection was closed by another thread in between</span>
                             <span class="c1"># us verifying and using it</span>
                             <span class="n">last_reason</span> <span class="o">=</span> <span class="s1">'connection closed between connect() and lock() acquisition'</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: </span><span class="si">{</span><span class="n">last_reason</span><span class="si">}</span><span class="s1">, retrying'</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Database [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">]: </span><span class="si">{</span><span class="n">last_reason</span><span class="si">}</span><span class="s1">, retrying'</span><span class="p">)</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
                             <span class="n">retry</span> <span class="o">=</span> <span class="n">retry</span> <span class="o">-</span> <span class="mi">1</span>
                         <span class="k">else</span><span class="p">:</span>
@@ -6821,7 +6847,7 @@
                             <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">last_reason</span> <span class="o">=</span> <span class="s1">'could not acquire lock'</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                             <span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: Could not acquire lock to verify connection</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                                 <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock_holder_description</span><span class="p">()</span>
                             <span class="p">)</span>
@@ -6830,7 +6856,7 @@
 
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="n">last_reason</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'connection error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: Connection error </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: Connection error </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
                     <span class="k">if</span> <span class="n">locked</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -6839,8 +6865,9 @@
                 <span class="k">if</span> <span class="n">retry</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>
 
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_verify_reason</span> <span class="o">=</span> <span class="n">last_reason</span>
             <span class="k">if</span> <span class="n">retry</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                     <span class="s1">'Database [</span><span class="si">{}</span><span class="s1">]: verify() gave up after </span><span class="si">{}</span><span class="s1"> attempt(s) (</span><span class="si">{}</span><span class="s1">)</span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">attempts</span><span class="p">,</span> <span class="n">last_reason</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock_holder_description</span><span class="p">()</span>
                     <span class="p">)</span>
