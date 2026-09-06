@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shtime-API &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 5. September 2026, commit 41f252b) Dokumentation</title>
+  <title>Shtime-API &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 6. September 2026, commit 3420895) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
@@ -6083,6 +6083,33 @@
 <dd class="field-even"><p>dict</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.shtime.Shtime.add_seconds">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_seconds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seconds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/shtime.html#Shtime.add_seconds"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.shtime.Shtime.add_seconds" title="Link zu dieser Definition"></a></dt>
+<dd><p>Add <cite>seconds</cite> of real elapsed time to an aware datetime <cite>dt</cite>,
+safe across a DST transition that falls within the interval.
+Plain <cite>dt + timedelta(seconds=seconds)</cite> does wall-clock field
+arithmetic - it silently gains or loses an hour whenever the
+interval crosses a fall-back/spring-forward boundary, since the
+tzinfo is just re-resolved against the shifted field values
+rather than the arithmetic happening against a DST-free clock.
+Use this for any „N seconds/minutes from now“ computation whose
+result may be compared against a later <cite>now()</cite> - a scheduler
+<cite>next</cite> time, a suspend-until point, a delayed-action trigger.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.shtime.Shtime.add_seconds_naive">
+<span class="sig-name descname"><span class="pre">add_seconds_naive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seconds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/shtime.html#Shtime.add_seconds_naive"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.shtime.Shtime.add_seconds_naive" title="Link zu dieser Definition"></a></dt>
+<dd><p>Like add_seconds(), but for a naive datetime <cite>dt</cite> assumed to
+be in this instance’s configured timezone - tags it, adds
+<cite>seconds</cite> DST-safely, then strips the tag again. For code that
+deliberately stays naive throughout (e.g. comparing two locally-
+captured timestamps, like a device-offline or reconnect
+watchdog) but still needs the addition itself to be real-
+elapsed-time-safe across a DST transition.</p>
 </dd></dl>
 
 <dl class="py method">

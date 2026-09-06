@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.shtime &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 5. September 2026, commit 41f252b) Dokumentation</title>
+  <title>lib.shtime &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 6. September 2026, commit 3420895) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -6129,6 +6129,41 @@
     <span class="c1">#   Following methods implement some time handling</span>
     <span class="c1"># -----------------------------------------------------------------------------------------------------</span>
 
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_utc_delta</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""a - b as a timedelta, safe across a DST transition either</span>
+<span class="sd">        datetime might fall on. Raw subtraction of two aware datetimes</span>
+<span class="sd">        that share the same tzinfo object (as any two datetimes routed</span>
+<span class="sd">        through this class's shared self._tzinfo do) ignores fold and</span>
+<span class="sd">        compares/subtracts on raw field values - wrong whenever a and b</span>
+<span class="sd">        straddle a fall-back/spring-forward boundary. Converting both to</span>
+<span class="sd">        UTC first sidesteps this entirely, since UTC has no DST."""</span>
+        <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span> <span class="o">-</span> <span class="n">b</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Shtime.add_seconds"><a class="viewcode-back" href="../../lib/shtime.html#lib.shtime.Shtime.add_seconds">[Doku]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_seconds</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">seconds</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Add `seconds` of real elapsed time to an aware datetime `dt`,</span>
+<span class="sd">        safe across a DST transition that falls within the interval.</span>
+<span class="sd">        Plain `dt + timedelta(seconds=seconds)` does wall-clock field</span>
+<span class="sd">        arithmetic - it silently gains or loses an hour whenever the</span>
+<span class="sd">        interval crosses a fall-back/spring-forward boundary, since the</span>
+<span class="sd">        tzinfo is just re-resolved against the shifted field values</span>
+<span class="sd">        rather than the arithmetic happening against a DST-free clock.</span>
+<span class="sd">        Use this for any "N seconds/minutes from now" computation whose</span>
+<span class="sd">        result may be compared against a later `now()` - a scheduler</span>
+<span class="sd">        `next` time, a suspend-until point, a delayed-action trigger."""</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">seconds</span><span class="p">))</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">tzinfo</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Shtime.add_seconds_naive"><a class="viewcode-back" href="../../lib/shtime.html#lib.shtime.Shtime.add_seconds_naive">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_seconds_naive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">seconds</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Like add_seconds(), but for a naive datetime `dt` assumed to</span>
+<span class="sd">        be in this instance's configured timezone - tags it, adds</span>
+<span class="sd">        `seconds` DST-safely, then strips the tag again. For code that</span>
+<span class="sd">        deliberately stays naive throughout (e.g. comparing two locally-</span>
+<span class="sd">        captured timestamps, like a device-offline or reconnect</span>
+<span class="sd">        watchdog) but still needs the addition itself to be real-</span>
+<span class="sd">        elapsed-time-safe across a DST transition."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_seconds</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tzinfo</span><span class="p">),</span> <span class="n">seconds</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_build_timediff_resulttype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta</span><span class="p">,</span> <span class="n">resulttype</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">resulttype</span> <span class="o">==</span> <span class="s1">'s'</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">delta</span><span class="o">.</span><span class="n">days</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">3600</span> <span class="o">+</span> <span class="n">delta</span><span class="o">.</span><span class="n">seconds</span>
@@ -6176,7 +6211,7 @@
 <span class="sd">        """</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datetime_transform</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span> <span class="ow">is</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">:</span>
-            <span class="n">delta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">dt</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_utc_delta</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span> <span class="n">dt</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">delta</span><span class="o">.</span><span class="n">days</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="s1">'time_since: '</span>
@@ -6205,7 +6240,7 @@
 <span class="sd">        """</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datetime_transform</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span> <span class="ow">is</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">:</span>
-            <span class="n">delta</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_utc_delta</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
             <span class="k">if</span> <span class="n">delta</span><span class="o">.</span><span class="n">days</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="s1">'time_until: '</span>
@@ -6237,9 +6272,9 @@
         <span class="n">dt1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datetime_transform</span><span class="p">(</span><span class="n">dt1</span><span class="p">)</span>
         <span class="n">dt2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datetime_transform</span><span class="p">(</span><span class="n">dt2</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">dt1</span><span class="p">)</span> <span class="ow">is</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">dt2</span><span class="p">)</span> <span class="ow">is</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">:</span>
-            <span class="n">delta</span> <span class="o">=</span> <span class="n">dt2</span> <span class="o">-</span> <span class="n">dt1</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_utc_delta</span><span class="p">(</span><span class="n">dt2</span><span class="p">,</span> <span class="n">dt1</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">delta</span><span class="o">.</span><span class="n">days</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">delta</span> <span class="o">=</span> <span class="n">dt1</span> <span class="o">-</span> <span class="n">dt2</span>
+                <span class="n">delta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_utc_delta</span><span class="p">(</span><span class="n">dt1</span><span class="p">,</span> <span class="n">dt2</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_timediff_resulttype</span><span class="p">(</span><span class="n">delta</span><span class="p">,</span> <span class="n">resulttype</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
