@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>database &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 12. September 2026, commit b917674) Dokumentation</title>
+  <title>database &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 13. September 2026, commit 9bbb04b) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -29,7 +29,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Stichwortverzeichnis" href="../../genindex.html" />
     <link rel="search" title="Suche" href="../../search.html" />
-    <link rel="next" title="db_addon" href="../db_addon/user_doc.html" />
+    <link rel="next" title="MySQL/MariaDB Installation Neu" href="user_doc/mysql.html" />
     <link rel="prev" title="cli" href="../cli/user_doc.html" /> 
 </head>
 
@@ -507,6 +507,11 @@
 </ul>
 </li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">database</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#installation-der-datenbank">Installation der Datenbank</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="user_doc/mysql.html">MySQL/MariaDB Installation <span class="bluesup">Neu</span></a></li>
+<li class="toctree-l5"><a class="reference internal" href="user_doc/timescale.html">PostgreSQL/TimescaleDB Installation <span class="bluesup">Neu</span></a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="#konfiguration">Konfiguration</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#treiber-auswahl">Treiber-Auswahl</a></li>
 </ul>
@@ -2868,6 +2873,11 @@
 </ul>
 </li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">database</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#installation-der-datenbank">Installation der Datenbank</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="user_doc/mysql.html">MySQL/MariaDB Installation <span class="bluesup">Neu</span></a></li>
+<li class="toctree-l5"><a class="reference internal" href="user_doc/timescale.html">PostgreSQL/TimescaleDB Installation <span class="bluesup">Neu</span></a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="#konfiguration">Konfiguration</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#treiber-auswahl">Treiber-Auswahl</a></li>
 </ul>
@@ -6647,6 +6657,65 @@ welches bereits mit Python oder MySQL gebundeled ist, und über das
 <a class="reference external" href="https://wiki.python.org/moin/MySQL">Implementierungsmodul</a> verwendet wird, oder PostgreSQL,
 optional mit der <a class="reference external" href="https://www.timescale.com/">TimescaleDB</a> Extension - siehe
 „PostgreSQL+TimescaleDB Unterstützung“ weiter unten).</p>
+<section id="installation-der-datenbank">
+<h2>Installation der Datenbank<a class="headerlink" href="#installation-der-datenbank" title="Permalink to this heading"></a></h2>
+<p id="index-2">Alle drei Datenbanken speichern die gleichen Daten im gleichen Schema; das Plugin verhält sich
+aus Sicht der Items identisch. Der Unterschied liegt im Installationsaufwand und darin, was mit
+großen Datenmengen passiert:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>SQLite3</p></th>
+<th class="head"><p>MySQL/MariaDB</p></th>
+<th class="head"><p>PostgreSQL+TimescaleDB</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Installationsaufwand</p></td>
+<td><p>keiner (in Python enthalten)</p></td>
+<td><p>Serverpaket installieren und
+einrichten</p></td>
+<td><p>Serverpaket installieren, optional
+zusätzlich TimescaleDB-Paketquelle
+einrichten</p></td>
+</tr>
+<tr class="row-odd"><td><p>Datenhaltung</p></td>
+<td><p>eine einzelne Datei</p></td>
+<td><p>eigener Datenbankserver
+(Client/Server)</p></td>
+<td><p>eigener Datenbankserver
+(Client/Server)</p></td>
+</tr>
+<tr class="row-even"><td><p>Gut geeignet für</p></td>
+<td><p>kleine bis mittlere
+Installationen</p></td>
+<td><p>einen bereits vorhandenen
+MySQL/MariaDB-Server mitnutzen</p></td>
+<td><p>sehr große Logbestände (Millionen
+Zeilen), native Kompression und
+Aggregation direkt auf dem
+Datenbankserver</p></td>
+</tr>
+<tr class="row-odd"><td><p>Standard im Plugin</p></td>
+<td><p>ja (<code class="docutils literal notranslate"><span class="pre">driver:</span> <span class="pre">sqlite3</span></code>)</p></td>
+<td><p>nein</p></td>
+<td><p>nein</p></td>
+</tr>
+</tbody>
+</table>
+<p>Im Zweifel ist SQLite3 der einfachste Einstieg und für die meisten Installationen ausreichend.
+SQLite3 ist Teil der Python Standardbibliothek und damit bereits vorhanden, sobald Python selbst
+installiert ist - es ist keine weitere Installation notwendig. Das Plugin legt die Datenbankdatei
+beim ersten Start selbstständig an.</p>
+<p>Wer stattdessen MySQL/MariaDB oder PostgreSQL+TimescaleDB nutzen möchte, findet die Installation
+und Grundeinrichtung des jeweiligen Datenbankservers auf den folgenden Seiten:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_doc/mysql.html">MySQL/MariaDB Installation <span class="bluesup">Neu</span></a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_doc/timescale.html">PostgreSQL/TimescaleDB Installation <span class="bluesup">Neu</span></a></li>
+</ul>
+</div>
+</section>
 <section id="konfiguration">
 <h2>Konfiguration<a class="headerlink" href="#konfiguration" title="Permalink to this heading"></a></h2>
 <p>Die Informationen zur Konfiguration des Plugins sind unter <a class="reference internal" href="../../plugins_doc/config/database.html"><span class="doc">Plugin ‚database‘ Konfiguration</span></a> beschrieben.</p>
@@ -6677,7 +6746,7 @@ und für die doppelte Einträge durch smarthomeNG Neustarts störend in Datenban
 Visualisierung sind.</p>
 <section id="treiber-auswahl">
 <h3>Treiber-Auswahl<a class="headerlink" href="#treiber-auswahl" title="Permalink to this heading"></a></h3>
-<p id="index-2">Der Parameter <code class="docutils literal notranslate"><span class="pre">driver</span></code> bestimmt, welches DB-API2-Modul verwendet wird. Neben den echten
+<p id="index-3">Der Parameter <code class="docutils literal notranslate"><span class="pre">driver</span></code> bestimmt, welches DB-API2-Modul verwendet wird. Neben den echten
 Modulnamen (<code class="docutils literal notranslate"><span class="pre">sqlite3</span></code>, <code class="docutils literal notranslate"><span class="pre">pymysql</span></code>, <code class="docutils literal notranslate"><span class="pre">psycopg2</span></code>, <code class="docutils literal notranslate"><span class="pre">psycopg</span></code>) akzeptiert das Plugin auch
 sprechende Datenbank-Namen, die automatisch auf das passende Modul abgebildet werden:</p>
 <table class="docutils align-default">
@@ -6911,7 +6980,7 @@ der Datenbank gelöscht. Alternativ können ältere Werte statt gelöscht zu wer
 Kompaktierungsintervall verdichtet werden, siehe oben „Kompaktierung statt Löschen“.</p>
 <section id="automatisches-ungultigmarkieren-bei-ausbleibenden-anderungen-oder-updates-database-invalid-after">
 <h3>Automatisches Ungültigmarkieren bei ausbleibenden Änderungen oder Updates (database_invalid_after)<a class="headerlink" href="#automatisches-ungultigmarkieren-bei-ausbleibenden-anderungen-oder-updates-database-invalid-after" title="Permalink to this heading"></a></h3>
-<span class="target" id="index-3"></span><p id="index-4">Für Items, deren Datenquelle bei Ausfall einfach keine neuen Werte mehr liefert (statt aktiv
+<span class="target" id="index-4"></span><p id="index-5">Für Items, deren Datenquelle bei Ausfall einfach keine neuen Werte mehr liefert (statt aktiv
 eine Störung zu melden), kann das Item Attribut <code class="docutils literal notranslate"><span class="pre">database_invalid_after</span></code> genutzt werden, um
 automatisch eine Datenlücke zu öffnen, wenn über die angegebene Zeitspanne keine Änderungen
 oder Updates eingehen - ohne dass das Quell-Plugin dafür etwas Besonderes unterstützen muss.</p>
@@ -6946,14 +7015,14 @@ werden muss.</p>
 </section>
 <section id="postgresql-timescaledb-unterstutzung">
 <h2>PostgreSQL+TimescaleDB Unterstützung<a class="headerlink" href="#postgresql-timescaledb-unterstutzung" title="Permalink to this heading"></a></h2>
-<span class="target" id="index-5"></span><p id="index-6">Neben SQLite3 und MySQL/MariaDB unterstützt das Plugin auch PostgreSQL, optional mit der
+<span class="target" id="index-6"></span><p id="index-7">Neben SQLite3 und MySQL/MariaDB unterstützt das Plugin auch PostgreSQL, optional mit der
 <a class="reference external" href="https://www.timescale.com/">TimescaleDB</a> Extension. TimescaleDB wandelt die <code class="docutils literal notranslate"><span class="pre">log</span></code>-Tabelle
 in eine sogenannte Hypertable um und stellt zusätzliche, server-seitige Funktionen für native
 Kompression und Aggregation historischer Daten bereit. Die Treiber-Auswahl ist oben unter
 „Konfiguration“ beschrieben.</p>
 <section id="hypertable-und-zeitpartitionen">
 <h3>Hypertable und Zeitpartitionen<a class="headerlink" href="#hypertable-und-zeitpartitionen" title="Permalink to this heading"></a></h3>
-<span class="target" id="index-7"></span><p id="index-8">Ist die TimescaleDB-Extension auf dem PostgreSQL-Server installiert, wandelt das Plugin die
+<span class="target" id="index-8"></span><p id="index-9">Ist die TimescaleDB-Extension auf dem PostgreSQL-Server installiert, wandelt das Plugin die
 <code class="docutils literal notranslate"><span class="pre">log</span></code>-Tabelle standardmäßig (Parameter <code class="docutils literal notranslate"><span class="pre">timescale_hypertable</span></code>, Standard <code class="docutils literal notranslate"><span class="pre">true</span></code>) in eine
 Hypertable um. Das beschleunigt zeitbereichsbasierte Abfragen (Graphen, Statistiken) auf großen
 Tabellen erheblich, ohne dass sich am Zugriff auf die Tabelle sonst etwas ändert.</p>
@@ -6964,7 +7033,7 @@ unverändert mit einer normalen PostgreSQL-Tabelle weiter.</p>
 </section>
 <section id="kompression">
 <h3>Kompression<a class="headerlink" href="#kompression" title="Permalink to this heading"></a></h3>
-<p id="index-9">Mit <code class="docutils literal notranslate"><span class="pre">timescale_compress:</span> <span class="pre">true</span></code> aktiviert das Plugin native spaltenbasierte Kompression der
+<p id="index-10">Mit <code class="docutils literal notranslate"><span class="pre">timescale_compress:</span> <span class="pre">true</span></code> aktiviert das Plugin native spaltenbasierte Kompression der
 <code class="docutils literal notranslate"><span class="pre">log</span></code>-Tabelle. Alle Zeitpartitionen außer der aktuellsten werden komprimiert.</p>
 <p>TimescaleDBs eigene Dokumentation nennt typische Kompressionsraten von 10-20x (90-95%
 Speicherplatzersparnis) für Zeitreihendaten; im eigenen Test dieses Plugins gegen einen echten
@@ -6978,7 +7047,7 @@ Aktivierungsversuche.</p>
 </section>
 <section id="native-aggregation-und-retention">
 <h3>Native Aggregation und Retention<a class="headerlink" href="#native-aggregation-und-retention" title="Permalink to this heading"></a></h3>
-<span class="target" id="index-10"></span><span class="target" id="index-11"></span><p id="index-12">Standardmäßig (<code class="docutils literal notranslate"><span class="pre">timescale_native_aggregation:</span> <span class="pre">false</span></code>) kompaktiert das Plugin alte Werte wie
+<span class="target" id="index-11"></span><span class="target" id="index-12"></span><p id="index-13">Standardmäßig (<code class="docutils literal notranslate"><span class="pre">timescale_native_aggregation:</span> <span class="pre">false</span></code>) kompaktiert das Plugin alte Werte wie
 gewohnt selbst in Python (siehe „Kompaktierung statt Löschen“ weiter oben) - das funktioniert
 auf allen unterstützten Datenbanken identisch.</p>
 <p>Mit <code class="docutils literal notranslate"><span class="pre">timescale_native_aggregation:</span> <span class="pre">true</span></code> übernimmt stattdessen TimescaleDB die Aggregation
@@ -7376,7 +7445,7 @@ werden soll, <em>bevor</em> der erste neue Messwert bekannt ist.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../cli/user_doc.html" class="btn btn-neutral float-left" title="cli" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Zurück</a>
-        <a href="../db_addon/user_doc.html" class="btn btn-neutral float-right" title="db_addon" accesskey="n" rel="next">Weiter <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="user_doc/mysql.html" class="btn btn-neutral float-right" title="MySQL/MariaDB Installation Neu" accesskey="n" rel="next">Weiter <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
