@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.daemon &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 13. September 2026, commit 17d5010) Dokumentation</title>
+  <title>lib.daemon &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 14. September 2026, commit bc42f13) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -6767,19 +6767,38 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">pidfile</span><span class="p">)):</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">pidfile</span><span class="p">))</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="s1">'w+'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
-        <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'</span><span class="si">%s</span><span class="s1">'</span> <span class="o">%</span> <span class="n">pid</span><span class="p">)</span>
-
+    <span class="c1"># 'a+', not 'w+' - the previous code truncated and overwrote the file with</span>
+    <span class="c1"># *this* process's own PID before even attempting the lock, so a failed lock</span>
+    <span class="c1"># attempt (another instance genuinely running) still left the file on disk</span>
+    <span class="c1"># holding this (by-then-exited) process's PID instead of the real running</span>
+    <span class="c1"># instance's - corrupting the very record check_sh_is_running() relies on for</span>
+    <span class="c1"># its own next check. Locking first and writing only on success means a failed</span>
+    <span class="c1"># attempt leaves the file exactly as it was.</span>
     <span class="k">global</span> <span class="n">_pidfile_handle</span>
+    <span class="n">_pidfile_handle</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="s1">'a+'</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">_pidfile_handle</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span>
-        <span class="c1"># print(f"_pidfile_handle = '{_pidfile_handle}'")</span>
         <span class="c1"># LOCK_EX - acquire an exclusive lock</span>
         <span class="c1"># LOCK_NB - non blocking</span>
         <span class="n">portalocker</span><span class="o">.</span><span class="n">lock</span><span class="p">(</span><span class="n">_pidfile_handle</span><span class="p">,</span> <span class="n">portalocker</span><span class="o">.</span><span class="n">LOCK_EX</span> <span class="o">|</span> <span class="n">portalocker</span><span class="o">.</span><span class="n">LOCK_NB</span><span class="p">)</span>
     <span class="c1"># don't close _pidfile_handle or lock is gone!!!</span>
-    <span class="k">except</span> <span class="n">portalocker</span><span class="o">.</span><span class="n">AlreadyLocked</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">'Could not lock pid file: </span><span class="si">%d</span><span class="s1"> (</span><span class="si">%s</span><span class="s1">)'</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">errno</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">strerror</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span></div>
+    <span class="k">except</span> <span class="n">portalocker</span><span class="o">.</span><span class="n">LockException</span><span class="p">:</span>
+        <span class="c1"># LockException (AlreadyLocked's own base, see check_sh_is_running() below</span>
+        <span class="c1"># for the same catch), not OSError - it carries no .errno/.strerror of its</span>
+        <span class="c1"># own, unlike the OSError it wraps as __cause__; accessing those (the</span>
+        <span class="c1"># previous code) raised an unrelated AttributeError instead of reporting the</span>
+        <span class="c1"># actual, entirely expected "another instance is already running" condition.</span>
+        <span class="n">_pidfile_handle</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">previous_pid</span> <span class="o">=</span> <span class="n">_pidfile_handle</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">or</span> <span class="s1">'?'</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">'Could not lock pid file </span><span class="si">{</span><span class="n">pidfile</span><span class="si">}</span><span class="s1"> - SmartHomeNG is already running (pid </span><span class="si">{</span><span class="n">previous_pid</span><span class="si">}</span><span class="s1">). Exiting.'</span><span class="p">,</span>
+            <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">_pidfile_handle</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">_pidfile_handle</span><span class="o">.</span><span class="n">truncate</span><span class="p">()</span>
+    <span class="n">_pidfile_handle</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'</span><span class="si">%s</span><span class="s1">'</span> <span class="o">%</span> <span class="n">pid</span><span class="p">)</span>
+    <span class="n">_pidfile_handle</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="read_pidfile"><a class="viewcode-back" href="../../lib/daemon.html#lib.daemon.read_pidfile">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">read_pidfile</span><span class="p">(</span><span class="n">pidfile</span><span class="p">):</span>
@@ -6817,24 +6836,25 @@
 <span class="sd">    :rtype: bool</span>
 <span class="sd">    """</span>
 
-    <span class="n">pid</span> <span class="o">=</span> <span class="n">read_pidfile</span><span class="p">(</span><span class="n">pidfile</span><span class="p">)</span>
-    <span class="c1"># print("daemon.check_sh_is_running: pidfile={}, pid={}, psutil.pid_exists(pid)={}".format(pidfile, pid, psutil.pid_exists(pid)))</span>
-    <span class="n">isRunning</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">if</span> <span class="n">pid</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">psutil</span><span class="o">.</span><span class="n">pid_exists</span><span class="p">(</span><span class="n">pid</span><span class="p">):</span>
-        <span class="c1"># print("daemon.check_sh_is_running: pid={}, psutil.pid_exists(pid)={}".format(pid, psutil.pid_exists(pid)))</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span>
-            <span class="c1"># LOCK_EX - acquire an exclusive lock</span>
-            <span class="c1"># LOCK_NB - non blocking</span>
-            <span class="n">portalocker</span><span class="o">.</span><span class="n">lock</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="n">portalocker</span><span class="o">.</span><span class="n">LOCK_EX</span> <span class="o">|</span> <span class="n">portalocker</span><span class="o">.</span><span class="n">LOCK_NB</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">'daemon.check_sh_is_running: portalocker.lock erfolgreich'</span><span class="p">)</span>
-            <span class="c1"># pidfile not locked, so sh is terminated</span>
-        <span class="k">except</span> <span class="n">portalocker</span><span class="o">.</span><span class="n">LockException</span><span class="p">:</span>
-            <span class="n">isRunning</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">finally</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">fh</span><span class="p">:</span>
-                <span class="n">fh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">isRunning</span></div>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">pidfile</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># The lock is the authoritative check, not the pid recorded in the file's text</span>
+    <span class="c1"># content - gating this on psutil.pid_exists(read_pidfile(pidfile)) (the</span>
+    <span class="c1"># previous code) meant a stale/incorrect recorded pid (e.g. left behind by a</span>
+    <span class="c1"># process that itself failed to acquire the lock and exited) short-circuited</span>
+    <span class="c1"># straight to "not running" without ever attempting the real lock check, even</span>
+    <span class="c1"># while a different, genuinely running instance still held it.</span>
+    <span class="n">fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># LOCK_EX - acquire an exclusive lock</span>
+        <span class="c1"># LOCK_NB - non blocking</span>
+        <span class="n">portalocker</span><span class="o">.</span><span class="n">lock</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="n">portalocker</span><span class="o">.</span><span class="n">LOCK_EX</span> <span class="o">|</span> <span class="n">portalocker</span><span class="o">.</span><span class="n">LOCK_NB</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">except</span> <span class="n">portalocker</span><span class="o">.</span><span class="n">LockException</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">fh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="kill"><a class="viewcode-back" href="../../lib/daemon.html#lib.daemon.kill">[Doku]</a><span class="k">def</span><span class="w"> </span><span class="nf">kill</span><span class="p">(</span><span class="n">pidfile</span><span class="p">,</span> <span class="n">waittime</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">pid0_warning</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
