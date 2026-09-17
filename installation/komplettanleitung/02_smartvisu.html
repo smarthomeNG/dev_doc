@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>smartVISU installieren &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 16. September 2026, commit c1c4707) Dokumentation</title>
+  <title>smartVISU installieren &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 17. September 2026, commit 8a20cf6) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -99,7 +99,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#zugriff-auf-die-smartvisu-testen">Zugriff auf die SmartVISU testen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#eigene-visu-seiten-anlegen">Eigene Visu Seiten anlegen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#smartvisu-kurzanleitung">SmartVISU Kurzanleitung</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#smarthomeng-plugin-visu-smartvisu">SmartHomeNG Plugin <strong>visu_smartvisu</strong></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#smarthomeng-plugin-smartvisu">SmartHomeNG Plugin <strong>smartvisu</strong></a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#mischung-von-generierten-und-manuell-erstellten-seiten">Mischung von generierten und manuell erstellten Seiten</a></li>
 </ul>
 </li>
@@ -4719,7 +4719,8 @@
 <li class="toctree-l4"><a class="reference internal" href="../../visualisierung/features.html#unterschiedliche-visu-styles">Unterschiedliche Visu-Styles</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../visualisierung/features.html#unterschiedliche-blockgroszen">Unterschiedliche Blockgrößen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../visualisierung/features.html#unterschiedliche-blocktypen">Unterschiedliche Blocktypen</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../visualisierung/features.html#manuell-erstellte-seiten">Manuell erstellte Seiten</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../visualisierung/features.html#manuell-erstellte-seiten">Manuell erstellte Seiten</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../visualisierung/features.html#anpassung-von-stilen-in-generierten-seiten">Anpassung von Stilen in generierten Seiten</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../visualisierung/deprecated_widgets.html">Warnungen für Deprecated Widgets</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../visualisierung/top_navigation.html">Top Navigation auf Visu Seiten <span class="redsup">Neu</span></a></li>
 </ul>
@@ -6661,7 +6662,7 @@ Variable Daten (z.B. Itemwerte, Plotdaten) tauschen SmartVisu und SmartHomeNG ü
 <li><p><a class="reference internal" href="#zugriff-auf-die-smartvisu-testen" id="id3">Zugriff auf die SmartVISU testen</a></p></li>
 <li><p><a class="reference internal" href="#eigene-visu-seiten-anlegen" id="id4">Eigene Visu Seiten anlegen</a></p></li>
 <li><p><a class="reference internal" href="#smartvisu-kurzanleitung" id="id5">SmartVISU Kurzanleitung</a></p></li>
-<li><p><a class="reference internal" href="#smarthomeng-plugin-visu-smartvisu" id="id6">SmartHomeNG Plugin <strong>visu_smartvisu</strong></a></p>
+<li><p><a class="reference internal" href="#smarthomeng-plugin-smartvisu" id="id6">SmartHomeNG Plugin <strong>smartvisu</strong></a></p>
 <ul>
 <li><p><a class="reference internal" href="#mischung-von-generierten-und-manuell-erstellten-seiten" id="id7">Mischung von generierten und manuell erstellten Seiten</a></p></li>
 </ul>
@@ -6679,7 +6680,7 @@ In dem Fall gibt es im Internet genügend andere Quellen die Hilfe versprechen.<
 Apache2</label><div class="sd-tab-content docutils">
 <p>Auf einigen Debian Distributionen ist Apache2 bereits vorinstalliert, dennoch braucht es jedenfalls noch
 einige zusätzliche Pakete, insbesondere PHP.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>apache2<span class="w"> </span>libawl-php<span class="w"> </span>php-curl<span class="w"> </span>php-fpm<span class="w"> </span>php-json<span class="w"> </span>php-xml<span class="w"> </span>php-mbstring<span class="w"> </span>php-zip<span class="w"> </span>libapache2-mod-php
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>apache2<span class="w"> </span>libawl-php<span class="w"> </span>php-curl<span class="w"> </span>php-json<span class="w"> </span>php-xml<span class="w"> </span>php-mbstring<span class="w"> </span>php-zip<span class="w"> </span>libapache2-mod-php
 <span class="c1"># nun zur Sicherheit den apache neu starten</span>
 sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>apache2
 </pre></div>
@@ -6712,9 +6713,7 @@ werden. Wichtig ist jedenfalls das korrekte Handling von PHP Dateien, das wie fo
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>chown<span class="w"> </span>www-data:www-data<span class="w"> </span>/etc/nginx/sites-available/default
 </pre></div>
 </div>
-</div>
-</div>
-<p>Sollte es Probleme mit PHP geben(egal ob Apache2 oder NGINX), sind folgende Schritte durchzuführen:</p>
+<p>Sollte es Probleme mit PHP geben, sind folgende Schritte durchzuführen:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>mkdir<span class="w"> </span>/etc/systemd/system/php-fpm.service.d/
 sudo<span class="w"> </span>nano<span class="w"> </span>/etc/systemd/system/php-fpm.service.d/service_php_fix.conf
 </pre></div>
@@ -6727,8 +6726,10 @@ sudo<span class="w"> </span>nano<span class="w"> </span>/etc/systemd/system/php-
 </div>
 <p>Schließlich sollte PHP und der Webserver neu gestartet werden.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>php-fpm.service
-sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>nginx<span class="w"> </span>ODER<span class="w"> </span>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>apache2
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>nginx
 </pre></div>
+</div>
+</div>
 </div>
 </section>
 <section id="smartvisu-quellcode-laden">
@@ -6765,18 +6766,21 @@ und werden beim ersten Start nach einer frischen Installation in die Einstellung
 mit der IP oder dem Hostnamen deines SmartVISU Servers ersetzen: <code class="docutils literal notranslate"><span class="pre">http://&lt;ip-des-servers&gt;/smartvisu</span></code>.
 Bei <strong>Checking your configuration</strong> sollte alles mit einem Haken versehen sein. Falls nicht, sind die
 entsprechenden Änderungen vorzunehmen <strong>bevor man weiter macht</strong>.</p>
-<p>Über den Knopf <strong>Config</strong> kommt man ins SmartVISU Interface direkt auf die Config Seite.</p>
-<p>Bei I/O Connection <strong>SmartHomeNG</strong> auswählen. Bei Adresse (URL / IP) die IP Adresse des
-Servers oder den DNS Namen eingeben auf dem SmartHomeNG installiert ist.
-Bei Port ist standardmäßig <code class="docutils literal notranslate"><span class="pre">2424</span></code> einzugeben.</p>
-<p><strong>ACHTUNG</strong>: Hier <strong>NICHT</strong> <code class="docutils literal notranslate"><span class="pre">localhost</span></code> oder <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code>
-eingeben, denn diese Adresse wird vom Client Browser benutzt
-(Javascripts) um aktuelle Daten über einen Websocket direkt von
-SmartHomeNG abzufragen.</p>
-<p>Im Tab <strong>Interfaces</strong> muss noch die anzuzeigende Visu Seite eingestellt
-werden. Dort kann unter anderem gewählt werden zwischen verschiedenen
-Demoseiten.</p>
-<p>Um die Einstellungen zu sichern bitte <strong>Save</strong> auswählen.</p>
+<p>Über den Knopf <strong>Config</strong> kommt man ins smartVISU Interface direkt auf die Config Seite. Diese ist anfangs in Englischer
+Sprache. Unter <strong>User Interface &gt; Language</strong> kann man die Sprache auf Deutsch einstellen und mit <strong>Save Settings</strong> speichern.
+Danach sind alle Menüpunkte und Hilfetexte in Deutscher Sprache (wird im Folgenden vorausgesetzt).</p>
+<p>Bei Smarthome/IoT-Datenquelle ist <strong>SmartHomeNG</strong> auszuwählen. Bei der Adresse (Host / IP) muss die IP Adresse des
+Servers eingeben werden, auf dem SmartHomeNG installiert ist. Alternativ kann der Hostname des Serves
+angegeben werden. Bei Port ist standardmäßig <code class="docutils literal notranslate"><span class="pre">2424</span></code> einzugeben und TLS-Port <code class="docutils literal notranslate"><span class="pre">2425</span></code>.</p>
+<p><strong>ACHTUNG</strong>: Hier <strong>NICHT</strong> <code class="docutils literal notranslate"><span class="pre">localhost</span></code> oder <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code> eingeben, denn die Adresse wird vom Client Browser benötigt,
+um aktuelle Daten über einen Websocket direkt von SmartHomeNG abzufragen.</p>
+<p>Soll die Visu über einen Hostnamen anstatt der IP-Adresse aufgerufen werden, muss der Hostnamne im Untermenü
+<strong>smartVISU Hostname / Proxy Server</strong> als Hostname bekannt gemacht werden, damit der Treiber dies von einer externen URL
+unterscheiden kann.</p>
+<p>Im Tab <strong>Benutzeroberfläche</strong> müssen noch die anzuzeigenden Visu-Seiten eingestellt
+werden. Bevor man eigene Seiten erstellt, kann man dort verschiedene Demoseiten ausprobieren,
+die dann als Basis für die eigene Visu dienen können.</p>
+<p>Um die Einstellungen zu sichern bitte <strong>Einstellungen speichern</strong> auswählen.</p>
 </section>
 <section id="eigene-visu-seiten-anlegen">
 <h2><a class="toc-backref" href="#id4" role="doc-backlink">Eigene Visu Seiten anlegen</a><a class="headerlink" href="#eigene-visu-seiten-anlegen" title="Permalink to this heading"></a></h2>
@@ -6786,20 +6790,32 @@ Es existiert im Ordner <code class="docutils literal notranslate"><span class="p
 kopiert <code class="docutils literal notranslate"><span class="pre">cp</span> <span class="pre">_template</span> <span class="pre">&lt;meineneuevisu&gt;</span></code>. Für <code class="docutils literal notranslate"><span class="pre">&lt;meineneuevisu&gt;</span></code> sollte <strong>nicht smarthome</strong> gewählt werden
 wenn später die Visu vom SmartHomeNG Plugin <strong>smartvisu</strong> erstellt werden soll. Die manuell erstellten Seiten
 könnten sonst einfach von SmartHomeNG überschrieben werden.</p>
-<p>Die Dateien für die SmartVISU sind einfache HTML Dateien. Die einzelnen Bedienelemente wie Buttons, Flips,
-Werteanzeigen (sogenannte Widgets) sind Makros die mit der Makrosprache <strong>TWIG</strong> definiert sind.
-Die HTML können auf eigene Bedürfnisse beliebig angepasst werden.
-Im einzelnen ist das zwar auf der  <a class="reference external" href="http://www.smartvisu.de/">Projektseite smartVISU</a> nachzulesen,
-es wird aber empfohlen die entsprechende Dokumentation aus GitGub nachzuinstallieren, wo immer die aktuellste Version gepflegt ist (siehe unten).
-Die durch die SmartVISU generierten HTML Seiten sind zwar responsiv aber durchweg statisch.
-Die Kommunikation zwischen SmartHomeNG und der SmartVISU erfolgt über ein Websocket Plugin
-für SmartHomeNG und JavaScript Code der in der HTML Seite eingebunden wird. Der Javascript Code manipuliert dann
-aufgrund der via Websocket übermittelten Daten von Items in SmartHomeNG dynamisch den Inhalt der Webseite (DOM).</p>
+<p>Die Dateien für die SmartVISU sind einfache HTML Dateien, die auf eigene Bedürfnisse beliebig angepasst werden
+können. Die einzelnen Bedienelemente wie Buttons, Flips und Werteanzeigen (sogenannte Widgets) sind Makros,
+die mit der Makrosprache <strong>TWIG</strong> definiert sind und mit vielen Optionen für die jeweilige Aufgabe parametriert
+werden können. Als Hilfestellung für die Parametrierung bringt smartVISU eine integrierte interaktive Dokumentation
+in Englisch mit, die über die Systemseite (Zahnradsymbbol in der Kopfzeile) aufgerufen wird. Sie enthält viele
+Widget-Beispiele, deren Funktionen live, aber offline getestet werden können.</p>
+<p>Ebenfalls auf der Systemseite befindet sich der Widget-Assistent. Mit ihm können Widgets live parametriert und
+online am Backend (z.B. SmartHomeNG) getestet werden. Der eingegebene Code wird automatisch in die Zwischenablage
+kopiert und kann direkt in die HTML-Seiten hineinkopiert werden. Um die volle Funktionalität nutzen zu können,
+muss SmartHomeNG fertig konfiguriert und gestartet sein und das smartvisu-Plugin muss die Datei „masteritem.json“
+erstellt haben, die dem Assistenten die definierten Items und ihre Typen bekannt macht.</p>
+<p>Wer noch tiefer in die Zusammenhänge einsteigen will, kann die sog. „Kurzanleitung“  in Deutscher Sprache verwenden
+(siehe unten). Dort werden für viele Grundfunktionen die Parametrierung der Items in SmartHomeNG gemeinsam mit der
+zugehörigen Widget-Parametrierung in smartVISU erklärt.</p>
+<p>Dokumentation und Kurzanleitung sind zwar auf der <a class="reference external" href="http://www.smartvisu.de/">Projektseite smartVISU</a> zu finden,
+es wird aber empfohlen die integrierte Dokumentation in der Visu zu verwenden, die immer zur installierten
+Version passt und aktuell ist.</p>
+<p>Die für die SmartVISU generierten HTML Seiten sind zwar responsiv, aber durchweg statisch. Die Kommunikation zwischen
+SmartHomeNG und der SmartVISU erfolgt über das Websocketmodul für SmartHomeNG und JavaScript Code, der automatisch
+zu den Widgets in die HTML Seite eingebunden wird. Der Javascript Code steuert dann dynamisch das Verhalten der Seite
+in Abhängigkeit von den via Websocket übermittelten Daten von Items in SmartHomeNG.</p>
 </section>
 <section id="smartvisu-kurzanleitung">
 <h2><a class="toc-backref" href="#id5" role="doc-backlink">SmartVISU Kurzanleitung</a><a class="headerlink" href="#smartvisu-kurzanleitung" title="Permalink to this heading"></a></h2>
-<p>Die SmartVISU 3.7 bringt die Kurzanleitung im Unterordner pages bereits mit.
-Für alle älteren SmartVISU Installationen &lt;= 3.6 muß die Kurzanleitung manuell nachinstalliert werden.
+<p>Ab Version v3.7 bringt smartVISU die Kurzanleitung im Unterordner pages bereits mit.
+Für alle älteren SmartVISU Installationen &lt;= v3.6 muß die Kurzanleitung manuell nachinstalliert werden.
 Dazu sind folgende Kommandos auszuführen:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>/var/www/html/smartvisu/pages
 mkdir<span class="w"> </span>kurzanleitung
@@ -6808,11 +6824,12 @@ git<span class="w"> </span>clone<span class="w"> </span>https://github.com/smart
 </pre></div>
 </div>
 <p>(Bitte wie immer auf den Punkt am Ende des letzten Befehls achten)</p>
-<p>Der Aufruf der Kurzanleitung kann anschließend im Browser mit dem
-Befehl <code class="docutils literal notranslate"><span class="pre">http://&lt;ip-des-servers&gt;/smartvisu/index.php?pages=kurzanleitung</span></code> erfolgen.</p>
+<p>Wenn die Kurzanleitung installiert ist, erscheint automatisch ein entsprechender Menüpunkt auf der
+Systemseite. Alternativ kann die Kurzanleitung im Browser mit det URL
+<code class="docutils literal notranslate"><span class="pre">http://&lt;ip-des-servers&gt;/smartvisu/index.php?pages=kurzanleitung</span></code> aufgerufen werden.</p>
 </section>
-<section id="smarthomeng-plugin-visu-smartvisu">
-<h2><a class="toc-backref" href="#id6" role="doc-backlink">SmartHomeNG Plugin <strong>visu_smartvisu</strong></a><a class="headerlink" href="#smarthomeng-plugin-visu-smartvisu" title="Permalink to this heading"></a></h2>
+<section id="smarthomeng-plugin-smartvisu">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">SmartHomeNG Plugin <strong>smartvisu</strong></a><a class="headerlink" href="#smarthomeng-plugin-smartvisu" title="Permalink to this heading"></a></h2>
 <div class="admonition hint">
 <p class="admonition-title">Hinweis</p>
 <p>Bevor man sich an der automatischen Generierung von Visualisierungs-Seiten durch SmartHomeNG heran macht,
@@ -6824,13 +6841,17 @@ Zudem gibt es seit smartVISU v3.0 den Widget Assistenten, mit dem die benötigte
 getestet und in die Zwischenablage kopiert werden können. Der Widget Assistent ist über das
 Systemmenü zu erreichen.</p>
 </div>
-<p>Mit dem Plugin <strong>smartvisu</strong> können aus der Definition der Items in SmartHomeNG automatisch Visuseiten
-erstellt werden. Diese Visu Seiten werden im Verzeichnis <code class="docutils literal notranslate"><span class="pre">smarthome</span></code> des <code class="docutils literal notranslate"><span class="pre">pages</span></code> Verzeichnisses der
-smartVISU erstellt. Das Plugin unterstützt smartVISU Versionen von v2.8 bis zur aktuellen Version.</p>
+<p>Mit dem Plugin <strong>smartvisu</strong> können aus der Definition der Items in SmartHomeNG automatisch Visu-Seiten
+erstellt werden. Hierzu müssen die benötigten Seitenformate und der benötigte Widget-Code direkt in die
+Item-Definitionen von SmartHomeNG geschrieben werden. Dies ist im
+Abschnitt <a class="reference internal" href="../../visualisierung/visualisierung.html"><span class="doc">Visualisierung</span></a> genau beschrieben. Die so erstellten Visu-Seiten
+werden im Verzeichnis <code class="docutils literal notranslate"><span class="pre">smarthome</span></code> des <code class="docutils literal notranslate"><span class="pre">pages</span></code> Verzeichnisses der smartVISU abgelegt. In der Konfiguration
+von smartVISU ist dafür <code class="docutils literal notranslate"><span class="pre">Smarthome</span></code> für die Seiten der Benutzeroberfläche einzustellen.</p>
+<p>Das Plugin unterstützt smartVISU Versionen von v2.8 bis zur aktuellen Version.</p>
 <section id="mischung-von-generierten-und-manuell-erstellten-seiten">
 <h3><a class="toc-backref" href="#id7" role="doc-backlink">Mischung von generierten und manuell erstellten Seiten</a><a class="headerlink" href="#mischung-von-generierten-und-manuell-erstellten-seiten" title="Permalink to this heading"></a></h3>
 <p>Es ist möglich automatisch generierte und manuell erstellte Seiten zu mischen. Das Vorgehen hierzu ist
-in unter <a class="reference internal" href="../../visualisierung/visualisierung.html"><span class="doc">Visualisierung</span></a>  beschrieben.</p>
+in unter <a class="reference internal" href="../../visualisierung/visualisierung.html"><span class="doc">Visualisierung</span></a> beschrieben.</p>
 </section>
 </section>
 </section>
