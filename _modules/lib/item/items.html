@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.item.items &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 21. September 2026, commit d04327c) Dokumentation</title>
+  <title>lib.item.items &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 21. September 2026, commit a669dc7) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -6707,6 +6707,7 @@
 
 <span class="sd">"""</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -6742,6 +6743,42 @@
     <span class="k">yield</span> <span class="n">item</span>
     <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">return_children</span><span class="p">():</span>
         <span class="k">yield from</span> <span class="n">_flatten_with_children</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_to_ordereddict</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Recursively convert a plain dict/list structure into collections.OrderedDict.</span>
+
+<span class="sd">    lib.config's struct-expansion machinery (search_for_struct_in_items() /</span>
+<span class="sd">    merge()) type-checks for collections.OrderedDict specifically and silently</span>
+<span class="sd">    drops plain dict values instead of recursing into them - this normalizes</span>
+<span class="sd">    a caller-supplied config dict (as accepted by Items.create_item()) into</span>
+<span class="sd">    the shape that machinery expects.</span>
+
+<span class="sd">    :param value: value to convert (dict, list, or any other value passed through unchanged)</span>
+<span class="sd">    :return: OrderedDict-converted equivalent of *value*</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">_to_ordereddict</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">_to_ordereddict</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">value</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_config_has_struct_ref</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Return True if *config*, or any nested child-item dict within it, contains</span>
+<span class="sd">    a 'struct' attribute.</span>
+
+<span class="sd">    :param config: item attribute configuration dict to scan</span>
+<span class="sd">    :type config: dict</span>
+<span class="sd">    :rtype: bool</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="s1">'struct'</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">_config_has_struct_ref</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">))</span>
 
 
 <div class="viewcode-block" id="Items"><a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items">[Doku]</a><span class="k">class</span><span class="w"> </span><span class="nc">Items</span><span class="p">:</span>
@@ -6984,6 +7021,13 @@
 <span class="sd">        item — same as calling create_item() on each of them individually</span>
 <span class="sd">        with an empty config.</span>
 
+<span class="sd">        A 'struct' attribute in *config* (or in any nested child-item dict</span>
+<span class="sd">        within it) is expanded against the live struct definitions, the</span>
+<span class="sd">        same as for items loaded from items.yaml at startup. The</span>
+<span class="sd">        persisted YAML (when *persist* is True) keeps the struct</span>
+<span class="sd">        reference unexpanded, so it stays in sync if the struct</span>
+<span class="sd">        definition itself changes before the next restart.</span>
+
 <span class="sd">        :param path: Full path of the item to create</span>
 <span class="sd">        :param config: Attribute configuration dict for the item</span>
 <span class="sd">        :param parent: Item under which to create this item; None to</span>
@@ -7042,6 +7086,9 @@
             <span class="n">lib</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">_add_filenames_to_config</span><span class="p">({</span><span class="s1">'_'</span><span class="p">:</span> <span class="n">item_config</span><span class="p">},</span> <span class="n">filename</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_write_to_yaml_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">_config_has_struct_ref</span><span class="p">(</span><span class="n">item_config</span><span class="p">):</span>
+            <span class="n">item_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expand_struct_refs</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">item_config</span><span class="p">)</span>
+
         <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_construct_and_link</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">item_config</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -7055,6 +7102,41 @@
             <span class="n">new_item</span><span class="o">.</span><span class="n">_init_run</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">item</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_expand_struct_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Expand every 'struct' attribute in *config* (including ones nested</span>
+<span class="sd">        in child-item dicts within it), the same way lib.config does for</span>
+<span class="sd">        items loaded from items.yaml at startup.</span>
+
+<span class="sd">        Resolves against self.structs._struct_definitions - a live dict, so</span>
+<span class="sd">        a struct registered by a plugin (add_struct_definition()) after</span>
+<span class="sd">        startup is picked up too, not just structs known at boot time.</span>
+
+<span class="sd">        Only called by create_item() when _config_has_struct_ref(config) is</span>
+<span class="sd">        True: the underlying lib.config.merge() machinery stringifies</span>
+<span class="sd">        scalar attribute values as a side effect (matching how normal</span>
+<span class="sd">        YAML-loaded item configs already behave, since YAML text is</span>
+<span class="sd">        inherently string-based and Item does its own type-casting from</span>
+<span class="sd">        the 'type' attribute) - skipping this entirely for the common</span>
+<span class="sd">        no-struct case keeps create_item() from changing the type of</span>
+<span class="sd">        values (e.g. a Python bool staying a bool) for callers who never</span>
+<span class="sd">        asked for struct expansion.</span>
+
+<span class="sd">        :param path: Full dotted path of the item *config* is for</span>
+<span class="sd">        :param config: Attribute configuration dict to expand</span>
+<span class="sd">        :type path: str</span>
+<span class="sd">        :type config: dict</span>
+<span class="sd">        :return: *config* with every 'struct' reference expanded</span>
+<span class="sd">        :rtype: collections.OrderedDict</span>
+<span class="sd">        """</span>
+        <span class="n">parent_path</span><span class="p">,</span> <span class="n">_sep</span><span class="p">,</span> <span class="n">leaf_name</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">rpartition</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)</span>
+        <span class="n">wrapped</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">({</span><span class="n">leaf_name</span><span class="p">:</span> <span class="n">_to_ordereddict</span><span class="p">(</span><span class="n">config</span><span class="p">)})</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="n">lib</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">search_for_struct_in_items</span><span class="p">(</span>
+            <span class="n">wrapped</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">structs</span><span class="o">.</span><span class="n">_struct_definitions</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">source_name</span><span class="o">=</span><span class="s1">'create_item'</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent_path</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">leaf_name</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">())</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_load_yaml_file</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
