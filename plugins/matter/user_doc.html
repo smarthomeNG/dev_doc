@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>matter &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 21. September 2026, commit a669dc7) Dokumentation</title>
+  <title>matter &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 21. September 2026, commit 932d1aa) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -6683,7 +6683,11 @@ einzige Installation:</p>
 <h2>Matter-over-Thread-Geräte anbinden<a class="headerlink" href="#matter-over-thread-gerate-anbinden" title="Permalink to this heading"></a></h2>
 <p>Türkontakte, Hygrometer und ähnliche batteriebetriebene Sensoren nutzen meist Thread statt Wifi
 und benötigen dafür zusätzliche, physische Infrastruktur (einen Thread Border Router, einen
-Bluetooth-Adapter) sowie einen einmaligen Einrichtungsschritt im Webinterface - siehe:</p>
+Bluetooth-Adapter) sowie einen einmaligen Einrichtungsschritt im Webinterface.</p>
+<p>Grund für den Unterschied: Wifi-Geräte hängen direkt im bestehenden LAN/WLAN, das matter-server
+ohnehin schon erreicht - keine weitere Einrichtung nötig. Thread-Geräte bilden dagegen ihr
+eigenes, vom LAN getrenntes Funk-Mesh; ohne eine Brücke dorthin (Thread Border Router) bleiben
+sie für matter-server unerreichbar, unabhängig von allem anderen in diesem Plugin. Details:</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="user_doc/thread.html">Thread-Geräte</a></li>
@@ -6775,11 +6779,35 @@ der <strong>Entfernen</strong>-Button verwendet werden.</p>
 </section>
 <section id="aktueller-umfang">
 <h2>Aktueller Umfang<a class="headerlink" href="#aktueller-umfang" title="Permalink to this heading"></a></h2>
-<p><strong>server-Rolle</strong>: Sidecar-Überwachung, WS-Client, Item-Mapping (generisches Attribut/Befehl, plus
-<code class="docutils literal notranslate"><span class="pre">matter_switch</span></code>-Kurzform für bool-On/Off-Cluster), Endpoint-/Cluster-Discovery-Browser und
-Copy-Paste-Item-Generator-YAML im Webif.</p>
-<p><strong>bridge-Rolle</strong>: nur <code class="docutils literal notranslate"><span class="pre">switch</span></code>/<code class="docutils literal notranslate"><span class="pre">contact</span></code>/<code class="docutils literal notranslate"><span class="pre">temperature_sensor</span></code>, Live-Hinzufügen/-Entfernen
-von Accessories ohne bridge-Neustart, Webif-Kopplung.</p>
+<p><strong>server-Rolle</strong>:</p>
+<ul class="simple">
+<li><p>Sidecar-Prozessüberwachung (automatischer Neustart mit Backoff)</p></li>
+<li><p>WebSocket-Client zu matter-server (Kommissionierung, Attribut-Lesen/Schreiben, Befehle,
+Subscriptions)</p></li>
+<li><p>Item-Mapping: generische <code class="docutils literal notranslate"><span class="pre">matter_attribute</span></code>/<code class="docutils literal notranslate"><span class="pre">matter_command</span></code>-Attribute sowie die
+<code class="docutils literal notranslate"><span class="pre">matter_switch</span></code>-Kurzform für bool-On/Off-Cluster</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">matter_alias</span></code>: node_id-Indirektion für eine über Rekommissionierung hinweg stabile
+Item-Zuordnung</p></li>
+<li><p>Endpoint-/Cluster-Discovery-Browser (Discovery-Tab)</p></li>
+<li><p>Item-Vorschlag pro Gerät: Copy-Paste-YAML oder direktes Anlegen als echte Items
+(„Item erstellen“-Button) unter einem gemeinsamen <code class="docutils literal notranslate"><span class="pre">matter_devices</span></code>-Basis-Item</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">item_structs</span></code> mit generischen Cluster-Vorlagen (<code class="docutils literal notranslate"><span class="pre">switch</span></code>, <code class="docutils literal notranslate"><span class="pre">electrical_power_measurement</span></code>,
+<code class="docutils literal notranslate"><span class="pre">contact</span></code>, <code class="docutils literal notranslate"><span class="pre">temperature_sensor</span></code>, <code class="docutils literal notranslate"><span class="pre">humidity_sensor</span></code>, <code class="docutils literal notranslate"><span class="pre">battery</span></code>) sowie fertigen
+Geräte-Vorlagen (<code class="docutils literal notranslate"><span class="pre">shelly_plug_m_3gen</span></code>/<code class="docutils literal notranslate"><span class="pre">_simple</span></code>)</p></li>
+<li><p>Matter-over-Thread: Bluetooth-basierte Erstkopplung, Verwaltung der Thread
+Netzwerk-Zugangsdaten im Webinterface (manuell oder automatisch von der Border-Router-REST-API
+abgerufen)</p></li>
+<li><p>Gerät mit einem weiteren Controller teilen (neues Kopplungsfenster, QR-Code), Fabric-Liste mit
+Entfernen-Option je Fabric</p></li>
+<li><p>Gezielt erzwungenes Neu-Interview eines Geräts, Anzeige der aktuell verbundenen IP-Adresse(n)</p></li>
+</ul>
+<p><strong>bridge-Rolle</strong>:</p>
+<ul class="simple">
+<li><p>Expose-Typen <code class="docutils literal notranslate"><span class="pre">switch</span></code>, <code class="docutils literal notranslate"><span class="pre">contact</span></code>, <code class="docutils literal notranslate"><span class="pre">temperature_sensor</span></code></p></li>
+<li><p>Live-Hinzufügen/-Entfernen von Accessories ohne bridge-Neustart</p></li>
+<li><p>Webif-Kopplung mit anderen Matter-Controllern (QR-Code/Code), Fabric-Liste mit
+Entfernen-Option je Fabric</p></li>
+</ul>
 </section>
 </section>
 

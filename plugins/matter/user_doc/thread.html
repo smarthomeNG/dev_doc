@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Thread-Geräte &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 21. September 2026, commit a669dc7) Dokumentation</title>
+  <title>Thread-Geräte &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 21. September 2026, commit 932d1aa) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -6662,6 +6662,24 @@
 <p>Matter-over-Thread-Geräte (Türkontakte, Hygrometer, viele batteriebetriebene Sensoren) brauchen
 zusätzliche, physische Infrastruktur, die Matter-over-Wifi-Geräte (z.B. smarte Steckdosen) nicht
 benötigen. Diese Seite beschreibt, was zusätzlich nötig ist und wie es eingerichtet wird.</p>
+<section id="matter-thread-und-border-router-begriffsklarung">
+<h2>Matter, Thread und Border Router: Begriffsklärung<a class="headerlink" href="#matter-thread-und-border-router-begriffsklarung" title="Permalink to this heading"></a></h2>
+<p><strong>Matter</strong> ist der Anwendungs-Layer-Standard, den dieses Plugin implementiert - Gerätetypen,
+Cluster, Befehle, Kommissionierung. Matter läuft immer über IP, benötigt aber einen
+Transportweg darunter: WLAN, Ethernet oder Thread.</p>
+<p><strong>Thread</strong> ist einer dieser Transportwege - ein stromsparendes 802.15.4-Funk-Mesh-Netz mit
+eigenem IPv6-Adressraum, für batteriebetriebene Geräte gedacht, für die WLAN zu stromhungrig
+wäre. Thread-Geräte bilden untereinander ein eigenes Mesh, das nicht Teil des normalen LANs/WLANs
+ist.</p>
+<p>Ein <strong>Thread Border Router (TBR)</strong> verbindet dieses Thread-Mesh mit dem normalen IP-Netz
+(Routing zwischen Thread und LAN, mDNS-Weiterleitung). Ohne TBR bleibt das Thread-Mesh vom Rest
+des Netzes isoliert.</p>
+<p>matter-server (der Sidecar dieses Plugins) ist ein Matter-<strong>Controller</strong> - er kommissioniert
+Geräte und spricht die Matter-Anwendungsschicht, spannt aber selbst kein Netz auf. Bei
+WLAN-Geräten verlässt er sich auf ein bereits bestehendes WLAN; bei Thread-Geräten entsprechend
+auf einen bereits bestehenden, separat eingerichteten TBR. Der Rest dieser Seite beschreibt genau
+diese zusätzliche, für Thread nötige Infrastruktur.</p>
+</section>
 <section id="ubersicht-was-zusatzlich-benotigt-wird">
 <h2>Übersicht: was zusätzlich benötigt wird<a class="headerlink" href="#ubersicht-was-zusatzlich-benotigt-wird" title="Permalink to this heading"></a></h2>
 <ul class="simple">
@@ -6856,14 +6874,26 @@ hciconfig<span class="w"> </span>hci0
 einen weiteren, einmaligen Schritt: matter-server muss wissen, welche Zugangsdaten es dem Gerät
 für das Thread-Netz übergeben soll. Diese werden <strong>nicht automatisch</strong> vom Border Router
 übernommen - sie müssen einmalig eingetragen werden.</p>
+<p>Im Webinterface unter „Thread Netzwerk-Zugangsdaten“ gibt es dafür zwei Wege:</p>
+<ul>
+<li><p><strong>Automatisch vom Border Router abrufen</strong> (Button „Automatisch vom Border Router abrufen“).
+Holt das aktive Dataset per <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/node/dataset/active</span></code> direkt von OTBRs eigener REST-API und
+registriert es. Setzt voraus, dass der Plugin-Parameter <code class="docutils literal notranslate"><span class="pre">server_otbr_rest_url</span></code> auf eine vom
+shng-Host aus erreichbare OTBR-REST-API zeigt - der Default <code class="docutils literal notranslate"><span class="pre">http://localhost:8081</span></code> passt,
+wenn OTBR auf demselben Host wie shng läuft. Der Button erscheint nur, wenn dieser Parameter
+nicht leer ist.</p></li>
+<li><p><strong>Manuell eintragen</strong>, falls OTBRs REST-API vom shng-Host aus nicht erreichbar ist (anderer
+Host, abweichender Port, Firewall):</p>
 <ol class="arabic">
 <li><p>Aktives Dataset des Border Routers auslesen (Hex-Format):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>otbr<span class="w"> </span>ot-ctl<span class="w"> </span>dataset<span class="w"> </span>active<span class="w"> </span>-x
 </pre></div>
 </div>
 </li>
-<li><p>Im Webinterface unter „Thread Netzwerk-Zugangsdaten“ den Hex-String eintragen und absenden.</p></li>
+<li><p>Den Hex-String in das Eingabefeld eintragen und absenden.</p></li>
 </ol>
+</li>
+</ul>
 <p>Die Zugangsdaten werden dauerhaft in matter-servers eigenem Speicher abgelegt (kein erneutes
 Eintragen nach einem Neustart nötig) - eine einmalige Einrichtung pro Thread-Netz, kein Schritt
 pro Gerät. Solange nichts gesetzt ist, zeigt der Devices-Tab ein Eingabefeld; danach zeigt der
