@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plugin ‚matter‘ Konfiguration &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 20. September 2026, commit d04327c) Dokumentation</title>
+  <title>Plugin ‚matter‘ Konfiguration &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 21. September 2026, commit d04327c) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -1036,6 +1036,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../plugins/matter/user_doc.html">matter</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#voraussetzungen">Voraussetzungen</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#matter-over-thread-gerate-anbinden">Matter-over-Thread-Geräte anbinden</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../plugins/matter/user_doc/thread.html">Thread-Geräte</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#konfiguration">Konfiguration</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../plugins/matter/user_doc.html#item-attribute">Item-Attribute</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../plugins/matter/user_doc.html#gerate-dauerhaft-benennen-matter-alias">Geräte dauerhaft benennen: matter_alias</a></li>
@@ -3448,6 +3452,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../plugins/matter/user_doc.html">matter</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#voraussetzungen">Voraussetzungen</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#matter-over-thread-gerate-anbinden">Matter-over-Thread-Geräte anbinden</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../plugins/matter/user_doc/thread.html">Thread-Geräte</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#konfiguration">Konfiguration</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../plugins/matter/user_doc.html#item-attribute">Item-Attribute</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../plugins/matter/user_doc.html#gerate-dauerhaft-benennen-matter-alias">Geräte dauerhaft benennen: matter_alias</a></li>
@@ -6779,6 +6787,15 @@
 </ul>
 </div></blockquote>
 </section>
+<section id="server-bluetooth-adapter">
+<h2>server_bluetooth_adapter<a class="headerlink" href="#server-bluetooth-adapter" title="Permalink to this heading"></a></h2>
+<p>HCI-ID des Bluetooth-Adapters (–bluetooth-adapter, z.B. „0“ fuer hci0), nicht die MAC-Adresse. Noetig fuer die Erstkommissionierung eines noch nicht vernetzten Matter-over-Thread-Geraets (BLE-basierte Uebergabe der Thread-Zugangsdaten). Leer = matter-servers eigener Default (kein Bluetooth).</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Datentyp: <strong>str</strong></p></li>
+</ul>
+</div></blockquote>
+</section>
 <section id="server-commission-timeout">
 <h2>server_commission_timeout<a class="headerlink" href="#server-commission-timeout" title="Permalink to this heading"></a></h2>
 <p>Wartezeit (Sekunden) auf die Antwort von matter-server auf einen Kopplungsversuch (commission_with_code), bevor das Plugin selbst aufgibt. matter-server versucht dabei jede bekannte Netzwerkadresse des Geräts mit bis zu 30s Timeout und plant intern bis zu 255s für einen Kopplungsversuch ein - ein realer Versuch dauerte schon einmal ca. 3 Minuten bis zur echten Antwort. Kommt die Antwort trotzdem später als dieser Timeout, wird sie nicht verworfen, sondern im Webif nachträglich als Hinweis angezeigt. Für Tests kann ein kürzerer Wert sinnvoll sein, um schneller ein Fehlschlagen zu sehen - auf Kosten davon, öfter in den verzögerten Hinweis statt die direkte Fehlermeldung zu laufen.</p>
@@ -6826,6 +6843,16 @@
 <div><ul class="simple">
 <li><p>Datentyp: <strong>int</strong></p></li>
 <li><p>Standardwert: <strong>65521</strong></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="server-generated-items-file">
+<h2>server_generated_items_file<a class="headerlink" href="#server-generated-items-file" title="Permalink to this heading"></a></h2>
+<p>Datei (im items-Verzeichnis), in der per „Item erstellen“-Button erzeugte Geräte-Items landen, als Kind-Items unter dem automatisch angelegten Basis-Item matter_devices. Datei und Basis-Item werden bei Bedarf automatisch angelegt.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Datentyp: <strong>str</strong></p></li>
+<li><p>Standardwert: <strong>matter_devices.yaml</strong></p></li>
 </ul>
 </div></blockquote>
 </section>
@@ -6982,6 +7009,33 @@
 <section id="item-structs">
 <h1>Item-Structs<a class="headerlink" href="#item-structs" title="Permalink to this heading"></a></h1>
 <p>Das Plugin stellt die folgenden Item-Structs zur Verfügung. Diese Informationen sind aus der <cite>plugin.yaml</cite> entnommen und möglicherweise nicht vollständig.</p>
+<section id="battery">
+<h2>battery<a class="headerlink" href="#battery" title="Permalink to this heading"></a></h2>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>battery</strong> (<cite>foo</cite>, —)</dt><dd><ul>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>percent</strong> (<cite>num</cite>, Batteriestand in %)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>percent_raw</strong> (<cite>num</cite>, Batteriestand in halben Prozent (Roh-Wert))</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>voltage</strong> (<cite>num</cite>, Batteriespannung in V)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>voltage_mv</strong> (<cite>num</cite>, Batteriespannung in mV (Roh-Wert))</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
 <section id="contact">
 <h2>contact<a class="headerlink" href="#contact" title="Permalink to this heading"></a></h2>
 <p>Kontaktzustand (BooleanState.StateValue)</p>
@@ -7019,6 +7073,21 @@
 </dd>
 </dl>
 </li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</section>
+<section id="humidity-sensor">
+<h2>humidity_sensor<a class="headerlink" href="#humidity-sensor" title="Permalink to this heading"></a></h2>
+<p>aktuelle relative Luftfeuchtigkeit in %</p>
+<div class="treeview docutils container">
+<ul class="simple">
+<li><dl class="simple">
+<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>humidity_sensor</strong> (<cite>num</cite>, aktuelle relative Luftfeuchtigkeit in %)</dt><dd><ul>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>humidity_raw</strong> (<cite>num</cite>, aktuelle relative Luftfeuchtigkeit in 1/100 % (Roh-Wert))</p></li>
 </ul>
 </dd>
 </dl>

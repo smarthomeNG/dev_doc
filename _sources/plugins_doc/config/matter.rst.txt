@@ -165,6 +165,15 @@ Item, unter dem Alias-Definitionen liegen (direkte Kind-Items, jeweils Typ num m
  - Standardwert: **matter.aliases**
 
 
+server_bluetooth_adapter
+========================
+
+
+HCI-ID des Bluetooth-Adapters (--bluetooth-adapter, z.B. "0" fuer hci0), nicht die MAC-Adresse. Noetig fuer die Erstkommissionierung eines noch nicht vernetzten Matter-over-Thread-Geraets (BLE-basierte Uebergabe der Thread-Zugangsdaten). Leer = matter-servers eigener Default (kein Bluetooth).
+
+ - Datentyp: **str**
+
+
 server_commission_timeout
 =========================
 
@@ -213,6 +222,16 @@ Vendor-ID (--vendorid) für shngs eigene Fabric. Wirkt nur beim allerersten Anle
 
  - Datentyp: **int**
  - Standardwert: **65521**
+
+
+server_generated_items_file
+===========================
+
+
+Datei (im items-Verzeichnis), in der per "Item erstellen"-Button erzeugte Geräte-Items landen, als Kind-Items unter dem automatisch angelegten Basis-Item matter_devices. Datei und Basis-Item werden bei Bedarf automatisch angelegt.
+
+ - Datentyp: **str**
+ - Standardwert: **matter_devices.yaml**
 
 
 server_sidecar_entry
@@ -375,6 +394,18 @@ Item-Structs
 Das Plugin stellt die folgenden Item-Structs zur Verfügung. Diese Informationen sind aus der `plugin.yaml` entnommen und möglicherweise nicht vollständig.
 
 
+battery
+=======
+
+
+.. treeview::
+     - :dir:`folder` **battery** (`foo`, ---)
+         - :dir:`folder` **percent** (`num`, Batteriestand in %)
+             - :dir:`file` **percent_raw** (`num`, Batteriestand in halben Prozent (Roh-Wert))
+         - :dir:`folder` **voltage** (`num`, Batteriespannung in V)
+             - :dir:`file` **voltage_mv** (`num`, Batteriespannung in mV (Roh-Wert))
+
+
 contact
 =======
 
@@ -397,6 +428,16 @@ electrical_power_measurement
              - :dir:`file` **hinweis** (`foo`, In eigenen Tests wurde die Spannung nur einmalig beim Verbinden aktualisiert. Obwohl das Gerät die Spannung laufend misst, wird sie über Matter nicht mehr übertragen - z.B. über MQTT sehr wohl.)
          - :dir:`folder` **current** (`num`, aktueller Strom in A)
              - :dir:`file` **current_ma** (`num`, aktueller Strom in mA)
+
+
+humidity_sensor
+===============
+
+aktuelle relative Luftfeuchtigkeit in %
+
+.. treeview::
+     - :dir:`folder` **humidity_sensor** (`num`, aktuelle relative Luftfeuchtigkeit in %)
+         - :dir:`file` **humidity_raw** (`num`, aktuelle relative Luftfeuchtigkeit in 1/100 % (Roh-Wert))
 
 
 shelly_plug_m_3gen
