@@ -1043,10 +1043,12 @@
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#konfiguration">Konfiguration</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../plugins/matter/user_doc.html#item-attribute">Item-Attribute</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../plugins/matter/user_doc.html#gerate-dauerhaft-benennen-matter-alias">Geräte dauerhaft benennen: matter_alias</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../plugins/matter/user_doc.html#kopplung">Kopplung</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#bridge-rolle-shng-items-fur-andere-matter-okosysteme-sichtbar-machen">bridge-Rolle: shng-Items für andere Matter-Ökosysteme sichtbar machen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#item-structs">Item-Structs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#mehrere-instanzen">Mehrere Instanzen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#ein-gerat-mit-apple-home-google-home-usw-teilen">Ein Gerät mit Apple Home / Google Home usw. teilen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#aktueller-umfang">Aktueller Umfang</a></li>
 </ul>
@@ -3459,10 +3461,12 @@
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#konfiguration">Konfiguration</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../plugins/matter/user_doc.html#item-attribute">Item-Attribute</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../plugins/matter/user_doc.html#gerate-dauerhaft-benennen-matter-alias">Geräte dauerhaft benennen: matter_alias</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../plugins/matter/user_doc.html#kopplung">Kopplung</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#bridge-rolle-shng-items-fur-andere-matter-okosysteme-sichtbar-machen">bridge-Rolle: shng-Items für andere Matter-Ökosysteme sichtbar machen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#item-structs">Item-Structs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#mehrere-instanzen">Mehrere Instanzen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#ein-gerat-mit-apple-home-google-home-usw-teilen">Ein Gerät mit Apple Home / Google Home usw. teilen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/matter/user_doc.html#aktueller-umfang">Aktueller Umfang</a></li>
 </ul>
@@ -6798,7 +6802,7 @@
 </section>
 <section id="server-commission-timeout">
 <h2>server_commission_timeout<a class="headerlink" href="#server-commission-timeout" title="Permalink to this heading"></a></h2>
-<p>Wartezeit (Sekunden) auf die Antwort von matter-server auf einen Kopplungsversuch (commission_with_code), bevor das Plugin selbst aufgibt. matter-server versucht dabei jede bekannte Netzwerkadresse des Geräts mit bis zu 30s Timeout und plant intern bis zu 255s für einen Kopplungsversuch ein - ein realer Versuch dauerte schon einmal ca. 3 Minuten bis zur echten Antwort. Kommt die Antwort trotzdem später als dieser Timeout, wird sie nicht verworfen, sondern im Webif nachträglich als Hinweis angezeigt. Für Tests kann ein kürzerer Wert sinnvoll sein, um schneller ein Fehlschlagen zu sehen - auf Kosten davon, öfter in den verzögerten Hinweis statt die direkte Fehlermeldung zu laufen.</p>
+<p>Wartezeit (Sekunden) auf die Antwort von matter-server auf einen Kopplungsversuch (commission_with_code). matter-server versucht jede bekannte Netzwerkadresse des Geräts mit bis zu 30s Timeout und plant bis zu 255s für einen Versuch ein. Die Kopplung läuft im Hintergrund, ihr Status wird im Webif laufend aktualisiert.</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>int</strong></p></li>
@@ -6846,9 +6850,19 @@
 </ul>
 </div></blockquote>
 </section>
+<section id="server-generated-items-base">
+<h2>server_generated_items_base<a class="headerlink" href="#server-generated-items-base" title="Permalink to this heading"></a></h2>
+<p>Basis-Item, unter dem per „Item erstellen“-Button erzeugte Geräte-Items angelegt werden (wird bei Bedarf automatisch angelegt). Sollte sich zwischen mehreren Instanzen unterscheiden - node_ids sind nur innerhalb der Fabric der jeweiligen Instanz eindeutig.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Datentyp: <strong>str</strong></p></li>
+<li><p>Standardwert: <strong>matter_devices</strong></p></li>
+</ul>
+</div></blockquote>
+</section>
 <section id="server-generated-items-file">
 <h2>server_generated_items_file<a class="headerlink" href="#server-generated-items-file" title="Permalink to this heading"></a></h2>
-<p>Datei (im items-Verzeichnis), in der per „Item erstellen“-Button erzeugte Geräte-Items landen, als Kind-Items unter dem automatisch angelegten Basis-Item matter_devices. Datei und Basis-Item werden bei Bedarf automatisch angelegt.</p>
+<p>Datei (im items-Verzeichnis), in der per „Item erstellen“-Button erzeugte Geräte-Items landen, als Kind-Items unter server_generated_items_base. Datei und Basis-Item werden bei Bedarf automatisch angelegt.</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>str</strong></p></li>
@@ -6983,7 +6997,7 @@
 </section>
 <section id="matter-expose-type">
 <h2>matter_expose_type<a class="headerlink" href="#matter-expose-type" title="Permalink to this heading"></a></h2>
-<p>Bridge-Rolle: macht dieses Item als Matter-Bridge-Gerät fuer andere Matter-Controller (Apple Home, Google Home, …) sichtbar. switch = steuerbarer Bool-Aktor, contact = Nur-Lese-Bool-Sensor (z.B. Tuerkontakt), temperature_sensor = Nur-Lese-Zahlensensor (Grad Celsius).</p>
+<p>Bridge-Rolle: macht dieses Item als Matter-Bridge-Gerät fuer andere Matter-Controller (Apple Home, Google Home, …) sichtbar. switch = steuerbarer Bool-Aktor (Item-Typ bool), contact = Nur-Lese-Bool-Sensor, z.B. Tuerkontakt (Item-Typ bool), temperature_sensor = Nur-Lese-Zahlensensor in Grad Celsius (Item-Typ num).</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Datentyp: <strong>str</strong></p></li>

@@ -178,7 +178,7 @@ server_commission_timeout
 =========================
 
 
-Wartezeit (Sekunden) auf die Antwort von matter-server auf einen Kopplungsversuch (commission_with_code), bevor das Plugin selbst aufgibt. matter-server versucht dabei jede bekannte Netzwerkadresse des Geräts mit bis zu 30s Timeout und plant intern bis zu 255s für einen Kopplungsversuch ein - ein realer Versuch dauerte schon einmal ca. 3 Minuten bis zur echten Antwort. Kommt die Antwort trotzdem später als dieser Timeout, wird sie nicht verworfen, sondern im Webif nachträglich als Hinweis angezeigt. Für Tests kann ein kürzerer Wert sinnvoll sein, um schneller ein Fehlschlagen zu sehen - auf Kosten davon, öfter in den verzögerten Hinweis statt die direkte Fehlermeldung zu laufen.
+Wartezeit (Sekunden) auf die Antwort von matter-server auf einen Kopplungsversuch (commission_with_code). matter-server versucht jede bekannte Netzwerkadresse des Geräts mit bis zu 30s Timeout und plant bis zu 255s für einen Versuch ein. Die Kopplung läuft im Hintergrund, ihr Status wird im Webif laufend aktualisiert.
 
  - Datentyp: **int**
  - Standardwert: **300**
@@ -224,11 +224,21 @@ Vendor-ID (--vendorid) für shngs eigene Fabric. Wirkt nur beim allerersten Anle
  - Standardwert: **65521**
 
 
+server_generated_items_base
+===========================
+
+
+Basis-Item, unter dem per "Item erstellen"-Button erzeugte Geräte-Items angelegt werden (wird bei Bedarf automatisch angelegt). Sollte sich zwischen mehreren Instanzen unterscheiden - node_ids sind nur innerhalb der Fabric der jeweiligen Instanz eindeutig.
+
+ - Datentyp: **str**
+ - Standardwert: **matter_devices**
+
+
 server_generated_items_file
 ===========================
 
 
-Datei (im items-Verzeichnis), in der per "Item erstellen"-Button erzeugte Geräte-Items landen, als Kind-Items unter dem automatisch angelegten Basis-Item matter_devices. Datei und Basis-Item werden bei Bedarf automatisch angelegt.
+Datei (im items-Verzeichnis), in der per "Item erstellen"-Button erzeugte Geräte-Items landen, als Kind-Items unter server_generated_items_base. Datei und Basis-Item werden bei Bedarf automatisch angelegt.
 
  - Datentyp: **str**
  - Standardwert: **matter_devices.yaml**
@@ -367,7 +377,7 @@ matter_expose_type
 ==================
 
 
-Bridge-Rolle: macht dieses Item als Matter-Bridge-Gerät fuer andere Matter-Controller (Apple Home, Google Home, ...) sichtbar. switch = steuerbarer Bool-Aktor, contact = Nur-Lese-Bool-Sensor (z.B. Tuerkontakt), temperature_sensor = Nur-Lese-Zahlensensor (Grad Celsius).
+Bridge-Rolle: macht dieses Item als Matter-Bridge-Gerät fuer andere Matter-Controller (Apple Home, Google Home, ...) sichtbar. switch = steuerbarer Bool-Aktor (Item-Typ bool), contact = Nur-Lese-Bool-Sensor, z.B. Tuerkontakt (Item-Typ bool), temperature_sensor = Nur-Lese-Zahlensensor in Grad Celsius (Item-Typ num).
 
  - Datentyp: **str**
 
