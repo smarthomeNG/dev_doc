@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 21. September 2026, commit 932d1aa) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 23. September 2026, commit 7c2ff98) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -6686,8 +6686,10 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">concurrent.futures</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Coroutine</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Coroutine</span><span class="p">,</span> <span class="n">Any</span>
 
 
 <div class="viewcode-block" id="SmartPlugin"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin">[Doku]</a><span class="k">class</span><span class="w"> </span><span class="nc">SmartPlugin</span><span class="p">(</span><span class="n">SmartObject</span><span class="p">,</span> <span class="n">Utils</span><span class="p">):</span>
@@ -7979,6 +7981,44 @@
         <span class="c1">#         self.logger.exception(f"run_asyncio_coro: Exception {ex} getting coro result ({coro=}, loop={self._asyncio_loop})")</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
+<div class="viewcode-block" id="SmartPlugin.submit_asyncio_coro"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.submit_asyncio_coro">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">submit_asyncio_coro</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">coro</span><span class="p">:</span> <span class="n">Coroutine</span><span class="p">,</span> <span class="n">on_error</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="ne">BaseException</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">Future</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Schedule a coroutine in the eventloop of the plugin without waiting for its result</span>
+
+<span class="sd">        Non-blocking counterpart to run_asyncio_coro() for fire-and-forget work from the</span>
+<span class="sd">        thread-operated part of the plugin, e.g. update_item(), where the calling thread (often</span>
+<span class="sd">        another plugin's receive thread or a scheduler worker) must not be held up until the</span>
+<span class="sd">        device answers. Coroutines submitted from one thread start in submission order.</span>
+
+<span class="sd">        :param coro: A coroutine that should be run in the eventloop of the asyncio-thread</span>
+<span class="sd">        :param on_error: Called with the exception if the coroutine raises; if omitted, the exception is logged</span>
+
+<span class="sd">        :return: A future tracking the coroutine, or None if no eventloop is active (the coroutine is closed then)</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">"submit_asyncio_coro: Cannot run coro '</span><span class="si">{</span><span class="n">coro</span><span class="si">}</span><span class="s2">' because no eventloop is active"</span><span class="p">)</span>
+            <span class="n">coro</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">future</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run_coroutine_threadsafe</span><span class="p">(</span><span class="n">coro</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span><span class="p">)</span>
+        <span class="n">future</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_report_submitted_coro_error</span><span class="p">,</span> <span class="n">on_error</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">future</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_report_submitted_coro_error</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">on_error</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="ne">BaseException</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">future</span><span class="p">:</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">Future</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Done-callback for submit_asyncio_coro(): hands a raised exception to on_error, or logs it."""</span>
+        <span class="k">if</span> <span class="n">future</span><span class="o">.</span><span class="n">cancelled</span><span class="p">():</span>
+            <span class="k">return</span>
+        <span class="n">ex</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">exception</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ex</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">on_error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">on_error</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'submit_asyncio_coro: coroutine raised </span><span class="si">{</span><span class="n">ex</span><span class="si">!r}</span><span class="s1">'</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="n">ex</span><span class="p">)</span>
+
 <div class="viewcode-block" id="SmartPlugin.wait_for_asyncio_termination"><a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.wait_for_asyncio_termination">[Doku]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">wait_for_asyncio_termination</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Wait for the command to stop the plugin_coro</span>
@@ -8116,9 +8156,16 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">init_template_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init_template_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">autoescape_templates</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">()):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Initialize the Jinja2 template engine environment</span>
+
+<span class="sd">        HTML autoescaping is opt-in per template name: only the templates listed in</span>
+<span class="sd">        *autoescape_templates* (typically the plugin's own, e.g. ``('index.html',)``) escape their</span>
+<span class="sd">        output. Global templates such as base_plugin.html stay unescaped, since they render</span>
+<span class="sd">        HTML-carrying variables (tab titles, ...) as-is.</span>
+
+<span class="sd">        :param autoescape_templates: Names of the templates that autoescape their output</span>
 
 <span class="sd">        :return: Jinja2 template engine environment</span>
 <span class="sd">        :rtype: object</span>
@@ -8130,7 +8177,10 @@
 
         <span class="n">mytemplates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">path_join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">webif_dir</span><span class="p">,</span> <span class="s1">'templates'</span><span class="p">)</span>
         <span class="n">globaltemplates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugin</span><span class="o">.</span><span class="n">mod_http</span><span class="o">.</span><span class="n">gtemplates_dir</span>
-        <span class="n">tplenv</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="n">FileSystemLoader</span><span class="p">([</span><span class="n">mytemplates</span><span class="p">,</span> <span class="n">globaltemplates</span><span class="p">]))</span>
+        <span class="n">escaped</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">autoescape_templates</span><span class="p">)</span>
+        <span class="n">tplenv</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span>
+            <span class="n">loader</span><span class="o">=</span><span class="n">FileSystemLoader</span><span class="p">([</span><span class="n">mytemplates</span><span class="p">,</span> <span class="n">globaltemplates</span><span class="p">]),</span> <span class="n">autoescape</span><span class="o">=</span><span class="k">lambda</span> <span class="n">name</span><span class="p">:</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">escaped</span>
+        <span class="p">)</span>
 
         <span class="n">tplenv</span><span class="o">.</span><span class="n">globals</span><span class="p">[</span><span class="s1">'isfile'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_staticfile</span>
         <span class="n">tplenv</span><span class="o">.</span><span class="n">globals</span><span class="p">[</span><span class="s1">'_'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate</span>  <span class="c1"># use translate method of webinterface class</span>
