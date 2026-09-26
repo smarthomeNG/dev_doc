@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.db &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 25. September 2026, commit 79dca7d) Dokumentation</title>
+  <title>lib.db &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 26. September 2026, commit cb358b7) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -7214,13 +7214,17 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connected</span></div>
 
 <div class="viewcode-block" id="Database.is_connection_error"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.is_connection_error">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">is_connection_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""True if *exc* is a PEP 249 connection-trouble class for this driver.</span>
+<span class="w">        </span><span class="sd">"""True if *exc* is a PEP 249 connection-trouble class for this driver,</span>
+<span class="sd">        or the plain ``ConnectionError`` transaction() itself raises for</span>
+<span class="sd">        "not connected" (see its docstring) - that one is never a driver</span>
+<span class="sd">        exception, so it's never in _connection_error_classes, but it's</span>
+<span class="sd">        exactly the condition every caller of this method is trying to detect.</span>
 
 <span class="sd">        Uses the raw classes tuple, not _reconnect_exceptions' (Exception,)</span>
 <span class="sd">        fallback - an unclassifiable driver must never downgrade an</span>
 <span class="sd">        unrelated bug's log level just because it can't be classified.</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_error_classes</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_error_classes</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exc</span><span class="p">,</span> <span class="ne">ConnectionError</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Database.setup"><a class="viewcode-back" href="../../lib/db.html#lib.db.Database.setup">[Doku]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queries</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Setup or update the database structure.</span>
