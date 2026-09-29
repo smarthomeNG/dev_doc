@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.item.item &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 29. September 2026, commit f8f5a22) Dokumentation</title>
+  <title>lib.item.item &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 29. September 2026, commit 7834fa3) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
@@ -7907,10 +7907,16 @@
 <span class="sd">        Run initial eval to set an initial value for the item</span>
 
 <span class="sd">        Called from Items.load_itemdefinitions</span>
+
+<span class="sd">        Skipped if a plugin already assigned a real value during parse_item()</span>
+<span class="sd">        (e.g. database/rrd 'init' restore via item.set()) - changed_by no</span>
+<span class="sd">        longer starts with 'Init' in that case, so forcing the eval here</span>
+<span class="sd">        would recompute from an already-current value (double-counting for</span>
+<span class="sd">        accumulator-style evals).</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trigger</span><span class="p">:</span>
             <span class="c1"># Only if item has an eval_trigger</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="o">.</span><span class="n">get_last_change_by</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'Init'</span><span class="p">):</span>
                 <span class="c1"># Only if item has an eval expression</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">trigger</span><span class="p">(</span>
                     <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">,</span>
