@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plugin ‚matter‘ Konfiguration &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 28. September 2026, commit 5bb703f) Dokumentation</title>
+  <title>Plugin ‚matter‘ Konfiguration &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 29. September 2026, commit 5bb703f) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -6870,6 +6870,16 @@
 </ul>
 </div></blockquote>
 </section>
+<section id="server-icd-check-cycle">
+<h2>server_icd_check_cycle<a class="headerlink" href="#server-icd-check-cycle" title="Permalink to this heading"></a></h2>
+<p>Intervall (Sekunden) zwischen Prüfungen auf abgelaufene ICD-Geräte (Batterie-/Sleepy-Thread-Geräte, z.B. Tür-/Fensterkontakte). Ein ICD-Gerät meldet sich nur alle IdleModeDuration Sekunden - die Prüfung markiert ein Item als ungültig, sobald es länger als matter_icd_invalid_factor * IdleModeDuration ohne Update ist.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Datentyp: <strong>int</strong></p></li>
+<li><p>Standardwert: <strong>60</strong></p></li>
+</ul>
+</div></blockquote>
+</section>
 <section id="server-otbr-rest-url">
 <h2>server_otbr_rest_url<a class="headerlink" href="#server-otbr-rest-url" title="Permalink to this heading"></a></h2>
 <p>Basis-URL der REST-API des Thread Border Routers (OTBR), fuer den „Automatisch abrufen“-Button bei den Thread Netzwerk-Zugangsdaten (GET /node/dataset/active). Nur relevant, wenn der Border Router erreichbar ist - Default passt, wenn er auf demselben Host wie shng laeuft. Leer = Button wird nicht angezeigt, Zugangsdaten muessen manuell eingefuegt werden.</p>
@@ -7011,6 +7021,15 @@
 </ul>
 </div></blockquote>
 </section>
+<section id="matter-icd-invalid-factor">
+<h2>matter_icd_invalid_factor<a class="headerlink" href="#matter-icd-invalid-factor" title="Permalink to this heading"></a></h2>
+<p>Nur fuer ICD-Geraete (Batterie-/Sleepy-Thread, z.B. Tuer-/Fensterkontakte): ueberschreibt den Standard-Multiplikator (2.5) fuer die Ungueltig-Markierung dieses Items in der Datenbank. Schwelle = Faktor * IdleModeDuration (die vom Geraet selbst gemeldete Melde-Intervall). Vererbt sich wie matter_node an Kind-Items.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Datentyp: <strong>num</strong></p></li>
+</ul>
+</div></blockquote>
+</section>
 <section id="matter-node">
 <h2>matter_node<a class="headerlink" href="#matter-node" title="Permalink to this heading"></a></h2>
 <p>Matter Node-ID des Geräts (wird bei der Kommissionierung vergeben)</p>
@@ -7039,20 +7058,8 @@
 <ul class="simple">
 <li><dl class="simple">
 <dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>battery</strong> (<cite>foo</cite>, —)</dt><dd><ul>
-<li><dl class="simple">
-<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>percent</strong> (<cite>num</cite>, Batteriestand in %)</dt><dd><ul>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>percent_raw</strong> (<cite>num</cite>, Batteriestand in halben Prozent (Roh-Wert))</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>voltage</strong> (<cite>num</cite>, Batteriespannung in V)</dt><dd><ul>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>voltage_mv</strong> (<cite>num</cite>, Batteriespannung in mV (Roh-Wert))</p></li>
-</ul>
-</dd>
-</dl>
-</li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>percent</strong> (<cite>num</cite>, Batteriestand in %)</p></li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>voltage</strong> (<cite>num</cite>, Batteriespannung in V)</p></li>
 </ul>
 </dd>
 </dl>
@@ -7075,28 +7082,15 @@
 <ul class="simple">
 <li><dl class="simple">
 <dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>electrical_power_measurement</strong> (<cite>foo</cite>, —)</dt><dd><ul>
-<li><dl class="simple">
-<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>power</strong> (<cite>num</cite>, aktuelle Leistung in W)</dt><dd><ul>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>power_mw</strong> (<cite>num</cite>, aktuelle Leistung in mW)</p></li>
-</ul>
-</dd>
-</dl>
-</li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>power</strong> (<cite>num</cite>, aktuelle Leistung in W)</p></li>
 <li><dl class="simple">
 <dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>voltage</strong> (<cite>num</cite>, aktuelle Spannung in V)</dt><dd><ul>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>voltage_mv</strong> (<cite>num</cite>, aktuelle Spannung in mV)</p></li>
 <li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>hinweis</strong> (<cite>foo</cite>, In eigenen Tests wurde die Spannung nur einmalig beim Verbinden aktualisiert. Obwohl das Gerät die Spannung laufend misst, wird sie über Matter nicht mehr übertragen - z.B. über MQTT sehr wohl.)</p></li>
 </ul>
 </dd>
 </dl>
 </li>
-<li><dl class="simple">
-<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>current</strong> (<cite>num</cite>, aktueller Strom in A)</dt><dd><ul>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>current_ma</strong> (<cite>num</cite>, aktueller Strom in mA)</p></li>
-</ul>
-</dd>
-</dl>
-</li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>current</strong> (<cite>num</cite>, aktueller Strom in A)</p></li>
 </ul>
 </dd>
 </dl>
@@ -7109,13 +7103,7 @@
 <p>aktuelle relative Luftfeuchtigkeit in %</p>
 <div class="treeview docutils container">
 <ul class="simple">
-<li><dl class="simple">
-<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>humidity_sensor</strong> (<cite>num</cite>, aktuelle relative Luftfeuchtigkeit in %)</dt><dd><ul>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>humidity_raw</strong> (<cite>num</cite>, aktuelle relative Luftfeuchtigkeit in 1/100 % (Roh-Wert))</p></li>
-</ul>
-</dd>
-</dl>
-</li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>humidity_sensor</strong> (<cite>num</cite>, aktuelle relative Luftfeuchtigkeit in %)</p></li>
 </ul>
 </div>
 </section>
@@ -7160,13 +7148,7 @@
 <p>aktuelle Temperatur in °C</p>
 <div class="treeview docutils container">
 <ul class="simple">
-<li><dl class="simple">
-<dt><span class="treeview-icon treeview-dir-folder" title="folder"></span> <strong>temperature_sensor</strong> (<cite>num</cite>, aktuelle Temperatur in °C)</dt><dd><ul>
-<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>temperature_raw</strong> (<cite>num</cite>, aktuelle Temperatur in 1/100 °C (Roh-Wert))</p></li>
-</ul>
-</dd>
-</dl>
-</li>
+<li><p><span class="treeview-icon treeview-dir-file" title="file"></span> <strong>temperature_sensor</strong> (<cite>num</cite>, aktuelle Temperatur in °C)</p></li>
 </ul>
 </div>
 </section>

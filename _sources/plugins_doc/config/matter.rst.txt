@@ -244,6 +244,16 @@ Datei (im items-Verzeichnis), in der per "Item erstellen"-Button erzeugte Gerät
  - Standardwert: **matter_devices.yaml**
 
 
+server_icd_check_cycle
+======================
+
+
+Intervall (Sekunden) zwischen Prüfungen auf abgelaufene ICD-Geräte (Batterie-/Sleepy-Thread-Geräte, z.B. Tür-/Fensterkontakte). Ein ICD-Gerät meldet sich nur alle IdleModeDuration Sekunden - die Prüfung markiert ein Item als ungültig, sobald es länger als matter_icd_invalid_factor * IdleModeDuration ohne Update ist.
+
+ - Datentyp: **int**
+ - Standardwert: **60**
+
+
 server_otbr_rest_url
 ====================
 
@@ -388,6 +398,15 @@ Bridge-Rolle: macht dieses Item als Matter-Bridge-Gerät fuer andere Matter-Cont
    - **temperature_sensor**
 
 
+matter_icd_invalid_factor
+=========================
+
+
+Nur fuer ICD-Geraete (Batterie-/Sleepy-Thread, z.B. Tuer-/Fensterkontakte): ueberschreibt den Standard-Multiplikator (2.5) fuer die Ungueltig-Markierung dieses Items in der Datenbank. Schwelle = Faktor * IdleModeDuration (die vom Geraet selbst gemeldete Melde-Intervall). Vererbt sich wie matter_node an Kind-Items.
+
+ - Datentyp: **num**
+
+
 matter_node
 ===========
 
@@ -420,10 +439,8 @@ battery
 
 .. treeview::
      - :dir:`folder` **battery** (`foo`, ---)
-         - :dir:`folder` **percent** (`num`, Batteriestand in %)
-             - :dir:`file` **percent_raw** (`num`, Batteriestand in halben Prozent (Roh-Wert))
-         - :dir:`folder` **voltage** (`num`, Batteriespannung in V)
-             - :dir:`file` **voltage_mv** (`num`, Batteriespannung in mV (Roh-Wert))
+         - :dir:`file` **percent** (`num`, Batteriestand in %)
+         - :dir:`file` **voltage** (`num`, Batteriespannung in V)
 
 
 contact
@@ -441,13 +458,10 @@ electrical_power_measurement
 
 .. treeview::
      - :dir:`folder` **electrical_power_measurement** (`foo`, ---)
-         - :dir:`folder` **power** (`num`, aktuelle Leistung in W)
-             - :dir:`file` **power_mw** (`num`, aktuelle Leistung in mW)
+         - :dir:`file` **power** (`num`, aktuelle Leistung in W)
          - :dir:`folder` **voltage** (`num`, aktuelle Spannung in V)
-             - :dir:`file` **voltage_mv** (`num`, aktuelle Spannung in mV)
              - :dir:`file` **hinweis** (`foo`, In eigenen Tests wurde die Spannung nur einmalig beim Verbinden aktualisiert. Obwohl das Gerät die Spannung laufend misst, wird sie über Matter nicht mehr übertragen - z.B. über MQTT sehr wohl.)
-         - :dir:`folder` **current** (`num`, aktueller Strom in A)
-             - :dir:`file` **current_ma** (`num`, aktueller Strom in mA)
+         - :dir:`file` **current** (`num`, aktueller Strom in A)
 
 
 humidity_sensor
@@ -456,8 +470,7 @@ humidity_sensor
 aktuelle relative Luftfeuchtigkeit in %
 
 .. treeview::
-     - :dir:`folder` **humidity_sensor** (`num`, aktuelle relative Luftfeuchtigkeit in %)
-         - :dir:`file` **humidity_raw** (`num`, aktuelle relative Luftfeuchtigkeit in 1/100 % (Roh-Wert))
+     - :dir:`file` **humidity_sensor** (`num`, aktuelle relative Luftfeuchtigkeit in %)
 
 
 shelly_plug_m_3gen
@@ -492,8 +505,7 @@ temperature_sensor
 aktuelle Temperatur in °C
 
 .. treeview::
-     - :dir:`folder` **temperature_sensor** (`num`, aktuelle Temperatur in °C)
-         - :dir:`file` **temperature_raw** (`num`, aktuelle Temperatur in 1/100 °C (Roh-Wert))
+     - :dir:`file` **temperature_sensor** (`num`, aktuelle Temperatur in °C)
 
 
 ===============
