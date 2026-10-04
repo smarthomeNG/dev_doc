@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plugin-spezifische Attribute &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 4. Oktober 2026, commit 588d4c0) Dokumentation</title>
+  <title>Plugin-spezifische Attribute &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 4. Oktober 2026, commit ee91cf4) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=966e63c0" />
@@ -18,7 +18,7 @@
       <script src="../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=79713b6d"></script>
+      <script src="../../_static/documentation_options.js?v=2c51226e"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/translations.js?v=9bf55d28"></script>
@@ -364,6 +364,7 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Plugin-spezifische Attribute</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#vererbung-von-attributen-update">Vererbung von Attributen <span class="bluesup">update</span></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#zugriff-auf-attribute-anderer-items">Zugriff auf Attribute anderer Items</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#referenzen-bei-name-description-und-remark">Referenzen bei name, description und remark</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#platzhalter-in-attributwerten">Platzhalter in Attributwerten</a></li>
 </ul>
 </li>
@@ -5488,6 +5489,7 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Plugin-spezifische Attribute</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#vererbung-von-attributen-update">Vererbung von Attributen <span class="bluesup">update</span></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#zugriff-auf-attribute-anderer-items">Zugriff auf Attribute anderer Items</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#referenzen-bei-name-description-und-remark">Referenzen bei name, description und remark</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#platzhalter-in-attributwerten">Platzhalter in Attributwerten</a></li>
 </ul>
 </li>
@@ -6781,8 +6783,29 @@ der Konfiguration statt dem <code class="code docutils literal notranslate"><spa
 <p>Es ist auch möglich, auf Attribute des aktuellen Items zuzugreifen. Dazu wird für die <code class="code docutils literal notranslate"><span class="pre">&lt;Ebene&gt;</span></code> nur
 ein <code class="code docutils literal notranslate"><span class="pre">.</span></code> (für das aktuelle Item) angegeben (<code class="code docutils literal notranslate"><span class="pre">.:&lt;Attribut&gt;</span></code>).</p>
 </section>
+<section id="referenzen-bei-name-description-und-remark">
+<span id="standard-attribute-referenzen"></span><span id="index-7"></span><span id="index-6"></span><h2>Referenzen bei name, description und remark<a class="headerlink" href="#referenzen-bei-name-description-und-remark" title="Link to this heading"></a></h2>
+<p>Von den Standard-Attributen können nur <strong>name</strong>, <strong>description</strong> und <strong>remark</strong> Referenzen verwenden. Sie können
+sowohl Ziel einer Referenz sein (<code class="code docutils literal notranslate"><span class="pre">description:</span> <span class="pre">..:.</span></code>, <code class="code docutils literal notranslate"><span class="pre">remark:</span> <span class="pre">..:description</span></code>), als auch von
+plugin-spezifischen Attributen referenziert werden (<code class="code docutils literal notranslate"><span class="pre">my_attribute:</span> <span class="pre">..:name</span></code>).</p>
+<p>Für die Referenz gilt dieselbe Syntax wie bei plugin-spezifischen Attributen (<code class="code docutils literal notranslate"><span class="pre">&lt;Ebene&gt;:&lt;Attribut&gt;</span></code>).
+Auch Platzhalter sind möglich. Dazu wird wie oben ein Unterstrich an den Attributnamen angefügt
+(<code class="code docutils literal notranslate"><span class="pre">name_:</span> <span class="pre">&quot;Griff</span> <span class="pre">{..:name}&quot;</span></code>, <code class="code docutils literal notranslate"><span class="pre">description_</span></code>, <code class="code docutils literal notranslate"><span class="pre">remark_</span></code>).</p>
+<p>Verweist eine Referenz auf ein Attribut, das beim referenzierten Item nicht konfiguriert ist, bleibt das
+Zielattribut ungesetzt (<strong>name</strong> wird dann der Item-Pfad). Das gleiche gilt für Verweise im Kreis
+(<code class="code docutils literal notranslate"><span class="pre">description:</span> <span class="pre">.:remark</span></code> zusammen mit <code class="code docutils literal notranslate"><span class="pre">remark:</span> <span class="pre">.:description</span></code>).</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">fenster_kueche</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Küchenfenster</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Fenster in der Küche</span>
+
+<span class="w">    </span><span class="nt">griff</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">name_</span><span class="p">:</span><span class="w"> </span><span class="s">"Griff</span><span class="nv"> </span><span class="s">({..:name})"</span>
+<span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">..:.</span>
+</pre></div>
+</div>
+</section>
 <section id="platzhalter-in-attributwerten">
-<span id="index-7"></span><span id="index-6"></span><span id="id1"></span><h2>Platzhalter in Attributwerten<a class="headerlink" href="#platzhalter-in-attributwerten" title="Link to this heading"></a></h2>
+<span id="index-8"></span><span id="id1"></span><h2>Platzhalter in Attributwerten<a class="headerlink" href="#platzhalter-in-attributwerten" title="Link to this heading"></a></h2>
 <p>In Attributwerten können Platzhalter verwendet werden. Diese Platzhalter referenzieren
 ein anderes Attribut und werden beim Start von SmartHomeNG durch den entsprechenden Wert ersetzt.</p>
 <p>Die Platzhalter sind Attribut-Referenzen, wie sie in den zwei vorangegangenen Abschnitten beschrieben wurden.
@@ -6794,8 +6817,8 @@ der Konfigurationsdatei <code class="code docutils literal notranslate"><span cl
 angegeben werden. Im Zuge des Ladens wird beim Ersetzen der Platzhalter der Unterstrich entfernt. Das Attribut
 hal zur Laufzeit also den Namen <strong>my_attribute</strong> und nicht (wie man denken könnte) <strong>my_attribute_</strong>.</p>
 <p>Platzhalter können (wie die Vererbung und die Nutzung anderer Attributwerte) <strong>nur</strong> bei
-plugin-spezifischen Attributen verwendet werden. Die einzige Ausnahme ist das Standard-Attribut <strong>name</strong>. Hier können
-Platzhalter verwendet werden (<code class="code docutils literal notranslate"><span class="pre">name_:</span> <span class="pre">&quot;Text</span> <span class="pre">{..:my_value}&quot;</span></code>).</p>
+plugin-spezifischen Attributen verwendet werden. Die Ausnahmen sind die Standard-Attribute <strong>name</strong>,
+<strong>description</strong> und <strong>remark</strong> (siehe <a class="reference internal" href="#standard-attribute-referenzen"><span class="std std-ref">Referenzen bei name, description und remark</span></a>).</p>
 <p>Die Nutzung der Platzhalter wird am Beispiel der folgenden <strong>structs</strong> verdeutlicht:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">etc/structs/knx.yaml</span><a class="headerlink" href="#id2" title="Link to this code"></a></div>

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.item.item &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 4. Oktober 2026, commit 588d4c0) Dokumentation</title>
+  <title>lib.item.item &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 4. Oktober 2026, commit ee91cf4) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=966e63c0" />
@@ -17,7 +17,7 @@
       <script src="../../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=79713b6d"></script>
+      <script src="../../../_static/documentation_options.js?v=2c51226e"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/translations.js?v=9bf55d28"></script>
@@ -361,6 +361,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../referenz/items/plugin_attribute.html">Plugin-spezifische Attribute</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../referenz/items/plugin_attribute.html#vererbung-von-attributen-update">Vererbung von Attributen <span class="bluesup">update</span></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../referenz/items/plugin_attribute.html#zugriff-auf-attribute-anderer-items">Zugriff auf Attribute anderer Items</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../referenz/items/plugin_attribute.html#referenzen-bei-name-description-und-remark">Referenzen bei name, description und remark</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../referenz/items/plugin_attribute.html#platzhalter-in-attributwerten">Platzhalter in Attributwerten</a></li>
 </ul>
 </li>
@@ -5485,6 +5486,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../referenz/items/plugin_attribute.html">Plugin-spezifische Attribute</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../referenz/items/plugin_attribute.html#vererbung-von-attributen-update">Vererbung von Attributen <span class="bluesup">update</span></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../referenz/items/plugin_attribute.html#zugriff-auf-attribute-anderer-items">Zugriff auf Attribute anderer Items</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../referenz/items/plugin_attribute.html#referenzen-bei-name-description-und-remark">Referenzen bei name, description und remark</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../referenz/items/plugin_attribute.html#platzhalter-in-attributwerten">Platzhalter in Attributwerten</a></li>
 </ul>
 </li>
@@ -6832,6 +6834,7 @@
     <span class="n">parse_autotimer_attribute</span> <span class="k">as</span> <span class="n">_parse_autotimer_attribute</span><span class="p">,</span>
     <span class="n">build_trigger_condition_eval</span> <span class="k">as</span> <span class="n">_build_trigger_condition_eval</span><span class="p">,</span>
     <span class="n">get_attribute_value</span> <span class="k">as</span> <span class="n">_get_attribute_value_fn</span><span class="p">,</span>
+    <span class="n">apply_base_text</span> <span class="k">as</span> <span class="n">_apply_base_text</span><span class="p">,</span>
     <span class="n">build_on_xx_list</span> <span class="k">as</span> <span class="n">_build_on_xx_list_fn</span><span class="p">,</span>
     <span class="n">init_prerun</span> <span class="k">as</span> <span class="n">_init_prerun_fn</span><span class="p">,</span>
     <span class="n">check_item_name_collision</span> <span class="k">as</span> <span class="n">_check_item_name_collision</span><span class="p">,</span>
@@ -7124,6 +7127,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cast</span> <span class="o">=</span> <span class="n">cast_bool</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">conf</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_base_text</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_crontab</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_enforce_updates</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_enforce_change</span> <span class="o">=</span> <span class="kc">False</span>
@@ -7362,15 +7366,12 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="c1"># end of loop 'for attr, value in config.items()' - handling of all attributes of an item</span>
 
+        <span class="n">_apply_base_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+
         <span class="c1"># test for attribute copy within the same item to ensure replace in every definition order of attributes</span>
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">attr</span><span class="p">])</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'.:'</span><span class="p">):</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
-                <span class="n">fromattr</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">':'</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">fromattr</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">''</span><span class="p">,</span> <span class="s1">'.'</span><span class="p">]:</span>
-                    <span class="n">fromattr</span> <span class="o">=</span> <span class="n">attr</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_attr</span><span class="p">(</span><span class="n">fromattr</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_attribute_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">attr</span><span class="p">],</span> <span class="n">current_attr</span><span class="o">=</span><span class="n">attr</span><span class="p">)</span>
 
         <span class="c1"># variable replacement for attributes</span>
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">):</span>
@@ -7391,13 +7392,8 @@
                         <span class="k">break</span>
 
                 <span class="c1"># store resolved attribute value under name w/o underline</span>
-                <span class="n">attr_new</span> <span class="o">=</span> <span class="n">attr</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">attr_new</span> <span class="o">==</span> <span class="s1">'name'</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">attr_value</span>
-                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">attr_new</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr_value</span>
-                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">attr</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">attr_value</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
 
         <span class="c1"># Test if attributes are defined in metadata</span>
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">:</span>
