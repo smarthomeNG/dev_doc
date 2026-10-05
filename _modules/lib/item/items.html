@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.item.items &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 5. Oktober 2026, commit e0f7f11) Dokumentation</title>
+  <title>lib.item.items &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 5. Oktober 2026, commit a57f3f9) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=966e63c0" />
@@ -17,7 +17,7 @@
       <script src="../../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=76b7729f"></script>
+      <script src="../../../_static/documentation_options.js?v=70e4a3e6"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/translations.js?v=9bf55d28"></script>
@@ -7217,12 +7217,15 @@
 <span class="sd">        :param filename: Basename (without extension) of the target file</span>
 <span class="sd">        :param path: Full dotted path at which to insert *config*</span>
 <span class="sd">        :param config: Attribute configuration dict to persist</span>
+<span class="sd">        :raises ValueError: if the file cannot hold *path*, e.g. an ancestor</span>
+<span class="sd">                            is defined there as an attribute with a value</span>
 <span class="sd">        """</span>
         <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
         <span class="n">yf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yamlfile</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml_file</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-        <span class="n">yf</span><span class="o">.</span><span class="n">setvalue</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">yf</span><span class="o">.</span><span class="n">setvalue</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Item '</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">' cannot be persisted to '</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.yaml': an ancestor is not an item"</span><span class="p">)</span>
         <span class="n">yf</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_preserve_existing_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
