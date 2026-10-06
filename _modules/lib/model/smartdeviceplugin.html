@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 6. Oktober 2026, commit 15745f6) Dokumentation</title>
+  <title>lib.model.smartdeviceplugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 6. Oktober 2026, commit f5ff437) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=966e63c0" />
@@ -17,7 +17,7 @@
       <script src="../../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=63a94b1c"></script>
+      <script src="../../../_static/documentation_options.js?v=e4e26bb5"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/translations.js?v=9bf55d28"></script>
@@ -5110,6 +5110,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#verbindung">Verbindung</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#fehlerbehandlung">Fehlerbehandlung</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#loop-guard">Loop-Guard</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#datenlucken-bei-verbindungsverlust">Datenlücken bei Verbindungsverlust</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#datatypes">DataTypes</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#commands">Commands</a></li>
 </ul>
@@ -6714,6 +6715,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">textwrap</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ruamel.yaml</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">yaml</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
@@ -6918,6 +6920,11 @@
         <span class="n">_lgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_value</span><span class="p">(</span><span class="s1">'loop_guard_source'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loop_guard_source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">_lgs</span><span class="p">)</span> <span class="k">if</span> <span class="n">_lgs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">''</span>
 
+        <span class="c1"># mark device-mirroring items invalid in the database log on connection loss (opt-in)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_invalidate_on_disconnect</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_value</span><span class="p">(</span><span class="s1">'invalidate_on_disconnect'</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_suspended_by_connection</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_connected</span> <span class="o">=</span> <span class="kc">False</span>
+
         <span class="c1"># connection instance</span>
         <span class="c1"># self._connection: SDPConnection | None = None</span>
         <span class="c1"># commands instance</span>
@@ -7071,7 +7078,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="c1"># set callback for tcp client etc.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="n">PLUGIN_ATTR_CB_SUSPEND</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_suspend</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="n">PLUGIN_ATTR_CB_SUSPEND</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_connection_aborted</span>
 
         <span class="c1"># this is only viable for the base class. All derived plugin classes</span>
         <span class="c1"># will probably be created towards a specific command class</span>
@@ -7127,6 +7134,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alive</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'plugin resumed by </span><span class="si">{</span><span class="n">by</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">"unknown"</span><span class="si">}</span><span class="s1">, connections will be resumed'</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">suspended</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_suspended_by_connection</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_suspend_item</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">())</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
@@ -7148,6 +7156,18 @@
 <span class="w">        </span><span class="sd">"""called when suspend is disabled. Overwrite as needed"""</span>
         <span class="k">pass</span></div>
 
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_on_connection_aborted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suspend_active</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">by</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Connection callback for exhausted connect attempts: invalidate items, then suspend.</span>
+
+<span class="sd">        Unlike a manual suspend, the connection loss is real, so the items are marked</span>
+<span class="sd">        invalid here and the suspend-induced disconnect is not treated as manual.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">suspend_active</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_suspended_by_connection</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_invalidate_items</span><span class="p">(</span><span class="n">by</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_suspend</span><span class="p">(</span><span class="n">suspend_active</span><span class="p">,</span> <span class="n">by</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SmartDevicePlugin.set_suspend">
 <a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#lib.model.smartdeviceplugin.SmartDevicePlugin.set_suspend">[Doku]</a>
@@ -8140,6 +8160,7 @@
 <a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#lib.model.smartdeviceplugin.SmartDevicePlugin.on_connect">[Doku]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""callback if connection is made."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_connected</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="c1"># neither of these are meaningful in standalone mode: there's no</span>
         <span class="c1"># shng scheduler (self._sh is None) to schedule either through, and</span>
         <span class="c1"># standalone diagnostic flows (e.g. run_standalone()) do their own</span>
@@ -8172,8 +8193,48 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'connection lost, scheduling reconnect in 5s'</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">scheduler_add</span><span class="p">(</span>
                         <span class="n">reconnect_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">,</span> <span class="nb">next</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shtime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-                    <span class="p">)</span></div>
+                    <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">suspended</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_suspended_by_connection</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_invalidate_items</span><span class="p">(</span><span class="n">by</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="SmartDevicePlugin.should_invalidate_item">
+<a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartdeviceplugin_class.html#lib.model.smartdeviceplugin.SmartDevicePlugin.should_invalidate_item">[Doku]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">should_invalidate_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Item</span><span class="p">,</span> <span class="n">by</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Whether ``item`` is marked invalid when the connection is lost. Overwrite to filter.</span>
+
+<span class="sd">        By default these are the items that receive device data, i.e. those mapped to a</span>
+<span class="sd">        readable or pseudo command. Write-only items and the suspend item hold values</span>
+<span class="sd">        set by shng, not device state.</span>
+
+<span class="sd">        :param item: item of this plugin that has ``db_mark_invalid``</span>
+<span class="sd">        :param by: origin of the connection loss as reported by the connection</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span> <span class="k">for</span> <span class="n">items</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_commands_read</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_commands_pseudo</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_invalidate_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Mark this plugin's items invalid in the database log, if enabled by ``invalidate_on_disconnect``.</span>
+
+<span class="sd">        Items without ``db_mark_invalid`` (not logged by the database plugin) are skipped.</span>
+<span class="sd">        The item values stay unchanged; only the database log records a gap.</span>
+<span class="sd">        """</span>
+        <span class="c1"># before the first connect nothing was received, so there is nothing to invalidate</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_invalidate_on_disconnect</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_connected</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_item_list</span><span class="p">():</span>
+            <span class="n">mark_invalid</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s1">'db_mark_invalid'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">mark_invalid</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_invalidate_item</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">by</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="c1"># db_mark_invalid() is not idempotent: repeating it would split one gap into several</span>
+            <span class="n">is_invalid</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s1">'db_is_invalid'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_invalid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">is_invalid</span><span class="p">():</span>
+                <span class="k">continue</span>
+            <span class="n">mark_invalid</span><span class="p">(</span><span class="n">caller</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_fullname</span><span class="p">(),</span> <span class="n">source</span><span class="o">=</span><span class="s1">'connection_lost'</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_process_additional_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">custom</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">by</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""do additional processing of received data</span>
