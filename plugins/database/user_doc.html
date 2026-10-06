@@ -530,6 +530,7 @@
 <li class="toctree-l5"><a class="reference internal" href="#hypertable-und-zeitpartitionen">Hypertable und Zeitpartitionen</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#kompression">Kompression</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#native-aggregation-und-retention">Native Aggregation und Retention</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#daten-zwischen-datenbanken-migrieren">Daten zwischen Datenbanken migrieren</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#web-interface">Web Interface</a><ul>
@@ -2911,6 +2912,7 @@
 <li class="toctree-l5"><a class="reference internal" href="#hypertable-und-zeitpartitionen">Hypertable und Zeitpartitionen</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#kompression">Kompression</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#native-aggregation-und-retention">Native Aggregation und Retention</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#daten-zwischen-datenbanken-migrieren">Daten zwischen Datenbanken migrieren</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#web-interface">Web Interface</a><ul>
@@ -7065,12 +7067,21 @@ Tabellen erheblich, ohne dass sich am Zugriff auf die Tabelle sonst etwas änder
 <p>Ist die Extension nicht installiert, wird eine Warnung ausgegeben und das Plugin arbeitet
 unverändert mit einer normalen PostgreSQL-Tabelle weiter.</p>
 <p>Die Größe der einzelnen Zeitpartitionen wird über <code class="docutils literal notranslate"><span class="pre">timescale_chunk_interval</span></code> festgelegt
-(Standard <code class="docutils literal notranslate"><span class="pre">168h</span></code>, entspricht 7 Tagen).</p>
+(Standard <code class="docutils literal notranslate"><span class="pre">168h</span></code>, entspricht 7 Tagen). Die Angabe erfolgt in Sekunden, Minuten (<code class="docutils literal notranslate"><span class="pre">m</span></code>) oder
+Stunden (<code class="docutils literal notranslate"><span class="pre">h</span></code>), auch kombiniert (z.B. <code class="docutils literal notranslate"><span class="pre">2h30m</span></code>); Tage müssen in Stunden angegeben werden. Ein
+geänderter Wert gilt nur für neu angelegte Partitionen, bestehende bleiben unverändert.</p>
 </section>
 <section id="kompression">
 <h3>Kompression<a class="headerlink" href="#kompression" title="Link to this heading"></a></h3>
 <p id="index-10">Mit <code class="docutils literal notranslate"><span class="pre">timescale_compress:</span> <span class="pre">true</span></code> aktiviert das Plugin native spaltenbasierte Kompression der
-<code class="docutils literal notranslate"><span class="pre">log</span></code>-Tabelle. Alle Zeitpartitionen außer der aktuellsten werden komprimiert.</p>
+<code class="docutils literal notranslate"><span class="pre">log</span></code>-Tabelle. Alle Zeitpartitionen außer der aktuellsten werden komprimiert (Kompression
+greift für Partitionen, die älter als ein <code class="docutils literal notranslate"><span class="pre">timescale_chunk_interval</span></code> sind). Die aktuellste
+Partition bleibt unkomprimiert, weil nur dort noch offene, in Veränderung befindliche Einträge
+liegen.</p>
+<p>Greifen die Kompaktierung (<code class="docutils literal notranslate"><span class="pre">database_maxage_action</span></code>) oder eine manuelle Änderung/Löschung im
+Webinterface später auf Daten einer bereits komprimierten Partition zu, wird diese Partition dafür
+einmalig dekomprimiert. Da die Kompaktierung ein Intervall nur ein einziges Mal bearbeitet, ist das
+ein einmaliger Aufwand je Partition.</p>
 <p>TimescaleDBs eigene Dokumentation nennt typische Kompressionsraten von 10-20x (90-95%
 Speicherplatzersparnis) für Zeitreihendaten; im eigenen Test dieses Plugins gegen einen echten
 Datensatz mit rund 22 Millionen Zeilen wurden 17,39x gemessen.</p>
@@ -7090,15 +7101,38 @@ auf allen unterstützten Datenbanken identisch.</p>
 über sogenannte <em>Continuous Aggregates</em> - dieselben Item-Attribute (<code class="docutils literal notranslate"><span class="pre">database_maxage</span></code>,
 <code class="docutils literal notranslate"><span class="pre">database_maxage_action</span></code>, <code class="docutils literal notranslate"><span class="pre">database_maxage_interval</span></code>) steuern weiterhin, was aggregiert
 wird, nur die Ausführung verlagert sich auf den Datenbank-Server. Die Plugin-seitige
-Kompaktierung läuft in diesem Modus nicht mehr.</p>
+Kompaktierung läuft in diesem Modus nicht mehr, und damit auch nicht das Löschen alter Werte
+durch das Plugin: die Parameter <code class="docutils literal notranslate"><span class="pre">removeold_cycle</span></code> und <code class="docutils literal notranslate"><span class="pre">max_aggregate_intervals</span></code> haben dann
+keine Wirkung, und auch Items mit <code class="docutils literal notranslate"><span class="pre">database_maxage_action:</span> <span class="pre">delete</span></code> werden nicht mehr einzeln
+bereinigt.</p>
+<p>Das Plugin legt je verwendeter <code class="docutils literal notranslate"><span class="pre">database_maxage_interval</span></code>-Breite genau ein Continuous Aggregate
+an (<code class="docutils literal notranslate"><span class="pre">log_cagg_&lt;Sekunden&gt;s</span></code>, dazu eine Hilfs-View mit dem Zusatz <code class="docutils literal notranslate"><span class="pre">_final</span></code>) - nicht je Item oder
+Aktion. Items mit <code class="docutils literal notranslate"><span class="pre">database_maxage_action:</span> <span class="pre">delete</span></code> erhalten kein Aggregat. Die Aggregate werden
+stündlich vom Datenbank-Server aktualisiert; das jeweils aktuellste Intervall ist darin noch nicht
+enthalten.</p>
+<p>Lesende Abfragen (z.B. <code class="docutils literal notranslate"><span class="pre">item.db()</span></code>-Funktionen und Verlaufsdaten für Plots) nutzen weiterhin die
+Rohdaten, solange diese vorhanden sind. Nur der Teil eines Zeitraums, der vor dem ältesten noch
+vorhandenen Rohwert des Items liegt, wird aus den Aggregaten geliefert. Bei Einzelwert-Abfragen
+geschieht das nur, wenn der gesamte Zeitraum vor dem ältesten Rohwert liegt; Zeiträume, die
+Roh- und Aggregatdaten umfassen, werden aus den Rohdaten berechnet.</p>
 <div class="admonition important">
 <p class="admonition-title">Wichtig</p>
 <p>Ein Wechsel von <code class="docutils literal notranslate"><span class="pre">timescale_native_aggregation:</span> <span class="pre">true</span></code> zurück zu <code class="docutils literal notranslate"><span class="pre">false</span></code> ist nicht
-vorgesehen und kann nicht verlustfrei erfolgen.</p>
+vorgesehen und kann nicht verlustfrei erfolgen: Sind Rohdaten bereits durch die native
+Aufbewahrung entfernt worden (siehe unten), existieren für diesen Zeitraum nur noch die
+Aggregate - eine Rückkehr zur Rohdaten-Auflösung ist dann nicht mehr möglich. Das Plugin
+entfernt bestehende Continuous Aggregates und die Kompression nie selbst.</p>
 </div>
 <p>Zusätzlich kann <code class="docutils literal notranslate"><span class="pre">timescale_native_retention:</span> <span class="pre">true</span></code> (nur bei aktivem
 <code class="docutils literal notranslate"><span class="pre">timescale_native_aggregation</span></code>) alte Rohdaten-Zeitpartitionen automatisch auf dem
-Datenbank-Server entfernen, statt sie vom Plugin einzeln löschen zu lassen.</p>
+Datenbank-Server entfernen, statt sie vom Plugin einzeln löschen zu lassen. Der Schwellwert ist
+ein einziger für die gesamte <code class="docutils literal notranslate"><span class="pre">log</span></code>-Tabelle: das größte <code class="docutils literal notranslate"><span class="pre">database_maxage</span></code> aller am Plugin
+registrierten Items (bzw. <code class="docutils literal notranslate"><span class="pre">default_maxage</span></code>, falls größer) zuzüglich eines
+<code class="docutils literal notranslate"><span class="pre">timescale_chunk_interval</span></code> als Sicherheitsabstand. Ist weder <code class="docutils literal notranslate"><span class="pre">default_maxage</span></code> noch ein
+<code class="docutils literal notranslate"><span class="pre">database_maxage</span></code> gesetzt, wird die Aufbewahrung nicht aktiviert (Warnung im Log).</p>
+<p>Ohne <code class="docutils literal notranslate"><span class="pre">timescale_native_retention</span></code> werden im nativen Modus Rohdaten dauerhaft aufbewahrt - das
+gilt bewusst auch für Items mit <code class="docutils literal notranslate"><span class="pre">database_maxage_action:</span> <span class="pre">delete</span></code>, weil die Kompression den
+zusätzlichen Platzbedarf weitgehend auffängt.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warnung</p>
 <p>Die Löschung erfolgt partitionsweise für alle Items gemeinsam, nicht garantiert exakt
@@ -7110,6 +7144,52 @@ ohne eigenes <code class="docutils literal notranslate"><span class="pre">databa
 entfernt werden.</p>
 <p>Einmal entfernte Rohdaten sind unwiderruflich verloren.</p>
 </div>
+<section id="abgleich-mit-dem-zustand-der-datenbank-beim-start">
+<h4>Abgleich mit dem Zustand der Datenbank beim Start<a class="headerlink" href="#abgleich-mit-dem-zustand-der-datenbank-beim-start" title="Link to this heading"></a></h4>
+<p>Die Aufbewahrungsregel ist ein Hintergrund-Job des Datenbank-Servers: er läuft unabhängig davon,
+ob SmartHomeNG läuft, und wird durch das Beenden von SmartHomeNG <strong>nicht</strong> gestoppt. Weil die
+Einstellungen in der <code class="docutils literal notranslate"><span class="pre">plugin.yaml</span></code> vom tatsächlichen Zustand der Datenbank abweichen können
+(z.B. bei Änderungen, während SmartHomeNG gestoppt war), vergleicht das Plugin bei jedem Start
+den tatsächlichen Zustand mit der Konfiguration und greift in folgenden Fällen ein (jeweils mit
+einer Meldung auf CRITICAL-Ebene im Log):</p>
+<ul class="simple">
+<li><p>Aufbewahrung ist aktiv und konfiguriert, <code class="docutils literal notranslate"><span class="pre">timescale_native_aggregation</span></code> ist aber <code class="docutils literal notranslate"><span class="pre">false</span></code>:
+das Plugin arbeitet in diesem Lauf trotzdem im nativen Modus (nur im Speicher, die
+<code class="docutils literal notranslate"><span class="pre">plugin.yaml</span></code> wird nicht verändert), weil die Kompaktierung des Plugins mit dem Entfernen der
+Partitionen kollidieren würde.</p></li>
+<li><p>Aufbewahrung ist aktiv, aber <code class="docutils literal notranslate"><span class="pre">timescale_native_retention</span></code> ist <code class="docutils literal notranslate"><span class="pre">false</span></code>: das Plugin entfernt
+die Aufbewahrungsregel. Bereits gelöschte Rohdaten kommen dadurch nicht zurück. Lässt sich die
+Regel nicht entfernen, gilt wie im ersten Fall der native Modus für diesen Lauf.</p></li>
+<li><p>Aufbewahrung ist nicht aktiv, <code class="docutils literal notranslate"><span class="pre">timescale_native_retention</span></code> ist <code class="docutils literal notranslate"><span class="pre">true</span></code>, aber
+<code class="docutils literal notranslate"><span class="pre">timescale_native_aggregation</span></code> ist <code class="docutils literal notranslate"><span class="pre">false</span></code>: die Aufbewahrung wird in diesem Lauf nicht
+aktiviert.</p></li>
+</ul>
+<p>Um die Meldung dauerhaft zu beseitigen, sollte die Konfiguration in der <code class="docutils literal notranslate"><span class="pre">plugin.yaml</span></code> an den
+tatsächlichen Zustand angepasst werden.</p>
+</section>
+</section>
+<section id="daten-zwischen-datenbanken-migrieren">
+<h3>Daten zwischen Datenbanken migrieren<a class="headerlink" href="#daten-zwischen-datenbanken-migrieren" title="Link to this heading"></a></h3>
+<p id="index-15"><span id="index-14"></span>Mit dem Werkzeug <code class="docutils literal notranslate"><span class="pre">tools/db_migrate.py</span></code> (im SmartHomeNG-Basisverzeichnis) lassen sich Items und
+Log-Daten zwischen zwei beliebigen der unterstützten Datenbanken (SQLite3, MySQL/MariaDB,
+PostgreSQL+TimescaleDB) in beide Richtungen übertragen. SmartHomeNG muss dafür gestoppt sein.</p>
+<p>Quelle und Ziel werden entweder über den Namen einer Plugin-Instanz aus der <code class="docutils literal notranslate"><span class="pre">etc/plugin.yaml</span></code>
+(<code class="docutils literal notranslate"><span class="pre">--source-instance</span></code> / <code class="docutils literal notranslate"><span class="pre">--dest-instance</span></code>) oder direkt über Treiber und Verbindungsdaten
+angegeben (<code class="docutils literal notranslate"><span class="pre">--source-driver</span></code>/<code class="docutils literal notranslate"><span class="pre">--source-connect</span></code> bzw. <code class="docutils literal notranslate"><span class="pre">--dest-...</span></code>); mit <code class="docutils literal notranslate"><span class="pre">--interactive</span></code>
+wird nach fehlenden Angaben gefragt. Passwörter werden bei Bedarf abgefragt. <code class="docutils literal notranslate"><span class="pre">--dry-run</span></code> zeigt
+nur, was passieren würde. Eine unterbrochene Migration kann beliebig oft erneut gestartet werden:
+sie setzt je Item an der zuletzt übertragenen Zeile fort, <code class="docutils literal notranslate"><span class="pre">--force</span> <span class="pre">&lt;Item...&gt;</span></code> löscht und
+überträgt einzelne Items vollständig neu.
+Nach der Übertragung werden die Zeilenzahlen je Item verglichen. Quelle und Ziel dürfen nicht
+dieselbe Datenbank samt Tabellenpräfix sein.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warnung</p>
+<p>Übertragen werden nur die Rohdaten der <code class="docutils literal notranslate"><span class="pre">log</span></code>-Tabelle. Hat die Quelle Continuous Aggregates
+(<code class="docutils literal notranslate"><span class="pre">timescale_native_aggregation</span></code>), bricht das Werkzeug ab, weil dort möglicherweise bereits
+Rohdaten entfernt wurden und die Migration unvollständig wäre; mit <code class="docutils literal notranslate"><span class="pre">--force</span> <span class="pre">&lt;Item...&gt;</span></code>
+kann das bewusst übergangen werden.</p>
+</div>
+<p>Alle Optionen zeigt <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">tools/db_migrate.py</span> <span class="pre">--help</span></code>.</p>
 </section>
 </section>
 <section id="web-interface">

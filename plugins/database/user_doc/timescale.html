@@ -530,6 +530,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../user_doc.html#hypertable-und-zeitpartitionen">Hypertable und Zeitpartitionen</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../user_doc.html#kompression">Kompression</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../user_doc.html#native-aggregation-und-retention">Native Aggregation und Retention</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../user_doc.html#daten-zwischen-datenbanken-migrieren">Daten zwischen Datenbanken migrieren</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../user_doc.html#web-interface">Web Interface</a><ul>
@@ -2911,6 +2912,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../user_doc.html#hypertable-und-zeitpartitionen">Hypertable und Zeitpartitionen</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../user_doc.html#kompression">Kompression</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../user_doc.html#native-aggregation-und-retention">Native Aggregation und Retention</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../user_doc.html#daten-zwischen-datenbanken-migrieren">Daten zwischen Datenbanken migrieren</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../user_doc.html#web-interface">Web Interface</a><ul>
@@ -6719,19 +6721,17 @@ TimescaleDB-Zusatzfunktionen.</p>
 <h2>TimescaleDB Erweiterung installieren<a class="headerlink" href="#timescaledb-erweiterung-installieren" title="Link to this heading"></a></h2>
 <div class="admonition important">
 <p class="admonition-title">Wichtig</p>
-<p>Die TimescaleDB Paketquelle veröffentlicht (Stand: Erstellung dieser Anleitung) Pakete nur bis
-einschließlich Debian bookworm (12), noch nicht für trixie (13).</p>
-<p>Bis eine offizielle trixie-Unterstützung existiert, kann die bookworm-Paketquelle genutzt
-werden - die Pakete sind gegen die jeweilige PostgreSQL-Hauptversion gebaut, nicht fest an eine
-Debian-Version gebunden. Dies ist ein inoffizieller Workaround, keine von TimescaleDB offiziell
-unterstützte Konfiguration. Vor der praktischen Nutzung sollte auf
-<a class="reference external" href="https://www.tigerdata.com/docs/get-started/choose-your-path/install-timescaledb">der offiziellen Installationsseite</a>
-geprüft werden, ob sich daran etwas geändert hat.</p>
+<p>Die TimescaleDB Paketquelle enthält Pakete für Debian bookworm (12) und trixie (13), jeweils für
+amd64 und arm64 (geprüft am 06.10.2026 anhand des Paketindex der Paketquelle; für
+<code class="docutils literal notranslate"><span class="pre">timescaledb-2-postgresql-17</span></code> unter trixie z.B. Version 2.30.2).</p>
+<p>Als Distributions-Name muss die Debian-Bezeichnung eingetragen werden. Auf Derivaten wie Devuan
+(excalibur entspricht Debian trixie) kennt die Paketquelle den von <code class="docutils literal notranslate"><span class="pre">lsb_release</span></code> gelieferten
+Namen nicht - dort also <code class="docutils literal notranslate"><span class="pre">trixie</span></code> verwenden, nicht den Namen der eigenen Distribution.</p>
 </div>
-<p>Einrichtung der Paketquelle (mit explizit gesetztem <code class="docutils literal notranslate"><span class="pre">bookworm</span></code> statt der über <code class="docutils literal notranslate"><span class="pre">lsb_release</span></code>
-ermittelten Debian-Kennung, siehe Hinweis oben):</p>
+<p>Einrichtung der Paketquelle (hier für Debian trixie bzw. Devuan excalibur; für Debian bookworm
+<code class="docutils literal notranslate"><span class="pre">trixie</span></code> durch <code class="docutils literal notranslate"><span class="pre">bookworm</span></code> ersetzen):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>gnupg<span class="w"> </span>postgresql-common<span class="w"> </span>apt-transport-https<span class="w"> </span>lsb-release<span class="w"> </span>wget
-<span class="nb">echo</span><span class="w"> </span><span class="s2">"deb https://packagecloud.io/timescale/timescaledb/debian/ bookworm main"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/apt/sources.list.d/timescaledb.list
+<span class="nb">echo</span><span class="w"> </span><span class="s2">"deb https://packagecloud.io/timescale/timescaledb/debian/ trixie main"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/apt/sources.list.d/timescaledb.list
 wget<span class="w"> </span>--quiet<span class="w"> </span>-O<span class="w"> </span>-<span class="w"> </span>https://packagecloud.io/timescale/timescaledb/gpgkey<span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>gpg<span class="w"> </span>--dearmor<span class="w"> </span>-o<span class="w"> </span>/etc/apt/trusted.gpg.d/timescaledb.gpg
 sudo<span class="w"> </span>apt-get<span class="w"> </span>update
 </pre></div>
@@ -6743,23 +6743,20 @@ Version anpassen):</p>
 </div>
 <div class="admonition hint">
 <p class="admonition-title">Hinweis</p>
-<p>Weil die TimescaleDB-Pakete gegen bookworm gebaut sind, das System aber ggf. bereits neuere
-Debian-Versionen von <code class="docutils literal notranslate"><span class="pre">postgresql-17</span></code>/<code class="docutils literal notranslate"><span class="pre">libpq5</span></code> installiert hat (oder installieren würde),
-kann <code class="docutils literal notranslate"><span class="pre">apt</span></code> beim einfachen Befehl oben in seltenen Fällen mit nicht auflösbaren Abhängigkeiten
-scheitern, weil der Resolver Pakete unterschiedlicher Debian-Versionen mischen will. In diesem
-Fall hilft es, alle betroffenen Pakete in einem Kommando und mit <code class="docutils literal notranslate"><span class="pre">-t</span></code> explizit auf die eigene
+<p>Scheitert <code class="docutils literal notranslate"><span class="pre">apt</span></code> beim einfachen Befehl oben in seltenen Fällen mit nicht auflösbaren
+Abhängigkeiten, weil der Resolver Pakete unterschiedlicher Debian-Versionen mischen will, hilft
+es, alle betroffenen Pakete in einem Kommando und mit <code class="docutils literal notranslate"><span class="pre">-t</span></code> explizit auf die eigene
 Paketquelle (z.B. <code class="docutils literal notranslate"><span class="pre">trixie</span></code>) festgelegt zu installieren:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>-t<span class="w"> </span>trixie<span class="w"> </span>postgresql-17<span class="w"> </span>postgresql-client-17<span class="w"> </span>libpq5<span class="w"> </span>timescaledb-2-postgresql-17
 </pre></div>
 </div>
-<p>Ein solcher Konflikt wurde auf Devuan excalibur (dem trixie-Gegenstück von Devuan) beobachtet
-und dort mit <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">excalibur-security</span></code> statt <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">trixie</span></code> behoben. Auf einem frisch
-aufgesetzten, echten Debian trixie (getestet in einem Container, arm64) trat der Konflikt
-dagegen <strong>nicht</strong> auf - der einfache Befehl oben installierte dort ohne Probleme. Ob der
-Konflikt auftritt, scheint also vom bereits vorhandenen Systemzustand abzuhängen (z.B. weitere
-aktive Paketquellen, bereits vorgenommene Teil-Upgrades). Zuerst den einfachen Befehl
-versuchen, bei einer Fehlermeldung zu nicht auflösbaren Abhängigkeiten auf den <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">trixie</span></code>
-Befehl ausweichen; sollte das nicht ausreichen, probeweise <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">trixie-security</span></code> verwenden.</p>
+<p>Ein solcher Konflikt wurde mit der früher hier beschriebenen bookworm-Paketquelle auf Devuan
+excalibur beobachtet und dort mit <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">excalibur-security</span></code> statt <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">trixie</span></code> behoben; auf
+einem frisch aufgesetzten Debian trixie (Container, arm64) trat er nicht auf. Ob er auftritt,
+hängt offenbar vom vorhandenen Systemzustand ab (weitere aktive Paketquellen, bereits
+vorgenommene Teil-Upgrades). Zuerst den einfachen Befehl versuchen, bei einer Fehlermeldung zu
+nicht auflösbaren Abhängigkeiten auf den <code class="docutils literal notranslate"><span class="pre">-t</span></code>-Befehl ausweichen; sollte das nicht ausreichen,
+probeweise <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">trixie-security</span></code> verwenden.</p>
 </div>
 <p>Anschließend passt <code class="docutils literal notranslate"><span class="pre">timescaledb-tune</span></code> die PostgreSQL-Konfiguration automatisch an die vorhandene
 Hardware an (Arbeitsspeicher etc.) und der Server wird neu gestartet:</p>
