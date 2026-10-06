@@ -1376,6 +1376,7 @@
 </li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">tasmota</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#konfiguration">Konfiguration</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#datenlucken-bei-ausfall-eines-devices">Datenlücken bei Ausfall eines Devices</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#bekannte-tasmota-attribute">Bekannte tasmota-Attribute</a></li>
 </ul>
 </li>
@@ -1432,6 +1433,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../zigbee2mqtt/user_doc.html">zigbee2mqtt</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../zigbee2mqtt/user_doc.html#konfiguration">Konfiguration</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../zigbee2mqtt/user_doc.html#konfiguration-von-items">Konfiguration von Items</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../zigbee2mqtt/user_doc.html#datenlucken-bei-ausfall-des-gateways">Datenlücken bei Ausfall des Gateways</a></li>
 </ul>
 </li>
 </ul>
@@ -4435,6 +4437,7 @@
 </li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">tasmota</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#konfiguration">Konfiguration</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#datenlucken-bei-ausfall-eines-devices">Datenlücken bei Ausfall eines Devices</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#bekannte-tasmota-attribute">Bekannte tasmota-Attribute</a></li>
 </ul>
 </li>
@@ -4724,6 +4727,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../zigbee2mqtt/user_doc.html">zigbee2mqtt</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../zigbee2mqtt/user_doc.html#konfiguration">Konfiguration</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../zigbee2mqtt/user_doc.html#konfiguration-von-items">Konfiguration von Items</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../zigbee2mqtt/user_doc.html#datenlucken-bei-ausfall-des-gateways">Datenlücken bei Ausfall des Gateways</a></li>
 </ul>
 </li>
 </ul>
@@ -6796,6 +6800,24 @@ Siehe hierzu: <a class="reference external" href="https://tasmota.github.io/docs
 </pre></div>
 </div>
 <p>Vollständige Informationen zur Konfiguration und die Beschreibung der Item-Attribute sind unter <strong>plugin.yaml</strong> zu finden.</p>
+<section id="datenlucken-bei-ausfall-eines-devices">
+<h3>Datenlücken bei Ausfall eines Devices<a class="headerlink" href="#datenlucken-bei-ausfall-eines-devices" title="Link to this heading"></a></h3>
+<p>Items, die das <code class="docutils literal notranslate"><span class="pre">database</span></code>-Plugin loggt, können bei Ausfall eines Devices im Datenbank-Log als ungültig markiert werden
+(Datenlücke, der Item-Wert bleibt unverändert). Die Lücke endet mit dem nächsten vom Device gelieferten Wert. Das ist
+standardmäßig aus und wird über Plugin-Parameter aktiviert:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">invalidate_on_disconnect</span></code>: Das Device meldet per LWT „Offline“. Ein beim Start wiederholtes (retained) „Offline“
+löst nichts aus.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">invalidate_on_timeout</span></code>: Das Device hat länger als <code class="docutils literal notranslate"><span class="pre">invalidate_timeout_factor</span></code> * <code class="docutils literal notranslate"><span class="pre">telemetry_period</span></code> keine
+Nachricht gesendet. Das erfasst auch Geräte, deren LWT nicht ankommt (z.B. Ausfall des Brokers). Es setzt voraus,
+dass das Device Telemetrie in <code class="docutils literal notranslate"><span class="pre">telemetry_period</span></code> sendet; das Plugin stellt das auf den Devices ein. Für Devices,
+die das nicht tun, kann die Timeout-Invalidierung pro Item mit <code class="docutils literal notranslate"><span class="pre">tasmota_invalidate_on_timeout:</span> <span class="pre">false</span></code> ausgeschaltet
+werden (oder bei Plugin-Standard „aus“ mit <code class="docutils literal notranslate"><span class="pre">true</span></code> für einzelne Items eingeschaltet).</p></li>
+</ul>
+</div></blockquote>
+<p>Nicht markiert werden das <code class="docutils literal notranslate"><span class="pre">online</span></code>-Item sowie Ereignis-Items (<code class="docutils literal notranslate"><span class="pre">button</span></code>, <code class="docutils literal notranslate"><span class="pre">rf_key</span></code>).</p>
+</section>
 <section id="bekannte-tasmota-attribute">
 <h3>Bekannte tasmota-Attribute<a class="headerlink" href="#bekannte-tasmota-attribute" title="Link to this heading"></a></h3>
 <p>Die folgenden Attribute (Werte für das Item-Attribut <code class="docutils literal notranslate"><span class="pre">tasmota-attr</span></code>) sind bisher bekannt und unterstützt:</p>

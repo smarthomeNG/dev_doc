@@ -1376,6 +1376,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../tasmota/user_doc.html">tasmota</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../tasmota/user_doc.html#konfiguration">Konfiguration</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../tasmota/user_doc.html#datenlucken-bei-ausfall-eines-devices">Datenlücken bei Ausfall eines Devices</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../tasmota/user_doc.html#bekannte-tasmota-attribute">Bekannte tasmota-Attribute</a></li>
 </ul>
 </li>
@@ -1432,6 +1433,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../zigbee2mqtt/user_doc.html">zigbee2mqtt</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../zigbee2mqtt/user_doc.html#konfiguration">Konfiguration</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../zigbee2mqtt/user_doc.html#konfiguration-von-items">Konfiguration von Items</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../zigbee2mqtt/user_doc.html#datenlucken-bei-ausfall-des-gateways">Datenlücken bei Ausfall des Gateways</a></li>
 </ul>
 </li>
 </ul>
@@ -4435,6 +4437,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../tasmota/user_doc.html">tasmota</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../tasmota/user_doc.html#konfiguration">Konfiguration</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../tasmota/user_doc.html#datenlucken-bei-ausfall-eines-devices">Datenlücken bei Ausfall eines Devices</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../tasmota/user_doc.html#bekannte-tasmota-attribute">Bekannte tasmota-Attribute</a></li>
 </ul>
 </li>
@@ -4724,6 +4727,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../zigbee2mqtt/user_doc.html">zigbee2mqtt</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../zigbee2mqtt/user_doc.html#konfiguration">Konfiguration</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../zigbee2mqtt/user_doc.html#konfiguration-von-items">Konfiguration von Items</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../zigbee2mqtt/user_doc.html#datenlucken-bei-ausfall-des-gateways">Datenlücken bei Ausfall des Gateways</a></li>
 </ul>
 </li>
 </ul>
@@ -6893,6 +6897,20 @@ entsprechenden Devices erfolgen:</p>
 </div>
 <p>Damit werden außer dem Schalter selbst, Unteritems für Leistung, Energieverbrauch und Temperatur
 des Devices (in °C und °F) angelegt.</p>
+</section>
+<section id="datenlucken-bei-ausfall-eines-devices">
+<h2>Datenlücken bei Ausfall eines Devices<a class="headerlink" href="#datenlucken-bei-ausfall-eines-devices" title="Link to this heading"></a></h2>
+<p>Items, die das <code class="docutils literal notranslate"><span class="pre">database</span></code>-Plugin loggt, können im Datenbank-Log als ungültig markiert werden, wenn der Broker ein Device
+als offline meldet (Datenlücke, der Item-Wert bleibt unverändert). Die Lücke endet mit dem nächsten vom Device gelieferten
+Wert. Das ist standardmäßig aus und wird mit dem Plugin-Parameter <code class="docutils literal notranslate"><span class="pre">invalidate_on_disconnect:</span> <span class="pre">true</span></code> aktiviert.</p>
+<ul class="simple">
+<li><p>Ein beim Start wiederholtes (retained) „offline“ löst nichts aus; ebenso nichts bei Devices, deren Announce noch nicht
+empfangen wurde.</p></li>
+<li><p>Das <code class="docutils literal notranslate"><span class="pre">online</span></code>-Item selbst wird nicht markiert.</p></li>
+<li><p>Das Gen2-Ereignis <code class="docutils literal notranslate"><span class="pre">sleep</span></code> (Device schläft) löst keine Markierung aus.</p></li>
+<li><p>Für einzelne Items lässt sich der Plugin-Parameter mit <code class="docutils literal notranslate"><span class="pre">shelly_invalidate_on_disconnect:</span> <span class="pre">false</span></code> (oder <code class="docutils literal notranslate"><span class="pre">true</span></code>)
+überschreiben, z.B. für batteriebetriebene Devices, die ihre Verbindung regulär beenden.</p></li>
+</ul>
 </section>
 <section id="weitere-informationen">
 <h2>weitere Informationen<a class="headerlink" href="#weitere-informationen" title="Link to this heading"></a></h2>

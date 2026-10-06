@@ -1376,6 +1376,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../tasmota/user_doc.html">tasmota</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../tasmota/user_doc.html#konfiguration">Konfiguration</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../tasmota/user_doc.html#datenlucken-bei-ausfall-eines-devices">Datenlücken bei Ausfall eines Devices</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../tasmota/user_doc.html#bekannte-tasmota-attribute">Bekannte tasmota-Attribute</a></li>
 </ul>
 </li>
@@ -1432,6 +1433,7 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">zigbee2mqtt</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#konfiguration">Konfiguration</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#konfiguration-von-items">Konfiguration von Items</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#datenlucken-bei-ausfall-des-gateways">Datenlücken bei Ausfall des Gateways</a></li>
 </ul>
 </li>
 </ul>
@@ -4435,6 +4437,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../tasmota/user_doc.html">tasmota</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../tasmota/user_doc.html#konfiguration">Konfiguration</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../tasmota/user_doc.html#datenlucken-bei-ausfall-eines-devices">Datenlücken bei Ausfall eines Devices</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../tasmota/user_doc.html#bekannte-tasmota-attribute">Bekannte tasmota-Attribute</a></li>
 </ul>
 </li>
@@ -4724,6 +4727,7 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">zigbee2mqtt</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#konfiguration">Konfiguration</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#konfiguration-von-items">Konfiguration von Items</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#datenlucken-bei-ausfall-des-gateways">Datenlücken bei Ausfall des Gateways</a></li>
 </ul>
 </li>
 </ul>
@@ -6775,6 +6779,20 @@ Plugin unterstützt:</p>
 </ul>
 <p>Weitere Tags werden abhängig vom Gerät unterstützt. In den meisten Fällen können
 auch unbekannte Tags bei direkter Konfiguration verwendet werden.</p>
+</section>
+<section id="datenlucken-bei-ausfall-des-gateways">
+<h3>Datenlücken bei Ausfall des Gateways<a class="headerlink" href="#datenlucken-bei-ausfall-des-gateways" title="Link to this heading"></a></h3>
+<p>Items, die das <code class="docutils literal notranslate"><span class="pre">database</span></code>-Plugin loggt, können im Datenbank-Log als ungültig markiert werden, wenn das Gateway über
+<code class="docutils literal notranslate"><span class="pre">&lt;base_topic&gt;/bridge/state</span></code> „offline“ meldet (Datenlücke, der Item-Wert bleibt unverändert). Die Lücke endet mit dem
+nächsten vom Gerät gelieferten Wert. Das ist standardmäßig aus und wird mit dem Plugin-Parameter
+<code class="docutils literal notranslate"><span class="pre">invalidate_on_disconnect:</span> <span class="pre">true</span></code> aktiviert.</p>
+<ul class="simple">
+<li><p>Markiert werden die lesenden Items aller Geräte. Items des Gateways selbst (<code class="docutils literal notranslate"><span class="pre">z2m_topic:</span> <span class="pre">bridge</span></code>) und
+<code class="docutils literal notranslate"><span class="pre">z2m_writeonly</span></code>-Items werden nicht markiert.</p></li>
+<li><p>Ein beim Start wiederholtes (retained) „offline“ löst nichts aus; ebenso nichts, solange das Gateway seit dem Start
+nicht als „online“ gemeldet wurde.</p></li>
+<li><p>Der Ausfall einzelner Geräte (Availability-Topics der Geräte) wird vom Plugin nicht ausgewertet.</p></li>
+</ul>
 </section>
 </section>
 </section>
