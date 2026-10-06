@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.smarthome &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 6. Oktober 2026, commit a57f3f9) Dokumentation</title>
+  <title>lib.smarthome &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 6. Oktober 2026, commit 1d2a5ff) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=966e63c0" />
@@ -17,7 +17,7 @@
       <script src="../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=2f7ab25a"></script>
+      <script src="../../_static/documentation_options.js?v=cc566a04"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/translations.js?v=9bf55d28"></script>
@@ -5292,6 +5292,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.Logs"><code class="docutils literal notranslate"><span class="pre">Logs</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.ShngMemLogHandler"><code class="docutils literal notranslate"><span class="pre">ShngMemLogHandler</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.ShngTimedRotatingFileHandler"><code class="docutils literal notranslate"><span class="pre">ShngTimedRotatingFileHandler</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.debug_logging_config"><code class="docutils literal notranslate"><span class="pre">debug_logging_config()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../lib/metadata.html">lib.metadata</a><ul>
@@ -7158,15 +7159,7 @@
 
         <span class="c1">#############################################################</span>
         <span class="c1"># Test if plugins are installed</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plugins_dir</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s1">'Plugin folder does not exist!'</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Please create folder '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_plugins_dir</span><span class="si">}</span><span class="s2">' and install plugins."</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s1">'Aborting'</span><span class="p">)</span>
-            <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plugins_dir</span><span class="p">,</span> <span class="s1">'database'</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No plugins found in folder '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_plugins_dir</span><span class="si">}</span><span class="s2">'. Please install plugins."</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s1">'Aborting'</span><span class="p">)</span>
-            <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_plugins_installed</span><span class="p">()</span>
 
         <span class="c1">#############################################################</span>
         <span class="c1"># test if needed Python packages for configured plugins</span>
@@ -7455,6 +7448,21 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_dir</span></div>
 
 
+<div class="viewcode-block" id="SmartHome.check_plugins_installed">
+<a class="viewcode-back" href="../../entwicklung/core/core_shng.html#lib.smarthome.SmartHome.check_plugins_installed">[Doku]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_plugins_installed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Check that the plugins folder exists. SmartHomeNG also runs without plugins, so a missing</span>
+<span class="sd">        folder is only reported as a warning.</span>
+
+<span class="sd">        :return: True if the plugins folder exists</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plugins_dir</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No plugins installed: plugins folder '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_plugins_dir</span><span class="si">}</span><span class="s2">' does not exist"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
 <div class="viewcode-block" id="SmartHome.checkConfigFiles">
 <a class="viewcode-back" href="../../entwicklung/core/core_shng.html#lib.smarthome.SmartHome.checkConfigFiles">[Doku]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">checkConfigFiles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -7487,7 +7495,12 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">init_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf_basename</span><span class="o">=</span><span class="s1">''</span><span class="p">,</span> <span class="n">MODE</span><span class="o">=</span><span class="s1">'default'</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This function initiates the logging for SmartHomeNG.</span>
+
+<span class="sd">        In MODE 'debug' (``-d``) the built-in debug configuration is used and ``logging.yaml`` is not read at all.</span>
 <span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">MODE</span> <span class="o">==</span> <span class="s1">'debug'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">configure_debug_logging</span><span class="p">()</span>
+
         <span class="k">if</span> <span class="n">conf_basename</span> <span class="o">==</span> <span class="s1">''</span><span class="p">:</span>
             <span class="n">conf_basename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_conf_basename</span>
         <span class="n">logsetup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logs</span><span class="o">.</span><span class="n">configure_logging</span><span class="p">()</span>
@@ -7503,14 +7516,6 @@
                 <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">'Starting with default logging configuration'</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">MODE</span> <span class="o">==</span> <span class="s1">'interactive'</span><span class="p">:</span>  <span class="c1"># remove default stream handler</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">elif</span> <span class="n">MODE</span> <span class="o">==</span> <span class="s1">'verbose'</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">MODE</span> <span class="o">==</span> <span class="s1">'debug'</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">MODE</span> <span class="o">==</span> <span class="s1">'quiet'</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">logsetup</span></div>
 
 

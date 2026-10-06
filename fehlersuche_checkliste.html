@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Checkliste für die Fehlersuche &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 6. Oktober 2026, commit a57f3f9) Dokumentation</title>
+  <title>Checkliste für die Fehlersuche &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 6. Oktober 2026, commit 1d2a5ff) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/custom.css?v=966e63c0" />
@@ -18,7 +18,7 @@
       <script src="_static/search_scorer.js?v=811695eb"></script>
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=2f7ab25a"></script>
+      <script src="_static/documentation_options.js?v=cc566a04"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/translations.js?v=9bf55d28"></script>
@@ -5295,6 +5295,7 @@
 <li class="toctree-l5"><a class="reference internal" href="lib/log.html#lib.log.Logs"><code class="docutils literal notranslate"><span class="pre">Logs</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="lib/log.html#lib.log.ShngMemLogHandler"><code class="docutils literal notranslate"><span class="pre">ShngMemLogHandler</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="lib/log.html#lib.log.ShngTimedRotatingFileHandler"><code class="docutils literal notranslate"><span class="pre">ShngTimedRotatingFileHandler</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="lib/log.html#lib.log.debug_logging_config"><code class="docutils literal notranslate"><span class="pre">debug_logging_config()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="lib/metadata.html">lib.metadata</a><ul>
@@ -6727,12 +6728,17 @@ beendet werden. Das geht mit smarthome.py -s oder aber man startet auf der Shell
 <section id="smarthomeng-im-debugmodus-starten">
 <span id="index-2"></span><h2>SmartHomeNG im Debugmodus starten<a class="headerlink" href="#smarthomeng-im-debugmodus-starten" title="Link to this heading"></a></h2>
 <p>Eine einfache Möglichkeit Logeinträge bis zum Level DEBUG zu erhalten, ist es SmartHomeNG im Debug Modus zu starten.
-Allerdings werden dabei aus allen Komponenten und Plugins die Logausgaben bis zum Level DEBUG erweitert. Dieses führt
-zu einer sehr großen Anzahl von Log Einträgen und ist deshalb recht unübersichtlich.</p>
+Dabei wird <code class="docutils literal notranslate"><span class="pre">logging.yaml</span></code> komplett ignoriert und eine eingebaute Logging-Konfiguration verwendet. Das hilft auch,
+wenn <code class="docutils literal notranslate"><span class="pre">logging.yaml</span></code> fehlerhaft ist. Alle Logger von SmartHomeNG (Core, Module, Plugins, Logiken, Items und Funktionen)
+loggen dabei auf Level DEBUG, alle anderen Logger (z.B. von Python-Paketen) auf Level INFO. Die Ausgaben erfolgen auf
+der Konsole und in der Datei <code class="docutils literal notranslate"><span class="pre">var/log/smarthome-debug.log</span></code>. Dieses führt zu einer sehr großen Anzahl von Log
+Einträgen und ist deshalb recht unübersichtlich.</p>
 <div class="admonition note">
 <p class="admonition-title">Bemerkung</p>
-<p>Vorzuziehen ist eine gezielte Aktivierung der DBUG Ausgaben für einzelne Komponenten oder Plugins. Dieses geschieht
+<p>Vorzuziehen ist eine gezielte Aktivierung der DEBUG Ausgaben für einzelne Komponenten oder Plugins. Dieses geschieht
 über die Logging Konfiguration in <code class="docutils literal notranslate"><span class="pre">/etc/logging.yaml</span></code> bzw. über die GUI des Admin Interfaces.</p>
+<p>Im Debug Modus werden Änderungen an der Logging Konfiguration im Admin Interface zwar gespeichert, aber weder
+angewendet noch geprüft. Sie wirken erst nach einem Neustart ohne <code class="docutils literal notranslate"><span class="pre">-d</span></code>.</p>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">smarthome</span><span class="o">/</span><span class="nb">bin</span>
 <span class="n">python3</span> <span class="n">smarthome</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">d</span>

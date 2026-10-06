@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.log &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 6. Oktober 2026, commit a57f3f9) Dokumentation</title>
+  <title>lib.log &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 6. Oktober 2026, commit 1d2a5ff) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=966e63c0" />
@@ -17,7 +17,7 @@
       <script src="../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=2f7ab25a"></script>
+      <script src="../../_static/documentation_options.js?v=cc566a04"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/translations.js?v=9bf55d28"></script>
@@ -5292,6 +5292,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.Logs"><code class="docutils literal notranslate"><span class="pre">Logs</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.ShngMemLogHandler"><code class="docutils literal notranslate"><span class="pre">ShngMemLogHandler</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.ShngTimedRotatingFileHandler"><code class="docutils literal notranslate"><span class="pre">ShngTimedRotatingFileHandler</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.debug_logging_config"><code class="docutils literal notranslate"><span class="pre">debug_logging_config()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../lib/metadata.html">lib.metadata</a><ul>
@@ -6710,6 +6711,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">babel.dates</span><span class="w"> </span><span class="kn">import</span> <span class="n">format_datetime</span><span class="p">,</span> <span class="n">get_timezone_name</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
 
@@ -6718,6 +6720,57 @@
 
 <span class="n">logs_instance</span> <span class="o">=</span> <span class="kc">None</span>
 
+<span class="n">DEBUG_LOGFILE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">'.'</span><span class="p">,</span> <span class="n">DIR_VAR</span><span class="p">,</span> <span class="s1">'log'</span><span class="p">,</span> <span class="s1">'smarthome-debug.log'</span><span class="p">)</span>
+
+<span class="c1"># Logger families of SmartHomeNG itself (as defined in the default logging.yaml)</span>
+<span class="n">SHNG_LOGGER_FAMILIES</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'functions'</span><span class="p">,</span> <span class="s1">'lib'</span><span class="p">,</span> <span class="s1">'lib.smarthome'</span><span class="p">,</span> <span class="s1">'modules'</span><span class="p">,</span> <span class="s1">'plugins'</span><span class="p">,</span> <span class="s1">'logics'</span><span class="p">,</span> <span class="s1">'items'</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="debug_logging_config">
+<a class="viewcode-back" href="../../lib/log.html#lib.log.debug_logging_config">[Doku]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">debug_logging_config</span><span class="p">(</span><span class="n">logfile</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">DEBUG_LOGFILE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Build the built-in logging configuration used by ``smarthome.py -d``.</span>
+
+<span class="sd">    It does not depend on ``logging.yaml``: all SmartHomeNG loggers (see ``SHNG_LOGGER_FAMILIES``)</span>
+<span class="sd">    log at DEBUG, all other loggers (third-party packages) at INFO. Everything goes to stdout and</span>
+<span class="sd">    to ``logfile``.</span>
+
+<span class="sd">    :param logfile: Path of the debug logfile</span>
+<span class="sd">    :return: configuration dict for ``logging.config.dictConfig``</span>
+<span class="sd">    """</span>
+    <span class="n">handler_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'shng_debug_console'</span><span class="p">,</span> <span class="s1">'shng_debug_file'</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">'version'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s1">'disable_existing_loggers'</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s1">'formatters'</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">'shng_debug'</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">'format'</span><span class="p">:</span> <span class="s1">'</span><span class="si">%(asctime)s</span><span class="s1"> </span><span class="si">%(levelname)-8s</span><span class="s1"> </span><span class="si">%(name)-19s</span><span class="s1"> </span><span class="si">%(funcName)-25s</span><span class="s1"> ln:</span><span class="si">%(lineno)-4d</span><span class="s1"> </span><span class="si">%(message)s</span><span class="s1">  ----  </span><span class="si">%(threadName)-12s</span><span class="s1">'</span><span class="p">,</span>
+                <span class="s1">'datefmt'</span><span class="p">:</span> <span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S'</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="s1">'handlers'</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">'shng_debug_console'</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">'class'</span><span class="p">:</span> <span class="s1">'logging.StreamHandler'</span><span class="p">,</span>
+                <span class="s1">'formatter'</span><span class="p">:</span> <span class="s1">'shng_debug'</span><span class="p">,</span>
+                <span class="s1">'level'</span><span class="p">:</span> <span class="s1">'DEBUG'</span><span class="p">,</span>
+                <span class="s1">'stream'</span><span class="p">:</span> <span class="s1">'ext://sys.stdout'</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s1">'shng_debug_file'</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">'()'</span><span class="p">:</span> <span class="s1">'lib.log.ShngTimedRotatingFileHandler'</span><span class="p">,</span>
+                <span class="s1">'formatter'</span><span class="p">:</span> <span class="s1">'shng_debug'</span><span class="p">,</span>
+                <span class="s1">'level'</span><span class="p">:</span> <span class="s1">'DEBUG'</span><span class="p">,</span>
+                <span class="s1">'when'</span><span class="p">:</span> <span class="s1">'midnight'</span><span class="p">,</span>
+                <span class="s1">'backupCount'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="s1">'filename'</span><span class="p">:</span> <span class="n">logfile</span><span class="p">,</span>
+                <span class="s1">'encoding'</span><span class="p">:</span> <span class="s1">'utf8'</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">},</span>
+        <span class="s1">'loggers'</span><span class="p">:</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="p">{</span><span class="s1">'level'</span><span class="p">:</span> <span class="s1">'DEBUG'</span><span class="p">}</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">SHNG_LOGGER_FAMILIES</span><span class="p">},</span>
+        <span class="s1">'root'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'level'</span><span class="p">:</span> <span class="s1">'INFO'</span><span class="p">,</span> <span class="s1">'handlers'</span><span class="p">:</span> <span class="n">handler_names</span><span class="p">},</span>
+    <span class="p">}</span></div>
+
+
 
 <div class="viewcode-block" id="Logs">
 <a class="viewcode-back" href="../../lib/log.html#lib.log.Logs">[Doku]</a>
@@ -6725,6 +6778,9 @@
     <span class="n">_logs</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">logging_levels</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">root_handler_name</span> <span class="o">=</span> <span class="s1">''</span>
+
+    <span class="c1">#: False while the built-in debug configuration (``-d``) is active instead of ``logging.yaml``</span>
+    <span class="n">uses_logging_yaml</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="n">NOTICE_level</span> <span class="o">=</span> <span class="mi">29</span>
     <span class="n">DBGHIGH_level</span> <span class="o">=</span> <span class="mi">13</span>
@@ -6748,19 +6804,42 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span> <span class="o">=</span> <span class="n">sh</span>
         <span class="k">return</span>
 
+<div class="viewcode-block" id="Logs.configure_debug_logging">
+<a class="viewcode-back" href="../../lib/log.html#lib.log.Logs.configure_debug_logging">[Doku]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_debug_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logfile</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">DEBUG_LOGFILE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Configure logging with the built-in debug configuration instead of ``logging.yaml``.</span>
+
+<span class="sd">        See :func:`debug_logging_config`. The directory of ``logfile`` is created if missing.</span>
+
+<span class="sd">        :param logfile: Path of the debug logfile</span>
+<span class="sd">        :return: True on success</span>
+<span class="sd">        """</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">logfile</span><span class="p">)),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">configure_logging</span><span class="p">(</span><span class="n">config_dict</span><span class="o">=</span><span class="n">debug_logging_config</span><span class="p">(</span><span class="n">logfile</span><span class="p">))</span></div>
+
+
 <div class="viewcode-block" id="Logs.configure_logging">
 <a class="viewcode-back" href="../../lib/log.html#lib.log.Logs.configure_logging">[Doku]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">configure_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_filename</span><span class="o">=</span><span class="s1">''</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_filename</span><span class="o">=</span><span class="s1">''</span><span class="p">,</span> <span class="n">config_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Configure logging from ``logging.yaml`` (or ``config_filename``), or from ``config_dict`` if given.</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">config_filename</span><span class="p">:</span>
-            <span class="n">config_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_config_file</span><span class="p">(</span><span class="n">BASE_LOG</span><span class="p">)</span>
-        <span class="n">config_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_logging_config</span><span class="p">(</span><span class="n">config_filename</span><span class="p">,</span> <span class="n">ignore_notfound</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
+<span class="sd">        :param config_filename: Name of the logging configuration file; ignored if ``config_dict`` is given</span>
+<span class="sd">        :param config_dict: Ready-made ``dictConfig`` dict that replaces the configuration file</span>
+<span class="sd">        :return: True on success, the exception if ``dictConfig`` failed</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uses_logging_yaml</span> <span class="o">=</span> <span class="n">config_dict</span> <span class="ow">is</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">config_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">()</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"ERROR: Invalid logging configuration in file '</span><span class="si">{</span><span class="n">config_filename</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">()</span>
-            <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">config_filename</span><span class="p">:</span>
+                <span class="n">config_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_config_file</span><span class="p">(</span><span class="n">BASE_LOG</span><span class="p">)</span>
+            <span class="n">config_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_logging_config</span><span class="p">(</span><span class="n">config_filename</span><span class="p">,</span> <span class="n">ignore_notfound</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">config_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">()</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"ERROR: Invalid logging configuration in file '</span><span class="si">{</span><span class="n">config_filename</span><span class="si">}</span><span class="s2">'"</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">()</span>
+                <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="n">config_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_all_handlers_logger</span><span class="p">(</span><span class="n">config_dict</span><span class="p">)</span>
 
