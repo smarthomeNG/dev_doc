@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.orb &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 6. Oktober 2026, commit 1d2a5ff) Dokumentation</title>
+  <title>lib.orb &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 6. Oktober 2026, commit 15745f6) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=966e63c0" />
@@ -17,7 +17,7 @@
       <script src="../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=cc566a04"></script>
+      <script src="../../_static/documentation_options.js?v=63a94b1c"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/translations.js?v=9bf55d28"></script>
@@ -5358,6 +5358,7 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../lib/orb.html">lib.orb</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/orb.html#lib.orb.Orb"><code class="docutils literal notranslate"><span class="pre">Orb</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/orb.html#lib.orb.resolve_backend"><code class="docutils literal notranslate"><span class="pre">resolve_backend()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/orb.html#lib-orb-backends-update">lib.orb Backends <span class="greensup">Update</span></a></li>
 </ul>
 </li>
@@ -5984,6 +5985,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../lib/orb.html#lib.orb.Orb.utc_to_local"><code class="docutils literal notranslate"><span class="pre">Orb.utc_to_local()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../../lib/orb.html#lib.orb.resolve_backend"><code class="docutils literal notranslate"><span class="pre">resolve_backend()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../lib/orb.html#lib-orb-backends-update">lib.orb Backends <span class="greensup">Update</span></a></li>
 </ul>
 </li>
@@ -7217,6 +7219,40 @@
 <span class="k">if</span> <span class="n">Loader</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">_BACKENDS</span><span class="p">[</span><span class="s1">'skyfield'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_SkyfieldBackend</span>
     <span class="n">_BACKENDS</span><span class="p">[</span><span class="s1">'skyfield-cached'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_SkyfieldCachedBackend</span>
+
+
+<span class="n">_FALLBACK_ORDER</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'ephem'</span><span class="p">,</span> <span class="s1">'skyfield'</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="resolve_backend">
+<a class="viewcode-back" href="../../lib/orb.html#lib.orb.resolve_backend">[Doku]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">resolve_backend</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Map a configured backend name to one that is registered in ``_BACKENDS``.</span>
+
+<span class="sd">    A configured backend that is registered is always returned unchanged, even if its</span>
+<span class="sd">    data still has to be fetched on first use. A backend that is not registered</span>
+<span class="sd">    (package not installed, or unknown name) is replaced by the first registered one</span>
+<span class="sd">    of ``_FALLBACK_ORDER``, with a warning.</span>
+
+<span class="sd">    :param name: backend name from the configuration</span>
+<span class="sd">    :return: name of a registered backend, or None if no backend is available at all</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">_BACKENDS</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">name</span>
+    <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'skyfield'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">Loader</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">reason</span> <span class="o">=</span> <span class="s2">"skyfield is not installed (run 'tools/fetch_skyfield_data.py' once to install it)"</span>
+    <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">'ephem'</span><span class="p">:</span>
+        <span class="n">reason</span> <span class="o">=</span> <span class="s1">'ephem is not installed'</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">reason</span> <span class="o">=</span> <span class="s1">'unknown backend'</span>
+    <span class="k">for</span> <span class="n">fallback</span> <span class="ow">in</span> <span class="n">_FALLBACK_ORDER</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">fallback</span> <span class="ow">in</span> <span class="n">_BACKENDS</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Ephemeris backend '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">' not usable: </span><span class="si">{</span><span class="n">reason</span><span class="si">}</span><span class="s2">. Falling back to '</span><span class="si">{</span><span class="n">fallback</span><span class="si">}</span><span class="s2">'."</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">fallback</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Ephemeris backend '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">' not usable: </span><span class="si">{</span><span class="n">reason</span><span class="si">}</span><span class="s2">, and no other backend is installed."</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
 
 
 <div class="viewcode-block" id="Orb">

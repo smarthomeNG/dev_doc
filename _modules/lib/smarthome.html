@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.smarthome &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 6. Oktober 2026, commit 1d2a5ff) Dokumentation</title>
+  <title>lib.smarthome &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 6. Oktober 2026, commit 15745f6) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=966e63c0" />
@@ -17,7 +17,7 @@
       <script src="../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=cc566a04"></script>
+      <script src="../../_static/documentation_options.js?v=63a94b1c"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/translations.js?v=9bf55d28"></script>
@@ -5358,6 +5358,7 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../lib/orb.html">lib.orb</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/orb.html#lib.orb.Orb"><code class="docutils literal notranslate"><span class="pre">Orb</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/orb.html#lib.orb.resolve_backend"><code class="docutils literal notranslate"><span class="pre">resolve_backend()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/orb.html#lib-orb-backends-update">lib.orb Backends <span class="greensup">Update</span></a></li>
 </ul>
 </li>
@@ -5984,6 +5985,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../lib/orb.html#lib.orb.Orb.utc_to_local"><code class="docutils literal notranslate"><span class="pre">Orb.utc_to_local()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../../lib/orb.html#lib.orb.resolve_backend"><code class="docutils literal notranslate"><span class="pre">resolve_backend()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../lib/orb.html#lib-orb-backends-update">lib.orb Backends <span class="greensup">Update</span></a></li>
 </ul>
 </li>
@@ -7260,21 +7262,15 @@
 
         <span class="c1"># orb_backend: which ephemeris library lib.orb.Orb uses ('ephem' or 'skyfield').</span>
         <span class="c1"># Default set in initialize_vars(), overridden by smarthome.yaml if present.</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orb_backend</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lib</span><span class="o">.</span><span class="n">orb</span><span class="o">.</span><span class="n">_BACKENDS</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orb_backend</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'skyfield'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">lib</span><span class="o">.</span><span class="n">orb</span><span class="o">.</span><span class="n">Loader</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"Could not find/use ephemeris backend '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_orb_backend</span><span class="si">}</span><span class="s2">' - skyfield is not installed. "</span>
-                    <span class="sa">f</span><span class="s2">"Run 'tools/fetch_skyfield_data.py' once to install it."</span>
-                <span class="p">)</span>
+        <span class="n">orb_backend</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">orb</span><span class="o">.</span><span class="n">resolve_backend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_orb_backend</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">orb_backend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'_lon'</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'_lat'</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'No latitude/longitude specified =&gt; you could not use the sun and moon object.'</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Could not find/use ephemeris backend '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_orb_backend</span><span class="si">}</span><span class="s2">'!"</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'_lon'</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'_lat'</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'No latitude/longitude specified =&gt; you could not use the sun and moon object.'</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sun</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">orb</span><span class="o">.</span><span class="n">Orb</span><span class="p">(</span>
-                <span class="s1">'sun'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elev</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sun_neverup_delta</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_orb_backend</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">moon</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">orb</span><span class="o">.</span><span class="n">Orb</span><span class="p">(</span><span class="s1">'moon'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elev</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_orb_backend</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sun</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">orb</span><span class="o">.</span><span class="n">Orb</span><span class="p">(</span>
+                    <span class="s1">'sun'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elev</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sun_neverup_delta</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">orb_backend</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">moon</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">orb</span><span class="o">.</span><span class="n">Orb</span><span class="p">(</span><span class="s1">'moon'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elev</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">orb_backend</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">lat</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>

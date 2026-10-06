@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.orb &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 6. Oktober 2026, commit 1d2a5ff) Dokumentation</title>
+  <title>lib.orb &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 6. Oktober 2026, commit 15745f6) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=966e63c0" />
@@ -18,7 +18,7 @@
       <script src="../_static/search_scorer.js?v=811695eb"></script>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=cc566a04"></script>
+      <script src="../_static/documentation_options.js?v=63a94b1c"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/translations.js?v=9bf55d28"></script>
@@ -5361,6 +5361,7 @@
 </li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">lib.orb</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#lib.orb.Orb"><code class="docutils literal notranslate"><span class="pre">Orb</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#lib.orb.resolve_backend"><code class="docutils literal notranslate"><span class="pre">resolve_backend()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib-orb-backends-update">lib.orb Backends <span class="greensup">Update</span></a></li>
 </ul>
 </li>
@@ -5987,6 +5988,7 @@
 <li class="toctree-l5"><a class="reference internal" href="#lib.orb.Orb.utc_to_local"><code class="docutils literal notranslate"><span class="pre">Orb.utc_to_local()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="#lib.orb.resolve_backend"><code class="docutils literal notranslate"><span class="pre">resolve_backend()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#lib-orb-backends-update">lib.orb Backends <span class="greensup">Update</span></a></li>
 </ul>
 </li>
@@ -6822,6 +6824,27 @@ objects are uniquely created to prevent errors in computation.</p>
 
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="lib.orb.resolve_backend">
+<span class="sig-prename descclassname"><span class="pre">lib.orb.</span></span><span class="sig-name descname"><span class="pre">resolve_backend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/orb.html#resolve_backend"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.orb.resolve_backend" title="Link to this definition"></a></dt>
+<dd><p>Map a configured backend name to one that is registered in <code class="docutils literal notranslate"><span class="pre">_BACKENDS</span></code>.</p>
+<p>A configured backend that is registered is always returned unchanged, even if its
+data still has to be fetched on first use. A backend that is not registered
+(package not installed, or unknown name) is replaced by the first registered one
+of <code class="docutils literal notranslate"><span class="pre">_FALLBACK_ORDER</span></code>, with a warning.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameter<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – backend name from the configuration</p>
+</dd>
+<dt class="field-even">Rückgabetyp<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+<dt class="field-odd">Rückgabe<span class="colon">:</span></dt>
+<dd class="field-odd"><p>name of a registered backend, or None if no backend is available at all</p>
+</dd>
+</dl>
+</dd></dl>
+
 <section id="lib-orb-backends-update">
 <h2>lib.orb Backends <span class="greensup">Update</span><a class="headerlink" href="#lib-orb-backends-update" title="Link to this heading"></a></h2>
 <p>Die Bibliothek <cite>lib.orb</cite> kann intern mit verschiedenen Backends arbeiten:</p>
@@ -6910,6 +6933,10 @@ außer „Cache-Aufbau“ = einmalige Kosten für die erste Abfrage</p>
 <p>Die Backends können über den <code class="docutils literal notranslate"><span class="pre">etc/smarthome.yaml</span></code>-Parameter
 <cite>orb_backend: &lt;Wert&gt;</cite> konfiguriert werden. Gültige Werte sind
 „ephem“, „skyfield“ und „skyfield-cache“.</p>
+<p>Ist das konfigurierte Backend nicht installiert (oder unbekannt), weicht SmartHomeNG mit einer
+Warnung auf ein installiertes Backend aus (Reihenfolge: <code class="docutils literal notranslate"><span class="pre">ephem</span></code>, <code class="docutils literal notranslate"><span class="pre">skyfield</span></code>). Ist keines
+installiert, stehen <code class="docutils literal notranslate"><span class="pre">sh.sun</span></code> und <code class="docutils literal notranslate"><span class="pre">sh.moon</span></code> nicht zur Verfügung. Ist <code class="docutils literal notranslate"><span class="pre">skyfield</span></code> installiert
+und konfiguriert, aber die Ephemeriden-Datei fehlt, wird sie bei der ersten Abfrage heruntergeladen.</p>
 </section>
 </section>
 
