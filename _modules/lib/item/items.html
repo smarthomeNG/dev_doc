@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.item.items &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 7. Oktober 2026, commit b3c0866) Dokumentation</title>
+  <title>lib.item.items &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 7. Oktober 2026, commit 83c1408) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=966e63c0" />
@@ -17,7 +17,7 @@
       <script src="../../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=9fc68911"></script>
+      <script src="../../../_static/documentation_options.js?v=b0e50500"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/translations.js?v=9bf55d28"></script>
@@ -7238,6 +7238,45 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Item '</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">' cannot be persisted to '</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.yaml': an ancestor is not an item"</span><span class="p">)</span>
         <span class="n">yf</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rename_target_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">new_parent_obj</span><span class="p">,</span> <span class="n">new_is_top_level</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        File a persisted item's YAML node moves to on rename: *filename* if given, else the new</span>
+<span class="sd">        parent's file (non-top-level parent with one), else the item's own current file.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">filename</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">new_is_top_level</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">new_parent_obj</span><span class="p">,</span> <span class="s1">'_filename'</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">new_parent_obj</span><span class="o">.</span><span class="n">_filename</span>
+        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_persistable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Raise ValueError if ``items_dir/&lt;filename&gt;.yaml`` cannot hold *path*: it fails to parse,</span>
+<span class="sd">        or an ancestor of *path* is defined there as an attribute with a value instead of an item.</span>
+<span class="sd">        A missing file or missing ancestors are fine - they get created on write.</span>
+<span class="sd">        """</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="n">yf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yamlfile</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml_file</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">yf</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">child</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">child</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"Item '</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">' cannot be persisted to '</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.yaml': '</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">' is not an item there"</span>
+                <span class="p">)</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">child</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_or_raise</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Set *node* at *path* in the loaded yamlfile *yf*, raising ValueError if the file cannot hold it; None writes nothing."""</span>
+        <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">yf</span><span class="o">.</span><span class="n">setvalue</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Item '</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">' cannot be persisted to '</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.yaml': an ancestor is not an item"</span><span class="p">)</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_preserve_existing_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return a copy of *config* with any child-item entries (dict-valued</span>
@@ -7601,6 +7640,12 @@
         <span class="k">if</span> <span class="n">check_item_name_collision</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="p">,</span> <span class="n">objects_to_check</span><span class="p">,</span> <span class="n">leaf_attr</span><span class="p">,</span> <span class="n">new_path</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Item '</span><span class="si">{</span><span class="n">old_path</span><span class="si">}</span><span class="s2">' cannot be renamed to '</span><span class="si">{</span><span class="n">new_path</span><span class="si">}</span><span class="s2">': name collision"</span><span class="p">)</span>
 
+        <span class="n">target_filename</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">:</span>
+            <span class="n">target_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rename_target_filename</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">new_parent_obj</span><span class="p">,</span> <span class="n">new_is_top_level</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_persistable</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">,</span> <span class="n">old_path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_persistable</span><span class="p">(</span><span class="n">target_filename</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
+
         <span class="n">old_is_top_level</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">_is_top_of_item_tree</span><span class="p">()</span>
         <span class="n">old_parent_obj</span> <span class="o">=</span> <span class="bp">self</span> <span class="k">if</span> <span class="n">old_is_top_level</span> <span class="k">else</span> <span class="n">item</span><span class="o">.</span><span class="n">return_parent</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">new_parent_obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">old_parent_obj</span><span class="p">:</span>
@@ -7689,38 +7734,36 @@
                             <span class="sa">f</span><span class="s2">"Plugin '</span><span class="si">{</span><span class="n">plugin</span><span class="si">}</span><span class="s2">' failed to resume after rename of item '</span><span class="si">{</span><span class="n">old_path</span><span class="si">}</span><span class="s2">': </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span>
                         <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">:</span>
-            <span class="n">target_filename</span> <span class="o">=</span> <span class="n">filename</span> <span class="ow">or</span> <span class="p">(</span>
-                <span class="n">new_parent_obj</span><span class="o">.</span><span class="n">_filename</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">new_is_top_level</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">new_parent_obj</span><span class="p">,</span> <span class="s1">'_filename'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-                <span class="k">else</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span>
-            <span class="p">)</span>
-
+        <span class="k">if</span> <span class="n">target_filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">target_filename</span> <span class="o">==</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">:</span>
                 <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
                     <span class="n">yf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yamlfile</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml_file</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
                     <span class="n">node</span> <span class="o">=</span> <span class="n">yf</span><span class="o">.</span><span class="n">getnode</span><span class="p">(</span><span class="n">old_path</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_set_or_raise</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">new_path</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
                     <span class="n">yf</span><span class="o">.</span><span class="n">setvalue</span><span class="p">(</span><span class="n">old_path</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-                    <span class="n">yf</span><span class="o">.</span><span class="n">setvalue</span><span class="p">(</span><span class="n">new_path</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
                     <span class="n">yf</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">old_target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
+                <span class="n">old_yf</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">node</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="k">if</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">old_target</span><span class="p">):</span>
                     <span class="n">old_yf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yamlfile</span><span class="p">(</span><span class="n">old_target</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml_file</span><span class="p">(</span><span class="n">old_yf</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
                     <span class="n">node</span> <span class="o">=</span> <span class="n">old_yf</span><span class="o">.</span><span class="n">getnode</span><span class="p">(</span><span class="n">old_path</span><span class="p">)</span>
-                    <span class="n">old_yf</span><span class="o">.</span><span class="n">setvalue</span><span class="p">(</span><span class="n">old_path</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-                    <span class="n">old_yf</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
+                <span class="c1"># new location first: a failing write must not have removed the old definition already</span>
                 <span class="n">new_target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">target_filename</span><span class="p">)</span>
                 <span class="n">new_yf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yamlfile</span><span class="p">(</span><span class="n">new_target</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">new_target</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml_file</span><span class="p">(</span><span class="n">new_yf</span><span class="p">,</span> <span class="n">target_filename</span><span class="p">)</span>
-                <span class="n">new_yf</span><span class="o">.</span><span class="n">setvalue</span><span class="p">(</span><span class="n">new_path</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_set_or_raise</span><span class="p">(</span><span class="n">new_yf</span><span class="p">,</span> <span class="n">new_path</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">target_filename</span><span class="p">)</span>
                 <span class="n">new_yf</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">old_yf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">old_yf</span><span class="o">.</span><span class="n">setvalue</span><span class="p">(</span><span class="n">old_path</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="n">old_yf</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 
                 <span class="k">for</span> <span class="n">descendant</span> <span class="ow">in</span> <span class="n">_flatten_with_children</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
                     <span class="n">descendant</span><span class="o">.</span><span class="n">_filename</span> <span class="o">=</span> <span class="n">target_filename</span>
