@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>asyncio Unterstützung in Plugins &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 7. Oktober 2026, commit 83c1408) Dokumentation</title>
+  <title>asyncio Unterstützung in Plugins &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 8. Oktober 2026, commit fe4c8f4) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=966e63c0" />
@@ -18,7 +18,7 @@
       <script src="../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=b0e50500"></script>
+      <script src="../../_static/documentation_options.js?v=814624f2"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/translations.js?v=9bf55d28"></script>
@@ -5303,6 +5303,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.ShngMemLogHandler"><code class="docutils literal notranslate"><span class="pre">ShngMemLogHandler</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.ShngTimedRotatingFileHandler"><code class="docutils literal notranslate"><span class="pre">ShngTimedRotatingFileHandler</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.debug_logging_config"><code class="docutils literal notranslate"><span class="pre">debug_logging_config()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.rebase_handler_filenames"><code class="docutils literal notranslate"><span class="pre">rebase_handler_filenames()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../lib/metadata.html">lib.metadata</a><ul>
@@ -5859,6 +5860,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../python/virtual_environments.html">Virtuelle Python Environments</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../python/virtual_environments.html#installation-von-venv-bzw-virtualenv">Installation von venv bzw. virtualenv</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../python/virtual_environments.html#erstellung-von-virtuellen-environments">Erstellung von virtuellen Environments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python/virtual_environments.html#neue-installation-mit-eigenem-environment">Neue Installation mit eigenem Environment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../python/virtual_environments.html#wie-smarthomeng-das-environment-nutzt">Wie SmartHomeNG das Environment nutzt</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../python/virtual_environments.html#loschen-eines-virtuellen-environment">Löschen eines virtuellen Environment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../python/virtual_environments.html#virtuelle-environements-als-dienst">Virtuelle Environements als Dienst</a></li>
 </ul>
@@ -7083,6 +7086,27 @@ Parameter ‚mode‘ only available in SmartHomeNG versions <strong>v1.10.0 and 
 <dl class="field-list simple">
 <dt class="field-odd">Rückgabetyp<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">db_invalidate_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accept</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/lib/model/smartplugin.html#SmartPlugin.db_invalidate_items"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a></dt>
+<dd><p>Mark items invalid in the database log, so the log records a gap; the item values stay unchanged.</p>
+<p>Only items logged by the database plugin have the <code class="docutils literal notranslate"><span class="pre">db_mark_invalid</span></code> function and are marked.
+Items whose gap is already open are skipped, as repeated marking would split one gap into several.</p>
+<p>Only available in SmartHomeNG versions <strong>v1.13.0 and up</strong>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameter<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>items</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<a class="reference internal" href="../../lib/item_class_item.html#lib.item.item.Item" title="lib.item.item.Item"><code class="xref py py-class docutils literal notranslate"><span class="pre">Item</span></code></a>]</span>) – items to mark</p></li>
+<li><p><strong>source</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – reason for the gap, e.g. <code class="docutils literal notranslate"><span class="pre">'connection_lost'</span></code></p></li>
+<li><p><strong>accept</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference internal" href="../../lib/item_class_item.html#lib.item.item.Item" title="lib.item.item.Item"><code class="xref py py-class docutils literal notranslate"><span class="pre">Item</span></code></a>], <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]]</span>) – if given, only items for which it returns True are marked</p></li>
+</ul>
+</dd>
+<dt class="field-even">Rückgabetyp<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>

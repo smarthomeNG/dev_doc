@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Virtuelle Python Environments &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 7. Oktober 2026, commit 83c1408) Dokumentation</title>
+  <title>Virtuelle Python Environments &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 8. Oktober 2026, commit fe4c8f4) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=966e63c0" />
@@ -18,7 +18,7 @@
       <script src="../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=b0e50500"></script>
+      <script src="../../_static/documentation_options.js?v=814624f2"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/translations.js?v=9bf55d28"></script>
@@ -5303,6 +5303,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.ShngMemLogHandler"><code class="docutils literal notranslate"><span class="pre">ShngMemLogHandler</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.ShngTimedRotatingFileHandler"><code class="docutils literal notranslate"><span class="pre">ShngTimedRotatingFileHandler</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.debug_logging_config"><code class="docutils literal notranslate"><span class="pre">debug_logging_config()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.rebase_handler_filenames"><code class="docutils literal notranslate"><span class="pre">rebase_handler_filenames()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../lib/metadata.html">lib.metadata</a><ul>
@@ -5859,6 +5860,8 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Virtuelle Python Environments</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#installation-von-venv-bzw-virtualenv">Installation von venv bzw. virtualenv</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#erstellung-von-virtuellen-environments">Erstellung von virtuellen Environments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neue-installation-mit-eigenem-environment">Neue Installation mit eigenem Environment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#wie-smarthomeng-das-environment-nutzt">Wie SmartHomeNG das Environment nutzt</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#loschen-eines-virtuellen-environment">Löschen eines virtuellen Environment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#virtuelle-environements-als-dienst">Virtuelle Environements als Dienst</a></li>
 </ul>
@@ -6720,14 +6723,15 @@ auf, so dass die Skripte ohne Pfadangabe aufgerufen werden können.</p>
 </div>
 <section id="installation-von-venv-bzw-virtualenv">
 <h2>Installation von venv bzw. virtualenv<a class="headerlink" href="#installation-von-venv-bzw-virtualenv" title="Link to this heading"></a></h2>
-<p><strong>venv</strong> bzw. <strong>virtualenv</strong> wird am besten unter der Python Version installiert, für die später virtuelle
-Environments erstellt werden sollen. (<strong>venv</strong> ist bei aktuellen Distributionen bereits auf dem System installiert)
-Um zum Beispiel ein virtual Environment für Python 3.10 zu erstellen, ist der folgende Befehl auszuführen:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip3.10<span class="w"> </span>install<span class="w"> </span>venv
+<p><strong>venv</strong> ist ein Modul der Python Standardbibliothek und wird nicht mit <code class="docutils literal notranslate"><span class="pre">pip</span></code> installiert. Auf Debian und Ubuntu
+ist es in einem separaten Paket enthalten, das (falls nicht schon durch die Komplettanleitung geschehen) mit</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>python3-venv
 </pre></div>
 </div>
-<p>bzw.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip3.10<span class="w"> </span>install<span class="w"> </span>virtualenv
+<p>installiert wird. Es muss zu der Python Version passen, für die später virtuelle Environments erstellt werden
+sollen.</p>
+<p><strong>virtualenv</strong> ist für SmartHomeNG nicht nötig. Falls es trotzdem genutzt werden soll, wird es mit <code class="docutils literal notranslate"><span class="pre">pip</span></code> installiert:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip3.13<span class="w"> </span>install<span class="w"> </span>virtualenv
 </pre></div>
 </div>
 <div class="line-block">
@@ -6736,17 +6740,22 @@ Um zum Beispiel ein virtual Environment für Python 3.10 zu erstellen, ist der f
 </section>
 <section id="erstellung-von-virtuellen-environments">
 <h2>Erstellung von virtuellen Environments<a class="headerlink" href="#erstellung-von-virtuellen-environments" title="Link to this heading"></a></h2>
-<p>Jetzt kann mit dem folgenden Befehl ein virtual Environment erstellt werden, welches den Namen <strong>py_3.10</strong> trägt:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>make_venv<span class="w"> </span><span class="m">3</span>.10
+<p>Jetzt kann mit dem folgenden Befehl ein virtual Environment für Python 3.13 erstellt werden, welches den Namen
+<strong>py_shng3.13</strong> trägt:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>make_venv<span class="w"> </span><span class="m">3</span>.13<span class="w"> </span>shng3.13
 </pre></div>
 </div>
+<p>Der erste Parameter ist die Python Version, mit der das Environment erstellt wird, der zweite der frei wählbare Name
+des Environments (das Verzeichnis heißt <code class="docutils literal notranslate"><span class="pre">py_&lt;Name&gt;</span></code>). Es wird empfohlen, den Namen unabhängig von der Python Version
+zu wählen (hier: <code class="docutils literal notranslate"><span class="pre">shng</span></code> plus Python Version), damit Environment und Python Version nicht verwechselt werden und
+mehrere Environments mit unterschiedlichen Python Versionen nebeneinander bestehen können.</p>
 <p>Während der Anlage wird das Environment aktiviert, um einige norwendige Python Packages in das Environment zu
 installieren bzw. zu aktualisieren.</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
 <p>Das Environment wird mit dem Kommando</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">source</span><span class="w"> </span>act<span class="w"> </span><span class="m">3</span>.10
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">source</span><span class="w"> </span>act<span class="w"> </span>shng3.13
 </pre></div>
 </div>
 <p>aktiviert.</p>
@@ -6754,15 +6763,70 @@ installieren bzw. zu aktualisieren.</p>
 Packages können ganz normal mit <strong>pip3</strong> nachinstalliert werden. (SmartHomeNG installiert wie bei einer kompletten
 Neuinstallation die benötigten Packages).</p>
 <p>Der Aufruf von</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>py_3.10<span class="o">)</span><span class="w"> </span>$<span class="w"> </span>python3
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>py_shng3.13<span class="o">)</span><span class="w"> </span>$<span class="w"> </span>python3
 </pre></div>
 </div>
-<p>führt nun dazu, dass Python 3.10 gestartet wird.</p>
+<p>führt nun dazu, dass Python 3.13 gestartet wird.</p>
 <p>Um das virtuelle Environment zu deaktivieren, muss nur</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>py_3.10<span class="o">)</span><span class="w"> </span>$<span class="w"> </span>deactivate
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>py_shng3.13<span class="o">)</span><span class="w"> </span>$<span class="w"> </span>deactivate
 </pre></div>
 </div>
 <p>eingegeben werden.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="neue-installation-mit-eigenem-environment">
+<h2>Neue Installation mit eigenem Environment<a class="headerlink" href="#neue-installation-mit-eigenem-environment" title="Link to this heading"></a></h2>
+<p>Eine neue SmartHomeNG Installation (z.B. eine zweite Installation zum Testen, in einem anderen Verzeichnis) bekommt ein
+eigenes Environment. Beispiel für die Installation in <code class="docutils literal notranslate"><span class="pre">/usr/local/shng2</span></code> mit Python 3.13:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/smarthomeNG/smarthome.git<span class="w"> </span>/usr/local/shng2
+$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/smarthomeNG/plugins.git<span class="w"> </span>/usr/local/shng2/plugins
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>/usr/local/shng2
+$<span class="w"> </span>bash<span class="w"> </span>tools/make_venv<span class="w"> </span><span class="m">3</span>.13<span class="w"> </span>shng3.13
+$<span class="w"> </span><span class="nb">source</span><span class="w"> </span>tools/act<span class="w"> </span>shng3.13
+<span class="o">(</span>py_shng3.13<span class="o">)</span><span class="w"> </span>$<span class="w"> </span>python3<span class="w"> </span>bin/smarthome.py
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">make_venv</span></code> legt das Environment in <code class="docutils literal notranslate"><span class="pre">venvs/py_shng3.13</span></code> der jeweiligen Installation an, <code class="docutils literal notranslate"><span class="pre">act</span></code> aktiviert es.
+Beide Skripte beziehen sich auf die Installation, in der sie liegen, auch wenn sie mit Pfad aufgerufen werden.</p>
+<div class="admonition note">
+<p class="admonition-title">Bemerkung</p>
+<p>Das Skript <code class="docutils literal notranslate"><span class="pre">tools/postinstall</span></code> aus der Komplettanleitung erzeugt ebenfalls ein Environment, trägt aber
+zusätzlich <code class="docutils literal notranslate"><span class="pre">PATH</span></code> und <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">act</span> <span class="pre">shng</span></code> in die <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code> ein - und zwar nur, wenn dort noch kein Eintrag
+vorhanden ist. Bei einer zweiten Installation unter demselben Benutzer ist deshalb <code class="docutils literal notranslate"><span class="pre">make_venv</span></code> direkt
+aufzurufen, damit die <code class="docutils literal notranslate"><span class="pre">~/.bashrc</span></code> der ersten Installation unverändert bleibt.</p>
+</div>
+<p>Ein Environment kann auch ohne <code class="docutils literal notranslate"><span class="pre">make_venv</span></code> mit <code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">venv</span> <span class="pre">&lt;Verzeichnis&gt;</span></code> an beliebiger Stelle angelegt
+werden. Entscheidend ist nur, dass SmartHomeNG mit dem <code class="docutils literal notranslate"><span class="pre">python3</span></code> aus diesem Environment gestartet wird (nach
+<code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">&lt;Verzeichnis&gt;/bin/activate</span></code> oder mit vollem Pfad <code class="docutils literal notranslate"><span class="pre">&lt;Verzeichnis&gt;/bin/python3</span> <span class="pre">bin/smarthome.py</span></code>).</p>
+<p>Beim ersten Start legt SmartHomeNG fehlende Konfigurationsdateien (<code class="docutils literal notranslate"><span class="pre">smarthome.yaml</span></code>, <code class="docutils literal notranslate"><span class="pre">logging.yaml</span></code>,
+<code class="docutils literal notranslate"><span class="pre">plugin.yaml</span></code>, <code class="docutils literal notranslate"><span class="pre">module.yaml</span></code>, <code class="docutils literal notranslate"><span class="pre">logic.yaml</span></code>, <code class="docutils literal notranslate"><span class="pre">admin.yaml</span></code>, <code class="docutils literal notranslate"><span class="pre">holidays.yaml</span></code>) im Verzeichnis <code class="docutils literal notranslate"><span class="pre">etc</span></code>
+aus den Vorlagen <code class="docutils literal notranslate"><span class="pre">templates/*.default</span></code> an.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="wie-smarthomeng-das-environment-nutzt">
+<h2>Wie SmartHomeNG das Environment nutzt<a class="headerlink" href="#wie-smarthomeng-das-environment-nutzt" title="Link to this heading"></a></h2>
+<p>SmartHomeNG prüft beim Start, ob die benötigten Python Packages installiert sind, und installiert fehlende
+Packages selbst. Für ein Environment gilt dabei:</p>
+<ul class="simple">
+<li><p><strong>Welches pip:</strong> Es wird das <code class="docutils literal notranslate"><span class="pre">pip3</span></code> aus dem Verzeichnis des Python Interpreters verwendet, mit dem SmartHomeNG
+gestartet wurde. Läuft SmartHomeNG im Environment, landen die Packages also im Environment.</p></li>
+<li><p><strong>Core Requirements:</strong> Diese werden geprüft, bevor <code class="docutils literal notranslate"><span class="pre">etc/smarthome.yaml</span></code> gelesen wird. Fehlen Packages, werden sie
+installiert und SmartHomeNG startet sich anschließend neu. Der Pfad zum pip Kommando kann hierfür nur über den
+Kommandozeilenparameter <code class="docutils literal notranslate"><span class="pre">-p</span></code> / <code class="docutils literal notranslate"><span class="pre">--pip3_command</span></code> vorgegeben werden.</p></li>
+<li><p><strong>Module und Plugins:</strong> Danach werden die Requirements der Module und der konfigurierten Plugins geprüft und
+gegebenenfalls installiert. Für diese Installationen wird ein Eintrag <code class="docutils literal notranslate"><span class="pre">pip_command</span></code> in <code class="docutils literal notranslate"><span class="pre">etc/smarthome.yaml</span></code>
+berücksichtigt.</p></li>
+<li><p><strong>Option ``–user``:</strong> In einem Environment ruft SmartHomeNG pip ohne <code class="docutils literal notranslate"><span class="pre">--user</span></code> auf, da pip diese Option dort
+ablehnt. Außerhalb eines Environments wird <code class="docutils literal notranslate"><span class="pre">--user</span></code> verwendet. Das pip Protokoll steht in
+<code class="docutils literal notranslate"><span class="pre">var/log/pip3_outout.log</span></code> und <code class="docutils literal notranslate"><span class="pre">var/log/pip3_error.log</span></code>.</p></li>
+<li><p><strong>Requirements Dateien:</strong> Die Dateien in <code class="docutils literal notranslate"><span class="pre">requirements/</span></code> (z.B. <code class="docutils literal notranslate"><span class="pre">core.txt</span></code>, <code class="docutils literal notranslate"><span class="pre">base.txt</span></code>, <code class="docutils literal notranslate"><span class="pre">all.txt</span></code>) werden bei
+Bedarf aus den <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> des Cores, der Module und der Plugins erzeugt (siehe
+<a class="reference internal" href="../../tools/tools_build_requirements.html"><span class="doc">build_requirements.py</span></a>) und nicht von Hand bearbeitet.</p></li>
+</ul>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
@@ -6773,7 +6837,7 @@ Neuinstallation die benötigten Packages).</p>
 Bitte darauf achten, dass das Environment nicht aktiv ist. Bei Bedarf vor dem Löschen mit dem Befehl <code class="docutils literal notranslate"><span class="pre">deactivate</span></code>
 deaktivieren.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>/usr/local/smarthome/venvs
-$<span class="w"> </span>rm<span class="w"> </span>-r<span class="w"> </span>py_3.10
+$<span class="w"> </span>rm<span class="w"> </span>-r<span class="w"> </span>py_shng3.13
 </pre></div>
 </div>
 <div class="line-block">
@@ -6798,7 +6862,7 @@ Pfad zu Python in dem entsprechenden Environment angegeben werden.</p>
 
 <span class="o">[</span>Service<span class="o">]</span>
 <span class="nv">Type</span><span class="o">=</span>forking
-<span class="nv">ExecStart</span><span class="o">=</span>/usr/local/smarthome/venvs/py_310/bin/python3<span class="w"> </span>/usr/local/smarthome/bin/smarthome.py
+<span class="nv">ExecStart</span><span class="o">=</span>/usr/local/smarthome/venvs/py_shng3.13/bin/python3<span class="w"> </span>/usr/local/smarthome/bin/smarthome.py
 <span class="nv">WorkingDirectory</span><span class="o">=</span>/usr/local/smarthome
 <span class="nv">User</span><span class="o">=</span>smarthome
 <span class="nv">PIDFile</span><span class="o">=</span>/usr/local/smarthome/var/run/smarthome.pid

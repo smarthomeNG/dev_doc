@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.smarthome &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 7. Oktober 2026, commit 83c1408) Dokumentation</title>
+  <title>lib.smarthome &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 8. Oktober 2026, commit fe4c8f4) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=966e63c0" />
@@ -17,7 +17,7 @@
       <script src="../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=b0e50500"></script>
+      <script src="../../_static/documentation_options.js?v=814624f2"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/translations.js?v=9bf55d28"></script>
@@ -5300,6 +5300,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.ShngMemLogHandler"><code class="docutils literal notranslate"><span class="pre">ShngMemLogHandler</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.ShngTimedRotatingFileHandler"><code class="docutils literal notranslate"><span class="pre">ShngTimedRotatingFileHandler</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.debug_logging_config"><code class="docutils literal notranslate"><span class="pre">debug_logging_config()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.rebase_handler_filenames"><code class="docutils literal notranslate"><span class="pre">rebase_handler_filenames()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../lib/metadata.html">lib.metadata</a><ul>
@@ -5856,6 +5857,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../referenz/python/virtual_environments.html">Virtuelle Python Environments</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../referenz/python/virtual_environments.html#installation-von-venv-bzw-virtualenv">Installation von venv bzw. virtualenv</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../referenz/python/virtual_environments.html#erstellung-von-virtuellen-environments">Erstellung von virtuellen Environments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../referenz/python/virtual_environments.html#neue-installation-mit-eigenem-environment">Neue Installation mit eigenem Environment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../referenz/python/virtual_environments.html#wie-smarthomeng-das-environment-nutzt">Wie SmartHomeNG das Environment nutzt</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../referenz/python/virtual_environments.html#loschen-eines-virtuellen-environment">Löschen eines virtuellen Environment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../referenz/python/virtual_environments.html#virtuelle-environements-als-dienst">Virtuelle Environements als Dienst</a></li>
 </ul>
@@ -6750,7 +6753,6 @@
     <span class="n">CryptographyDeprecationWarning</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="n">BASE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
-<span class="n">PIDFILE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE</span><span class="p">,</span> <span class="s1">'var'</span><span class="p">,</span> <span class="s1">'run'</span><span class="p">,</span> <span class="s1">'smarthome.pid'</span><span class="p">)</span>
 
 <span class="c1">#####################################################################</span>
 <span class="c1"># Import SmartHomeNG Modules</span>
@@ -6767,6 +6769,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">lib.scheduler</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">lib.tools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">lib.utils</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lib.vardir</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">lib.orb</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">lib.backup</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">lib.translation</span>
@@ -6881,7 +6884,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_conf_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extern_conf_dir</span>
 
         <span class="c1"># shng system dirs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_var_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_dir</span><span class="p">,</span> <span class="n">DIR_VAR</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_var_dir</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">vardir</span><span class="o">.</span><span class="n">get_var_dir</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lib_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_dir</span><span class="p">,</span> <span class="n">DIR_LIB</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_plugins_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_dir</span><span class="p">,</span> <span class="n">DIR_PLUGINS</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_modules_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_dir</span><span class="p">,</span> <span class="n">DIR_MODULES</span><span class="p">)</span>
@@ -7050,7 +7053,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">connections</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pidfile</span> <span class="o">=</span> <span class="n">PIDFILE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pidfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lib</span><span class="o">.</span><span class="n">vardir</span><span class="o">.</span><span class="n">get_var_dir</span><span class="p">(),</span> <span class="s1">'run'</span><span class="p">,</span> <span class="s1">'smarthome.pid'</span><span class="p">)</span>
 
         <span class="c1"># check config files</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">checkConfigFiles</span><span class="p">()</span>
@@ -7124,15 +7127,15 @@
         <span class="c1">#############################################################</span>
         <span class="c1"># Fork process and write pidfile</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">==</span> <span class="s1">'default'</span><span class="p">:</span>
-            <span class="n">lib</span><span class="o">.</span><span class="n">daemon</span><span class="o">.</span><span class="n">daemonize</span><span class="p">(</span><span class="n">PIDFILE</span><span class="p">)</span>
+            <span class="n">lib</span><span class="o">.</span><span class="n">daemon</span><span class="o">.</span><span class="n">daemonize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pidfile</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">lib</span><span class="o">.</span><span class="n">daemon</span><span class="o">.</span><span class="n">write_pidfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">(),</span> <span class="n">PIDFILE</span><span class="p">)</span>
+            <span class="n">lib</span><span class="o">.</span><span class="n">daemon</span><span class="o">.</span><span class="n">write_pidfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pidfile</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'MODE = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'--------------------   Init SmartHomeNG </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s1">   --------------------'</span><span class="p">)</span>
 
         <span class="c1">#############################################################</span>
         <span class="c1"># Write startup message to log(s)</span>
-        <span class="n">pid</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">daemon</span><span class="o">.</span><span class="n">read_pidfile</span><span class="p">(</span><span class="n">PIDFILE</span><span class="p">)</span>
+        <span class="n">pid</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">daemon</span><span class="o">.</span><span class="n">read_pidfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pidfile</span><span class="p">)</span>
         <span class="n">virtual_text</span> <span class="o">=</span> <span class="s1">''</span>
         <span class="k">if</span> <span class="n">lib</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">running_virtual</span><span class="p">():</span>
             <span class="n">virtual_text</span> <span class="o">=</span> <span class="s1">' in virtual environment'</span>
@@ -7158,6 +7161,8 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extern_conf_dir</span> <span class="o">!=</span> <span class="n">BASE</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Using config dir </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_extern_conf_dir</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_var_dir</span> <span class="o">!=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE</span><span class="p">,</span> <span class="n">DIR_VAR</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Using var dir </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_var_dir</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
         <span class="c1">#############################################################</span>
         <span class="c1"># Initialize multi-language support</span>
@@ -7390,6 +7395,22 @@
 <span class="sd">        :rtype: str</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_var_dir</span></div>
+
+
+<div class="viewcode-block" id="SmartHome.resolve_var_path">
+<a class="viewcode-back" href="../../entwicklung/core/core_shng.html#lib.smarthome.SmartHome.resolve_var_path">[Doku]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_var_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Resolve a path from a plugin parameter to an absolute path, honoring a custom var directory</span>
+
+<span class="sd">        Relative paths starting with ``var`` (like the default ``var/knx``) are located below the var directory,</span>
+<span class="sd">        other relative paths below the base directory. Absolute paths are returned unchanged.</span>
+
+<span class="sd">        :param path: path as given in the plugin configuration</span>
+<span class="sd">        :return: absolute path</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">lib</span><span class="o">.</span><span class="n">vardir</span><span class="o">.</span><span class="n">resolve_var_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SmartHome.get_config_dir">
@@ -7721,7 +7742,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">shng_status</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'code'</span><span class="p">:</span> <span class="mi">33</span><span class="p">,</span> <span class="s1">'text'</span><span class="p">:</span> <span class="s1">'Stopped'</span><span class="p">}</span>
 
-        <span class="n">lib</span><span class="o">.</span><span class="n">daemon</span><span class="o">.</span><span class="n">remove_pidfile</span><span class="p">(</span><span class="n">PIDFILE</span><span class="p">)</span>
+        <span class="n">lib</span><span class="o">.</span><span class="n">daemon</span><span class="o">.</span><span class="n">remove_pidfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pidfile</span><span class="p">)</span>
 
         <span class="n">logging</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
         <span class="c1"># stop() can be called from any thread (e.g. a web/websocket request</span>
@@ -7868,7 +7889,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">dbghigh</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Garbage collector: collected </span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s1"> objects.'</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_export_threadinfo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span> <span class="s1">'var'</span><span class="p">,</span> <span class="s1">'run'</span><span class="p">,</span> <span class="s1">'threadinfo.json'</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_var_dir</span><span class="p">,</span> <span class="s1">'run'</span><span class="p">,</span> <span class="s1">'threadinfo.json'</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_threadinfo_export</span><span class="p">:</span>
             <span class="n">all_threads</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">threading</span><span class="o">.</span><span class="n">enumerate</span><span class="p">():</span>

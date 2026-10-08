@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.plugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 7. Oktober 2026, commit 83c1408) Dokumentation</title>
+  <title>lib.plugin &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 8. Oktober 2026, commit fe4c8f4) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=966e63c0" />
@@ -17,7 +17,7 @@
       <script src="../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=b0e50500"></script>
+      <script src="../../_static/documentation_options.js?v=814624f2"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/translations.js?v=9bf55d28"></script>
@@ -5300,6 +5300,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.ShngMemLogHandler"><code class="docutils literal notranslate"><span class="pre">ShngMemLogHandler</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.ShngTimedRotatingFileHandler"><code class="docutils literal notranslate"><span class="pre">ShngTimedRotatingFileHandler</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.debug_logging_config"><code class="docutils literal notranslate"><span class="pre">debug_logging_config()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.rebase_handler_filenames"><code class="docutils literal notranslate"><span class="pre">rebase_handler_filenames()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../lib/metadata.html">lib.metadata</a><ul>
@@ -5856,6 +5857,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../referenz/python/virtual_environments.html">Virtuelle Python Environments</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../referenz/python/virtual_environments.html#installation-von-venv-bzw-virtualenv">Installation von venv bzw. virtualenv</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../referenz/python/virtual_environments.html#erstellung-von-virtuellen-environments">Erstellung von virtuellen Environments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../referenz/python/virtual_environments.html#neue-installation-mit-eigenem-environment">Neue Installation mit eigenem Environment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../referenz/python/virtual_environments.html#wie-smarthomeng-das-environment-nutzt">Wie SmartHomeNG das Environment nutzt</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../referenz/python/virtual_environments.html#loschen-eines-virtuellen-environment">Löschen eines virtuellen Environment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../referenz/python/virtual_environments.html#virtuelle-environements-als-dienst">Virtuelle Environements als Dienst</a></li>
 </ul>
@@ -6745,6 +6748,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os.path</span>  <span class="c1"># until Backend is modified</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedTuple</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">importlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">import_module</span><span class="p">,</span> <span class="n">reload</span>
 
@@ -6775,6 +6779,15 @@
 
 <span class="k">class</span><span class="w"> </span><span class="nc">PyObject</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">Structure</span><span class="p">):</span>
     <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">'refcnt'</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_long</span><span class="p">)]</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PluginConfigRefresh</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Result of :meth:`Plugins.refresh_plugin_config`"""</span>
+
+    <span class="n">conf</span><span class="p">:</span> <span class="nb">dict</span>
+<span class="w">    </span><span class="sd">"""Parsed content of the plugin configuration file"""</span>
+    <span class="n">notices</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">"""Warnings for the user that result from the refreshed configuration"""</span>
 
 
 <div class="viewcode-block" id="Plugins">
@@ -6815,30 +6828,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_plugin_conf_filename</span> <span class="o">=</span> <span class="n">configfile</span> <span class="o">+</span> <span class="n">YAML_FILE</span>
         <span class="n">smarthome</span><span class="o">.</span><span class="n">_plugin_conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugin_conf_filename</span>  <span class="c1"># type: ignore</span>
 
-        <span class="c1"># read plugin configuration (from etc/plugin.yaml)</span>
-        <span class="n">_conf</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">parse_basename</span><span class="p">(</span><span class="n">configfile</span><span class="p">,</span> <span class="n">configtype</span><span class="o">=</span><span class="s1">'plugin'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plugins_count</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threads_early</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threads_late</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># read plugin configuration (from etc/plugin.yaml) and count plugin usage</span>
+        <span class="n">_conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">refresh_plugin_config</span><span class="p">()</span><span class="o">.</span><span class="n">conf</span>
         <span class="k">if</span> <span class="n">_conf</span> <span class="o">==</span> <span class="p">{}:</span>
             <span class="k">return</span>
 
-        <span class="c1"># count plugin usage in plugin conf</span>
-        <span class="c1"># do this here and now because _conf isn't available later or elsewhere</span>
-        <span class="c1"># TODO: think about central plugin config?</span>
-
-        <span class="c1"># get all unique plugin names</span>
-        <span class="c1"># __plugins = set(_conf[p].get('plugin_name', 'unknown') for p in _conf)</span>
-        <span class="c1"># to keep "old" config compatibility (class_name/class_path), also check for class_name</span>
-        <span class="n">__plugins</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">_conf</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'plugin_name'</span><span class="p">,</span> <span class="n">_conf</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'class_name'</span><span class="p">,</span> <span class="s1">'unknown'</span><span class="p">))</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">_conf</span><span class="p">)</span>
-
-        <span class="c1"># prepopulate counter dict</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_plugins_count</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">__plugins</span><span class="p">}</span>
-
-        <span class="c1"># count plugin usage</span>
-        <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">_conf</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_plugins_count</span><span class="p">[</span><span class="n">_conf</span><span class="p">[</span><span class="n">plugin</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'plugin_name'</span><span class="p">,</span> <span class="n">_conf</span><span class="p">[</span><span class="n">plugin</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'class_name'</span><span class="p">,</span> <span class="s1">'unknown'</span><span class="p">))]</span> <span class="o">+=</span> <span class="mi">1</span>
-
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Load plugins'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">threads_early</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">threads_late</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="c1"># for every section (plugin) in the plugin.yaml file</span>
         <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">_conf</span><span class="p">:</span>
@@ -6951,6 +6950,89 @@
         <span class="c1">#        logger.warning("_get_classname_and_classpath: plugin_name = {}, classpath = {}, classname = {}".format(plugin_name, classpath, classname))</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">classname</span><span class="p">,</span> <span class="n">classpath</span> <span class="o">+</span> <span class="n">plugin_version</span><span class="p">)</span>
 
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_count_plugin_usage</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">conf</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Count the enabled sections of a plugin configuration per plugin name</span>
+
+<span class="sd">        Sections with ``plugin_enabled: false`` are never loaded and are not counted.</span>
+
+<span class="sd">        :param conf: parsed plugin configuration</span>
+<span class="sd">        :return: number of enabled sections by plugin name</span>
+<span class="sd">        """</span>
+        <span class="n">count</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_section_enabled</span><span class="p">(</span><span class="n">section</span><span class="p">):</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_section_plugin_name</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
+                <span class="n">count</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">count</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">count</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_unnamed_instance_notices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_count</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">conf</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Build warnings for plugins that just changed from single to multiple use while an instance</span>
+<span class="sd">        is loaded under the default (unnamed) instance</span>
+
+<span class="sd">        A loaded instance cannot be renamed at runtime. After a restart it would be named after its section.</span>
+
+<span class="sd">        :param old_count: usage count before the refresh</span>
+<span class="sd">        :param conf: parsed plugin configuration, used to find the plugin name of loaded instances</span>
+<span class="sd">        :return: one warning per affected loaded instance</span>
+<span class="sd">        """</span>
+        <span class="n">notices</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">thread</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_threads</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threads_early</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threads_late</span><span class="p">:</span>
+            <span class="n">plugin</span> <span class="o">=</span> <span class="n">thread</span><span class="o">.</span><span class="n">plugin</span>
+            <span class="n">section</span> <span class="o">=</span> <span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">thread</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="n">SmartPlugin</span><span class="p">)</span> <span class="ow">or</span> <span class="n">section</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">plugin</span><span class="o">.</span><span class="n">get_instance_name</span><span class="p">():</span>
+                <span class="k">continue</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_section_plugin_name</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins_count</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">new</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">old_count</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">notices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"Plugin '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">' is now used by </span><span class="si">{</span><span class="n">new</span><span class="si">}</span><span class="s2"> sections. The loaded instance from section "</span>
+                    <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">thread</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">' keeps the default instance name until SmartHomeNG is restarted."</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">notices</span>
+
+<div class="viewcode-block" id="Plugins.refresh_plugin_config">
+<a class="viewcode-back" href="../../lib/plugin_class_plugins.html#lib.plugin.Plugins.refresh_plugin_config">[Doku]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">refresh_plugin_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PluginConfigRefresh</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Re-read the plugin configuration file and update the plugin usage count from it</span>
+
+<span class="sd">        The usage count decides whether a plugin section gets the default instance or an instance named</span>
+<span class="sd">        after the section. Call this before loading plugins at runtime, so that sections added or removed</span>
+<span class="sd">        since startup are taken into account.</span>
+
+<span class="sd">        :return: the parsed configuration and warnings for the user (also logged as warnings)</span>
+<span class="sd">        """</span>
+        <span class="n">conf</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">parse_basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_configfile</span><span class="p">,</span> <span class="n">configtype</span><span class="o">=</span><span class="s1">'plugin'</span><span class="p">)</span>
+        <span class="n">old_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins_count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plugins_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_count_plugin_usage</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+        <span class="n">notices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unnamed_instance_notices</span><span class="p">(</span><span class="n">old_count</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">notice</span> <span class="ow">in</span> <span class="n">notices</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">notice</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">PluginConfigRefresh</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">notices</span><span class="p">)</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_section_plugin_name</span><span class="p">(</span><span class="n">plg_conf</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return the plugin name of a plugin.yaml section (falls back to ``class_name`` for legacy configurations)</span>
+
+<span class="sd">        :param plg_conf: loaded section of the plugin.yaml</span>
+<span class="sd">        :return: plugin name, or 'unknown' if the section defines neither ``plugin_name`` nor ``class_name``</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">plg_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'plugin_name'</span><span class="p">,</span> <span class="n">plg_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'class_name'</span><span class="p">,</span> <span class="s1">'unknown'</span><span class="p">))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_section_enabled</span><span class="p">(</span><span class="n">plg_conf</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return False if a plugin.yaml section is switched off with ``plugin_enabled: false``</span>
+
+<span class="sd">        :param plg_conf: loaded section of the plugin.yaml</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">plg_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'plugin_enabled'</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">'false'</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_instancename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plg_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">plg_conf</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the instance name for the given plugin</span>
@@ -6972,7 +7054,7 @@
                     <span class="n">instance</span> <span class="o">=</span> <span class="s1">''</span>
             <span class="k">return</span> <span class="n">instance</span>
 
-        <span class="n">count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins_count</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">plg_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'plugin_name'</span><span class="p">,</span> <span class="n">plg_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'class_name'</span><span class="p">,</span> <span class="s1">'unknown'</span><span class="p">)),</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins_count</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_section_plugin_name</span><span class="p">(</span><span class="n">plg_conf</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
 
         <span class="c1"># rewrite should retain prior instance naming, but enable</span>
         <span class="c1"># "automagic instances" if nothing is explicitly given</span>
@@ -7206,7 +7288,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">add_struct_definition</span><span class="p">(</span><span class="n">plugin_name</span><span class="p">,</span> <span class="n">struct_name</span><span class="p">,</span> <span class="n">item_structs</span><span class="p">[</span><span class="n">struct_name</span><span class="p">])</span>
 
         <span class="c1"># Test if plugin is disabled</span>
-        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'plugin_enabled'</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'false'</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_section_enabled</span><span class="p">(</span><span class="n">conf</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'Section </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1"> (plugin_name </span><span class="si">{</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"plugin_name"</span><span class="p">,</span><span class="w"> </span><span class="s2">"unknown"</span><span class="p">)</span><span class="si">}</span><span class="s1">) is disabled - plugin not loaded'</span>
             <span class="p">)</span>
@@ -7430,7 +7512,7 @@
         <span class="n">alive</span> <span class="o">=</span> <span class="n">myplugin</span><span class="o">.</span><span class="n">alive</span>
 
         <span class="c1"># read plugin configuration (from etc/plugin.yaml)</span>
-        <span class="n">_conf</span> <span class="o">=</span> <span class="n">lib</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">parse_basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_configfile</span><span class="p">,</span> <span class="n">configtype</span><span class="o">=</span><span class="s1">'plugin'</span><span class="p">)</span>
+        <span class="n">_conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">refresh_plugin_config</span><span class="p">()</span><span class="o">.</span><span class="n">conf</span>
         <span class="k">if</span> <span class="n">_conf</span> <span class="o">==</span> <span class="p">{}:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Reading plugin config </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_configfile</span><span class="si">}</span><span class="s1"> returned no data, check config'</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>

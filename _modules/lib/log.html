@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.log &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 7. Oktober 2026, commit 83c1408) Dokumentation</title>
+  <title>lib.log &mdash; Dokumentation v1.12.2.1 v1.12.2.1 develop (Stand 8. Oktober 2026, commit fe4c8f4) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=966e63c0" />
@@ -17,7 +17,7 @@
       <script src="../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=b0e50500"></script>
+      <script src="../../_static/documentation_options.js?v=814624f2"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/translations.js?v=9bf55d28"></script>
@@ -5300,6 +5300,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.ShngMemLogHandler"><code class="docutils literal notranslate"><span class="pre">ShngMemLogHandler</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.ShngTimedRotatingFileHandler"><code class="docutils literal notranslate"><span class="pre">ShngTimedRotatingFileHandler</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.debug_logging_config"><code class="docutils literal notranslate"><span class="pre">debug_logging_config()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/log.html#lib.log.rebase_handler_filenames"><code class="docutils literal notranslate"><span class="pre">rebase_handler_filenames()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../lib/metadata.html">lib.metadata</a><ul>
@@ -5856,6 +5857,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../referenz/python/virtual_environments.html">Virtuelle Python Environments</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../referenz/python/virtual_environments.html#installation-von-venv-bzw-virtualenv">Installation von venv bzw. virtualenv</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../referenz/python/virtual_environments.html#erstellung-von-virtuellen-environments">Erstellung von virtuellen Environments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../referenz/python/virtual_environments.html#neue-installation-mit-eigenem-environment">Neue Installation mit eigenem Environment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../referenz/python/virtual_environments.html#wie-smarthomeng-das-environment-nutzt">Wie SmartHomeNG das Environment nutzt</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../referenz/python/virtual_environments.html#loschen-eines-virtuellen-environment">Löschen eines virtuellen Environment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../referenz/python/virtual_environments.html#virtuelle-environements-als-dienst">Virtuelle Environements als Dienst</a></li>
 </ul>
@@ -6725,11 +6728,12 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">lib.shyaml</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">shyaml</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">lib.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">YAML_FILE</span><span class="p">,</span> <span class="n">DEFAULT_FILE</span><span class="p">,</span> <span class="n">BASE_LOG</span><span class="p">,</span> <span class="n">DIR_ETC</span><span class="p">,</span> <span class="n">DIR_VAR</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lib.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">YAML_FILE</span><span class="p">,</span> <span class="n">DEFAULT_FILE</span><span class="p">,</span> <span class="n">BASE_LOG</span><span class="p">,</span> <span class="n">DIR_ETC</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lib.vardir</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_var_dir</span><span class="p">,</span> <span class="n">rebase_var_prefix</span>
 
 <span class="n">logs_instance</span> <span class="o">=</span> <span class="kc">None</span>
 
-<span class="n">DEBUG_LOGFILE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">'.'</span><span class="p">,</span> <span class="n">DIR_VAR</span><span class="p">,</span> <span class="s1">'log'</span><span class="p">,</span> <span class="s1">'smarthome-debug.log'</span><span class="p">)</span>
+<span class="n">DEBUG_LOGFILE_NAME</span> <span class="o">=</span> <span class="s1">'smarthome-debug.log'</span>
 
 <span class="c1"># Logger families of SmartHomeNG itself (as defined in the default logging.yaml)</span>
 <span class="n">SHNG_LOGGER_FAMILIES</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'functions'</span><span class="p">,</span> <span class="s1">'lib'</span><span class="p">,</span> <span class="s1">'lib.smarthome'</span><span class="p">,</span> <span class="s1">'modules'</span><span class="p">,</span> <span class="s1">'plugins'</span><span class="p">,</span> <span class="s1">'logics'</span><span class="p">,</span> <span class="s1">'items'</span><span class="p">)</span>
@@ -6737,7 +6741,7 @@
 
 <div class="viewcode-block" id="debug_logging_config">
 <a class="viewcode-back" href="../../lib/log.html#lib.log.debug_logging_config">[Doku]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">debug_logging_config</span><span class="p">(</span><span class="n">logfile</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">DEBUG_LOGFILE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">debug_logging_config</span><span class="p">(</span><span class="n">logfile</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Build the built-in logging configuration used by ``smarthome.py -d``.</span>
 
@@ -6745,9 +6749,11 @@
 <span class="sd">    log at DEBUG, all other loggers (third-party packages) at INFO. Everything goes to stdout and</span>
 <span class="sd">    to ``logfile``.</span>
 
-<span class="sd">    :param logfile: Path of the debug logfile</span>
+<span class="sd">    :param logfile: Path of the debug logfile; defaults to ``log/smarthome-debug.log`` in the var directory</span>
 <span class="sd">    :return: configuration dict for ``logging.config.dictConfig``</span>
 <span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">logfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_var_dir</span><span class="p">(),</span> <span class="s1">'log'</span><span class="p">,</span> <span class="n">DEBUG_LOGFILE_NAME</span><span class="p">)</span>
     <span class="n">handler_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'shng_debug_console'</span><span class="p">,</span> <span class="s1">'shng_debug_file'</span><span class="p">]</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s1">'version'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
@@ -6778,6 +6784,22 @@
         <span class="s1">'loggers'</span><span class="p">:</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="p">{</span><span class="s1">'level'</span><span class="p">:</span> <span class="s1">'DEBUG'</span><span class="p">}</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">SHNG_LOGGER_FAMILIES</span><span class="p">},</span>
         <span class="s1">'root'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'level'</span><span class="p">:</span> <span class="s1">'INFO'</span><span class="p">,</span> <span class="s1">'handlers'</span><span class="p">:</span> <span class="n">handler_names</span><span class="p">},</span>
     <span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="rebase_handler_filenames">
+<a class="viewcode-back" href="../../lib/log.html#lib.log.rebase_handler_filenames">[Doku]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">rebase_handler_filenames</span><span class="p">(</span><span class="n">config_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Re-root the file handlers' relative ``var/...`` filenames of a logging configuration under the var directory.</span>
+
+<span class="sd">    Needed because ``logging.yaml`` names its logfiles ``./var/log/...``, which would otherwise ignore ``--var_dir``.</span>
+<span class="sd">    Handlers without ``filename`` and filenames not starting with ``var`` are left alone; changes ``config_dict`` in place.</span>
+<span class="sd">    """</span>
+    <span class="k">for</span> <span class="n">handler</span> <span class="ow">in</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'handlers'</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'filename'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">handler</span><span class="p">[</span><span class="s1">'filename'</span><span class="p">]</span> <span class="o">=</span> <span class="n">rebase_var_prefix</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div>
 
 
 
@@ -6815,17 +6837,19 @@
 
 <div class="viewcode-block" id="Logs.configure_debug_logging">
 <a class="viewcode-back" href="../../lib/log.html#lib.log.Logs.configure_debug_logging">[Doku]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">configure_debug_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logfile</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">DEBUG_LOGFILE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_debug_logging</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logfile</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Configure logging with the built-in debug configuration instead of ``logging.yaml``.</span>
 
 <span class="sd">        See :func:`debug_logging_config`. The directory of ``logfile`` is created if missing.</span>
 
-<span class="sd">        :param logfile: Path of the debug logfile</span>
+<span class="sd">        :param logfile: Path of the debug logfile; defaults to ``log/smarthome-debug.log`` in the var directory</span>
 <span class="sd">        :return: True on success</span>
 <span class="sd">        """</span>
+        <span class="n">config_dict</span> <span class="o">=</span> <span class="n">debug_logging_config</span><span class="p">(</span><span class="n">logfile</span><span class="p">)</span>
+        <span class="n">logfile</span> <span class="o">=</span> <span class="n">config_dict</span><span class="p">[</span><span class="s1">'handlers'</span><span class="p">][</span><span class="s1">'shng_debug_file'</span><span class="p">][</span><span class="s1">'filename'</span><span class="p">]</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">logfile</span><span class="p">)),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">configure_logging</span><span class="p">(</span><span class="n">config_dict</span><span class="o">=</span><span class="n">debug_logging_config</span><span class="p">(</span><span class="n">logfile</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">configure_logging</span><span class="p">(</span><span class="n">config_dict</span><span class="o">=</span><span class="n">config_dict</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Logs.configure_logging">
@@ -6912,6 +6936,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">add_logging_level</span><span class="p">(</span><span class="s1">'DBGMED'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">DBGMED_level</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_logging_level</span><span class="p">(</span><span class="s1">'DBGLOW'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">DBGLOW_level</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_logging_level</span><span class="p">(</span><span class="s1">'DEVELOP'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEVELOP_level</span><span class="p">)</span>
+
+        <span class="n">rebase_handler_filenames</span><span class="p">(</span><span class="n">config_dict</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dictConfig</span><span class="p">(</span><span class="n">config_dict</span><span class="p">)</span>
@@ -7776,9 +7802,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="n">cache</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_maxlen</span> <span class="o">=</span> <span class="n">maxlen</span>
         <span class="c1"># save cache files in var/log/cache directory</span>
-        <span class="n">cache_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="n">logs_instance</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_config_dir</span><span class="p">(</span><span class="n">DIR_VAR</span><span class="p">),</span> <span class="s1">'log'</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span> <span class="s1">'cache'</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span>
-        <span class="p">)</span>
+        <span class="n">cache_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">logs_instance</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_vardir</span><span class="p">(),</span> <span class="s1">'log'</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span> <span class="s1">'cache'</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">cache_directory</span><span class="p">):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">cache_directory</span><span class="p">)</span>
