@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>uzsu &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 12. Oktober 2026, commit ca999b4) Dokumentation</title>
+  <title>uzsu &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 12. Oktober 2026, commit 881a4be) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=966e63c0" />
@@ -18,7 +18,7 @@
       <script src="../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c93ad938"></script>
+      <script src="../../_static/documentation_options.js?v=444749b5"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/translations.js?v=9bf55d28"></script>
@@ -855,6 +855,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#pluginfunktionen">Pluginfunktionen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#web-interface">Web Interface</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#beispiel">Beispiel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alarm-einmalige-schaltung">Alarm (einmalige Schaltung)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#datenformat">Datenformat</a></li>
 </ul>
 </li>
@@ -4558,6 +4559,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#pluginfunktionen">Pluginfunktionen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#web-interface">Web Interface</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#beispiel">Beispiel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#alarm-einmalige-schaltung">Alarm (einmalige Schaltung)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#datenformat">Datenformat</a></li>
 </ul>
 </li>
@@ -5319,7 +5321,7 @@
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../lib/shyaml.html">lib.shyaml</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.convert_linenumber"><code class="docutils literal notranslate"><span class="pre">convert_linenumber()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.convert_linenumbers"><code class="docutils literal notranslate"><span class="pre">convert_linenumbers()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.editing_is_enabled"><code class="docutils literal notranslate"><span class="pre">editing_is_enabled()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.get_commentedseq"><code class="docutils literal notranslate"><span class="pre">get_commentedseq()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.get_emptynode"><code class="docutils literal notranslate"><span class="pre">get_emptynode()</span></code></a></li>
@@ -6851,16 +6853,38 @@ Es wird allerdings empfohlen, den ersten Ansatz zu wählen, um etwaige Überschn
 </pre></div>
 </div>
 </section>
+<section id="alarm-einmalige-schaltung">
+<h2>Alarm (einmalige Schaltung)<a class="headerlink" href="#alarm-einmalige-schaltung" title="Link to this heading"></a></h2>
+<p>Ein Eintrag mit <code class="docutils literal notranslate"><span class="pre">once:</span> <span class="pre">True</span></code> schaltet zum nächsten Zeitpunkt und wird danach deaktiviert, vergleichbar mit einem nicht wiederholten Wecker:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sh</span><span class="o">.</span><span class="n">eg</span><span class="o">.</span><span class="n">wohnen</span><span class="o">.</span><span class="n">leuchte</span><span class="o">.</span><span class="n">uzsu</span><span class="p">({</span><span class="s1">'active'</span><span class="p">:</span><span class="kc">True</span><span class="p">,</span> <span class="s1">'list'</span><span class="p">:[</span>
+<span class="p">{</span><span class="s1">'value'</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span> <span class="s1">'active'</span><span class="p">:</span><span class="kc">True</span><span class="p">,</span> <span class="s1">'once'</span><span class="p">:</span><span class="kc">True</span><span class="p">,</span> <span class="s1">'time'</span><span class="p">:</span> <span class="s1">'06:30'</span><span class="p">}]})</span>
+</pre></div>
+</div>
+<p>Schaltung an Werktagen, nicht aber an Feiertagen:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sh</span><span class="o">.</span><span class="n">eg</span><span class="o">.</span><span class="n">wohnen</span><span class="o">.</span><span class="n">leuchte</span><span class="o">.</span><span class="n">uzsu</span><span class="p">({</span><span class="s1">'active'</span><span class="p">:</span><span class="kc">True</span><span class="p">,</span> <span class="s1">'list'</span><span class="p">:[</span>
+<span class="p">{</span><span class="s1">'value'</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span> <span class="s1">'active'</span><span class="p">:</span><span class="kc">True</span><span class="p">,</span> <span class="s1">'rrule'</span><span class="p">:</span><span class="s1">'FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR'</span><span class="p">,</span> <span class="s1">'holidays'</span><span class="p">:</span><span class="s1">'exclude'</span><span class="p">,</span> <span class="s1">'time'</span><span class="p">:</span> <span class="s1">'06:30'</span><span class="p">}]})</span>
+</pre></div>
+</div>
+</section>
 <section id="datenformat">
 <h2>Datenformat<a class="headerlink" href="#datenformat" title="Link to this heading"></a></h2>
 <p>Jedes USZU Item wird als dict-Typ gespeichert. Darin enthalten sind einige allgemeine Informationen und Berechnungen und das Herzstück - die Liste mit den Schaltvorgängen. Jeder Listen-Eintrag ist wiederum ein dict, das aus Key und Value-Paaren besteht. Im Folgenden werden die möglichen Dictionary-Keys gelistet. Nutzt man das USZU Widget der SmartVISU, muss man sich um diese Einträge nicht kümmern.</p>
-<ul class="simple">
+<ul>
 <li><p><strong>dtstart</strong>: Ein datetime Objekt, das den exakten Startwert für den rrule Algorithmus bestimmt. Dieser Parameter ist besonders bei FREQ=MINUTELY rrules relevant.</p></li>
 <li><p><strong>value</strong>: Der Wert, auf den das uzsu_item gesetzt werden soll.</p></li>
 <li><p><strong>active</strong>: <code class="docutils literal notranslate"><span class="pre">True</span></code> wenn die UZSU aktiviert ist, <code class="docutils literal notranslate"><span class="pre">False</span></code> wenn keine Aktualisierungen vorgenommen werden sollen. Dieser Wert kann über die Pluginfunktion activate gesteuert werden.</p></li>
 <li><p><strong>once</strong>: <code class="docutils literal notranslate"><span class="pre">True</span></code> wenn ein Eintrag nach einmaligem Schalten deaktiviert werden soll, <code class="docutils literal notranslate"><span class="pre">False</span></code> wenn ein Eintrag weiterhin evaluiert werden bzw. aktiv bleiben soll. Serien bleiben bis zur letzten Schaltung aktiv.</p></li>
 <li><p><strong>time</strong>: Zeit als String. Entweder eine direkte Zeitangabe wie <code class="docutils literal notranslate"><span class="pre">17:00</span></code> oder eine Kombination mit Sonnenauf- und Untergang wie bei einem crontab, z.B. <code class="docutils literal notranslate"><span class="pre">17:00&lt;sunset</span></code>, <code class="docutils literal notranslate"><span class="pre">sunrise&gt;8:00</span></code>, <code class="docutils literal notranslate"><span class="pre">17:00&lt;sunset</span></code>.</p></li>
 <li><p><strong>rrule</strong>: Hier können Wiederholungsregeln wie in <a class="reference external" href="https://dateutil.readthedocs.io/en/stable/rrule.html">rrule</a> beschrieben festgelegt werden.</p></li>
+<li><p><strong>holidays</strong>: Verknüpft die Wochentage der <code class="docutils literal notranslate"><span class="pre">rrule</span></code> mit dem Feiertagskalender des Cores (<code class="docutils literal notranslate"><span class="pre">etc/holidays.yaml</span></code>). Gilt auch für Serien; das berechnete Wochenraster <code class="docutils literal notranslate"><span class="pre">seriesCalculated</span></code> berücksichtigt Feiertage nicht.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">exclude</span></code>: Schaltung entfällt an Feiertagen (z.B. Mo-Fr, aber nicht an Feiertagen)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">include</span></code>: Schaltung erfolgt an den Wochentagen der <code class="docutils literal notranslate"><span class="pre">rrule</span></code> und zusätzlich an Feiertagen</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">only</span></code>: Schaltung erfolgt nur an Feiertagen, die Wochentage der <code class="docutils literal notranslate"><span class="pre">rrule</span></code> werden ignoriert</p></li>
+</ul>
+<p>Ohne diesen Eintrag (oder mit einem anderen Wert) werden Feiertage nicht berücksichtigt. Hat der Eintrag keine <code class="docutils literal notranslate"><span class="pre">rrule</span></code>, gilt eine tägliche Wiederholung.</p>
+</li>
+<li><p><strong>holidays_scope</strong>: <code class="docutils literal notranslate"><span class="pre">all</span></code> (Standard) berücksichtigt gesetzliche und selbst definierte Feiertage, <code class="docutils literal notranslate"><span class="pre">public</span></code> nur gesetzliche Feiertage.</p></li>
 </ul>
 </section>
 </section>

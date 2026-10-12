@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.metadata &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 12. Oktober 2026, commit ca999b4) Dokumentation</title>
+  <title>lib.metadata &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 12. Oktober 2026, commit 881a4be) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=966e63c0" />
@@ -17,7 +17,7 @@
       <script src="../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c93ad938"></script>
+      <script src="../../_static/documentation_options.js?v=444749b5"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/translations.js?v=9bf55d28"></script>
@@ -852,6 +852,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/uzsu/user_doc.html#pluginfunktionen">Pluginfunktionen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/uzsu/user_doc.html#web-interface">Web Interface</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/uzsu/user_doc.html#beispiel">Beispiel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../plugins/uzsu/user_doc.html#alarm-einmalige-schaltung">Alarm (einmalige Schaltung)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/uzsu/user_doc.html#datenformat">Datenformat</a></li>
 </ul>
 </li>
@@ -4555,6 +4556,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/uzsu/user_doc.html#pluginfunktionen">Pluginfunktionen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/uzsu/user_doc.html#web-interface">Web Interface</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/uzsu/user_doc.html#beispiel">Beispiel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../plugins/uzsu/user_doc.html#alarm-einmalige-schaltung">Alarm (einmalige Schaltung)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/uzsu/user_doc.html#datenformat">Datenformat</a></li>
 </ul>
 </li>
@@ -5316,7 +5318,7 @@
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../lib/shyaml.html">lib.shyaml</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.convert_linenumber"><code class="docutils literal notranslate"><span class="pre">convert_linenumber()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.convert_linenumbers"><code class="docutils literal notranslate"><span class="pre">convert_linenumbers()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.editing_is_enabled"><code class="docutils literal notranslate"><span class="pre">editing_is_enabled()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.get_commentedseq"><code class="docutils literal notranslate"><span class="pre">get_commentedseq()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.get_emptynode"><code class="docutils literal notranslate"><span class="pre">get_emptynode()</span></code></a></li>
@@ -6711,6 +6713,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
 
@@ -6734,6 +6737,41 @@
 
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">META_DESCRIPTION_KEYS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'description'</span><span class="p">,</span> <span class="s1">'description_long'</span><span class="p">,</span> <span class="s1">'valid_list_description'</span><span class="p">)</span>
+<span class="n">_ESCAPED_NEWLINE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'</span><span class="se">\\</span><span class="s1">n[ \t]*\n?'</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_normalize_description_newlines</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Replace literal backslash-n sequences in description texts with real line breaks</span>
+
+<span class="sd">    Single-quoted YAML scalars do not process escapes, so ``'a\\nb'`` is loaded with the</span>
+<span class="sd">    two characters backslash and ``n``. The walk converts the strings (also inside</span>
+<span class="sd">    language dicts and lists) below the keys in ``META_DESCRIPTION_KEYS``, in place.</span>
+<span class="sd">    All other values are left untouched.</span>
+
+<span class="sd">    :param node: loaded metadata (dict, list or scalar)</span>
+<span class="sd">    :return: the same structure, with normalized descriptions</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">_ESCAPED_NEWLINE</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">convert</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">convert</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">node</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">convert</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">META_DESCRIPTION_KEYS</span> <span class="k">else</span> <span class="n">_normalize_description_newlines</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+            <span class="n">node</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">_normalize_description_newlines</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">node</span>
+
 
 <span class="c1"># global variables to take definitions of multiple plugins</span>
 <span class="n">all_itemdefinitions</span> <span class="o">=</span> <span class="p">{}</span>
@@ -6787,7 +6825,7 @@
         <span class="c1"># that situation are already required to keep at the shng base dir</span>
         <span class="n">basedir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">get_basedir</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">'.'</span>
         <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basedir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_filename</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="n">_normalize_description_newlines</span><span class="p">(</span><span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_paramlist</span> <span class="o">=</span> <span class="p">[]</span>

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>modules.admin.api_plugin &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 12. Oktober 2026, commit ca999b4) Dokumentation</title>
+  <title>modules.admin.api_plugin &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 12. Oktober 2026, commit 881a4be) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=966e63c0" />
@@ -17,7 +17,7 @@
       <script src="../../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=c93ad938"></script>
+      <script src="../../../_static/documentation_options.js?v=444749b5"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/translations.js?v=9bf55d28"></script>
@@ -852,6 +852,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../plugins/uzsu/user_doc.html#pluginfunktionen">Pluginfunktionen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../plugins/uzsu/user_doc.html#web-interface">Web Interface</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../plugins/uzsu/user_doc.html#beispiel">Beispiel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../plugins/uzsu/user_doc.html#alarm-einmalige-schaltung">Alarm (einmalige Schaltung)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../plugins/uzsu/user_doc.html#datenformat">Datenformat</a></li>
 </ul>
 </li>
@@ -4555,6 +4556,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../plugins/uzsu/user_doc.html#pluginfunktionen">Pluginfunktionen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../plugins/uzsu/user_doc.html#web-interface">Web Interface</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../plugins/uzsu/user_doc.html#beispiel">Beispiel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../plugins/uzsu/user_doc.html#alarm-einmalige-schaltung">Alarm (einmalige Schaltung)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../plugins/uzsu/user_doc.html#datenformat">Datenformat</a></li>
 </ul>
 </li>
@@ -5316,7 +5318,7 @@
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../lib/shyaml.html">lib.shyaml</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../../lib/shyaml.html#lib.shyaml.convert_linenumber"><code class="docutils literal notranslate"><span class="pre">convert_linenumber()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../lib/shyaml.html#lib.shyaml.convert_linenumbers"><code class="docutils literal notranslate"><span class="pre">convert_linenumbers()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../lib/shyaml.html#lib.shyaml.editing_is_enabled"><code class="docutils literal notranslate"><span class="pre">editing_is_enabled()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../lib/shyaml.html#lib.shyaml.get_commentedseq"><code class="docutils literal notranslate"><span class="pre">get_commentedseq()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../lib/shyaml.html#lib.shyaml.get_emptynode"><code class="docutils literal notranslate"><span class="pre">get_emptynode()</span></code></a></li>
@@ -6966,15 +6968,41 @@
         <span class="k">return</span> <span class="n">response</span></div>
 
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_activate_disabled_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Remove ``plugin_enabled: false`` from section ``id`` of etc/plugin.yaml</span>
+
+<span class="sd">        :param id: section name in etc/plugin.yaml</span>
+<span class="sd">        :return: True if the section was disabled and has been enabled, False if nothing changed</span>
+<span class="sd">        """</span>
+        <span class="n">config_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_config_filename</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_for_old_config</span><span class="p">(</span><span class="n">config_filename</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">plugin_conf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_load_roundtrip</span><span class="p">(</span><span class="n">config_filename</span><span class="p">)</span>
+        <span class="n">sect</span> <span class="o">=</span> <span class="n">plugin_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sect</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">Plugins</span><span class="o">.</span><span class="n">_is_section_enabled</span><span class="p">(</span><span class="n">sect</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">del</span> <span class="n">sect</span><span class="p">[</span><span class="s1">'plugin_enabled'</span><span class="p">]</span>
+        <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_save_roundtrip</span><span class="p">(</span><span class="n">config_filename</span><span class="p">,</span> <span class="n">plugin_conf</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"PluginController: Enabled plugin section '</span><span class="si">{}</span><span class="s2">' to load it"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
 <div class="viewcode-block" id="PluginController.handle_plugin_lifecycle">
 <a class="viewcode-back" href="../../../referenz/module/module_admin.html#modules.admin.api_plugin.PluginController.handle_plugin_lifecycle">[Doku]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">handle_plugin_lifecycle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Load, unload or reload the plugin of section ``id``</span>
+
+<span class="sd">        'load' enables a section that is switched off with ``plugin_enabled: false`` first; the section stays</span>
+<span class="sd">        enabled if loading then fails.</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span> <span class="o">=</span> <span class="n">Plugins</span><span class="o">.</span><span class="n">get_instance</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="s1">'load'</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">return_plugin</span><span class="p">(</span><span class="nb">id</span><span class="p">):</span>
                 <span class="k">return</span> <span class="p">{</span><span class="s1">'result'</span><span class="p">:</span> <span class="s1">'error'</span><span class="p">,</span> <span class="s1">'description'</span><span class="p">:</span> <span class="s2">"Plugin '</span><span class="si">{}</span><span class="s2">' is already loaded"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">)}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_activate_disabled_section</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
             <span class="n">refreshed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">refresh_plugin_config</span><span class="p">()</span>
             <span class="n">plg_conf</span> <span class="o">=</span> <span class="n">refreshed</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">plg_conf</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -7080,7 +7108,8 @@
                 <span class="n">ApiParam</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'action'</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">enum</span><span class="o">=</span><span class="p">[</span><span class="s1">'start'</span><span class="p">,</span> <span class="s1">'stop'</span><span class="p">,</span> <span class="s1">'load'</span><span class="p">,</span> <span class="s1">'unload'</span><span class="p">,</span> <span class="s1">'reload'</span><span class="p">]),</span>
                 <span class="n">ApiParam</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'filename'</span><span class="p">),</span>
             <span class="p">],</span>
-            <span class="n">description</span><span class="o">=</span><span class="s1">'A successful load may add "warnings" (list of strings) to the response, to be shown to the user.'</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">'A successful load may add "warnings" (list of strings) to the response, to be shown to the user. '</span>
+            <span class="s1">'Action load removes "plugin_enabled: false" from the section in etc/plugin.yaml before loading.'</span><span class="p">,</span>
             <span class="n">response_example</span><span class="o">=</span><span class="s1">'{"result": "ok", "warnings": ["..."]}'</span><span class="p">,</span>
         <span class="p">),</span>
     <span class="p">]</span>

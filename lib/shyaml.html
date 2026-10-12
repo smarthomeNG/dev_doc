@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.shyaml &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 12. Oktober 2026, commit ca999b4) Dokumentation</title>
+  <title>lib.shyaml &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 12. Oktober 2026, commit 881a4be) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=966e63c0" />
@@ -18,7 +18,7 @@
       <script src="../_static/search_scorer.js?v=811695eb"></script>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=c93ad938"></script>
+      <script src="../_static/documentation_options.js?v=444749b5"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/translations.js?v=9bf55d28"></script>
@@ -855,6 +855,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../plugins/uzsu/user_doc.html#pluginfunktionen">Pluginfunktionen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../plugins/uzsu/user_doc.html#web-interface">Web Interface</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../plugins/uzsu/user_doc.html#beispiel">Beispiel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../plugins/uzsu/user_doc.html#alarm-einmalige-schaltung">Alarm (einmalige Schaltung)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../plugins/uzsu/user_doc.html#datenformat">Datenformat</a></li>
 </ul>
 </li>
@@ -4558,6 +4559,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../plugins/uzsu/user_doc.html#pluginfunktionen">Pluginfunktionen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../plugins/uzsu/user_doc.html#web-interface">Web Interface</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../plugins/uzsu/user_doc.html#beispiel">Beispiel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../plugins/uzsu/user_doc.html#alarm-einmalige-schaltung">Alarm (einmalige Schaltung)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../plugins/uzsu/user_doc.html#datenformat">Datenformat</a></li>
 </ul>
 </li>
@@ -5319,7 +5321,7 @@
 </ul>
 </li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">lib.shyaml</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="#lib.shyaml.convert_linenumber"><code class="docutils literal notranslate"><span class="pre">convert_linenumber()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#lib.shyaml.convert_linenumbers"><code class="docutils literal notranslate"><span class="pre">convert_linenumbers()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib.shyaml.editing_is_enabled"><code class="docutils literal notranslate"><span class="pre">editing_is_enabled()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib.shyaml.get_commentedseq"><code class="docutils literal notranslate"><span class="pre">get_commentedseq()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib.shyaml.get_emptynode"><code class="docutils literal notranslate"><span class="pre">get_emptynode()</span></code></a></li>
@@ -6703,9 +6705,23 @@ are implemented in this library.</p>
 </dd>
 </dl>
 <dl class="py function">
-<dt class="sig sig-object py" id="lib.shyaml.convert_linenumber">
-<span class="sig-prename descclassname"><span class="pre">lib.shyaml.</span></span><span class="sig-name descname"><span class="pre">convert_linenumber</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">occ</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/shyaml.html#convert_linenumber"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.shyaml.convert_linenumber" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="lib.shyaml.convert_linenumbers">
+<span class="sig-prename descclassname"><span class="pre">lib.shyaml.</span></span><span class="sig-name descname"><span class="pre">convert_linenumbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/shyaml.html#convert_linenumbers"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.shyaml.convert_linenumbers" title="Link to this definition"></a></dt>
+<dd><p>Map the line numbers in a YAML parser message back to the file’s real lines.</p>
+<p>Files are parsed with every line break doubled, so the parser’s line n is line (n + 1) / 2
+of the file. Converts both <code class="docutils literal notranslate"><span class="pre">line</span> <span class="pre">5,</span> <span class="pre">column</span> <span class="pre">9</span></code> and <code class="docutils literal notranslate"><span class="pre">(line:</span> <span class="pre">5)</span></code> references.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameter<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – parser error message</p>
+</dd>
+<dt class="field-even">Rückgabe<span class="colon">:</span></dt>
+<dd class="field-even"><p>message with the real line numbers</p>
+</dd>
+<dt class="field-odd">Rückgabetyp<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="lib.shyaml.editing_is_enabled">

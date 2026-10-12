@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.shyaml &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 12. Oktober 2026, commit ca999b4) Dokumentation</title>
+  <title>lib.shyaml &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 12. Oktober 2026, commit 881a4be) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=966e63c0" />
@@ -17,7 +17,7 @@
       <script src="../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c93ad938"></script>
+      <script src="../../_static/documentation_options.js?v=444749b5"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/translations.js?v=9bf55d28"></script>
@@ -852,6 +852,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/uzsu/user_doc.html#pluginfunktionen">Pluginfunktionen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/uzsu/user_doc.html#web-interface">Web Interface</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/uzsu/user_doc.html#beispiel">Beispiel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../plugins/uzsu/user_doc.html#alarm-einmalige-schaltung">Alarm (einmalige Schaltung)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/uzsu/user_doc.html#datenformat">Datenformat</a></li>
 </ul>
 </li>
@@ -4555,6 +4556,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/uzsu/user_doc.html#pluginfunktionen">Pluginfunktionen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/uzsu/user_doc.html#web-interface">Web Interface</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/uzsu/user_doc.html#beispiel">Beispiel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../plugins/uzsu/user_doc.html#alarm-einmalige-schaltung">Alarm (einmalige Schaltung)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../plugins/uzsu/user_doc.html#datenformat">Datenformat</a></li>
 </ul>
 </li>
@@ -5316,7 +5318,7 @@
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../lib/shyaml.html">lib.shyaml</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.convert_linenumber"><code class="docutils literal notranslate"><span class="pre">convert_linenumber()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.convert_linenumbers"><code class="docutils literal notranslate"><span class="pre">convert_linenumbers()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.editing_is_enabled"><code class="docutils literal notranslate"><span class="pre">editing_is_enabled()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.get_commentedseq"><code class="docutils literal notranslate"><span class="pre">get_commentedseq()</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/shyaml.html#lib.shyaml.get_emptynode"><code class="docutils literal notranslate"><span class="pre">get_emptynode()</span></code></a></li>
@@ -6723,6 +6725,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
@@ -6763,30 +6766,68 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="convert_linenumber">
-<a class="viewcode-back" href="../../lib/shyaml.html#lib.shyaml.convert_linenumber">[Doku]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">convert_linenumber</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">occ</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">occ</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">s2</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'line: '</span><span class="p">)</span> <span class="o">+</span> <span class="mi">6</span> <span class="p">:]</span>
-    <span class="k">elif</span> <span class="n">occ</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'line: '</span><span class="p">)</span> <span class="o">+</span> <span class="mi">6</span>
-        <span class="n">s2</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'line: '</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="o">+</span> <span class="mi">6</span> <span class="p">:]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s1">'*'</span> <span class="o">+</span> <span class="n">s</span>
-    <span class="n">lineold</span> <span class="o">=</span> <span class="n">s2</span><span class="p">[:</span> <span class="n">s2</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">')'</span><span class="p">)]</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">linenew</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">lineold</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
-    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'Unable to correct line number for yaml-file error. Wrong line number is </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lineold</span><span class="p">))</span>
-        <span class="n">linenew</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">lineold</span><span class="p">)</span>
-    <span class="n">lo</span> <span class="o">=</span> <span class="s1">'line '</span> <span class="o">+</span> <span class="n">lineold</span>
-    <span class="n">ln</span> <span class="o">=</span> <span class="s1">'line '</span> <span class="o">+</span> <span class="n">linenew</span>
-    <span class="n">lo2</span> <span class="o">=</span> <span class="s1">'(line: '</span> <span class="o">+</span> <span class="n">lineold</span> <span class="o">+</span> <span class="s1">')'</span>
-    <span class="n">ln2</span> <span class="o">=</span> <span class="s1">'(line: '</span> <span class="o">+</span> <span class="n">linenew</span> <span class="o">+</span> <span class="s1">')'</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">ln</span><span class="p">)</span>
-    <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">lo2</span><span class="p">,</span> <span class="n">ln2</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">s</span></div>
+<span class="n">MERGE_TAG</span> <span class="o">=</span> <span class="s1">'tag:yaml.org,2002:merge'</span>
+<span class="n">_LINE_REFERENCE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'\bline(: | )(\d+)'</span><span class="p">)</span>
 
+
+<div class="viewcode-block" id="convert_linenumbers">
+<a class="viewcode-back" href="../../lib/shyaml.html#lib.shyaml.convert_linenumbers">[Doku]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_linenumbers</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Map the line numbers in a YAML parser message back to the file's real lines.</span>
+
+<span class="sd">    Files are parsed with every line break doubled, so the parser's line n is line (n + 1) / 2</span>
+<span class="sd">    of the file. Converts both ``line 5, column 9`` and ``(line: 5)`` references.</span>
+
+<span class="sd">    :param text: parser error message</span>
+<span class="sd">    :type text: str</span>
+<span class="sd">    :return: message with the real line numbers</span>
+<span class="sd">    :rtype: str</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">_LINE_REFERENCE</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="sa">f</span><span class="s1">'line</span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="si">}{</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="mi">2</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_duplicate_key_warning_loader</span><span class="p">(</span><span class="n">base_loader</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">doubled</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Build a loader class that logs a warning for every key defined twice in one mapping.</span>
+
+<span class="sd">    :param base_loader: loader class to extend</span>
+<span class="sd">    :param source: file name (or other label) shown in the warning</span>
+<span class="sd">    :param doubled: True if the parsed text has every line break doubled</span>
+<span class="sd">    :type source: str</span>
+<span class="sd">    :type doubled: bool</span>
+<span class="sd">    :return: loader class</span>
+<span class="sd">    """</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">DuplicateKeyWarningLoader</span><span class="p">(</span><span class="n">base_loader</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_checked_mappings</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">flatten_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_checked_mappings</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_checked_mappings</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_warn_duplicate_keys</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">flatten_mapping</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_warn_duplicate_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+            <span class="n">first_lines</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">key_node</span><span class="p">,</span> <span class="n">_value_node</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key_node</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">MERGE_TAG</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">key_node</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span> <span class="n">key_node</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">key_node</span><span class="o">.</span><span class="n">start_mark</span><span class="o">.</span><span class="n">line</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="p">(</span><span class="n">line</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">doubled</span> <span class="k">else</span> <span class="n">line</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">first_lines</span><span class="p">:</span>
+                    <span class="n">first_lines</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">line</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s1">: duplicate key "</span><span class="si">{</span><span class="n">key_node</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1">" in line </span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s1">, first defined in line '</span>
+                        <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">first_lines</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="si">}</span><span class="s1"> - the last definition replaces the earlier ones'</span>
+                    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">DuplicateKeyWarningLoader</span>
 
 
 <div class="viewcode-block" id="yaml_load">
@@ -6815,7 +6856,7 @@
             <span class="n">sdata</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="n">sdata</span> <span class="o">=</span> <span class="n">sdata</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="se">\n\n</span><span class="s1">'</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ordered</span><span class="p">:</span>
-            <span class="n">y</span> <span class="o">=</span> <span class="n">_ordered_load</span><span class="p">(</span><span class="n">sdata</span><span class="p">,</span> <span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">_ordered_load</span><span class="p">(</span><span class="n">sdata</span><span class="p">,</span> <span class="n">_duplicate_key_warning_loader</span><span class="p">(</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">doubled</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">y</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">sdata</span><span class="p">,</span> <span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -6829,10 +6870,7 @@
                 <span class="s1">'The colon (:) following a key has to be followed by a space. The space is missing!</span><span class="se">\n</span><span class="s1">Error in '</span> <span class="o">+</span> <span class="n">estr</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="s1">'(line: '</span> <span class="ow">in</span> <span class="n">estr</span><span class="p">:</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">convert_linenumber</span><span class="p">(</span><span class="n">estr</span><span class="p">)</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">convert_linenumber</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-            <span class="c1">#            estr += '\nNOTE: To find correct line numbers: add 1 to line and divide by 2 -&gt; '+line</span>
-            <span class="n">estr</span> <span class="o">=</span> <span class="n">line</span>
+            <span class="n">estr</span> <span class="o">=</span> <span class="n">convert_linenumbers</span><span class="p">(</span><span class="n">estr</span><span class="p">)</span>
             <span class="n">estr</span> <span class="o">+=</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">NOTE: Look for the error at the expected &lt;block end&gt;, near the second specified line number'</span>
         <span class="k">if</span> <span class="s1">'[Errno 2]'</span> <span class="ow">in</span> <span class="n">estr</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">ignore_notfound</span><span class="p">:</span>
@@ -6870,7 +6908,7 @@
         <span class="n">sdata</span> <span class="o">=</span> <span class="n">string</span>
         <span class="c1">#        sdata = sdata.replace('\n', '\n\n')</span>
         <span class="k">if</span> <span class="n">ordered</span><span class="p">:</span>
-            <span class="n">y</span> <span class="o">=</span> <span class="n">_ordered_load</span><span class="p">(</span><span class="n">sdata</span><span class="p">,</span> <span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">_ordered_load</span><span class="p">(</span><span class="n">sdata</span><span class="p">,</span> <span class="n">_duplicate_key_warning_loader</span><span class="p">(</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">,</span> <span class="s1">'&lt;string&gt;'</span><span class="p">,</span> <span class="n">doubled</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">y</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">sdata</span><span class="p">,</span> <span class="n">yaml</span><span class="o">.</span><span class="n">SafeLoader</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -7098,9 +7136,10 @@
         <span class="n">sdata</span> <span class="o">=</span> <span class="n">sdata</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="se">\n\n</span><span class="s1">'</span><span class="p">)</span>
         <span class="n">y</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">sdata</span><span class="p">,</span> <span class="n">yaml</span><span class="o">.</span><span class="n">RoundTripLoader</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"yaml_load_roundtrip: YAML-file load error: '</span><span class="si">%s</span><span class="s2">'"</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">convert_linenumbers</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"yaml_load_roundtrip: YAML-file load error in </span><span class="si">%s</span><span class="s2">: '</span><span class="si">%s</span><span class="s2">'"</span> <span class="o">%</span> <span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">message</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">raise_on_error</span><span class="p">:</span>
-            <span class="k">raise</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
         <span class="n">y</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">return</span> <span class="n">y</span></div>
 
