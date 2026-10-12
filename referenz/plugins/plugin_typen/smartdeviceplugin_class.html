@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Class SmartDevicePlugin &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 9. Oktober 2026, commit e2b8abd) Dokumentation</title>
+  <title>Class SmartDevicePlugin &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 12. Oktober 2026, commit 650913d) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=966e63c0" />
@@ -18,7 +18,7 @@
       <script src="../../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=3c8e2f49"></script>
+      <script src="../../../_static/documentation_options.js?v=14f150e1"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/translations.js?v=9bf55d28"></script>
@@ -6821,6 +6821,11 @@ definieren. Der folgende Code ist ein Ausschnitt aus der commands-Definition des
 </div>
 <p>Die einzelnen Attribute der command-Definitionen sind in der Datei <cite>./dev/sample_smartdevice_plugin/commands.py</cite> im
 Detail erklärt.</p>
+<p><code class="docutils literal notranslate"><span class="pre">read</span></code> und <code class="docutils literal notranslate"><span class="pre">write</span></code> beschreiben die Operationen am Gerät: <code class="docutils literal notranslate"><span class="pre">read</span></code> erlaubt, den Wert vom Gerät anzufordern (auf
+Anforderung, beim Start, zyklisch oder in Lesegruppen), <code class="docutils literal notranslate"><span class="pre">write</span></code> erlaubt, Item-Werte an das Gerät zu senden. Werte
+empfangen dagegen alle Items, die an das Kommando gebunden sind - unabhängig davon, ob der Wert aus einer Antwort,
+einer Meldung des Geräts oder aus dem Plugin-Code stammt. Ein Kommando ohne <code class="docutils literal notranslate"><span class="pre">read</span></code> und ohne <code class="docutils literal notranslate"><span class="pre">write</span></code> ist ein
+Pseudo-Kommando: es existiert nicht auf dem Gerät und wird nur vom Plugin befüllt.</p>
 </section>
 <section id="protokoll">
 <h2>Protokoll<a class="headerlink" href="#protokoll" title="Link to this heading"></a></h2>
@@ -7001,6 +7006,8 @@ and converting data from shng to the device and vice versa.</p>
 <p>In the easiest cases, only the command specifications in <code class="docutils literal notranslate"><span class="pre">commands.py</span></code>
 and possibly DT-* datatype classes are needed; additional command classes
 or plugin code can be added if necessary or desired.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">suspend_item</span></code> parameter uses the pause item slot of SmartPlugin;
+pausing suspends device communication instead of stopping the plugin.</p>
 <p>The implemented methods are described below, inherited methods are only
 described if changed/overwritten.</p>
 <dl class="py attribute">
@@ -7014,15 +7021,46 @@ described if changed/overwritten.</p>
 <dd><p>free-form additional text, appended at the end of the standalone usage message</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="lib.model.smartdeviceplugin.SmartDevicePlugin.remove_item">
-<span class="sig-name descname"><span class="pre">remove_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/lib/model/smartdeviceplugin.html#SmartDevicePlugin.remove_item"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartdeviceplugin.SmartDevicePlugin.remove_item" title="Link to this definition"></a></dt>
-<dd><p>remove item references from plugin</p>
-<dl class="field-list simple">
-<dt class="field-odd">Rückgabetyp<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
-</dd>
-</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lib.model.smartdeviceplugin.SmartDevicePlugin.TRANSPORTS">
+<span class="sig-name descname"><span class="pre">TRANSPORTS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">TransportRule</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></span><a class="headerlink" href="#lib.model.smartdeviceplugin.SmartDevicePlugin.TRANSPORTS" title="Link to this definition"></a></dt>
+<dd><p>rules selecting the transport, first match wins</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lib.model.smartdeviceplugin.SmartDevicePlugin.PROTOCOL">
+<span class="sig-name descname"><span class="pre">PROTOCOL</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">[</span></span><span class="pre">SDPProtocol</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#lib.model.smartdeviceplugin.SmartDevicePlugin.PROTOCOL" title="Link to this definition"></a></dt>
+<dd><p>protocol type or class to wrap the transport in, None for none (or the protocol parameter)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lib.model.smartdeviceplugin.SmartDevicePlugin.COMMAND_CLASS">
+<span class="sig-name descname"><span class="pre">COMMAND_CLASS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">[</span></span><span class="pre">SDPCommand</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#lib.model.smartdeviceplugin.SmartDevicePlugin.COMMAND_CLASS" title="Link to this definition"></a></dt>
+<dd><p>command class or its name in lib.model.sdp.command, None for the command_class parameter or SDPCommand</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lib.model.smartdeviceplugin.SmartDevicePlugin.LINE_TERMINATED">
+<span class="sig-name descname"><span class="pre">LINE_TERMINATED</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#lib.model.smartdeviceplugin.SmartDevicePlugin.LINE_TERMINATED" title="Link to this definition"></a></dt>
+<dd><p>line-based device: commands end with the terminator parameter, replies are read up to it</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lib.model.smartdeviceplugin.SmartDevicePlugin.JSON_MOVE_KEYS">
+<span class="sig-name descname"><span class="pre">JSON_MOVE_KEYS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></span><a class="headerlink" href="#lib.model.smartdeviceplugin.SmartDevicePlugin.JSON_MOVE_KEYS" title="Link to this definition"></a></dt>
+<dd><p>keys moved from the JSON-RPC data dict root to its params (JSON-RPC protocol only)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lib.model.smartdeviceplugin.SmartDevicePlugin.CUSTOM_TOKEN">
+<span class="sig-name descname"><span class="pre">CUSTOM_TOKEN</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">CustomTokenSpec</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#lib.model.smartdeviceplugin.SmartDevicePlugin.CUSTOM_TOKEN" title="Link to this definition"></a></dt>
+<dd><p>custom commands addressing one of several devices by a custom attribute, None for none</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lib.model.smartdeviceplugin.SmartDevicePlugin.template_vars">
+<span class="sig-name descname"><span class="pre">template_vars</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ChainMap</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#lib.model.smartdeviceplugin.SmartDevicePlugin.template_vars" title="Link to this definition"></a></dt>
+<dd><p>values for {PARAM:…} and {CUSTOM_PARAMn:…} command templates; falls back to the plugin parameters</p>
 </dd></dl>
 
 <dl class="py method">
@@ -7047,6 +7085,17 @@ configuration methods</p>
 <dt class="sig sig-object py" id="lib.model.smartdeviceplugin.SmartDevicePlugin.resume">
 <span class="sig-name descname"><span class="pre">resume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/lib/model/smartdeviceplugin.html#SmartDevicePlugin.resume"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartdeviceplugin.SmartDevicePlugin.resume" title="Link to this definition"></a></dt>
 <dd><p>disabled suspended mode, network/serial connections are resumed</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.model.smartdeviceplugin.SmartDevicePlugin.on_pause_item_change">
+<span class="sig-name descname"><span class="pre">on_pause_item_change</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paused</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/lib/model/smartdeviceplugin.html#SmartDevicePlugin.on_pause_item_change"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartdeviceplugin.SmartDevicePlugin.on_pause_item_change" title="Link to this definition"></a></dt>
+<dd><p>Suspend or resume device communication.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Rückgabetyp<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -7094,14 +7143,40 @@ configuration methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="lib.model.smartdeviceplugin.SmartDevicePlugin.parse_item">
 <span class="sig-name descname"><span class="pre">parse_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/lib/model/smartdeviceplugin.html#SmartDevicePlugin.parse_item"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartdeviceplugin.SmartDevicePlugin.parse_item" title="Link to this definition"></a></dt>
-<dd><p>Default plugin parse_item method. Is called when the plugin is
-initialized. The plugin can, corresponding to its attribute keywords,
-decide what to do with the item in future, like adding it to an
-internal array for future reference
-:type item: 
-:param item:    The item to process.
-:rtype: <span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>
-:return:        Recall function for item updates</p>
+<dd><p>Bind the item; the suspend item is registered as pause item.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameter<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>item</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="../../../lib/item_class_item.html#lib.item.item.Item" title="lib.item.item.Item"><code class="xref py py-class docutils literal notranslate"><span class="pre">Item</span></code></a></span>) – the item to parse</p>
+</dd>
+<dt class="field-even">Rückgabetyp<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+<dt class="field-odd">Rückgabe<span class="colon">:</span></dt>
+<dd class="field-odd"><p>update_item if the item needs change notifications, else None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.model.smartdeviceplugin.SmartDevicePlugin.custom_tokens">
+<span class="sig-name descname"><span class="pre">custom_tokens</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/lib/model/smartdeviceplugin.html#SmartDevicePlugin.custom_tokens"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartdeviceplugin.SmartDevicePlugin.custom_tokens" title="Link to this definition"></a></dt>
+<dd><p>Values of custom attribute <code class="docutils literal notranslate"><span class="pre">index</span></code> (default: the custom command index), each once.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Rückgabetyp<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.model.smartdeviceplugin.SmartDevicePlugin.update_lookup">
+<span class="sig-name descname"><span class="pre">update_lookup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/lib/model/smartdeviceplugin.html#SmartDevicePlugin.update_lookup"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartdeviceplugin.SmartDevicePlugin.update_lookup" title="Link to this definition"></a></dt>
+<dd><p>Replace lookup <code class="docutils literal notranslate"><span class="pre">table</span></code> by <code class="docutils literal notranslate"><span class="pre">data</span></code> and update the items holding its other modes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Rückgabetyp<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -7128,7 +7203,8 @@ SmartHomeNG. It should write the changed value out to the device
 <span class="sig-name descname"><span class="pre">send_command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_result</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_on_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/lib/model/smartdeviceplugin.html#SmartDevicePlugin.send_command"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartdeviceplugin.SmartDevicePlugin.send_command" title="Link to this definition"></a></dt>
 <dd><p>Sends the specified command to the device providing &lt;value&gt; as data
 Not providing data will issue a read command, trying to read the value
-from the device and writing it to the associated item.</p>
+from the device and writing it to the associated item. Commands not
+declared readable in commands.py are not requested.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameter<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -7182,7 +7258,7 @@ and update value</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="lib.model.smartdeviceplugin.SmartDevicePlugin.read_all_commands">
 <span class="sig-name descname"><span class="pre">read_all_commands</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/lib/model/smartdeviceplugin.html#SmartDevicePlugin.read_all_commands"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartdeviceplugin.SmartDevicePlugin.read_all_commands" title="Link to this definition"></a></dt>
-<dd><p>Triggers all configured read commands or all configured commands of given group</p>
+<dd><p>Triggers all configured read commands or all configured commands of given group; group ‚0‘ is all commands</p>
 </dd></dl>
 
 <dl class="py method">
@@ -7230,7 +7306,7 @@ Possible to check only for reading or writing</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="lib.model.smartdeviceplugin.SmartDevicePlugin.set_custom_item">
 <span class="sig-name descname"><span class="pre">set_custom_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/lib/model/smartdeviceplugin.html#SmartDevicePlugin.set_custom_item"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.model.smartdeviceplugin.SmartDevicePlugin.set_custom_item" title="Link to this definition"></a></dt>
-<dd><p>this is called by parse_items if xx_custom[123] is found.</p>
+<dd><p>Called by parse_item() for each custom attribute value found. Overwrite as needed.</p>
 </dd></dl>
 
 <dl class="py method">
