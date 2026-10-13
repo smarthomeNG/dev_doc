@@ -6892,6 +6892,9 @@ bereits mit einem leeren Ergebnis beantwortet.</p></li>
 <li><p>Das Plugin wiederholt deshalb die Anfrage für alle Gruppenadressen ohne Wert nach 2, 5 und 15 Sekunden
 (<code class="docutils literal notranslate"><span class="pre">KNXD_CACHEREAD_RETRY_DELAYS</span></code> in <code class="docutils literal notranslate"><span class="pre">globals.py</span></code>). Trifft während dieser Zeit ein Telegramm für die Gruppenadresse
 ein, wird sie nicht mehr angefragt.</p></li>
+<li><p>Die Wiederholungen laufen über eine eigene, kurzlebige Verbindung zum knxd (Wartezeit auf die Antworten:
+<code class="docutils literal notranslate"><span class="pre">KNXD_CACHEREAD_TIMEOUT</span></code>). Beobachtet wurde, dass der knxd auf der Verbindung des Gruppenmonitors nach einer
+Cache-Anfrage alle Gruppentelegramme ablehnt. Das Plugin sendet dort deshalb nur die Cache-Anfragen der Startphase.</p></li>
 <li><p>Gruppenadressen, die danach noch ohne Wert sind, werden mit dem Loglevel aus dem Parameter
 <code class="docutils literal notranslate"><span class="pre">loglevel_knxd_cache_problems</span></code> protokolliert und im Webinterface rot markiert.</p></li>
 <li><p>Werte, die ein Item beim Start initialisieren, tragen im Source den Suffix <code class="docutils literal notranslate"><span class="pre">:init</span></code>, z.B.
