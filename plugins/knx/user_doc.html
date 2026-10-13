@@ -1026,6 +1026,11 @@
 <li class="toctree-l5"><a class="reference internal" href="#plugin-yaml">plugin.yaml</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="#knxd-einrichten">knxd einrichten</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#group-cache">Group Cache</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#funktionsweise-des-cache-lesens">Funktionsweise des Cache-Lesens</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="#beispiele">Beispiele</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#statistiken">Statistiken</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#web-interface">Web Interface</a></li>
@@ -3382,6 +3387,11 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">knx</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#konfiguration">Konfiguration</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#plugin-yaml">plugin.yaml</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#knxd-einrichten">knxd einrichten</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#group-cache">Group Cache</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#funktionsweise-des-cache-lesens">Funktionsweise des Cache-Lesens</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#beispiele">Beispiele</a></li>
@@ -6766,8 +6776,8 @@ Logger. Die einzelnen Abschnitte müssen in die <code class="docutils literal no
 <section id="logic-yaml">
 <h4>logic.yaml<a class="headerlink" href="#logic-yaml" title="Link to this heading"></a></h4>
 <p>Bitte die Dokumentation lesen, die aus den Metadaten der <code class="docutils literal notranslate"><span class="pre">plugin.yaml</span></code> erzeugt wurde.</p>
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">etc/logics.yaml</span><a class="headerlink" href="#id1" title="Link to this code"></a></div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">etc/logics.yaml</span><a class="headerlink" href="#id2" title="Link to this code"></a></div>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">logic1</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">knx_dpt</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9</span>
 <span class="w">    </span><span class="nt">knx_listen</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1/1/7</span>
@@ -6783,7 +6793,7 @@ Logger. Die einzelnen Abschnitte müssen in die <code class="docutils literal no
 <p>Im Kontext des KNX Plugins beinhaltet das Dictionary <code class="docutils literal notranslate"><span class="pre">trigger</span></code> folgende Elemente:</p>
 <ul class="simple">
 <li><p>trigger[‚by‘] Protokoll (‚KNX‘)</p></li>
-<li><p>trigger[‚source‘] Physikalische Adresse der Paketquelle</p></li>
+<li><p>trigger[‚source‘] Physikalische Adresse der Paketquelle; bei Startwerten (siehe unten) mit dem Suffix <code class="docutils literal notranslate"><span class="pre">:init</span></code></p></li>
 <li><p>trigger[‚value‘] der Wert</p></li>
 </ul>
 </section>
@@ -6811,6 +6821,88 @@ Werte die ungültig sind und vom KNX geliefert werden entsprechen in Python eine
 Da dieser Wert (Not a Number) in Items von SmartHomeNG nicht zugelassen ist wird die Zuweisung auf ein Item unterdrückt
 und eine Warnung in das entsprechende Logfile geschrieben (wenn konfiguriert)</p>
 </section>
+</section>
+</section>
+<section id="knxd-einrichten">
+<span id="id1"></span><h2>knxd einrichten<a class="headerlink" href="#knxd-einrichten" title="Link to this heading"></a></h2>
+<p>Das Plugin verbindet sich per TCP mit dem knxd (Standard: <code class="docutils literal notranslate"><span class="pre">127.0.0.1:6720</span></code>, siehe Plugin Parameter <code class="docutils literal notranslate"><span class="pre">host</span></code> und <code class="docutils literal notranslate"><span class="pre">port</span></code>).
+Die Beispiele gelten für knxd 0.14 und neuer, der seine Konfiguration aus einer INI Datei liest.</p>
+<section id="group-cache">
+<h3>Group Cache<a class="headerlink" href="#group-cache" title="Link to this heading"></a></h3>
+<p>Items mit dem Attribut <code class="docutils literal notranslate"><span class="pre">knx_cache</span></code> werden beim Start aus dem Group Cache des knxd initialisiert. Der knxd hat nur dann
+einen Group Cache, wenn er dafür konfiguriert ist. Die vom knxd mitgelieferte Vorlage <code class="docutils literal notranslate"><span class="pre">systemd/knxd.conf</span></code>
+enthält keine entsprechende Option:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">KNXD_OPTS</span><span class="o">=</span><span class="s2">"-e 0.0.1 -E 0.0.2:8 -u /tmp/eib -b ip:"</span>
+</pre></div>
+</div>
+<p>Ohne Group Cache lehnt der knxd die Cache-Anfragen des Plugins ab. Das Plugin schreibt dann eine Warnung ins Log und
+alle Items mit <code class="docutils literal notranslate"><span class="pre">knx_cache</span></code> behalten ihren Startwert.</p>
+<p>Der Group Cache wird in der INI Datei mit der Option <code class="docutils literal notranslate"><span class="pre">cache</span></code> im Abschnitt <code class="docutils literal notranslate"><span class="pre">[main]</span></code> eingeschaltet. Ihr Wert ist der
+Name eines Abschnitts. Hat der Group Cache keine eigenen Parameter, muss dieser Abschnitt nicht existieren.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hinweis</p>
+<p>Der Group Cache sollte über die INI Datei eingeschaltet werden. Die Kommandozeilen-Option <code class="docutils literal notranslate"><span class="pre">-c</span></code> (<code class="docutils literal notranslate"><span class="pre">--GroupCache</span></code>)
+ist veraltet und wird vom knxd beim Start in dieselbe <code class="docutils literal notranslate"><span class="pre">cache</span></code> Option umgewandelt. Eine Rückmeldung aus der Praxis
+berichtet, dass der Cache mit <code class="docutils literal notranslate"><span class="pre">-c</span></code> nicht funktioniert, mit der INI Datei dagegen schon.
+Die Ursache ist nicht geklärt. Bei der Umstellung hilft <code class="docutils literal notranslate"><span class="pre">knxd_args</span></code> (siehe unten).</p>
+</div>
+<p>Beispiel für <code class="docutils literal notranslate"><span class="pre">/etc/knxd.ini</span></code> mit einer KNX/IP-Schnittstelle als Tunnel (entspricht <code class="docutils literal notranslate"><span class="pre">-b</span> <span class="pre">ipt:&lt;IP&gt;</span></code>):</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">/etc/knxd.ini</span><a class="headerlink" href="#id3" title="Link to this code"></a></div>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[main]</span>
+<span class="na">addr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0.0.1</span>
+<span class="na">client-addrs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">0.0.2:8</span>
+<span class="na">connections</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">interface</span>
+<span class="na">systemd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">systemd</span>
+<span class="na">cache</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">cache</span>
+
+<span class="k">[interface]</span>
+<span class="na">driver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">ipt</span>
+<span class="na">ip-address</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">192.168.10.38</span>
+
+<span class="k">[systemd]</span>
+
+<span class="k">[cache]</span>
+<span class="na">max-size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1000</span>
+</pre></div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">addr</span></code> ist die KNX Adresse des knxd (entspricht <code class="docutils literal notranslate"><span class="pre">-e</span></code>), <code class="docutils literal notranslate"><span class="pre">client-addrs</span></code> der Adressbereich für seine Clients
+(<code class="docutils literal notranslate"><span class="pre">-E</span></code>). Beide müssen zur eigenen KNX Installation passen. <code class="docutils literal notranslate"><span class="pre">max-size</span></code> begrenzt die Zahl der gespeicherten
+Gruppenadressen und kann entfallen.</p>
+<p>Der knxd wird mit dieser Datei gestartet, indem in <code class="docutils literal notranslate"><span class="pre">/etc/knxd.conf</span></code> (bei Betrieb mit systemd) nur diese Zeile steht:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">KNXD_OPTS</span><span class="o">=/</span><span class="n">etc</span><span class="o">/</span><span class="n">knxd</span><span class="o">.</span><span class="n">ini</span>
+</pre></div>
+</div>
+<p>Wird der knxd ohne systemd betrieben, muss er selbst auf dem TCP Port lauschen. Dafür wird in <code class="docutils literal notranslate"><span class="pre">[main]</span></code> bei
+<code class="docutils literal notranslate"><span class="pre">connections</span></code> ein zusätzlicher Abschnitt mit <code class="docutils literal notranslate"><span class="pre">server</span> <span class="pre">=</span> <span class="pre">knxd_tcp</span></code> (Port 6720) eingetragen. Bei systemd übernimmt
+das <code class="docutils literal notranslate"><span class="pre">knxd.socket</span></code>.</p>
+<p>Bestehende Kommandozeilen-Optionen können mit dem Programm <code class="docutils literal notranslate"><span class="pre">knxd_args</span></code> in eine INI Datei umgewandelt werden.
+Die Konfiguration lässt sich mit <code class="docutils literal notranslate"><span class="pre">stop-after-setup</span> <span class="pre">=</span> <span class="pre">true</span></code> im Abschnitt <code class="docutils literal notranslate"><span class="pre">[main]</span></code> prüfen: der knxd beendet sich
+dann nach dem Einlesen der Datei.</p>
+</section>
+<section id="funktionsweise-des-cache-lesens">
+<h3>Funktionsweise des Cache-Lesens<a class="headerlink" href="#funktionsweise-des-cache-lesens" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Der knxd speichert im Arbeitsspeicher nur Telegramme (Schreiben und Antworten), die nach seinem Start über den Bus
+gelaufen sind. Direkt nach einem Neustart des knxd ist der Cache leer.</p></li>
+<li><p>Fehlt eine Gruppenadresse im Cache, sendet der knxd ein Lesetelegramm auf den Bus und wartet darauf nur 75 ms.
+Antwortet das Gerät später, wird die Antwort zwar im Cache gespeichert, die Cache-Anfrage des Plugins ist dann aber
+bereits mit einem leeren Ergebnis beantwortet.</p></li>
+<li><p>Das Plugin wiederholt deshalb die Anfrage für alle Gruppenadressen ohne Wert nach 2, 5 und 15 Sekunden
+(<code class="docutils literal notranslate"><span class="pre">KNXD_CACHEREAD_RETRY_DELAYS</span></code> in <code class="docutils literal notranslate"><span class="pre">globals.py</span></code>). Trifft während dieser Zeit ein Telegramm für die Gruppenadresse
+ein, wird sie nicht mehr angefragt.</p></li>
+<li><p>Gruppenadressen, die danach noch ohne Wert sind, werden mit dem Loglevel aus dem Parameter
+<code class="docutils literal notranslate"><span class="pre">loglevel_knxd_cache_problems</span></code> protokolliert und im Webinterface rot markiert.</p></li>
+<li><p>Werte, die ein Item beim Start initialisieren, tragen im Source den Suffix <code class="docutils literal notranslate"><span class="pre">:init</span></code>, z.B.
+<code class="docutils literal notranslate"><span class="pre">knx:1.1.5:ga=1/1/1:init</span></code>. Das betrifft die Antworten des knxd-Caches (<code class="docutils literal notranslate"><span class="pre">knx_cache</span></code>), die verspätete Antwort des
+Busses auf eine vom knxd gestellte Leseanforderung und die erste Antwort auf ein <code class="docutils literal notranslate"><span class="pre">knx_init</span></code>. Schreibtelegramme
+(z.B. von einem Taster) sind nie markiert, auch nicht während der Startphase. Der Source beginnt weiterhin mit der
+physikalischen Adresse, bestehende Muster wie <code class="docutils literal notranslate"><span class="pre">^KNX:1.1.4:ga</span></code> treffen also weiter zu.
+Mit dem Suffix lassen sich Startwerte filtern, z.B. in der stateengine mit
+<code class="docutils literal notranslate"><span class="pre">se_manual_exclude:</span> <span class="pre">^KNX:.*:init$</span></code>, damit sie nicht als manueller Eingriff zählen.</p></li>
+<li><p>Das Gerät, das den Wert liefern soll, muss für das Kommunikationsobjekt in der ETS das Lese-Flag gesetzt haben.</p></li>
+</ul>
 </section>
 </section>
 <section id="beispiele">
@@ -6843,6 +6935,8 @@ Unter dem ersten Tab werden die Items die das Plugin nutzen übersichtlich darge
 <p>Wenn es Items gibt, die mit dem Attribut <code class="docutils literal notranslate"><span class="pre">knx_cache</span></code> und einer Gruppenadresse konfiguriert wurden wird SmartHomeNG beim Start
 diese Gruppenadressen vom knxd abfragen.
 Wenn die Werte der Gruppenadressen zu diesem Zeitpunkt nicht im knxd vorliegen wird dieser eine Leseanforderung absetzten um die Werte zu bekommen.
+Dabei wartet der knxd nur 75 ms auf die Antwort, das Plugin fragt unbeantwortete Gruppenadressen deshalb nach 2, 5 und 15 Sekunden erneut ab
+(siehe <a class="reference internal" href="#knxd-einrichten"><span class="std std-ref">knxd einrichten</span></a>).
 Schlägt der Versuch fehl oder sind aus anderem Grund keine Werte im Cache des knxd vorhanden dann sendet dieser ein fehlerhaftes Datenpaket
 in dem nur Absender und Empfängeradresse enthalten sind. Die weiteren 2 Bytes mit Kontroll- und Dateninformationen fehlen jedoch.
 Daraus lässt sich auch nicht feststellen, ob die Empfängeradresse eine physikalische Adresse oder eine Gruppenadresse ist.
