@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 13. Oktober 2026, commit 881a4be) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 13. Oktober 2026, commit 5f9af50) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=966e63c0" />
@@ -17,7 +17,7 @@
       <script src="../../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=7132b921"></script>
+      <script src="../../../_static/documentation_options.js?v=74315712"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/translations.js?v=9bf55d28"></script>
@@ -8150,7 +8150,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Shutting down asyncio loop and thread...'</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">put_command_to_run_queue</span><span class="p">(</span><span class="s1">'STOP'</span><span class="p">)</span>
-        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pluginThread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'_asyncio_loop_thread of plugin stopped'</span><span class="p">)</span>
@@ -8310,13 +8309,12 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Writing command '</span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2">' to run-queue"</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="c1"># Send a command to plugin_coro</span>
-                <span class="n">asyncio</span><span class="o">.</span><span class="n">run_coroutine_threadsafe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">command</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span><span class="p">)</span>
+                <span class="c1"># Send a command to plugin_coro and wait until it is enqueued</span>
+                <span class="n">asyncio</span><span class="o">.</span><span class="n">run_coroutine_threadsafe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">command</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span><span class="p">)</span><span class="o">.</span><span class="n">result</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">"put_command_to_run_queue: Exception '</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">' in _run_queue.put (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_asyncio_loop</span><span class="si">=}</span><span class="s2">)"</span>
                 <span class="p">)</span>
-            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">"put_command_to_run_queue: Cannot write command '</span><span class="si">{</span><span class="n">command</span><span class="si">}</span><span class="s2">' to run-queue, no active event-loop"</span>
