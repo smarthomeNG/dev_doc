@@ -91,6 +91,15 @@ Intervall in Sekunden für die periodische Erreichbarkeitsprüfung der konfiguri
  - Standardwert: **60**
 
 
+media_server
+============
+
+
+Medienserver für die Suche (Item search): Name des UPnP-Medienservers (friendlyName, wird per SSDP gesucht) oder die URL seiner Gerätebeschreibung (http://...). Leer schaltet die Suche ab.
+
+ - Datentyp: **str**
+
+
 ==============
 Item Attribute
 ==============
@@ -330,6 +339,9 @@ media
                  - :dir:`file` **save_playlist** (`bool`, True schreiben, um die gesamte aktuelle Warteschlange als über browse.playlist_bank gewählte MusicCast-Playliste zu speichern (dieselbe Bank-Auswahl wie browse.playlist_add, aber ganze Warteschlange statt einzelnem Eintrag).)
                  - :dir:`file` **clear** (`bool`, True schreiben, um die Warteschlange zu leeren.)
                  - :dir:`file` **update** (`bool`, True schreiben, um die Warteschlange neu abzufragen.)
+             - :dir:`folder` **search** (`str`,  Titel oder Album auf dem UPnP-Medienserver (Plugin-Parameter media_server) suchen und das beste Ergebnis abspielen. Ein Text wird geschrieben, z.B. 'help' (Titel enthält alle Wörter), '"let it be"' (Phrase), 'album: abbey road' (nur Alben) oder 'title: yesterday' (nur Titel). Läuft asynchron, Ergebnis siehe status/result. Wirkt auf die Zone main; eine neuere Suche ersetzt eine laufende.)
+                 - :dir:`file` **status** (`str`, Zustand der letzten Suche (idle, busy, ok, no_match, path_failed, error, disabled). Nur-Lese-Zugriff.)
+                 - :dir:`file` **result** (`dict`, Abgespielter Treffer als Dict mit type (album/track), title, album, path. Leer, wenn nichts abgespielt wurde. Nur-Lese-Zugriff.)
          - :dir:`folder` **tuner** (`foo`, Tuner-Steuerung (AM/FM))
              - :dir:`folder` **band** (`str`, AM/FM/DAB, je nach Gerät. RDS ist kein eigenes Band, sondern Zusatzinfo im FM-Betrieb.)
                  - :dir:`file` **values** (`list`, Gültige Werte für Band. Nur-Lese-Zugriff.)
