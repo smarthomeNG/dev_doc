@@ -1,5 +1,5 @@
 const DOCUMENTATION_OPTIONS = {
-    VERSION: 'v1.12.2.2 develop (Stand 19. Oktober 2026, commit 406afca)',
+    VERSION: 'v1.12.2.2 develop (Stand 20. Oktober 2026, commit 84f6fd0)',
     LANGUAGE: 'de',
     COLLAPSE_INDEX: false,
     BUILDER: 'html',
