@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scheduler-API &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 22. Oktober 2026, commit 84f6fd0) Dokumentation</title>
+  <title>Scheduler-API &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 22. Oktober 2026, commit 4bc9552) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=966e63c0" />
@@ -18,7 +18,7 @@
       <script src="../_static/search_scorer.js?v=811695eb"></script>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=d0de818e"></script>
+      <script src="../_static/documentation_options.js?v=318be083"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/translations.js?v=9bf55d28"></script>
@@ -6181,6 +6181,8 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Scheduler-API</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#module-lib.scheduler">lib.scheduler</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#lib.scheduler.LeaveLogic"><code class="docutils literal notranslate"><span class="pre">LeaveLogic</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#lib.scheduler.TaskCancelled"><code class="docutils literal notranslate"><span class="pre">TaskCancelled</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="#lib.scheduler.RunningTask"><code class="docutils literal notranslate"><span class="pre">RunningTask</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="#lib.scheduler.Scheduler"><code class="docutils literal notranslate"><span class="pre">Scheduler</span></code></a></li>
 </ul>
 </li>
@@ -6781,6 +6783,124 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 </dd></dl>
 
+<dl class="py exception">
+<dt class="sig sig-object py" id="lib.scheduler.TaskCancelled">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">lib.scheduler.</span></span><span class="sig-name descname"><span class="pre">TaskCancelled</span></span><a class="reference internal" href="../_modules/lib/scheduler.html#TaskCancelled"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.scheduler.TaskCancelled" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseException</span></code></p>
+<p>Raised inside a running logic whose cancellation was requested.</p>
+<p>Derives from BaseException, so <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception</span></code> in logic code does not swallow it;
+<code class="docutils literal notranslate"><span class="pre">try/finally</span></code> blocks still run.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="lib.scheduler.RunningTask">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">lib.scheduler.</span></span><span class="sig-name descname"><span class="pre">RunningTask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">thread_ident</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">started</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">started_at</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runtime_warn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trigger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warnings_logged</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runtime_cancel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cancel_requested_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cancel_requests</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/scheduler.html#RunningTask"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.scheduler.RunningTask" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A scheduler task currently executing on a worker thread.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variablen<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>thread_ident</strong> – <code class="docutils literal notranslate"><span class="pre">threading.get_ident()</span></code> of the worker thread running the task</p></li>
+<li><p><strong>task_type</strong> – kind of task object - logic, item (cycle/cron/autotimer) or method</p></li>
+<li><p><strong>name</strong> – scheduler name of the task</p></li>
+<li><p><strong>started</strong> – <code class="docutils literal notranslate"><span class="pre">time.monotonic()</span></code> at task start, basis for runtime calculation</p></li>
+<li><p><strong>started_at</strong> – wall-clock time at task start, for display</p></li>
+<li><p><strong>runtime_warn</strong> – seconds after which a runtime warning is logged; 0 disables warnings</p></li>
+<li><p><strong>trigger</strong> – trigger dict of a logic (by, source, source_details, dest, value), None for other types</p></li>
+<li><p><strong>warnings_logged</strong> – number of runtime warnings logged so far</p></li>
+<li><p><strong>task_id</strong> – unique id of this task run, assigned by the registry; distinguishes runs on the same thread</p></li>
+<li><p><strong>runtime_cancel</strong> – seconds after which cancellation is requested automatically; 0 disables</p></li>
+<li><p><strong>cancel_requested_at</strong> – <code class="docutils literal notranslate"><span class="pre">time.monotonic()</span></code> of the first cancellation request, None if never requested</p></li>
+<li><p><strong>cancel_requests</strong> – number of cancellation requests so far</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lib.scheduler.RunningTask.thread_ident">
+<span class="sig-name descname"><span class="pre">thread_ident</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#lib.scheduler.RunningTask.thread_ident" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lib.scheduler.RunningTask.task_type">
+<span class="sig-name descname"><span class="pre">task_type</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'logic'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'item'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'method'</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#lib.scheduler.RunningTask.task_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lib.scheduler.RunningTask.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#lib.scheduler.RunningTask.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lib.scheduler.RunningTask.started">
+<span class="sig-name descname"><span class="pre">started</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#lib.scheduler.RunningTask.started" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lib.scheduler.RunningTask.started_at">
+<span class="sig-name descname"><span class="pre">started_at</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime</span></span><a class="headerlink" href="#lib.scheduler.RunningTask.started_at" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lib.scheduler.RunningTask.runtime_warn">
+<span class="sig-name descname"><span class="pre">runtime_warn</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#lib.scheduler.RunningTask.runtime_warn" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lib.scheduler.RunningTask.trigger">
+<span class="sig-name descname"><span class="pre">trigger</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#lib.scheduler.RunningTask.trigger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lib.scheduler.RunningTask.warnings_logged">
+<span class="sig-name descname"><span class="pre">warnings_logged</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#lib.scheduler.RunningTask.warnings_logged" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lib.scheduler.RunningTask.task_id">
+<span class="sig-name descname"><span class="pre">task_id</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#lib.scheduler.RunningTask.task_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lib.scheduler.RunningTask.runtime_cancel">
+<span class="sig-name descname"><span class="pre">runtime_cancel</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#lib.scheduler.RunningTask.runtime_cancel" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lib.scheduler.RunningTask.cancel_requested_at">
+<span class="sig-name descname"><span class="pre">cancel_requested_at</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#lib.scheduler.RunningTask.cancel_requested_at" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lib.scheduler.RunningTask.cancel_requests">
+<span class="sig-name descname"><span class="pre">cancel_requests</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></span><a class="headerlink" href="#lib.scheduler.RunningTask.cancel_requests" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="lib.scheduler.RunningTask.runtime">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">runtime</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#lib.scheduler.RunningTask.runtime" title="Link to this definition"></a></dt>
+<dd><p>Seconds since the task started.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="lib.scheduler.RunningTask.cancellable">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cancellable</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#lib.scheduler.RunningTask.cancellable" title="Link to this definition"></a></dt>
+<dd><p>True if the task may be cancelled; only logics are.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="lib.scheduler.RunningTask.next_warn_after">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">next_warn_after</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#lib.scheduler.RunningTask.next_warn_after" title="Link to this definition"></a></dt>
+<dd><p>Runtime in seconds at which the next warning is due (runtime_warn, then each doubling); None if disabled.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="lib.scheduler.RunningTask.overdue">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">overdue</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#lib.scheduler.RunningTask.overdue" title="Link to this definition"></a></dt>
+<dd><p>True once the task has exceeded its runtime_warn threshold.</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="lib.scheduler.Scheduler">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">lib.scheduler.</span></span><span class="sig-name descname"><span class="pre">Scheduler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">smarthome</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/scheduler.html#Scheduler"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.scheduler.Scheduler" title="Link to this definition"></a></dt>
@@ -6842,6 +6962,60 @@
 <dl class="field-list simple">
 <dt class="field-odd">Rückgabe<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list with names of worker threads</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.scheduler.Scheduler.get_running_tasks">
+<span class="sig-name descname"><span class="pre">get_running_tasks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/scheduler.html#Scheduler.get_running_tasks"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.scheduler.Scheduler.get_running_tasks" title="Link to this definition"></a></dt>
+<dd><p>Get the tasks currently executing on worker threads</p>
+<dl class="field-list simple">
+<dt class="field-odd">Rückgabetyp<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<a class="reference internal" href="#lib.scheduler.RunningTask" title="lib.scheduler.RunningTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">RunningTask</span></code></a>]</span></p>
+</dd>
+<dt class="field-even">Rückgabe<span class="colon">:</span></dt>
+<dd class="field-even"><p>copies of the running tasks, in no particular order</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.scheduler.Scheduler.get_task_stack">
+<span class="sig-name descname"><span class="pre">get_task_stack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">thread_ident</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/scheduler.html#Scheduler.get_task_stack"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.scheduler.Scheduler.get_task_stack" title="Link to this definition"></a></dt>
+<dd><p>Get the current call stack of a running task</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameter<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>thread_ident</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – thread ident of the worker thread running the task</p>
+</dd>
+<dt class="field-even">Rückgabetyp<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>] | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+<dt class="field-odd">Rückgabe<span class="colon">:</span></dt>
+<dd class="field-odd"><p>stack as formatted by <code class="docutils literal notranslate"><span class="pre">traceback.format_stack()</span></code>, None if no task runs on that thread</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lib.scheduler.Scheduler.cancel_task">
+<span class="sig-name descname"><span class="pre">cancel_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">thread_ident</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/lib/scheduler.html#Scheduler.cancel_task"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#lib.scheduler.Scheduler.cancel_task" title="Link to this definition"></a></dt>
+<dd><p>Request cancellation of a running logic by raising TaskCancelled in it</p>
+<p>The exception arrives at the logic’s next bytecode boundary: immediately in a busy loop,
+but only after a blocking call (sleep, wait, lock, socket, subprocess) returns. A logic
+swallowing it (bare <code class="docutils literal notranslate"><span class="pre">except:</span></code>) keeps running; repeated requests raise it again.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameter<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>thread_ident</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – thread ident of the worker thread running the task</p></li>
+<li><p><strong>task_id</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – <code class="docutils literal notranslate"><span class="pre">task_id</span></code> of the task run to cancel; a different run on that thread is not touched</p></li>
+</ul>
+</dd>
+<dt class="field-even">Rückgabetyp<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'requested'</span></code>, <code class="docutils literal notranslate"><span class="pre">'not_found'</span></code>, <code class="docutils literal notranslate"><span class="pre">'not_cancellable'</span></code>]</span></p>
+</dd>
+<dt class="field-odd">Rückgabe<span class="colon">:</span></dt>
+<dd class="field-odd"><p>‚requested‘, ‚not_found‘ (no such task run) or ‚not_cancellable‘ (not a logic)</p>
 </dd>
 </dl>
 </dd></dl>

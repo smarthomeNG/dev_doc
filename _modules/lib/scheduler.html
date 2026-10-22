@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.scheduler &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 22. Oktober 2026, commit 84f6fd0) Dokumentation</title>
+  <title>lib.scheduler &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 22. Oktober 2026, commit 4bc9552) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=966e63c0" />
@@ -17,7 +17,7 @@
       <script src="../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=d0de818e"></script>
+      <script src="../../_static/documentation_options.js?v=318be083"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/translations.js?v=9bf55d28"></script>
@@ -6178,6 +6178,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../lib/scheduler.html">Scheduler-API</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../lib/scheduler.html#module-lib.scheduler">lib.scheduler</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/scheduler.html#lib.scheduler.LeaveLogic"><code class="docutils literal notranslate"><span class="pre">LeaveLogic</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/scheduler.html#lib.scheduler.TaskCancelled"><code class="docutils literal notranslate"><span class="pre">TaskCancelled</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/scheduler.html#lib.scheduler.RunningTask"><code class="docutils literal notranslate"><span class="pre">RunningTask</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/scheduler.html#lib.scheduler.Scheduler"><code class="docutils literal notranslate"><span class="pre">Scheduler</span></code></a></li>
 </ul>
 </li>
@@ -6778,6 +6780,10 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">ctypes</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">lib.env</span>
 
@@ -6814,6 +6820,191 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">LeaveLogic</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span>  <span class="c1"># declare a label for 'raise LeaveLogic'</span></div>
 
+
+
+<div class="viewcode-block" id="TaskCancelled">
+<a class="viewcode-back" href="../../lib/scheduler.html#lib.scheduler.TaskCancelled">[Doku]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TaskCancelled</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Raised inside a running logic whose cancellation was requested.</span>
+
+<span class="sd">    Derives from BaseException, so ``except Exception`` in logic code does not swallow it;</span>
+<span class="sd">    ``try/finally`` blocks still run.</span>
+<span class="sd">    """</span></div>
+
+
+
+<span class="n">TaskType</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s1">'logic'</span><span class="p">,</span> <span class="s1">'item'</span><span class="p">,</span> <span class="s1">'method'</span><span class="p">]</span>
+
+<span class="n">CancelResult</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">Literal</span><span class="p">[</span><span class="s1">'requested'</span><span class="p">,</span> <span class="s1">'not_found'</span><span class="p">,</span> <span class="s1">'not_cancellable'</span><span class="p">]</span>
+
+<span class="n">DEFAULT_RUNTIME_WARN</span> <span class="o">=</span> <span class="mi">120</span>  <span class="c1"># seconds a scheduler task may run before a warning is logged; 0 disables</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_seconds</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""``value`` as a threshold in seconds (a number &gt;= 0), None if invalid."""</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">seconds</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">seconds</span> <span class="k">if</span> <span class="n">seconds</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_set_async_exc</span><span class="p">(</span><span class="n">thread_ident</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Raise ``exc`` in thread ``thread_ident`` at its next bytecode boundary; None clears a pending one.</span>
+
+<span class="sd">    A thread blocked in a C call (sleep, lock, socket, ...) gets the exception only when that call returns.</span>
+<span class="sd">    """</span>
+    <span class="n">ctypes</span><span class="o">.</span><span class="n">pythonapi</span><span class="o">.</span><span class="n">PyThreadState_SetAsyncExc</span><span class="p">(</span>
+        <span class="n">ctypes</span><span class="o">.</span><span class="n">c_ulong</span><span class="p">(</span><span class="n">thread_ident</span><span class="p">),</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">exc</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">py_object</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="RunningTask">
+<a class="viewcode-back" href="../../lib/scheduler.html#lib.scheduler.RunningTask">[Doku]</a>
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RunningTask</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    A scheduler task currently executing on a worker thread.</span>
+
+<span class="sd">    :ivar thread_ident: ``threading.get_ident()`` of the worker thread running the task</span>
+<span class="sd">    :ivar task_type: kind of task object - logic, item (cycle/cron/autotimer) or method</span>
+<span class="sd">    :ivar name: scheduler name of the task</span>
+<span class="sd">    :ivar started: ``time.monotonic()`` at task start, basis for runtime calculation</span>
+<span class="sd">    :ivar started_at: wall-clock time at task start, for display</span>
+<span class="sd">    :ivar runtime_warn: seconds after which a runtime warning is logged; 0 disables warnings</span>
+<span class="sd">    :ivar trigger: trigger dict of a logic (by, source, source_details, dest, value), None for other types</span>
+<span class="sd">    :ivar warnings_logged: number of runtime warnings logged so far</span>
+<span class="sd">    :ivar task_id: unique id of this task run, assigned by the registry; distinguishes runs on the same thread</span>
+<span class="sd">    :ivar runtime_cancel: seconds after which cancellation is requested automatically; 0 disables</span>
+<span class="sd">    :ivar cancel_requested_at: ``time.monotonic()`` of the first cancellation request, None if never requested</span>
+<span class="sd">    :ivar cancel_requests: number of cancellation requests so far</span>
+<span class="sd">    """</span>
+
+    <span class="n">thread_ident</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">task_type</span><span class="p">:</span> <span class="n">TaskType</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">started</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">started_at</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span>
+    <span class="n">runtime_warn</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">trigger</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">warnings_logged</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">task_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">runtime_cancel</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">cancel_requested_at</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">cancel_requests</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">runtime</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Seconds since the task started."""</span>
+        <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">started</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cancellable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""True if the task may be cancelled; only logics are."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_type</span> <span class="o">==</span> <span class="s1">'logic'</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">next_warn_after</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Runtime in seconds at which the next warning is due (runtime_warn, then each doubling); None if disabled."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_warn</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_warn</span> <span class="o">*</span> <span class="mi">2</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">warnings_logged</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">overdue</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""True once the task has exceeded its runtime_warn threshold."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_warn</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runtime_warn</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_TaskRegistry</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Thread-safe registry of the tasks currently running on scheduler worker threads, keyed by thread ident."""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">RunningTask</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_task_ids</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="n">RunningTask</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Register ``task`` as running on its worker thread and assign its ``task_id``."""</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="n">task</span><span class="o">.</span><span class="n">task_id</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_task_ids</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">[</span><span class="n">task</span><span class="o">.</span><span class="n">thread_ident</span><span class="p">]</span> <span class="o">=</span> <span class="n">task</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thread_ident</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunningTask</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Remove and return the task running on ``thread_ident``, None if there is none.</span>
+
+<span class="sd">        A cancellation requested but not yet delivered is withdrawn, so it cannot hit the</span>
+<span class="sd">        worker's next task. Must be called from the worker thread itself; a TaskCancelled</span>
+<span class="sd">        raised while this runs means it has to be called again (see ``Scheduler._finish_task()``).</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">thread_ident</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">task</span><span class="o">.</span><span class="n">cancel_requested_at</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">_set_async_exc</span><span class="p">(</span><span class="n">thread_ident</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">thread_ident</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">request_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thread_ident</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">now</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">CancelResult</span><span class="p">,</span> <span class="n">RunningTask</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Raise TaskCancelled in the task ``task_id`` running on ``thread_ident``.</span>
+
+<span class="sd">        Every call raises it again, since a delivered exception may have been swallowed by the task.</span>
+
+<span class="sd">        :return: result and a copy of the task (None if not found)</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">thread_ident</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">task</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">task</span><span class="o">.</span><span class="n">task_id</span> <span class="o">!=</span> <span class="n">task_id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s1">'not_found'</span><span class="p">,</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="o">.</span><span class="n">cancellable</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s1">'not_cancellable'</span><span class="p">,</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+            <span class="n">_set_async_exc</span><span class="p">(</span><span class="n">thread_ident</span><span class="p">,</span> <span class="n">TaskCancelled</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">cancel_requested_at</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">task</span><span class="o">.</span><span class="n">cancel_requested_at</span> <span class="o">=</span> <span class="n">now</span>
+            <span class="n">task</span><span class="o">.</span><span class="n">cancel_requests</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="s1">'requested'</span><span class="p">,</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">due_cancels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">now</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">RunningTask</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Copies of the tasks that passed their runtime_cancel at monotonic time ``now`` and were not cancelled yet."""</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">runtime_cancel</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">t</span><span class="o">.</span><span class="n">cancel_requested_at</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">now</span> <span class="o">-</span> <span class="n">t</span><span class="o">.</span><span class="n">started</span> <span class="o">&gt;=</span> <span class="n">t</span><span class="o">.</span><span class="n">runtime_cancel</span>
+            <span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">snapshot</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">RunningTask</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Copies of all running tasks."""</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thread_ident</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunningTask</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Copy of the task running on ``thread_ident``, None if there is none."""</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">thread_ident</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">task</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">due_warnings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">now</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">RunningTask</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Tasks whose next runtime warning is due at monotonic time ``now``, marked as warned.</span>
+
+<span class="sd">        A task is returned at most once per call; if several thresholds have passed since the last</span>
+<span class="sd">        call, ``warnings_logged`` skips to the highest one passed.</span>
+<span class="sd">        """</span>
+        <span class="n">due</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">threshold</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">next_warn_after</span>
+                <span class="k">if</span> <span class="n">threshold</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">now</span> <span class="o">-</span> <span class="n">task</span><span class="o">.</span><span class="n">started</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">while</span> <span class="n">threshold</span> <span class="o">&lt;=</span> <span class="n">now</span> <span class="o">-</span> <span class="n">task</span><span class="o">.</span><span class="n">started</span><span class="p">:</span>
+                    <span class="n">task</span><span class="o">.</span><span class="n">warnings_logged</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">threshold</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">next_warn_after</span>
+                <span class="n">due</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataclasses</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">task</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">due</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">_PriorityQueue</span><span class="p">:</span>
@@ -6902,6 +7093,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_runc</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Condition</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cycle_items</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># store items for dynamic cycles {'item2.property.path': {name1, name2, ...}}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_running</span> <span class="o">=</span> <span class="n">_TaskRegistry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reported_invalid_runtime_warn</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">global</span> <span class="n">_scheduler_instance</span>
         <span class="k">if</span> <span class="n">_scheduler_instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -7003,6 +7196,87 @@
         <span class="k">return</span> <span class="n">worker_names</span></div>
 
 
+<div class="viewcode-block" id="Scheduler.get_running_tasks">
+<a class="viewcode-back" href="../../lib/scheduler.html#lib.scheduler.Scheduler.get_running_tasks">[Doku]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_running_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">RunningTask</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Get the tasks currently executing on worker threads</span>
+
+<span class="sd">        :return: copies of the running tasks, in no particular order</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_running</span><span class="o">.</span><span class="n">snapshot</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Scheduler.get_task_stack">
+<a class="viewcode-back" href="../../lib/scheduler.html#lib.scheduler.Scheduler.get_task_stack">[Doku]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_task_stack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thread_ident</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Get the current call stack of a running task</span>
+
+<span class="sd">        :param thread_ident: thread ident of the worker thread running the task</span>
+<span class="sd">        :return: stack as formatted by ``traceback.format_stack()``, None if no task runs on that thread</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_running</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">thread_ident</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_current_frames</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">thread_ident</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">frame</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_stack</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Scheduler.cancel_task">
+<a class="viewcode-back" href="../../lib/scheduler.html#lib.scheduler.Scheduler.cancel_task">[Doku]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cancel_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thread_ident</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">task_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CancelResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Request cancellation of a running logic by raising TaskCancelled in it</span>
+
+<span class="sd">        The exception arrives at the logic's next bytecode boundary: immediately in a busy loop,</span>
+<span class="sd">        but only after a blocking call (sleep, wait, lock, socket, subprocess) returns. A logic</span>
+<span class="sd">        swallowing it (bare ``except:``) keeps running; repeated requests raise it again.</span>
+
+<span class="sd">        :param thread_ident: thread ident of the worker thread running the task</span>
+<span class="sd">        :param task_id: ``task_id`` of the task run to cancel; a different run on that thread is not touched</span>
+<span class="sd">        :return: 'requested', 'not_found' (no such task run) or 'not_cancellable' (not a logic)</span>
+<span class="sd">        """</span>
+        <span class="n">result</span><span class="p">,</span> <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_running</span><span class="o">.</span><span class="n">request_cancel</span><span class="p">(</span><span class="n">thread_ident</span><span class="p">,</span> <span class="n">task_id</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="s1">'requested'</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_task_logger</span><span class="p">(</span><span class="n">task</span><span class="p">)</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">task_type</span><span class="si">}</span><span class="s1">) cancellation requested after </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">runtime</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1"> s '</span>
+                <span class="sa">f</span><span class="s1">'(request </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">cancel_requests</span><span class="si">}</span><span class="s1">)'</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_task_logger</span><span class="p">(</span><span class="n">task</span><span class="p">:</span> <span class="n">RunningTask</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Logger for messages about ``task``: the logic's own logger for logics, the scheduler logger otherwise."""</span>
+        <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">task_type</span> <span class="o">==</span> <span class="s1">'logic'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">logger</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_task_runtimes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">now</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Check running tasks against their runtime thresholds.</span>
+
+<span class="sd">        Logs a warning with the current stack for each task that passed its next runtime_warn</span>
+<span class="sd">        threshold, and requests cancellation of each logic that passed its runtime_cancel.</span>
+
+<span class="sd">        :param now: ``time.monotonic()`` value to check against, defaults to the current one</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">now</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_running</span><span class="o">.</span><span class="n">due_warnings</span><span class="p">(</span><span class="n">now</span><span class="p">):</span>
+            <span class="n">stack</span> <span class="o">=</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_task_stack</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">thread_ident</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[</span><span class="s1">'(not available)</span><span class="se">\n</span><span class="s1">'</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_task_logger</span><span class="p">(</span><span class="n">task</span><span class="p">)</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">task_type</span><span class="si">}</span><span class="s1">) running for </span><span class="si">{</span><span class="n">now</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">task</span><span class="o">.</span><span class="n">started</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1"> s '</span>
+                <span class="sa">f</span><span class="s1">'(runtime_warn </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">runtime_warn</span><span class="si">:</span><span class="s1">g</span><span class="si">}</span><span class="s1"> s, thread </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">thread_ident</span><span class="si">}</span><span class="s1">), current stack:</span><span class="se">\n</span><span class="si">{</span><span class="n">stack</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">)</span>
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_running</span><span class="o">.</span><span class="n">due_cancels</span><span class="p">(</span><span class="n">now</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_task_logger</span><span class="p">(</span><span class="n">task</span><span class="p">)</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">task_type</span><span class="si">}</span><span class="s1">) exceeded runtime_cancel </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">runtime_cancel</span><span class="si">:</span><span class="s1">g</span><span class="si">}</span><span class="s1"> s, cancelling'</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cancel_task</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">thread_ident</span><span class="p">,</span> <span class="n">task</span><span class="o">.</span><span class="n">task_id</span><span class="p">)</span>
+
 <div class="viewcode-block" id="Scheduler.run">
 <a class="viewcode-back" href="../../lib/scheduler.html#lib.scheduler.Scheduler.run">[Doku]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -7103,6 +7377,10 @@
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Exception: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1"> while searching scheduler for due tasks. Traceback: </span><span class="si">{</span><span class="n">tb_str</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
             <span class="k">finally</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_check_task_runtimes</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Exception: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1"> while checking task runtimes'</span><span class="p">)</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">shng_status</span><span class="p">[</span><span class="s1">'code'</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">20</span><span class="p">:</span>
@@ -7603,19 +7881,141 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_worker</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">alive</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_runc</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_runc</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runq</span><span class="o">.</span><span class="n">qsize</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_runc</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">prio</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">by</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runq</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="k">finally</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_runc</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">by</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">by</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">TaskCancelled</span><span class="p">:</span>
+                <span class="c1"># cancellation delivered after _task() caught the first one; the task is already finished</span>
+                <span class="n">threading</span><span class="o">.</span><span class="n">current_thread</span><span class="p">()</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">'idle'</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_task_type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TaskType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Classify a scheduler task object the way ``_dispatch_task()`` executes it."""</span>
+        <span class="n">class_name</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">if</span> <span class="n">class_name</span> <span class="o">==</span> <span class="s1">'Logic'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">'logic'</span>
+        <span class="k">if</span> <span class="n">class_name</span> <span class="o">==</span> <span class="s1">'Item'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">'item'</span>
+        <span class="k">return</span> <span class="s1">'method'</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_logic_trigger</span><span class="p">(</span><span class="n">by</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Build the ``trigger`` dict handed to a logic.</span>
+
+<span class="sd">        A dict ``source`` (item/cron/cycle trigger) is flattened: ``source`` becomes its item path,</span>
+<span class="sd">        or its 'source' entry ('cron'/'cycle') if no item is given; its 'details' go to ``source_details``.</span>
+<span class="sd">        """</span>
+        <span class="n">source_details</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">source_details</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'details'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
+            <span class="n">src</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'item'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">src</span> <span class="o">==</span> <span class="s1">''</span><span class="p">:</span>
+                <span class="n">src</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'source'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="n">src</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">'by'</span><span class="p">:</span> <span class="n">by</span><span class="p">,</span> <span class="s1">'source'</span><span class="p">:</span> <span class="n">source</span><span class="p">,</span> <span class="s1">'source_details'</span><span class="p">:</span> <span class="n">source_details</span><span class="p">,</span> <span class="s1">'dest'</span><span class="p">:</span> <span class="n">dest</span><span class="p">,</span> <span class="s1">'value'</span><span class="p">:</span> <span class="n">value</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_global_runtime_warn</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Global runtime warning threshold in seconds (``runtime_warn`` in smarthome.yaml, changeable live).</span>
+
+<span class="sd">        An invalid value is replaced by ``DEFAULT_RUNTIME_WARN`` and logged once per distinct invalid value.</span>
+<span class="sd">        """</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_runtime_warn</span>
+        <span class="n">runtime_warn</span> <span class="o">=</span> <span class="n">_parse_seconds</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">runtime_warn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">runtime_warn</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reported_invalid_runtime_warn</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reported_invalid_runtime_warn</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"smarthome.yaml: invalid runtime_warn '</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">' (must be a number &gt;= 0), using </span><span class="si">{</span><span class="n">DEFAULT_RUNTIME_WARN</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">DEFAULT_RUNTIME_WARN</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_logic_seconds</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">task_type</span><span class="p">:</span> <span class="n">TaskType</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        A logic's threshold attribute ``attr`` (logic.yaml) in seconds.</span>
+
+<span class="sd">        ``default`` applies to other task types, to logics without the attribute, and replaces an</span>
+<span class="sd">        invalid value, which is logged.</span>
+<span class="sd">        """</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="s1">'logic'</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">default</span>
+        <span class="n">seconds</span> <span class="o">=</span> <span class="n">_parse_seconds</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">seconds</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: invalid </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2"> '</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">' (must be a number &gt;= 0), using </span><span class="si">{</span><span class="n">default</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">default</span>
+        <span class="k">return</span> <span class="n">seconds</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_task_frames</span><span class="p">(</span><span class="n">tb</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">traceback</span><span class="o">.</span><span class="n">StackSummary</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Frames of traceback ``tb`` inside the task code, i.e. below the last frame of this module."""</span>
+        <span class="n">frames</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">extract_tb</span><span class="p">(</span><span class="n">tb</span><span class="p">)</span>
+        <span class="n">own</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">frame</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">frames</span><span class="p">)</span> <span class="k">if</span> <span class="n">frame</span><span class="o">.</span><span class="n">filename</span> <span class="o">==</span> <span class="vm">__file__</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">traceback</span><span class="o">.</span><span class="n">StackSummary</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span><span class="n">frames</span><span class="p">[</span><span class="n">own</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span> <span class="k">if</span> <span class="n">own</span> <span class="k">else</span> <span class="n">frames</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_finish_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thread_ident</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunningTask</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Remove the task of ``thread_ident`` from the registry, withdrawing an undelivered cancellation.</span>
+
+<span class="sd">        A cancellation delivered while the registry is being updated is absorbed and the update</span>
+<span class="sd">        retried; once the task is removed, no new cancellation can target it.</span>
+<span class="sd">        """</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_running</span><span class="o">.</span><span class="n">finish</span><span class="p">(</span><span class="n">thread_ident</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">TaskCancelled</span><span class="p">:</span>
+                <span class="k">continue</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">by</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">threading</span><span class="o">.</span><span class="n">current_thread</span><span class="p">()</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-        <span class="c1"># logger = logging.getLogger('_task.' + name)</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Execute a task on the current worker thread, tracking it as running for its duration.</span>
 
+<span class="sd">        The worker thread carries the task name while the task runs and 'idle' afterwards.</span>
+<span class="sd">        A cancelled task (TaskCancelled) is logged with the task code frames it was interrupted in.</span>
+<span class="sd">        """</span>
+        <span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">current_thread</span><span class="p">()</span>
+        <span class="n">thread</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="n">task_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_running</span><span class="o">.</span><span class="n">start</span><span class="p">(</span>
+            <span class="n">RunningTask</span><span class="p">(</span>
+                <span class="n">thread_ident</span><span class="o">=</span><span class="n">thread</span><span class="o">.</span><span class="n">ident</span><span class="p">,</span>
+                <span class="n">task_type</span><span class="o">=</span><span class="n">task_type</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">started</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">(),</span>
+                <span class="n">started_at</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shtime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+                <span class="n">runtime_warn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_logic_seconds</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">task_type</span><span class="p">,</span> <span class="s1">'runtime_warn'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_global_runtime_warn</span><span class="p">()),</span>
+                <span class="n">runtime_cancel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_logic_seconds</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">task_type</span><span class="p">,</span> <span class="s1">'runtime_cancel'</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                <span class="n">trigger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_logic_trigger</span><span class="p">(</span><span class="n">by</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="s1">'logic'</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">cancelled_in</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dispatch_task</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">by</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">TaskCancelled</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">cancelled_in</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task_frames</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finish_task</span><span class="p">(</span><span class="n">thread</span><span class="o">.</span><span class="n">ident</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">cancelled_in</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_task_logger</span><span class="p">(</span><span class="n">task</span><span class="p">)</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">task_type</span><span class="si">}</span><span class="s1">) cancelled after </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">runtime</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1"> s, interrupted in:</span><span class="se">\n</span><span class="s1">'</span>
+                    <span class="o">+</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cancelled_in</span><span class="o">.</span><span class="n">format</span><span class="p">())</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">task</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">task</span><span class="o">.</span><span class="n">warnings_logged</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_task_logger</span><span class="p">(</span><span class="n">task</span><span class="p">)</span><span class="o">.</span><span class="n">notice</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">task_type</span><span class="si">}</span><span class="s1">) finished after </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">runtime</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1"> s'</span><span class="p">)</span>
+            <span class="n">thread</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">'idle'</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_dispatch_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">by</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Execute a task according to its type (logic, item or method)."""</span>
         <span class="c1"># logger.warning(f'task {obj} ({obj.__class__.__name__}) with {value} by {by} source {source}')</span>
         <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'Logic'</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_execute_logic_task</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">by</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
@@ -7662,8 +8062,6 @@
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">tasks_logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Method </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> exception: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
-        <span class="n">threading</span><span class="o">.</span><span class="n">current_thread</span><span class="p">()</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">'idle'</span>
-
     <span class="k">def</span><span class="w"> </span><span class="nf">_execute_logic_task</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logic</span><span class="p">,</span> <span class="n">by</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Execute a logic from _task method</span>
@@ -7675,15 +8073,8 @@
         <span class="n">name</span> <span class="o">=</span> <span class="s1">'logics.'</span> <span class="o">+</span> <span class="n">logic</span><span class="o">.</span><span class="n">name</span>
         <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
-        <span class="n">source_details</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="n">source_details</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'details'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
-            <span class="n">src</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'item'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">src</span> <span class="o">==</span> <span class="s1">''</span><span class="p">:</span>
-                <span class="c1"># get source ('cron' or 'cycle')</span>
-                <span class="n">src</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'source'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
-            <span class="n">source</span> <span class="o">=</span> <span class="n">src</span>
-        <span class="n">trigger</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'by'</span><span class="p">:</span> <span class="n">by</span><span class="p">,</span> <span class="s1">'source'</span><span class="p">:</span> <span class="n">source</span><span class="p">,</span> <span class="s1">'source_details'</span><span class="p">:</span> <span class="n">source_details</span><span class="p">,</span> <span class="s1">'dest'</span><span class="p">:</span> <span class="n">dest</span><span class="p">,</span> <span class="s1">'value'</span><span class="p">:</span> <span class="n">value</span><span class="p">}</span>  <span class="c1"># noqa</span>
+        <span class="n">trigger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logic_trigger</span><span class="p">(</span><span class="n">by</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">trigger</span><span class="p">[</span><span class="s1">'source'</span><span class="p">]</span>
 
         <span class="c1"># TODO: remove comment block? or move to docstring</span>
 

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Standardparameter &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 22. Oktober 2026, commit 84f6fd0) Dokumentation</title>
+  <title>Standardparameter &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 22. Oktober 2026, commit 4bc9552) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=966e63c0" />
@@ -18,7 +18,7 @@
       <script src="../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=d0de818e"></script>
+      <script src="../../_static/documentation_options.js?v=318be083"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/translations.js?v=9bf55d28"></script>
@@ -6179,6 +6179,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../lib/scheduler.html">Scheduler-API</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../lib/scheduler.html#module-lib.scheduler">lib.scheduler</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/scheduler.html#lib.scheduler.LeaveLogic"><code class="docutils literal notranslate"><span class="pre">LeaveLogic</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/scheduler.html#lib.scheduler.TaskCancelled"><code class="docutils literal notranslate"><span class="pre">TaskCancelled</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/scheduler.html#lib.scheduler.RunningTask"><code class="docutils literal notranslate"><span class="pre">RunningTask</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/scheduler.html#lib.scheduler.Scheduler"><code class="docutils literal notranslate"><span class="pre">Scheduler</span></code></a></li>
 </ul>
 </li>
@@ -6790,6 +6792,19 @@ nicht angegeben wird, wird die Standardpriorität <strong>3</strong> verwendet.<
 <td><p><strong>Optional</strong>: Dieser Parameter wird durch das Plugin <strong>visu_websocket</strong>
 implementiert. Wenn dieser Parameter auf <strong>True</strong> gesetzt wird, kann die Logik
 von einer Visualisierung aus (z.B. smartVISU) ausgelöst werden.</p></td>
+</tr>
+<tr class="row-odd"><td><p>runtime_warn</p></td>
+<td><p><strong>Optional</strong>: Laufzeit in Sekunden, ab der eine Warnung mit Stacktrace in das Log der Logik
+geschrieben wird, erneut bei jeder Verdopplung der Laufzeit. <code class="docutils literal notranslate"><span class="pre">0</span></code> schaltet die Warnung für
+diese Logik ab. Ohne Angabe gilt <code class="docutils literal notranslate"><span class="pre">runtime_warn</span></code> aus <code class="docutils literal notranslate"><span class="pre">smarthome.yaml</span></code> (Standard: 120).</p></td>
+</tr>
+<tr class="row-even"><td><p>runtime_cancel</p></td>
+<td><p><strong>Optional</strong>: Laufzeit in Sekunden, nach der die Logik automatisch abgebrochen wird (wie über
+den Button „Abbrechen“ auf der Threads-Seite der Admin GUI). Ohne Angabe oder mit <code class="docutils literal notranslate"><span class="pre">0</span></code> wird
+nie automatisch abgebrochen. Der Abbruch löst in der Logik die Exception <code class="docutils literal notranslate"><span class="pre">TaskCancelled</span></code>
+aus: sofort in einer Rechenschleife, bei blockierenden Aufrufen (<code class="docutils literal notranslate"><span class="pre">time.sleep()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Event.wait()</span></code>, Netzwerk, <code class="docutils literal notranslate"><span class="pre">subprocess</span></code>) erst wenn diese zurückkehren. <code class="docutils literal notranslate"><span class="pre">try/finally</span></code>
+Blöcke laufen beim Abbruch. Ein <code class="docutils literal notranslate"><span class="pre">except:</span></code> ohne Exception-Typ verschluckt den Abbruch.</p></td>
 </tr>
 <tr class="row-odd"><td><p>enabled</p></td>
 <td><p><strong>Optional</strong>: <code class="docutils literal notranslate"><span class="pre">enabled</span></code> kann auf <code class="docutils literal notranslate"><span class="pre">False</span></code> gesetzt werden um die Ausführung der Logik

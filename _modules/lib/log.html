@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.log &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 22. Oktober 2026, commit 84f6fd0) Dokumentation</title>
+  <title>lib.log &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 22. Oktober 2026, commit 4bc9552) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=966e63c0" />
@@ -17,7 +17,7 @@
       <script src="../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=d0de818e"></script>
+      <script src="../../_static/documentation_options.js?v=318be083"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/translations.js?v=9bf55d28"></script>
@@ -6178,6 +6178,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../../lib/scheduler.html">Scheduler-API</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../lib/scheduler.html#module-lib.scheduler">lib.scheduler</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/scheduler.html#lib.scheduler.LeaveLogic"><code class="docutils literal notranslate"><span class="pre">LeaveLogic</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/scheduler.html#lib.scheduler.TaskCancelled"><code class="docutils literal notranslate"><span class="pre">TaskCancelled</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../lib/scheduler.html#lib.scheduler.RunningTask"><code class="docutils literal notranslate"><span class="pre">RunningTask</span></code></a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../lib/scheduler.html#lib.scheduler.Scheduler"><code class="docutils literal notranslate"><span class="pre">Scheduler</span></code></a></li>
 </ul>
 </li>
@@ -7032,9 +7034,12 @@
 
         <span class="k">def</span><span class="w"> </span><span class="nf">logForLevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+                <span class="c1"># +1 skips this wrapper, so the record names its caller's function and line</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">'stacklevel'</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'stacklevel'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">logToRoot</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">'stacklevel'</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'stacklevel'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="n">logging</span><span class="o">.</span><span class="n">addLevelName</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">description</span><span class="p">)</span>
