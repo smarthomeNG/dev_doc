@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Threads &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 22. Oktober 2026, commit 4bc9552) Dokumentation</title>
+  <title>Threads &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 22. Oktober 2026, commit 08ae676) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=966e63c0" />
@@ -18,7 +18,7 @@
       <script src="../_static/search_scorer.js?v=811695eb"></script>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=318be083"></script>
+      <script src="../_static/documentation_options.js?v=2cef31ac"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/translations.js?v=9bf55d28"></script>
@@ -4953,7 +4953,11 @@
 <li class="toctree-l3"><a class="reference internal" href="scenes.html#szenen-konfiguration">Szenen Konfiguration</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Threads</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Threads</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#laufende-tasks">Laufende Tasks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#logik-abbrechen">Logik abbrechen</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="logs.html">Logs</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="logs.html#logs-anzeigen">Logs anzeigen</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="logs.html#grosze-log-dateien">Große Log Dateien</a></li>
@@ -5726,6 +5730,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../referenz/logiken/logiken_exceptions.html">Exceptions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../referenz/logiken/logiken_exceptions.html#laufzeit-fehler">Laufzeit Fehler</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../referenz/logiken/logiken_exceptions.html#exception-leavelogic">Exception LeaveLogic</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../referenz/logiken/logiken_exceptions.html#exception-taskcancelled">Exception TaskCancelled</a></li>
 </ul>
 </li>
 </ul>
@@ -6756,7 +6761,44 @@
 des Threads. Einige spezielle Threads werden zusammengefasst und es wird nur die Anzahl Threads dieses Typs angezeigt.
 Dazu gehören Threads vom Typ <strong>CP Server</strong> und <strong>HTTPServer</strong> die von CherryPy erzeugt werden und Threads welche <strong>idle</strong>
 sind.</p>
+<p>Die Liste wird beim Öffnen der Seite geladen und mit dem Button <strong>Aktualisieren</strong> neu geladen.</p>
 <img alt="../_images/threads.jpg" class="screenshot" src="../_images/threads.jpg" />
+<section id="laufende-tasks">
+<span id="index-2"></span><h2>Laufende Tasks<a class="headerlink" href="#laufende-tasks" title="Link to this heading"></a></h2>
+<p>Worker-Threads des Schedulers, die gerade einen Task ausführen, tragen den Namen des Tasks (z.B. <code class="docutils literal notranslate"><span class="pre">logics.meine_logik</span></code>).
+Für sie zeigt die Liste zusätzlich:</p>
+<ul class="simple">
+<li><p><strong>Typ</strong>: <code class="docutils literal notranslate"><span class="pre">logic</span></code> für Logiken, <code class="docutils literal notranslate"><span class="pre">item</span></code> für Item-Zyklen, Crontabs und Autotimer, <code class="docutils literal notranslate"><span class="pre">method</span></code> für Scheduler-Einträge
+von Plugins und Core.</p></li>
+<li><p><strong>Laufzeit</strong>: Zeit seit dem Start des Tasks. Hat der Task die Schwelle <code class="docutils literal notranslate"><span class="pre">runtime_warn</span></code> überschritten, wird die Laufzeit
+hervorgehoben (Standard 120 Sekunden, einstellbar in <code class="docutils literal notranslate"><span class="pre">smarthome.yaml</span></code>, für Logiken auch pro Logik, siehe
+<a class="reference internal" href="../referenz/logiken/logiken_standardparameter.html"><span class="doc">Standardparameter von Logiken</span></a>).</p></li>
+</ul>
+<p>Beim Überschreiten von <code class="docutils literal notranslate"><span class="pre">runtime_warn</span></code> und erneut bei jeder Verdopplung der Laufzeit wird zusätzlich eine Warnung mit dem
+aktuellen Stacktrace des Tasks geloggt, für Logiken in das Log der Logik.</p>
+<p>Der Button <strong>Stack</strong> zeigt die Stelle im Code, an der der Task gerade ausgeführt wird. Wechselt die Stelle zwischen zwei
+Aufrufen, läuft der Task in einer Schleife. Bleibt sie gleich, wartet er in einem blockierenden Aufruf.</p>
+</section>
+<section id="logik-abbrechen">
+<span id="admin-threads-abbrechen"></span><span id="index-3"></span><h2>Logik abbrechen<a class="headerlink" href="#logik-abbrechen" title="Link to this heading"></a></h2>
+<p>Laufende Logiken können mit dem Button <strong>Abbrechen</strong> (in der Liste oder im Stack-Dialog) nach einer Bestätigung
+abgebrochen werden. Tasks anderer Typen (Item-Zyklen, Plugin-Methoden) können nicht abgebrochen werden, da sie z.B. Locks
+halten können, die ein Abbruch belegt zurücklassen würde.</p>
+<p>Der Abbruch löst in der Logik die Exception <a class="reference internal" href="../referenz/logiken/logiken_exceptions.html#logik-exceptions-taskcancelled"><span class="std std-ref">TaskCancelled</span></a> aus. Wann sie wirkt,
+hängt davon ab, was die Logik gerade tut:</p>
+<ul class="simple">
+<li><p>In einer Rechenschleife wird die Logik sofort abgebrochen.</p></li>
+<li><p>In einem blockierenden Aufruf (<code class="docutils literal notranslate"><span class="pre">time.sleep()</span></code>, <code class="docutils literal notranslate"><span class="pre">Event.wait()</span></code>, Netzwerkzugriff, <code class="docutils literal notranslate"><span class="pre">subprocess</span></code>) erst, wenn dieser
+zurückkehrt. Eine Logik, die in <code class="docutils literal notranslate"><span class="pre">time.sleep(1)</span></code>-Schritten wartet, wird also nach spätestens einer Sekunde abgebrochen,
+eine Logik in <code class="docutils literal notranslate"><span class="pre">time.sleep(600)</span></code> erst nach Ablauf der 600 Sekunden.</p></li>
+<li><p>Ein <code class="docutils literal notranslate"><span class="pre">except:</span></code> ohne Exception-Typ in der Logik verschluckt den Abbruch, die Logik läuft weiter.</p></li>
+</ul>
+<p>Solange der Abbruch angefordert, aber noch nicht wirksam ist, zeigt die Liste unter der Laufzeit
+<strong>Abbruch angefordert (×N)</strong>. Der Abbruch kann erneut angefordert werden, z.B. wenn die Logik ihn verschluckt hat.</p>
+<p>Der abgebrochene Lauf wird mit der Stelle, an der er unterbrochen wurde, als Warnung in das Log der Logik geschrieben.</p>
+<p>Logiken können mit dem Parameter <code class="docutils literal notranslate"><span class="pre">runtime_cancel</span></code> auch automatisch nach einer festen Laufzeit abgebrochen werden, siehe
+<a class="reference internal" href="../referenz/logiken/logiken_standardparameter.html"><span class="doc">Standardparameter von Logiken</span></a>.</p>
+</section>
 </section>
 
 

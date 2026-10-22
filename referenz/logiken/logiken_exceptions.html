@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Exceptions &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 22. Oktober 2026, commit 4bc9552) Dokumentation</title>
+  <title>Exceptions &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 22. Oktober 2026, commit 08ae676) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=966e63c0" />
@@ -18,7 +18,7 @@
       <script src="../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=318be083"></script>
+      <script src="../../_static/documentation_options.js?v=2cef31ac"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/translations.js?v=9bf55d28"></script>
@@ -4953,7 +4953,11 @@
 <li class="toctree-l3"><a class="reference internal" href="../../admin/scenes.html#szenen-konfiguration">Szenen Konfiguration</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../admin/threads.html">Threads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../admin/threads.html">Threads</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../admin/threads.html#laufende-tasks">Laufende Tasks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../admin/threads.html#logik-abbrechen">Logik abbrechen</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../admin/logs.html">Logs</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../admin/logs.html#logs-anzeigen">Logs anzeigen</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../admin/logs.html#grosze-log-dateien">Große Log Dateien</a></li>
@@ -5726,6 +5730,7 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Exceptions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#laufzeit-fehler">Laufzeit Fehler</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#exception-leavelogic">Exception LeaveLogic</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exception-taskcancelled">Exception TaskCancelled</a></li>
 </ul>
 </li>
 </ul>
@@ -6802,6 +6807,37 @@ zu beenden/zu verlassen.</p>
 </pre></div>
 </div>
 <p>Falls ein Grund angegeben wird, erfolgt ein Logeintrag mit dem Level INFO, der das Verlassen und diesen Grund loggt.</p>
+</section>
+<section id="exception-taskcancelled">
+<span id="logik-exceptions-taskcancelled"></span><span id="index-3"></span><h2>Exception TaskCancelled<a class="headerlink" href="#exception-taskcancelled" title="Link to this heading"></a></h2>
+<p>Wird der Abbruch einer laufenden Logik angefordert, über die <a class="reference internal" href="../../admin/threads.html#admin-threads-abbrechen"><span class="std std-ref">Threads-Seite der Admin GUI</span></a>
+oder automatisch über den Parameter <code class="docutils literal notranslate"><span class="pre">runtime_cancel</span></code>, löst SmartHomeNG in der Logik die Exception <code class="docutils literal notranslate"><span class="pre">TaskCancelled</span></code>
+aus. Sie beendet den aktuellen Lauf der Logik. Die Logik bleibt geladen und wird beim nächsten Trigger erneut ausgeführt.</p>
+<p><code class="docutils literal notranslate"><span class="pre">TaskCancelled</span></code> ist von <code class="docutils literal notranslate"><span class="pre">BaseException</span></code> abgeleitet, nicht von <code class="docutils literal notranslate"><span class="pre">Exception</span></code>. Ein <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception:</span></code> in der Logik
+fängt sie deshalb nicht ab. Ein <code class="docutils literal notranslate"><span class="pre">except:</span></code> ohne Exception-Typ fängt sie dagegen ab und verhindert so den Abbruch.</p>
+<p>Muss eine Logik beim Abbruch aufräumen (z.B. eine Verbindung schließen oder ein Item zurücksetzen), geht das mit
+<code class="docutils literal notranslate"><span class="pre">try/finally</span></code>. Der <code class="docutils literal notranslate"><span class="pre">finally</span></code>-Block läuft beim Abbruch genauso wie beim normalen Ende:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">verbindung</span> <span class="o">=</span> <span class="n">oeffne_verbindung</span><span class="p">()</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">fertig</span><span class="p">():</span>
+        <span class="n">arbeite</span><span class="p">(</span><span class="n">verbindung</span><span class="p">)</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">verbindung</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Soll die Logik speziell auf den Abbruch reagieren, kann sie <code class="docutils literal notranslate"><span class="pre">TaskCancelled</span></code> abfangen. Danach sollte sie die Exception
+erneut auslösen, damit der Lauf auch wirklich endet:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="o">...</span>
+<span class="k">except</span> <span class="n">TaskCancelled</span><span class="p">:</span>
+    <span class="n">sh</span><span class="o">.</span><span class="n">mein</span><span class="o">.</span><span class="n">status</span><span class="p">(</span><span class="s1">'abgebrochen'</span><span class="p">)</span>
+    <span class="k">raise</span>
+</pre></div>
+</div>
+<p>Die Exception wird ausgelöst, sobald die Logik wieder Python-Code ausführt: in einer Rechenschleife sofort, in einem
+blockierenden Aufruf (<code class="docutils literal notranslate"><span class="pre">time.sleep()</span></code>, <code class="docutils literal notranslate"><span class="pre">Event.wait()</span></code>, Netzwerkzugriff, <code class="docutils literal notranslate"><span class="pre">subprocess</span></code>) erst, wenn dieser zurückkehrt.</p>
+<p>Ein abgebrochener Lauf wird mit der Stelle, an der er unterbrochen wurde, als Warnung in das Log der Logik geschrieben.
+Der Zeitpunkt des letzten Laufs (<code class="docutils literal notranslate"><span class="pre">logic.last_run()</span></code>) wird für einen abgebrochenen Lauf nicht aktualisiert.</p>
 </section>
 </section>
 

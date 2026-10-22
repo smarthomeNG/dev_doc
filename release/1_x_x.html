@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Release 1.xx.x - xx. xxx 2026 &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 22. Oktober 2026, commit 4bc9552) Dokumentation</title>
+  <title>Release 1.xx.x - xx. xxx 2026 &mdash; Dokumentation v1.12.2.2 develop v1.12.2.2 develop (Stand 22. Oktober 2026, commit 08ae676) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=966e63c0" />
@@ -18,7 +18,7 @@
       <script src="../_static/search_scorer.js?v=811695eb"></script>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=318be083"></script>
+      <script src="../_static/documentation_options.js?v=2cef31ac"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/translations.js?v=9bf55d28"></script>
@@ -4953,7 +4953,11 @@
 <li class="toctree-l3"><a class="reference internal" href="../admin/scenes.html#szenen-konfiguration">Szenen Konfiguration</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../admin/threads.html">Threads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../admin/threads.html">Threads</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../admin/threads.html#laufende-tasks">Laufende Tasks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../admin/threads.html#logik-abbrechen">Logik abbrechen</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../admin/logs.html">Logs</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../admin/logs.html#logs-anzeigen">Logs anzeigen</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../admin/logs.html#grosze-log-dateien">Große Log Dateien</a></li>
@@ -5726,6 +5730,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../referenz/logiken/logiken_exceptions.html">Exceptions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../referenz/logiken/logiken_exceptions.html#laufzeit-fehler">Laufzeit Fehler</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../referenz/logiken/logiken_exceptions.html#exception-leavelogic">Exception LeaveLogic</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../referenz/logiken/logiken_exceptions.html#exception-taskcancelled">Exception TaskCancelled</a></li>
 </ul>
 </li>
 </ul>
@@ -6807,6 +6812,10 @@ zu unterstützten Python Versionen)</p>
 <section id="bugfixes-im-core">
 <h3>Bugfixes im CORE<a class="headerlink" href="#bugfixes-im-core" title="Link to this heading"></a></h3>
 <ul class="simple">
+<li><p>lib.log: Meldungen der SmartHomeNG-eigenen Log-Level (NOTICE, DBGHIGH, DBGMED, DBGLOW, DEVELOP) nennen jetzt die
+aufrufende Funktion und Zeile statt <code class="docutils literal notranslate"><span class="pre">logForLevel</span></code></p></li>
+<li><p>lib.scheduler: Ein Task, der eingereiht wird während alle Worker beschäftigt sind, wartet nicht mehr bis zu einer Sekunde,
+nachdem ein Worker frei geworden ist</p></li>
 <li><p>…</p></li>
 </ul>
 </section>
@@ -6830,6 +6839,15 @@ zu unterstützten Python Versionen)</p>
 </li>
 <li><p>Libs:</p>
 <ul>
+<li><p>lib.scheduler:</p>
+<ul>
+<li><p>Laufende Tasks (Logiken, Item-Zyklen/Crontabs, Plugin-Scheduler) werden mit Laufzeit erfasst</p></li>
+<li><p>Überschreitet ein Task die Laufzeit <code class="docutils literal notranslate"><span class="pre">runtime_warn</span></code> (Standard 120 s, global in <code class="docutils literal notranslate"><span class="pre">smarthome.yaml</span></code>, für Logiken
+auch pro Logik), wird eine Warnung mit seinem aktuellen Stacktrace geloggt, erneut bei jeder Verdopplung</p></li>
+<li><p>Laufende Logiken können abgebrochen werden (Exception <code class="docutils literal notranslate"><span class="pre">TaskCancelled</span></code>), manuell über die Admin GUI oder
+automatisch über den neuen Logik-Parameter <code class="docutils literal notranslate"><span class="pre">runtime_cancel</span></code></p></li>
+</ul>
+</li>
 <li><p>…:</p>
 <ul>
 <li><p>…</p></li>
@@ -6841,6 +6859,14 @@ zu unterstützten Python Versionen)</p>
 </li>
 <li><p>Modules:</p>
 <ul>
+<li><p>modules.admin:</p>
+<ul>
+<li><p>Threads-Seite zeigt Typ und Laufzeit laufender Tasks, überfällige Tasks hervorgehoben, den aktuellen Stack eines
+Tasks und erlaubt das Abbrechen von Logiken</p></li>
+<li><p>REST-API: <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/threads</span></code> liefert Informationen zu laufenden Tasks, <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/threads/&lt;ident&gt;</span></code> deren Stack,
+<code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/api/threads/&lt;ident&gt;/cancel</span></code> bricht eine Logik ab</p></li>
+</ul>
+</li>
 <li><p>modules. …:</p>
 <ul>
 <li><p>…</p></li>
@@ -6924,6 +6950,8 @@ aus dem Plugin-Repo entfernt und in das Archive-Repo verschoben:</p>
 <section id="dokumentation">
 <h3>Dokumentation<a class="headerlink" href="#dokumentation" title="Link to this heading"></a></h3>
 <ul class="simple">
+<li><p>Admin GUI: Threads-Seite mit laufenden Tasks und dem Abbrechen von Logiken</p></li>
+<li><p>Logiken: Exception <code class="docutils literal notranslate"><span class="pre">TaskCancelled</span></code>, Parameter <code class="docutils literal notranslate"><span class="pre">runtime_warn</span></code> und <code class="docutils literal notranslate"><span class="pre">runtime_cancel</span></code></p></li>
 <li><p>…</p></li>
 </ul>
 </section>
