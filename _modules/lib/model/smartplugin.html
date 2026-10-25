@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.model.smartplugin &mdash; Dokumentation v2.0.0-dev.1 v2.0.0-dev.1 develop (Stand 25. Oktober 2026, commit eaef411) Dokumentation</title>
+  <title>lib.model.smartplugin &mdash; Dokumentation v2.0.0-dev.1 v2.0.0-dev.1 develop (Stand 25. Oktober 2026, commit e09bfc1) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=966e63c0" />
@@ -17,7 +17,7 @@
       <script src="../../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=e7171f61"></script>
+      <script src="../../../_static/documentation_options.js?v=322e0dd6"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/translations.js?v=9bf55d28"></script>
@@ -6809,7 +6809,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">concurrent.futures</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Coroutine</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Coroutine</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">MutableMapping</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">lib.item.item</span><span class="w"> </span><span class="kn">import</span> <span class="n">Item</span>
@@ -7878,18 +7878,18 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s1">@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__instance</span><span class="si">}</span><span class="s1">'</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">__get_iattr_conf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__get_iattr_conf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        returns item attribute name including instance if required and found</span>
 <span class="sd">        in item configuration</span>
 
 <span class="sd">        :param conf: item configuration</span>
 <span class="sd">        :param attr: attribute name</span>
-<span class="sd">        :type conf: str</span>
+<span class="sd">        :type conf: Mapping[str, Any]</span>
 <span class="sd">        :type attr: str</span>
 
 <span class="sd">        :return: name of item attribute (including instance) or None (if not found)</span>
-<span class="sd">        :rtype: str</span>
+<span class="sd">        :rtype: str | None</span>
 <span class="sd">        """</span>
         <span class="n">__attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_iattr</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">__attr</span> <span class="ow">in</span> <span class="n">conf</span><span class="p">:</span>
@@ -7900,7 +7900,7 @@
 
 <div class="viewcode-block" id="SmartPlugin.has_iattr">
 <a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.has_iattr">[Doku]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">has_iattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_iattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        checks item configuration for an attribute</span>
 
@@ -7915,7 +7915,7 @@
 
 <div class="viewcode-block" id="SmartPlugin.get_iattr_value">
 <a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.get_iattr_value">[Doku]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_iattr_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_iattr_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns value for an attribute from item config</span>
 
@@ -7933,16 +7933,21 @@
 
 <div class="viewcode-block" id="SmartPlugin.set_attr_value">
 <a class="viewcode-back" href="../../../referenz/plugins/plugin_typen/smartplugin_class.html#lib.model.smartplugin.SmartPlugin.set_attr_value">[Doku]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">set_attr_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_attr_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conf</span><span class="p">:</span> <span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Set value for an attribute in item configuration</span>
 
+<span class="sd">        Does nothing if the attribute is not in the configuration. The value is stored under</span>
+<span class="sd">        this instance's own attribute name (``attr@&lt;instance&gt;``, or ``attr`` without an</span>
+<span class="sd">        instance), also if the attribute was found as ``attr@*``; the ``attr@*`` entry is left</span>
+<span class="sd">        unchanged, so other instances still read the original value.</span>
+
 <span class="sd">        :param conf: item configuration</span>
 <span class="sd">        :param attr: attribute name</span>
-<span class="sd">        :param value: value to set the atteibute to</span>
-<span class="sd">        :type conf: str</span>
+<span class="sd">        :param value: value to set the attribute to</span>
+<span class="sd">        :type conf: MutableMapping[str, Any]</span>
 <span class="sd">        :type attr: str</span>
-<span class="sd">        :type value: str</span>
+<span class="sd">        :type value: Any</span>
 <span class="sd">        """</span>
         <span class="n">__attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_iattr_conf</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">__attr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>

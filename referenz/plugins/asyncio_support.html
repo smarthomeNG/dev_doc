@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>asyncio Unterstützung in Plugins &mdash; Dokumentation v2.0.0-dev.1 v2.0.0-dev.1 develop (Stand 25. Oktober 2026, commit eaef411) Dokumentation</title>
+  <title>asyncio Unterstützung in Plugins &mdash; Dokumentation v2.0.0-dev.1 v2.0.0-dev.1 develop (Stand 25. Oktober 2026, commit e09bfc1) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=966e63c0" />
@@ -18,7 +18,7 @@
       <script src="../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=e7171f61"></script>
+      <script src="../../_static/documentation_options.js?v=322e0dd6"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/translations.js?v=9bf55d28"></script>
@@ -7452,7 +7452,7 @@ is a string containing the instance name preseeded by a ‚&#64;‘ and traild b
 <dl class="field-list simple">
 <dt class="field-odd">Parameter<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>conf</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – item configuration</p></li>
+<li><p><strong>conf</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span>) – item configuration</p></li>
 <li><p><strong>attr</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – attribute name</p></li>
 </ul>
 </dd>
@@ -7473,13 +7473,13 @@ is a string containing the instance name preseeded by a ‚&#64;‘ and traild b
 <dl class="field-list simple">
 <dt class="field-odd">Parameter<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>conf</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – item configuration</p></li>
+<li><p><strong>conf</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]</span>) – item configuration</p></li>
 <li><p><strong>attr</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – attribute name</p></li>
-<li><p><strong>default</strong> – Return-value, if attribute is not found</p></li>
+<li><p><strong>default</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></span>) – Return-value, if attribute is not found</p></li>
 </ul>
 </dd>
 <dt class="field-even">Rückgabetyp<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></span></p>
 </dd>
 <dt class="field-odd">Rückgabe<span class="colon">:</span></dt>
 <dd class="field-odd"><p>value of an attribute</p>
@@ -7491,12 +7491,16 @@ is a string containing the instance name preseeded by a ‚&#64;‘ and traild b
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">set_attr_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/lib/model/smartplugin.html#SmartPlugin.set_attr_value"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a></dt>
 <dd><p>Set value for an attribute in item configuration</p>
+<p>Does nothing if the attribute is not in the configuration. The value is stored under
+this instance’s own attribute name (<code class="docutils literal notranslate"><span class="pre">attr&#64;&lt;instance&gt;</span></code>, or <code class="docutils literal notranslate"><span class="pre">attr</span></code> without an
+instance), also if the attribute was found as <code class="docutils literal notranslate"><span class="pre">attr&#64;*</span></code>; the <code class="docutils literal notranslate"><span class="pre">attr&#64;*</span></code> entry is left
+unchanged, so other instances still read the original value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameter<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>conf</strong> (<em>str</em>) – item configuration</p></li>
+<li><p><strong>conf</strong> (<em>MutableMapping</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – item configuration</p></li>
 <li><p><strong>attr</strong> (<em>str</em>) – attribute name</p></li>
-<li><p><strong>value</strong> (<em>str</em>) – value to set the atteibute to</p></li>
+<li><p><strong>value</strong> (<em>Any</em>) – value to set the attribute to</p></li>
 </ul>
 </dd>
 <dt class="field-even">Rückgabetyp<span class="colon">:</span></dt>
