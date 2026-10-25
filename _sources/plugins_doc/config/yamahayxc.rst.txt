@@ -264,9 +264,18 @@ Klangfeld/DSP-Steuerung der aktuellen Zone (geräteabhängig).
 isx-18
 ======
 
+Veraltet, wird mit dem nächsten Major-Release entfernt - stattdessen yamahayxc.isx-18d verwenden.
 
 .. treeview::
-     - :dir:`file` **isx-18** (`foo`, ---)
+     - :dir:`file` **isx-18** (`foo`, Veraltet, wird mit dem nächsten Major-Release entfernt - stattdessen yamahayxc.isx-18d verwenden.)
+
+
+isx-18d
+=======
+
+
+.. treeview::
+     - :dir:`file` **isx-18d** (`foo`, ---)
 
 
 legacy_alarm
@@ -363,7 +372,14 @@ media
              - :dir:`file` **preset_clear** (`num`, Preset-Nummer löschen.)
              - :dir:`file` **preset_switch** (`str`, Zum nächsten/vorherigen Preset wechseln, gültige Werte "next"/"previous")
              - :dir:`file` **dab_service** (`str`, Nächsten/vorherigen DAB-Sender des Ensembles wählen, gültige Werte "next"/"previous")
-             - :dir:`file` **dab_scan** (`str`, DAB-Sendersuchlauf (Initial Scan) starten oder abbrechen, gültige Werte "start"/"cancel")
+             - :dir:`file` **dab_scan** (`bool`, DAB-Sendersuchlauf (Initial Scan). True startet ihn, False bricht ihn ab; der Wert folgt dem Gerätestatus (True, solange der Suchlauf läuft). Ein Suchlauf löscht die Preset- und Senderliste.)
+             - :dir:`file` **dab_walk** (`bool`, DAB-Senderliste einlesen (alle Sender nacheinander anwählen, Gerät dabei stumm). True startet, False bricht ein laufendes Einlesen oder Anwählen ab; wird nach Ende vom Plugin auf False gesetzt. Dauert ca. 3 s pro Sender. Ergebnis in .dab_services)
+             - :dir:`file` **dab_tune** (`num`, Sender aus .dab_services anwählen (Wert = index). Das Gerät kennt nur "nächster/vorheriger", es wird also schrittweise gestellt (Gerät dabei stumm). -1 bricht ab; nach Ende vom Plugin auf -1 gesetzt.)
+             - :dir:`file` **dab_services** (`list`, Eingelesene DAB-Senderliste in Gerätereihenfolge, je Eintrag index/id/name. Leer, solange nicht eingelesen oder nach einem neuen Suchlauf (Sender-IDs ändern sich dann). Nur-Lese-Zugriff.)
+             - :dir:`file` **dab_walk_state** (`str`, Zustand von dab_walk/dab_tune ("idle"/"walking"/"tuning"/"done"/"aborted"/"error"). Nur-Lese-Zugriff.)
+             - :dir:`file` **dab_walk_progress** (`num`, Fortschritt von dab_walk/dab_tune in Prozent. Nur-Lese-Zugriff.)
+             - :dir:`file` **stations** (`list`, Presets des aktuellen Bandes, je Eintrag slot/band/number/name. number ist die Frequenz in kHz (AM/FM) oder die DAB-Sender-ID; name kommt vom Gerät, bei DAB sonst aus den bekannten Sendernamen (leer, wenn unbekannt). Nur-Lese-Zugriff.)
+             - :dir:`file` **auto_preset** (`bool`, FM-Sendersuchlauf in die Presets (Auto Preset). True startet, False bricht ab; der Wert folgt dem Gerätestatus. Überschreibt die FM-Presets.)
              - :dir:`file` **update** (`bool`, Aktuelle Werte für Tuner neu lesen.)
          - :dir:`folder` **link** (`foo`, Multiroom (MusicCast Link) Gruppen-Status und -Steuerung.)
              - :dir:`file` **linked** (`bool`, Bool-Indikator, ob das Gerät aktuell in einer Link-Gruppe ist. Nur-Lese-Zugriff.)
@@ -392,6 +408,14 @@ netusb
 .. treeview::
      - :dir:`folder` **netusb** (`foo`, ---)
          - :dir:`file` **netusb** (`foo`, ---)
+
+
+rx-s602d
+========
+
+
+.. treeview::
+     - :dir:`file` **rx-s602d** (`foo`, ---)
 
 
 rx-v483
