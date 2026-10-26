@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.plugin &mdash; Dokumentation v2.0.0-dev.1 v2.0.0-dev.1 develop (Stand 25. Oktober 2026, commit 3051ef1) Dokumentation</title>
+  <title>lib.plugin &mdash; Dokumentation v2.0.0-dev.1 v2.0.0-dev.1 develop (Stand 26. Oktober 2026, commit c5a54f1) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=966e63c0" />
@@ -17,7 +17,7 @@
       <script src="../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=2251cb79"></script>
+      <script src="../../_static/documentation_options.js?v=287ed245"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/translations.js?v=9bf55d28"></script>
@@ -7583,7 +7583,14 @@
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        attempt to reload plugin code</span>
 
-<span class="sd">        plugin will be unloaded, code reloaded and re-loaded. It it was running, it will be restarted.</span>
+<span class="sd">        The plugin is unloaded, its code reloaded and the plugin loaded again. If it was running, it is restarted.</span>
+
+<span class="sd">        All instances of a multi-instance plugin share their code, so all of them are replaced: they are</span>
+<span class="sd">        unloaded in reverse order of their configuration sections, the code is reloaded once, and they are</span>
+<span class="sd">        loaded (and, if they were running, started) again in configuration order.</span>
+
+<span class="sd">        :param configname: name of the plugin's section in etc/plugin.yaml; any instance of a multi-instance plugin</span>
+<span class="sd">        :return: True if every instance was reloaded</span>
 <span class="sd">        """</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">, step 1: get/check data'</span><span class="p">)</span>
 
@@ -7594,7 +7601,7 @@
 
         <span class="n">mymodule</span> <span class="o">=</span> <span class="n">myplugin</span><span class="o">.</span><span class="vm">__module__</span>
         <span class="n">classpath</span> <span class="o">=</span> <span class="n">myplugin</span><span class="o">.</span><span class="n">_classpath</span>
-        <span class="n">alive</span> <span class="o">=</span> <span class="n">myplugin</span><span class="o">.</span><span class="n">alive</span>
+        <span class="k">del</span> <span class="n">myplugin</span>
 
         <span class="c1"># read plugin configuration (from etc/plugin.yaml)</span>
         <span class="n">_conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">refresh_plugin_config</span><span class="p">()</span><span class="o">.</span><span class="n">conf</span>
@@ -7602,27 +7609,26 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Reading plugin config </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_configfile</span><span class="si">}</span><span class="s1"> returned no data, check config'</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="n">plg_conf</span> <span class="o">=</span> <span class="n">_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">configname</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">plg_conf</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'No config section </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1"> found, check config'</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="s1">'plugin_name'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">plg_conf</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'No plugin_name configured for </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">, check config'</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">False</span>
-
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">, step 1a: checking multi instance loading'</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">plg_name</span> <span class="ow">in</span> <span class="n">_conf</span><span class="p">:</span>
-            <span class="n">plg_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_plugin</span><span class="p">(</span><span class="n">plg_name</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">plg_instance</span> <span class="ow">and</span> <span class="n">plg_instance</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">==</span> <span class="n">mymodule</span> <span class="ow">and</span> <span class="n">plg_name</span> <span class="o">!=</span> <span class="n">configname</span><span class="p">:</span>
-                <span class="c1"># TODO: possibly allow direct unloading of all plugin instances, possibly config option?</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1"> also loaded as </span><span class="si">{</span><span class="n">plg_name</span><span class="si">}</span><span class="s1"> - unload all other instances first!'</span><span class="p">)</span>
+        <span class="n">group</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">name</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">_conf</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="n">configname</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">return_plugin</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="s1">'__module__'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">mymodule</span>
+        <span class="p">]</span>
+        <span class="n">was_alive</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_plugin</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">alive</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">group</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">group</span><span class="p">:</span>
+            <span class="n">plg_conf</span> <span class="o">=</span> <span class="n">_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">plg_conf</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="s1">'plugin_name'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">plg_conf</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'No usable config section </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> found, check config'</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">, step 2: unload plugin'</span><span class="p">)</span>
-        <span class="k">del</span> <span class="n">myplugin</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">unload_plugin</span><span class="p">(</span><span class="n">configname</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">: unload_plugin failed, aborting reload'</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">, step 2: unload plugin instances </span><span class="si">{</span><span class="n">group</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="n">unloaded</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">group</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">unload_plugin</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">: unload_plugin(</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">) failed, aborting reload'</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_restore_plugins</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">unloaded</span><span class="p">),</span> <span class="n">_conf</span><span class="p">,</span> <span class="n">was_alive</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="n">unloaded</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">, step 3: reload plugin code'</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reload_module_tree</span><span class="p">(</span><span class="n">classpath</span><span class="p">,</span> <span class="n">mymodule</span><span class="p">):</span>
@@ -7630,20 +7636,30 @@
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">, step 4: load plugin'</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_plugin</span><span class="p">(</span><span class="n">configname</span><span class="p">,</span> <span class="n">plg_conf</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">: load_plugin failed, aborting reload'</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="c1"># load_plugin() already calls _parse_existing_items() itself on</span>
-        <span class="c1"># success - a second, explicit call here used to double-register</span>
-        <span class="c1"># every matching item's trigger on the same instance</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_restore_plugins</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="n">_conf</span><span class="p">,</span> <span class="n">was_alive</span><span class="p">)</span></div>
 
-        <span class="k">if</span> <span class="n">alive</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1">, step 5: start plugin'</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">start_plugin</span><span class="p">(</span><span class="n">configname</span><span class="p">)</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Reloading plugin </span><span class="si">{</span><span class="n">configname</span><span class="si">}</span><span class="s1"> complete'</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">True</span></div>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_restore_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">confignames</span><span class="p">,</span> <span class="n">conf</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">was_alive</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Loads the given plugin sections, in the given order, and starts those that were running.</span>
 
+<span class="sd">        load_plugin() already calls _parse_existing_items() itself on success - a second, explicit call</span>
+<span class="sd">        used to double-register every matching item's trigger on the same instance.</span>
+
+<span class="sd">        :param confignames: names of the sections to load</span>
+<span class="sd">        :param conf: content of etc/plugin.yaml</span>
+<span class="sd">        :param was_alive: per section name, whether the plugin was running before it was unloaded</span>
+<span class="sd">        :return: True if every plugin was loaded</span>
+<span class="sd">        """</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">confignames</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_plugin</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">conf</span><span class="p">[</span><span class="n">name</span><span class="p">]):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Reloading plugin </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">: load_plugin failed'</span><span class="p">)</span>
+                <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">elif</span> <span class="n">was_alive</span><span class="p">[</span><span class="n">name</span><span class="p">]:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Reloading plugin </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">, step 5: start plugin'</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">start_plugin</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">success</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_reload_module_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">classpath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mymodule</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""</span>

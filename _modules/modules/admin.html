@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>modules.admin &mdash; Dokumentation v2.0.0-dev.1 v2.0.0-dev.1 develop (Stand 25. Oktober 2026, commit 3051ef1) Dokumentation</title>
+  <title>modules.admin &mdash; Dokumentation v2.0.0-dev.1 v2.0.0-dev.1 develop (Stand 26. Oktober 2026, commit c5a54f1) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=966e63c0" />
@@ -17,7 +17,7 @@
       <script src="../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=2251cb79"></script>
+      <script src="../../_static/documentation_options.js?v=287ed245"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/translations.js?v=9bf55d28"></script>
@@ -6807,6 +6807,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">lib.module</span><span class="w"> </span><span class="kn">import</span> <span class="n">Modules</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">lib.shtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">Shtime</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">.pullimpact</span><span class="w"> </span><span class="kn">import</span> <span class="n">PendingReloads</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.rest</span><span class="w"> </span><span class="kn">import</span> <span class="n">RESTResource</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.api_server</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
@@ -6835,7 +6836,7 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">Admin</span><span class="p">(</span><span class="n">Module</span><span class="p">):</span>
-    <span class="n">version</span> <span class="o">=</span> <span class="s1">'1.10.0'</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="s1">'1.11.0'</span>
     <span class="n">longname</span> <span class="o">=</span> <span class="s1">'Admin module for SmartHomeNG'</span>
     <span class="n">_port</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -6855,6 +6856,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Module '</span><span class="si">{}</span><span class="s2">': Initializing"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shortname</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Module '</span><span class="si">{}</span><span class="s2">': Parameters = '</span><span class="si">{}</span><span class="s2">'"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shortname</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">)))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pending_plugin_reloads</span> <span class="o">=</span> <span class="n">PendingReloads</span><span class="p">()</span>
 
         <span class="c1"># for authentication</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">jwt_secret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_or_create_jwt_secret</span><span class="p">()</span>
