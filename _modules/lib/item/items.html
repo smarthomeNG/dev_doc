@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.item.items &mdash; Dokumentation v2.0.0-dev.1 v2.0.0-dev.1 develop (Stand 28. Oktober 2026, commit 1ad8910) Dokumentation</title>
+  <title>lib.item.items &mdash; Dokumentation v2.0.0-dev.1 v2.0.0-dev.1 develop (Stand 28. Oktober 2026, commit 67294dd) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=966e63c0" />
@@ -17,7 +17,7 @@
       <script src="../../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=f9e8b1ce"></script>
+      <script src="../../../_static/documentation_options.js?v=9ecf477d"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/translations.js?v=9bf55d28"></script>
@@ -6828,10 +6828,13 @@
 <span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">types</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">lib.config</span>
@@ -6857,6 +6860,57 @@
 <span class="n">_items_instance</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Pointer to the initialized instance of the Items class (for use by static methods)</span>
 
 <span class="n">_MISSING</span> <span class="o">=</span> <span class="nb">object</span><span class="p">()</span>  <span class="c1"># sentinel for Items.edit_item()'s old/new config diff - None is a legitimate attribute value</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ItemOperationBusyError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Raised when a structural item operation is refused because another one is still running."""</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_ExclusiveOperationLock</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Non-blocking, reentrant lock serialising the structural item operations.</span>
+
+<span class="sd">    A second operation from another thread is refused (ItemOperationBusyError)</span>
+<span class="sd">    rather than queued: an operation can run for minutes (plugin stop/run, DB</span>
+<span class="sd">    log reassignment), and a queued caller would hang until its request times out.</span>
+<span class="sd">    Nested operations of the owning thread (copy_item -&gt; create_item,</span>
+<span class="sd">    rename_item -&gt; edit_item, ...) pass through.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_depth</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_running</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hold</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Hold the lock for *description*, or raise ItemOperationBusyError if another thread holds it."""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span><span class="n">blocking</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ItemOperationBusyError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Item operation '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_running</span><span class="si">}</span><span class="s2">' is still running - retry when it has finished"</span>
+            <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_depth</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_running</span> <span class="o">=</span> <span class="n">description</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_depth</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">yield</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_depth</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_depth</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_running</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_exclusive_item_operation</span><span class="p">(</span><span class="n">method</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Run an Items method under the instance's exclusive-operation lock; the first argument names the target."""</span>
+
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">target_name</span> <span class="o">=</span> <span class="n">target</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">target</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operation_lock</span><span class="o">.</span><span class="n">hold</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">method</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">(</span><span class="si">{</span><span class="n">target_name</span><span class="si">}</span><span class="s1">)'</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">wrapper</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_flatten_with_children</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
@@ -6935,6 +6989,9 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">smarthome</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span> <span class="o">=</span> <span class="n">smarthome</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_operation_lock</span> <span class="o">=</span> <span class="n">_ExclusiveOperationLock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_batch_files</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_batch_changed</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">global</span> <span class="n">_items_instance</span>
         <span class="k">if</span> <span class="n">_items_instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -7144,6 +7201,7 @@
 
 <div class="viewcode-block" id="Items.create_item">
 <a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.create_item">[Doku]</a>
+    <span class="nd">@_exclusive_item_operation</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">persist</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">create_missing_parents</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create a single item at runtime and fully initialize it (and any</span>
@@ -7311,6 +7369,50 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Could not parse '</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.yaml': </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_yaml_file_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""True if ``items_dir/&lt;filename&gt;.yaml`` exists, or is held by the running _yaml_batch()."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_batch_files</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">filename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_batch_files</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_open_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Return the yamlfile for ``items_dir/&lt;filename&gt;.yaml``, loaded if the file exists and empty otherwise.</span>
+<span class="sd">        Within a _yaml_batch() every call for the same *filename* returns the same instance.</span>
+
+<span class="sd">        :raises ValueError: if the file fails to parse</span>
+<span class="sd">        """</span>
+        <span class="n">batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_batch_files</span>
+        <span class="k">if</span> <span class="n">batch</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">batch</span><span class="p">[</span><span class="n">filename</span><span class="p">]</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">yf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yamlfile</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml_file</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">batch</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">batch</span><span class="p">[</span><span class="n">filename</span><span class="p">]</span> <span class="o">=</span> <span class="n">yf</span>
+        <span class="k">return</span> <span class="n">yf</span>
+
+    <span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_yaml_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Parse each yaml file once and save each changed one once for the operations run inside: _open_yaml()</span>
+<span class="sd">        hands out one shared instance per file and _save_yaml_file() only marks it changed. The changed files</span>
+<span class="sd">        are written when the outermost batch ends, also if it ends with an exception.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_batch_files</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">yield</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_batch_files</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_batch_changed</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">yield</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">files</span><span class="p">,</span> <span class="n">changed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_batch_files</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_batch_changed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_batch_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_batch_changed</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">changed</span><span class="p">:</span>
+                <span class="n">files</span><span class="p">[</span><span class="n">filename</span><span class="p">]</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_write_to_yaml_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Write *config* (the original, caller-supplied dict — no internal</span>
@@ -7325,13 +7427,10 @@
 <span class="sd">        :raises ValueError: if the file cannot hold *path*, e.g. an ancestor</span>
 <span class="sd">                            is defined there as an attribute with a value</span>
 <span class="sd">        """</span>
-        <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-        <span class="n">yf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yamlfile</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml_file</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">yf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_yaml</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">yf</span><span class="o">.</span><span class="n">setvalue</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Item '</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">' cannot be persisted to '</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.yaml': an ancestor is not an item"</span><span class="p">)</span>
-        <span class="n">yf</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_yaml_file</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_rename_target_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">new_parent_obj</span><span class="p">,</span> <span class="n">new_is_top_level</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
@@ -7350,12 +7449,9 @@
 <span class="sd">        or an ancestor of *path* is defined there as an attribute with a value instead of an item.</span>
 <span class="sd">        A missing file or missing ancestors are fine - they get created on write.</span>
 <span class="sd">        """</span>
-        <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_file_exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
             <span class="k">return</span>
-        <span class="n">yf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yamlfile</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml_file</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-        <span class="n">node</span> <span class="o">=</span> <span class="n">yf</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_yaml</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
             <span class="n">child</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">child</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -7365,6 +7461,68 @@
                     <span class="sa">f</span><span class="s2">"Item '</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">' cannot be persisted to '</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.yaml': '</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">' is not an item there"</span>
                 <span class="p">)</span>
             <span class="n">node</span> <span class="o">=</span> <span class="n">child</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_move_cache_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Move the cache file of the renamed *item* (named after its path) to its new name; a missing file is fine."""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">new_cache</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_cache_dir</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">_cache</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">_cache</span><span class="p">,</span> <span class="n">new_cache</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Item '</span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">': cache file '</span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">_cache</span><span class="si">}</span><span class="s2">' could not be moved: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="n">new_cache</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_save_yaml_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yf</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Save the loaded yamlfile *yf* (``items_dir/&lt;filename&gt;.yaml``); inside a _yaml_batch() only mark it changed."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_batch_files</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_batch_files</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="ow">is</span> <span class="n">yf</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_batch_changed</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">yf</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_remove_yaml_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yf</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Remove the node at *path* from the loaded yamlfile *yf* (``items_dir/&lt;filename&gt;.yaml``), then the ancestors that</span>
+<span class="sd">        leaves empty; an ancestor that is an item defined in *filename* itself stays.</span>
+<span class="sd">        """</span>
+        <span class="n">yf</span><span class="o">.</span><span class="n">setvalue</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">rpartition</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">while</span> <span class="n">parent</span><span class="p">:</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">yf</span><span class="o">.</span><span class="n">getnode</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">or</span> <span class="n">node</span><span class="p">):</span>
+                <span class="k">return</span>
+            <span class="n">owner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_item</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">owner</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">owner</span><span class="o">.</span><span class="n">_filename</span> <span class="o">==</span> <span class="n">filename</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="n">yf</span><span class="o">.</span><span class="n">setvalue</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">rpartition</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_move_yaml_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Re-key the node at *old_path* in ``items_dir/&lt;filename&gt;.yaml`` to *new_path*; a file without that node is left alone."""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_file_exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="n">yf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_yaml</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">yf</span><span class="o">.</span><span class="n">getnode</span><span class="p">(</span><span class="n">old_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">existing</span> <span class="o">=</span> <span class="n">yf</span><span class="o">.</span><span class="n">getnode</span><span class="p">(</span><span class="n">new_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">existing</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_merge_yaml_nodes</span><span class="p">(</span><span class="n">existing</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_or_raise</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">new_path</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remove_yaml_node</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">old_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_yaml_file</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_merge_yaml_nodes</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">extra</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Deep-merge the mapping *extra* into the mapping *base*, which wins on conflicting leaves; returns *base*."""</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">extra</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">Items</span><span class="o">.</span><span class="n">_merge_yaml_nodes</span><span class="p">(</span><span class="n">base</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">base</span><span class="p">:</span>
+                <span class="n">base</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="n">base</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_set_or_raise</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
@@ -7392,12 +7550,9 @@
 <span class="sd">        :return: config, with existing child entries merged in</span>
 <span class="sd">        :rtype: dict</span>
 <span class="sd">        """</span>
-        <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_file_exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">config</span>
-        <span class="n">yf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yamlfile</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml_file</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-        <span class="n">existing</span> <span class="o">=</span> <span class="n">yf</span><span class="o">.</span><span class="n">getnode</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">existing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_yaml</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">getnode</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">existing</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">config</span>
         <span class="n">merged</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
@@ -7426,6 +7581,7 @@
 
 <div class="viewcode-block" id="Items.edit_item">
 <a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.edit_item">[Doku]</a>
+    <span class="nd">@_exclusive_item_operation</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">edit_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">notify_plugins</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Edit an existing item's attributes at runtime, in place — preserves</span>
@@ -7609,6 +7765,7 @@
 
 <div class="viewcode-block" id="Items.remove_item">
 <a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.remove_item">[Doku]</a>
+    <span class="nd">@_exclusive_item_operation</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">remove_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">persist</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Function to remove an item from the dictionary of items</span>
@@ -7674,6 +7831,7 @@
 
 <div class="viewcode-block" id="Items.rename_item">
 <a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.rename_item">[Doku]</a>
+    <span class="nd">@_exclusive_item_operation</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">rename_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">new_path</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Rename an item in place, optionally moving it to a new parent (see</span>
@@ -7740,6 +7898,11 @@
             <span class="n">target_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rename_target_filename</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">new_parent_obj</span><span class="p">,</span> <span class="n">new_is_top_level</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_check_persistable</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">,</span> <span class="n">old_path</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_check_persistable</span><span class="p">(</span><span class="n">target_filename</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
+
+        <span class="c1"># descendants defined in files other than the item's own keep their file; their nodes follow the new path</span>
+        <span class="n">child_files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">({</span><span class="n">d</span><span class="o">.</span><span class="n">_filename</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">_flatten_with_children</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">_filename</span><span class="p">}</span> <span class="o">-</span> <span class="p">{</span><span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">})</span>
+        <span class="k">for</span> <span class="n">child_file</span> <span class="ow">in</span> <span class="n">child_files</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_persistable</span><span class="p">(</span><span class="n">child_file</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
 
         <span class="n">old_is_top_level</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">_is_top_of_item_tree</span><span class="p">()</span>
         <span class="n">old_parent_obj</span> <span class="o">=</span> <span class="bp">self</span> <span class="k">if</span> <span class="n">old_is_top_level</span> <span class="k">else</span> <span class="n">item</span><span class="o">.</span><span class="n">return_parent</span><span class="p">()</span>
@@ -7811,6 +7974,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span><span class="n">descendant_new_path</span><span class="p">,</span> <span class="n">descendant</span><span class="p">)</span>
 
                 <span class="n">descendant</span><span class="o">.</span><span class="n">_init_start_scheduler</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_move_cache_file</span><span class="p">(</span><span class="n">descendant</span><span class="p">)</span>
 
                 <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="n">rename_hook_plugins</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
@@ -7831,37 +7995,26 @@
 
         <span class="k">if</span> <span class="n">target_filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">target_filename</span> <span class="o">==</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">:</span>
-                <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
-                    <span class="n">yf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yamlfile</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml_file</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
-                    <span class="n">node</span> <span class="o">=</span> <span class="n">yf</span><span class="o">.</span><span class="n">getnode</span><span class="p">(</span><span class="n">old_path</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_set_or_raise</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">new_path</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
-                    <span class="n">yf</span><span class="o">.</span><span class="n">setvalue</span><span class="p">(</span><span class="n">old_path</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-                    <span class="n">yf</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_move_yaml_node</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">,</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">old_target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
-                <span class="n">old_yf</span> <span class="o">=</span> <span class="kc">None</span>
-                <span class="n">node</span> <span class="o">=</span> <span class="kc">None</span>
-                <span class="k">if</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">old_target</span><span class="p">):</span>
-                    <span class="n">old_yf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yamlfile</span><span class="p">(</span><span class="n">old_target</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml_file</span><span class="p">(</span><span class="n">old_yf</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
-                    <span class="n">node</span> <span class="o">=</span> <span class="n">old_yf</span><span class="o">.</span><span class="n">getnode</span><span class="p">(</span><span class="n">old_path</span><span class="p">)</span>
+                <span class="n">old_yf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_yaml</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_file_exists</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+                <span class="n">node</span> <span class="o">=</span> <span class="n">old_yf</span><span class="o">.</span><span class="n">getnode</span><span class="p">(</span><span class="n">old_path</span><span class="p">)</span> <span class="k">if</span> <span class="n">old_yf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
 
                 <span class="c1"># new location first: a failing write must not have removed the old definition already</span>
-                <span class="n">new_target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">target_filename</span><span class="p">)</span>
-                <span class="n">new_yf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yamlfile</span><span class="p">(</span><span class="n">new_target</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">new_target</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml_file</span><span class="p">(</span><span class="n">new_yf</span><span class="p">,</span> <span class="n">target_filename</span><span class="p">)</span>
+                <span class="n">new_yf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_yaml</span><span class="p">(</span><span class="n">target_filename</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_set_or_raise</span><span class="p">(</span><span class="n">new_yf</span><span class="p">,</span> <span class="n">new_path</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">target_filename</span><span class="p">)</span>
-                <span class="n">new_yf</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_save_yaml_file</span><span class="p">(</span><span class="n">new_yf</span><span class="p">,</span> <span class="n">target_filename</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">old_yf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">old_yf</span><span class="o">.</span><span class="n">setvalue</span><span class="p">(</span><span class="n">old_path</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-                    <span class="n">old_yf</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_remove_yaml_node</span><span class="p">(</span><span class="n">old_yf</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">,</span> <span class="n">old_path</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_save_yaml_file</span><span class="p">(</span><span class="n">old_yf</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
 
                 <span class="k">for</span> <span class="n">descendant</span> <span class="ow">in</span> <span class="n">_flatten_with_children</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
-                    <span class="n">descendant</span><span class="o">.</span><span class="n">_filename</span> <span class="o">=</span> <span class="n">target_filename</span>
+                    <span class="k">if</span> <span class="n">descendant</span><span class="o">.</span><span class="n">_filename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">child_files</span><span class="p">:</span>
+                        <span class="n">descendant</span><span class="o">.</span><span class="n">_filename</span> <span class="o">=</span> <span class="n">target_filename</span>
+
+        <span class="k">for</span> <span class="n">child_file</span> <span class="ow">in</span> <span class="n">child_files</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_move_yaml_node</span><span class="p">(</span><span class="n">child_file</span><span class="p">,</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
 
         <span class="n">report</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_references</span><span class="p">(</span><span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
 
@@ -7870,6 +8023,7 @@
 
 <div class="viewcode-block" id="Items.copy_item">
 <a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.copy_item">[Doku]</a>
+    <span class="nd">@_exclusive_item_operation</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">copy_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">new_path</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">create_missing_parents</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_children</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Copy an item to *new_path* as an independent clone — fresh</span>
@@ -7956,13 +8110,10 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Item '</span><span class="si">{</span><span class="n">old_path</span><span class="si">}</span><span class="s2">' cannot be copied: only persisted items can be copied"</span><span class="p">)</span>
 
-        <span class="n">source_target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">source_target</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_file_exists</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Item '</span><span class="si">{</span><span class="n">old_path</span><span class="si">}</span><span class="s2">' cannot be copied: source file '</span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="si">}</span><span class="s2">' not found"</span><span class="p">)</span>
 
-        <span class="n">yf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yamlfile</span><span class="p">(</span><span class="n">source_target</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml_file</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
-        <span class="n">node</span> <span class="o">=</span> <span class="n">yf</span><span class="o">.</span><span class="n">getnode</span><span class="p">(</span><span class="n">old_path</span><span class="p">)</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_yaml</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span><span class="o">.</span><span class="n">getnode</span><span class="p">(</span><span class="n">old_path</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Item '</span><span class="si">{</span><span class="n">old_path</span><span class="si">}</span><span class="s2">' cannot be copied: no config found at its current path"</span><span class="p">)</span>
 
@@ -8346,40 +8497,44 @@
 
         <span class="n">rewritten</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">failed</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">ref_item</span><span class="p">,</span> <span class="n">attrs</span> <span class="ow">in</span> <span class="n">matched_attrs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_config_for_edit</span><span class="p">(</span><span class="n">ref_item</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">attr_name</span> <span class="o">==</span> <span class="s1">'trigger'</span><span class="p">:</span>
-                        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="n">KEY_EVAL_TRIGGER</span><span class="p">,</span> <span class="n">KEY_TRIGGER</span><span class="p">):</span>
-                            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-                                <span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_config_entries</span><span class="p">(</span>
-                                    <span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
-                                    <span class="k">lambda</span> <span class="n">entry</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_bare_path_reference</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">),</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_batch</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">ref_item</span><span class="p">,</span> <span class="n">attrs</span> <span class="ow">in</span> <span class="n">matched_attrs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_config_for_edit</span><span class="p">(</span><span class="n">ref_item</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">attr_name</span> <span class="o">==</span> <span class="s1">'trigger'</span><span class="p">:</span>
+                            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="n">KEY_EVAL_TRIGGER</span><span class="p">,</span> <span class="n">KEY_TRIGGER</span><span class="p">):</span>
+                                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+                                    <span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_config_entries</span><span class="p">(</span>
+                                        <span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
+                                        <span class="k">lambda</span> <span class="n">entry</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_bare_path_reference</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">),</span>
+                                    <span class="p">)</span>
+                        <span class="k">elif</span> <span class="n">attr_name</span> <span class="o">==</span> <span class="s1">'hysteresis_input'</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="s1">'hysteresis_input'</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+                                <span class="n">config</span><span class="p">[</span><span class="s1">'hysteresis_input'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_bare_path_reference</span><span class="p">(</span>
+                                    <span class="n">config</span><span class="p">[</span><span class="s1">'hysteresis_input'</span><span class="p">],</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span>
                                 <span class="p">)</span>
-                    <span class="k">elif</span> <span class="n">attr_name</span> <span class="o">==</span> <span class="s1">'hysteresis_input'</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="s1">'hysteresis_input'</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-                            <span class="n">config</span><span class="p">[</span><span class="s1">'hysteresis_input'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_bare_path_reference</span><span class="p">(</span>
-                                <span class="n">config</span><span class="p">[</span><span class="s1">'hysteresis_input'</span><span class="p">],</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span>
-                            <span class="p">)</span>
-                    <span class="k">elif</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="p">(</span>
-                        <span class="s1">'eval'</span><span class="p">,</span>
-                        <span class="s1">'cycle'</span><span class="p">,</span>
-                        <span class="s1">'autotimer'</span><span class="p">,</span>
-                        <span class="s1">'hysteresis_upper_threshold'</span><span class="p">,</span>
-                        <span class="s1">'hysteresis_lower_threshold'</span><span class="p">,</span>
-                    <span class="p">):</span>
-                        <span class="k">if</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-                            <span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_sh_path_reference</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">],</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
-                    <span class="k">elif</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'on_change'</span><span class="p">,</span> <span class="s1">'on_update'</span><span class="p">):</span>
-                        <span class="k">if</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-                            <span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_config_entries</span><span class="p">(</span>
-                                <span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">],</span> <span class="k">lambda</span> <span class="n">entry</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_on_xx_entry</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
-                            <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">edit_item</span><span class="p">(</span><span class="n">ref_item</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
-                <span class="n">rewritten</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ref_item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">failed</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ref_item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+                        <span class="k">elif</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="p">(</span>
+                            <span class="s1">'eval'</span><span class="p">,</span>
+                            <span class="s1">'cycle'</span><span class="p">,</span>
+                            <span class="s1">'autotimer'</span><span class="p">,</span>
+                            <span class="s1">'hysteresis_upper_threshold'</span><span class="p">,</span>
+                            <span class="s1">'hysteresis_lower_threshold'</span><span class="p">,</span>
+                        <span class="p">):</span>
+                            <span class="k">if</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+                                <span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_sh_path_reference</span><span class="p">(</span>
+                                    <span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">],</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span>
+                                <span class="p">)</span>
+                        <span class="k">elif</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'on_change'</span><span class="p">,</span> <span class="s1">'on_update'</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+                                <span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_config_entries</span><span class="p">(</span>
+                                    <span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">],</span>
+                                    <span class="k">lambda</span> <span class="n">entry</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_on_xx_entry</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">),</span>
+                                <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">edit_item</span><span class="p">(</span><span class="n">ref_item</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+                    <span class="n">rewritten</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ref_item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">failed</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ref_item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
 
         <span class="k">return</span> <span class="p">{</span><span class="s1">'rewritten_references'</span><span class="p">:</span> <span class="n">rewritten</span><span class="p">,</span> <span class="s1">'failed_references'</span><span class="p">:</span> <span class="n">failed</span><span class="p">}</span>
 
@@ -8393,13 +8548,11 @@
 <span class="sd">        :param filename: Basename (without extension) of the file to edit</span>
 <span class="sd">        :param path: Full dotted path of the entry to remove</span>
 <span class="sd">        """</span>
-        <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_file_exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
             <span class="k">return</span>
-        <span class="n">yf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yamlfile</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml_file</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-        <span class="n">yf</span><span class="o">.</span><span class="n">setvalue</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">yf</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="n">yf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_yaml</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remove_yaml_node</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_yaml_file</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_rewrite_sh_path_reference</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">):</span>
@@ -8682,11 +8835,8 @@
 <span class="sd">        :rtype: dict</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">:</span>
-            <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="o">.</span><span class="n">_items_dir</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yaml_exists</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
-                <span class="n">yf</span> <span class="o">=</span> <span class="n">shyaml</span><span class="o">.</span><span class="n">yamlfile</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_load_yaml_file</span><span class="p">(</span><span class="n">yf</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
-                <span class="n">existing</span> <span class="o">=</span> <span class="n">yf</span><span class="o">.</span><span class="n">getnode</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_file_exists</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">):</span>
+                <span class="n">existing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_yaml</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span><span class="o">.</span><span class="n">getnode</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">existing</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                     <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">existing</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)}</span>
 
@@ -8707,6 +8857,7 @@
 
 <div class="viewcode-block" id="Items.remove_references">
 <a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.remove_references">[Doku]</a>
+    <span class="nd">@_exclusive_item_operation</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">remove_references</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Strip dangling unambiguous references to *path* from every other</span>
@@ -8740,46 +8891,47 @@
 <span class="sd">                  "skipped_ambiguous": [(item_path, attribute_name, value)]}</span>
 <span class="sd">        :rtype: dict</span>
 <span class="sd">        """</span>
-        <span class="n">pending</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">skipped</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_yaml_batch</span><span class="p">():</span>
+            <span class="n">pending</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">skipped</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="k">for</span> <span class="n">ref_item</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">unambiguous</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_references</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">unambiguous</span><span class="p">:</span>
-                <span class="n">skipped</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ref_item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
-                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">ref_item</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">unambiguous</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_references</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">unambiguous</span><span class="p">:</span>
+                    <span class="n">skipped</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ref_item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+                    <span class="k">continue</span>
 
-            <span class="n">entry</span> <span class="o">=</span> <span class="n">pending</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">ref_item</span><span class="p">,</span> <span class="p">{</span><span class="s1">'config'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_config_for_edit</span><span class="p">(</span><span class="n">ref_item</span><span class="p">),</span> <span class="s1">'attrs'</span><span class="p">:</span> <span class="nb">set</span><span class="p">()})</span>
-            <span class="n">config</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s1">'config'</span><span class="p">]</span>
+                <span class="n">entry</span> <span class="o">=</span> <span class="n">pending</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">ref_item</span><span class="p">,</span> <span class="p">{</span><span class="s1">'config'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_config_for_edit</span><span class="p">(</span><span class="n">ref_item</span><span class="p">),</span> <span class="s1">'attrs'</span><span class="p">:</span> <span class="nb">set</span><span class="p">()})</span>
+                <span class="n">config</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s1">'config'</span><span class="p">]</span>
 
-            <span class="k">if</span> <span class="n">attr_name</span> <span class="o">==</span> <span class="s1">'trigger'</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="n">KEY_EVAL_TRIGGER</span><span class="p">,</span> <span class="n">KEY_TRIGGER</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-                        <span class="k">continue</span>
-                    <span class="n">entries</span> <span class="o">=</span> <span class="p">[</span><span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-                    <span class="n">remaining</span> <span class="o">=</span> <span class="p">[</span><span class="n">entry_path</span> <span class="k">for</span> <span class="n">entry_path</span> <span class="ow">in</span> <span class="n">entries</span> <span class="k">if</span> <span class="n">entry_path</span> <span class="o">!=</span> <span class="n">path</span><span class="p">]</span>
-                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">remaining</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">entries</span><span class="p">):</span>
-                        <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">attr_name</span> <span class="o">==</span> <span class="s1">'trigger'</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="n">KEY_EVAL_TRIGGER</span><span class="p">,</span> <span class="n">KEY_TRIGGER</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                        <span class="n">entries</span> <span class="o">=</span> <span class="p">[</span><span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                        <span class="n">remaining</span> <span class="o">=</span> <span class="p">[</span><span class="n">entry_path</span> <span class="k">for</span> <span class="n">entry_path</span> <span class="ow">in</span> <span class="n">entries</span> <span class="k">if</span> <span class="n">entry_path</span> <span class="o">!=</span> <span class="n">path</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">remaining</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">entries</span><span class="p">):</span>
+                            <span class="k">continue</span>
+                        <span class="k">if</span> <span class="n">remaining</span><span class="p">:</span>
+                            <span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">remaining</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">attr_name</span> <span class="o">==</span> <span class="s1">'hysteresis_input'</span><span class="p">:</span>
+                    <span class="n">config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'hysteresis_input'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'on_change'</span><span class="p">,</span> <span class="s1">'on_update'</span><span class="p">):</span>
+                    <span class="n">remaining</span> <span class="o">=</span> <span class="p">[</span><span class="n">text</span> <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr_name</span><span class="p">,</span> <span class="p">[])</span> <span class="k">if</span> <span class="n">text</span> <span class="o">!=</span> <span class="n">value</span><span class="p">]</span>
                     <span class="k">if</span> <span class="n">remaining</span><span class="p">:</span>
-                        <span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">remaining</span>
+                        <span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">remaining</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">attr_name</span> <span class="o">==</span> <span class="s1">'hysteresis_input'</span><span class="p">:</span>
-                <span class="n">config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'hysteresis_input'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'on_change'</span><span class="p">,</span> <span class="s1">'on_update'</span><span class="p">):</span>
-                <span class="n">remaining</span> <span class="o">=</span> <span class="p">[</span><span class="n">text</span> <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr_name</span><span class="p">,</span> <span class="p">[])</span> <span class="k">if</span> <span class="n">text</span> <span class="o">!=</span> <span class="n">value</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">remaining</span><span class="p">:</span>
-                    <span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">remaining</span>
+                        <span class="n">config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">attr_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">attr_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">attr_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
-            <span class="n">entry</span><span class="p">[</span><span class="s1">'attrs'</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">attr_name</span><span class="p">)</span>
+                <span class="n">entry</span><span class="p">[</span><span class="s1">'attrs'</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">attr_name</span><span class="p">)</span>
 
-        <span class="n">removed</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">ref_item</span><span class="p">,</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">pending</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">edit_item</span><span class="p">(</span><span class="n">ref_item</span><span class="p">,</span> <span class="n">entry</span><span class="p">[</span><span class="s1">'config'</span><span class="p">])</span>
-            <span class="n">removed</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ref_item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s1">'attrs'</span><span class="p">])))</span>
+            <span class="n">removed</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">ref_item</span><span class="p">,</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">pending</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">edit_item</span><span class="p">(</span><span class="n">ref_item</span><span class="p">,</span> <span class="n">entry</span><span class="p">[</span><span class="s1">'config'</span><span class="p">])</span>
+                <span class="n">removed</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ref_item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s1">'attrs'</span><span class="p">])))</span>
 
         <span class="k">return</span> <span class="p">{</span><span class="s1">'removed'</span><span class="p">:</span> <span class="n">removed</span><span class="p">,</span> <span class="s1">'skipped_ambiguous'</span><span class="p">:</span> <span class="n">skipped</span><span class="p">}</span></div>
 
