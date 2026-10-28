@@ -5,11 +5,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.item.items &mdash; Dokumentation v2.0.0-dev.1 v2.0.0-dev.1 develop (Stand 27. Oktober 2026, commit 3e75e6b) Dokumentation</title>
+  <title>lib.item.items &mdash; Dokumentation v2.0.0-dev.1 v2.0.0-dev.1 develop (Stand 28. Oktober 2026, commit 1ad8910) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=966e63c0" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/treeview.css?v=f579613a" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/treeview.css?v=f8e9195c" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
 
   
@@ -17,7 +17,7 @@
       <script src="../../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=cb0ec035"></script>
+      <script src="../../../_static/documentation_options.js?v=f9e8b1ce"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/translations.js?v=9bf55d28"></script>
@@ -6838,10 +6838,17 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">lib.utils</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">lib.shyaml</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">shyaml</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">lib.constants</span><span class="w"> </span><span class="kn">import</span> <span class="n">ITEM_DEFAULTS</span><span class="p">,</span> <span class="n">PLUGIN_PARSE_ITEM</span><span class="p">,</span> <span class="n">PLUGIN_REMOVE_ITEM</span><span class="p">,</span> <span class="n">PLUGIN_RENAME_ITEM</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lib.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ITEM_DEFAULTS</span><span class="p">,</span>
+    <span class="n">KEY_EVAL_TRIGGER</span><span class="p">,</span>
+    <span class="n">KEY_TRIGGER</span><span class="p">,</span>
+    <span class="n">PLUGIN_PARSE_ITEM</span><span class="p">,</span>
+    <span class="n">PLUGIN_REMOVE_ITEM</span><span class="p">,</span>
+    <span class="n">PLUGIN_RENAME_ITEM</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">lib.item._internal._lifecycle</span><span class="w"> </span><span class="kn">import</span> <span class="n">_detach_from_other_items_triggers</span><span class="p">,</span> <span class="n">_remove_scheduler_jobs</span><span class="p">,</span> <span class="n">_stop_fading</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">lib.item._internal._parsing</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_item_name_collision</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">lib.item._internal._pathresolution</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_absolutepath</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lib.item._internal._pathresolution</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_absolutepath</span><span class="p">,</span> <span class="n">split_destitem_from_value</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.item</span><span class="w"> </span><span class="kn">import</span> <span class="n">Item</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.structs</span><span class="w"> </span><span class="kn">import</span> <span class="n">Structs</span>
@@ -7736,19 +7743,19 @@
 
         <span class="n">old_is_top_level</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">_is_top_of_item_tree</span><span class="p">()</span>
         <span class="n">old_parent_obj</span> <span class="o">=</span> <span class="bp">self</span> <span class="k">if</span> <span class="n">old_is_top_level</span> <span class="k">else</span> <span class="n">item</span><span class="o">.</span><span class="n">return_parent</span><span class="p">()</span>
+        <span class="n">old_leaf_attr</span> <span class="o">=</span> <span class="n">old_path</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">'.'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">new_parent_obj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">old_parent_obj</span><span class="p">:</span>
-            <span class="n">old_leaf_attr</span> <span class="o">=</span> <span class="n">old_path</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">'.'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">old_parent_obj</span><span class="o">.</span><span class="n">_remove_child</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">old_parent_obj</span><span class="p">,</span> <span class="n">old_leaf_attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="n">item</span><span class="p">:</span>
-                <span class="nb">delattr</span><span class="p">(</span><span class="n">old_parent_obj</span><span class="p">,</span> <span class="n">old_leaf_attr</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">old_is_top_level</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="p">,</span> <span class="n">old_leaf_attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="n">item</span><span class="p">:</span>
-                <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="p">,</span> <span class="n">old_leaf_attr</span><span class="p">)</span>
-
             <span class="n">item</span><span class="o">.</span><span class="n">_reassign_parent</span><span class="p">(</span><span class="n">new_parent_obj</span><span class="p">)</span>
             <span class="n">new_parent_obj</span><span class="o">.</span><span class="n">_append_child</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="n">new_parent_obj</span><span class="p">,</span> <span class="n">leaf_attr</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">new_is_top_level</span><span class="p">:</span>
-                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="p">,</span> <span class="n">leaf_attr</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">old_parent_obj</span><span class="p">,</span> <span class="n">old_leaf_attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="n">item</span><span class="p">:</span>
+            <span class="nb">delattr</span><span class="p">(</span><span class="n">old_parent_obj</span><span class="p">,</span> <span class="n">old_leaf_attr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">old_is_top_level</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="p">,</span> <span class="n">old_leaf_attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="n">item</span><span class="p">:</span>
+            <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="p">,</span> <span class="n">old_leaf_attr</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">new_parent_obj</span><span class="p">,</span> <span class="n">leaf_attr</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">new_is_top_level</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sh</span><span class="p">,</span> <span class="n">leaf_attr</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
 
         <span class="n">subtree</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">_flatten_with_children</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
         <span class="n">rename_hook_plugins</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">return_plugins</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">PLUGIN_RENAME_ITEM</span><span class="p">)]</span>
@@ -8344,10 +8351,12 @@
                 <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_config_for_edit</span><span class="p">(</span><span class="n">ref_item</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">attr_name</span> <span class="o">==</span> <span class="s1">'trigger'</span><span class="p">:</span>
-                        <span class="n">config</span><span class="p">[</span><span class="s1">'trigger'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_bare_path_reference</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
-                            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'trigger'</span><span class="p">,</span> <span class="p">[])</span>
-                        <span class="p">]</span>
+                        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="n">KEY_EVAL_TRIGGER</span><span class="p">,</span> <span class="n">KEY_TRIGGER</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+                                <span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_config_entries</span><span class="p">(</span>
+                                    <span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
+                                    <span class="k">lambda</span> <span class="n">entry</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_bare_path_reference</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">),</span>
+                                <span class="p">)</span>
                     <span class="k">elif</span> <span class="n">attr_name</span> <span class="o">==</span> <span class="s1">'hysteresis_input'</span><span class="p">:</span>
                         <span class="k">if</span> <span class="s1">'hysteresis_input'</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
                             <span class="n">config</span><span class="p">[</span><span class="s1">'hysteresis_input'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_bare_path_reference</span><span class="p">(</span>
@@ -8364,10 +8373,9 @@
                             <span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_sh_path_reference</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">],</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
                     <span class="k">elif</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'on_change'</span><span class="p">,</span> <span class="s1">'on_update'</span><span class="p">):</span>
                         <span class="k">if</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-                            <span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_sh_path_reference</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
-                                <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span>
-                            <span class="p">]</span>
+                            <span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_config_entries</span><span class="p">(</span>
+                                <span class="n">config</span><span class="p">[</span><span class="n">attr_name</span><span class="p">],</span> <span class="k">lambda</span> <span class="n">entry</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rewrite_on_xx_entry</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
+                            <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">edit_item</span><span class="p">(</span><span class="n">ref_item</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
                 <span class="n">rewritten</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ref_item</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -8450,6 +8458,53 @@
         <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">old_path</span> <span class="o">+</span> <span class="s1">'.'</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">new_path</span> <span class="o">+</span> <span class="n">value</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">old_path</span><span class="p">)</span> <span class="p">:]</span>
         <span class="k">return</span> <span class="n">value</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_map_config_entries</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">rewrite</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Apply *rewrite* to a config attribute that is either a single string</span>
+<span class="sd">        or a list of strings, returning the same shape (a string stays a</span>
+<span class="sd">        string, a list stays a list).</span>
+
+<span class="sd">        :param value: The attribute value from an item's config</span>
+<span class="sd">        :param rewrite: Function mapping one entry to its replacement</span>
+<span class="sd">        :type value: str | list</span>
+<span class="sd">        :type rewrite: callable</span>
+
+<span class="sd">        :return: value with *rewrite* applied to every entry</span>
+<span class="sd">        :rtype: str | list</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">rewrite</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">rewrite</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">value</span><span class="p">]</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rewrite_on_xx_entry</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Repoint one ``on_change``/``on_update`` entry (``[dest =] expr``) at</span>
+<span class="sd">        a renamed item: the optional destination is a bare item path</span>
+<span class="sd">        (``sh.`` prefix allowed), the expression holds ``sh.&lt;path&gt;``</span>
+<span class="sd">        references. Whitespace around the ``=`` is kept.</span>
+
+<span class="sd">        :param entry: The config text of one on_change/on_update entry</span>
+<span class="sd">        :param old_path: The path being renamed away from</span>
+<span class="sd">        :param new_path: The path being renamed to</span>
+<span class="sd">        :type entry: str</span>
+<span class="sd">        :type old_path: str</span>
+<span class="sd">        :type new_path: str</span>
+
+<span class="sd">        :return: entry with destination and expression repointed</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        """</span>
+        <span class="n">dest</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">split_destitem_from_value</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dest</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Items</span><span class="o">.</span><span class="n">_rewrite_sh_path_reference</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
+
+        <span class="n">head</span><span class="p">,</span> <span class="n">separator</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">'='</span><span class="p">)</span>
+        <span class="n">dest</span> <span class="o">=</span> <span class="n">head</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">sh_prefix</span> <span class="o">=</span> <span class="s1">'sh.'</span> <span class="k">if</span> <span class="n">dest</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'sh.'</span><span class="p">)</span> <span class="k">else</span> <span class="s1">''</span>
+        <span class="n">new_dest</span> <span class="o">=</span> <span class="n">sh_prefix</span> <span class="o">+</span> <span class="n">Items</span><span class="o">.</span><span class="n">_rewrite_bare_path_reference</span><span class="p">(</span><span class="n">dest</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">sh_prefix</span><span class="p">)</span> <span class="p">:],</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">head</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">new_dest</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">separator</span> <span class="o">+</span> <span class="n">Items</span><span class="o">.</span><span class="n">_rewrite_sh_path_reference</span><span class="p">(</span><span class="n">tail</span><span class="p">,</span> <span class="n">old_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Items.find_references">
 <a class="viewcode-back" href="../../../lib/item_class_items.html#lib.item.Items.find_references">[Doku]</a>
@@ -8565,9 +8620,10 @@
 <span class="sd">        are yielded under the same attribute_name, since the raw config</span>
 <span class="sd">        value being rewritten is one string either way.</span>
 
-<span class="sd">        Only string values are yielded: cycle/autotimer parts set at</span>
-<span class="sd">        runtime (``item.autotimer(60, 1)``) hold numbers, which cannot</span>
-<span class="sd">        contain a reference.</span>
+<span class="sd">        on_change/on_update contribute both the expressions and the</span>
+<span class="sd">        ``dest =`` destination paths. Only string values are yielded:</span>
+<span class="sd">        cycle/autotimer parts set at runtime (``item.autotimer(60, 1)``)</span>
+<span class="sd">        hold numbers, which cannot contain a reference.</span>
 <span class="sd">        """</span>
         <span class="n">scalars</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">(</span><span class="s1">'eval'</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_eval</span><span class="p">),</span>
@@ -8581,7 +8637,13 @@
             <span class="p">(</span><span class="s1">'hysteresis_lower_threshold'</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_hysteresis_lower_threshold</span><span class="p">),</span>
             <span class="p">(</span><span class="s1">'hysteresis_lower_threshold'</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_hysteresis_lower_timer</span><span class="p">),</span>
         <span class="p">)</span>
-        <span class="n">lists</span> <span class="o">=</span> <span class="p">((</span><span class="s1">'on_change'</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_on_change</span><span class="p">),</span> <span class="p">(</span><span class="s1">'on_update'</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_on_update</span><span class="p">),</span> <span class="p">(</span><span class="s1">'trigger'</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_trigger</span><span class="p">))</span>
+        <span class="n">lists</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="s1">'on_change'</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_on_change</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">'on_change'</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_on_change_dest_var</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">'on_update'</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_on_update</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">'on_update'</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_on_update_dest_var</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">'trigger'</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">_trigger</span><span class="p">),</span>
+        <span class="p">)</span>
         <span class="n">pairs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">scalars</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">texts</span> <span class="ow">in</span> <span class="n">lists</span><span class="p">:</span>
             <span class="n">pairs</span><span class="o">.</span><span class="n">extend</span><span class="p">((</span><span class="n">attr_name</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span> <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">texts</span> <span class="ow">or</span> <span class="p">[])</span>
@@ -8690,11 +8752,17 @@
             <span class="n">config</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s1">'config'</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="n">attr_name</span> <span class="o">==</span> <span class="s1">'trigger'</span><span class="p">:</span>
-                <span class="n">remaining</span> <span class="o">=</span> <span class="p">[</span><span class="n">entry_path</span> <span class="k">for</span> <span class="n">entry_path</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'trigger'</span><span class="p">,</span> <span class="p">[])</span> <span class="k">if</span> <span class="n">entry_path</span> <span class="o">!=</span> <span class="n">path</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">remaining</span><span class="p">:</span>
-                    <span class="n">config</span><span class="p">[</span><span class="s1">'trigger'</span><span class="p">]</span> <span class="o">=</span> <span class="n">remaining</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'trigger'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="n">KEY_EVAL_TRIGGER</span><span class="p">,</span> <span class="n">KEY_TRIGGER</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="n">entries</span> <span class="o">=</span> <span class="p">[</span><span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                    <span class="n">remaining</span> <span class="o">=</span> <span class="p">[</span><span class="n">entry_path</span> <span class="k">for</span> <span class="n">entry_path</span> <span class="ow">in</span> <span class="n">entries</span> <span class="k">if</span> <span class="n">entry_path</span> <span class="o">!=</span> <span class="n">path</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">remaining</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">entries</span><span class="p">):</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="n">remaining</span><span class="p">:</span>
+                        <span class="n">config</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">remaining</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">attr_name</span> <span class="o">==</span> <span class="s1">'hysteresis_input'</span><span class="p">:</span>
                 <span class="n">config</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'hysteresis_input'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'on_change'</span><span class="p">,</span> <span class="s1">'on_update'</span><span class="p">):</span>
