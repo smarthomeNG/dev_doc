@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lib.scheduler &mdash; Dokumentation v2.0.0-dev.1 v2.0.0-dev.1 develop (Stand 18. November 2026, commit 0441a7e) Dokumentation</title>
+  <title>lib.scheduler &mdash; Dokumentation v2.0.0-dev.1 v2.0.0-dev.1 develop (Stand 18. November 2026, commit 7a95e7c) Dokumentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=966e63c0" />
@@ -17,7 +17,7 @@
       <script src="../../_static/search_scorer.js?v=811695eb"></script>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=f30d1383"></script>
+      <script src="../../_static/documentation_options.js?v=3d02ac72"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/translations.js?v=9bf55d28"></script>
@@ -6871,6 +6871,8 @@
 
 <span class="n">DEFAULT_RUNTIME_WARN</span> <span class="o">=</span> <span class="mi">120</span>  <span class="c1"># seconds a scheduler task may run before a warning is logged; 0 disables</span>
 
+<span class="n">_LOCK_TIMEOUT</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># seconds run() waits for the scheduler lock before logging its holder</span>
+
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_parse_seconds</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""``value`` as a threshold in seconds (a number &gt;= 0), None if invalid."""</span>
@@ -7038,6 +7040,79 @@
         <span class="k">return</span> <span class="n">due</span>
 
 
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_LockHolder</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    One acquisition of a :class:`_TracedLock`; a new instance per acquisition.</span>
+
+<span class="sd">    :ivar thread_ident: ``threading.get_ident()`` of the holding thread</span>
+<span class="sd">    :ivar thread_name: name of the holding thread at acquisition</span>
+<span class="sd">    :ivar site: function, file and line that acquired the lock</span>
+<span class="sd">    :ivar acquired: ``time.monotonic()`` at acquisition</span>
+<span class="sd">    """</span>
+
+    <span class="n">thread_ident</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">thread_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">site</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">acquired</span><span class="p">:</span> <span class="nb">float</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">held_for</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Seconds since acquisition."""</span>
+        <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">acquired</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_TracedLock</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Non-reentrant lock that records its current holder, to name it when another thread waits too long.</span>
+
+<span class="sd">    Supports the ``threading.Lock`` subset ``acquire()``, ``release()`` and ``with``.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_holder</span><span class="p">:</span> <span class="n">_LockHolder</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">holder</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_LockHolder</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Current acquisition, None while the lock is free."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_holder</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blocking</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Acquire like ``threading.Lock.acquire()``, recording the calling thread and function."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_acquire</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">blocking</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Release like ``threading.Lock.release()``."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_holder</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">'_TracedLock'</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_acquire</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="kc">True</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">exc_info</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">caller</span><span class="p">:</span> <span class="n">types</span><span class="o">.</span><span class="n">FrameType</span><span class="p">,</span> <span class="n">blocking</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span><span class="n">blocking</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">current_thread</span><span class="p">()</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="n">caller</span><span class="o">.</span><span class="n">f_code</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_holder</span> <span class="o">=</span> <span class="n">_LockHolder</span><span class="p">(</span>
+                <span class="n">thread_ident</span><span class="o">=</span><span class="n">thread</span><span class="o">.</span><span class="n">ident</span><span class="p">,</span>
+                <span class="n">thread_name</span><span class="o">=</span><span class="n">thread</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">site</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">code</span><span class="o">.</span><span class="n">co_name</span><span class="si">}</span><span class="s1">() at </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">code</span><span class="o">.</span><span class="n">co_filename</span><span class="p">)</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="n">caller</span><span class="o">.</span><span class="n">f_lineno</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="n">acquired</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">(),</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+            <span class="c1"># an async TaskCancelled can land here; the caller's try/finally is not entered yet</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+            <span class="k">raise</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+
 <span class="k">class</span><span class="w"> </span><span class="nc">_PriorityQueue</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Implements a queue which contain tuples of priority and data sorted by priority.</span>
@@ -7121,7 +7196,8 @@
         <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'Scheduler'</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Init Scheduler'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sh</span> <span class="o">=</span> <span class="n">smarthome</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">_TracedLock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reported_lock_holder</span><span class="p">:</span> <span class="n">_LockHolder</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_runc</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Condition</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cycle_items</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># store items for dynamic cycles {'item2.property.path': {name1, name2, ...}}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_running</span> <span class="o">=</span> <span class="n">_TaskRegistry</span><span class="p">()</span>
@@ -7308,6 +7384,28 @@
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cancel_task</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">thread_ident</span><span class="p">,</span> <span class="n">task</span><span class="o">.</span><span class="n">task_id</span><span class="p">)</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_log_lock_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Log that run() could not acquire the scheduler lock within ``_LOCK_TIMEOUT``, naming the holder.</span>
+
+<span class="sd">        The first message for an acquisition adds the holder thread's current stack; further</span>
+<span class="sd">        messages for the same acquisition name holder and hold time only.</span>
+<span class="sd">        """</span>
+        <span class="n">holder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">holder</span>
+        <span class="k">if</span> <span class="n">holder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Scheduler: lock not acquired within </span><span class="si">{</span><span class="n">_LOCK_TIMEOUT</span><span class="si">:</span><span class="s1">g</span><span class="si">}</span><span class="s1"> s, released meanwhile'</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">'Scheduler: lock not acquired within </span><span class="si">{</span><span class="n">_LOCK_TIMEOUT</span><span class="si">:</span><span class="s1">g</span><span class="si">}</span><span class="s1"> s, held for </span><span class="si">{</span><span class="n">holder</span><span class="o">.</span><span class="n">held_for</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1"> s '</span>
+            <span class="sa">f</span><span class="s1">'by thread </span><span class="si">{</span><span class="n">holder</span><span class="o">.</span><span class="n">thread_name</span><span class="si">}</span><span class="s1"> (acquired in </span><span class="si">{</span><span class="n">holder</span><span class="o">.</span><span class="n">site</span><span class="si">}</span><span class="s1">)'</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">holder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reported_lock_holder</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reported_lock_holder</span> <span class="o">=</span> <span class="n">holder</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_current_frames</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">holder</span><span class="o">.</span><span class="n">thread_ident</span><span class="p">)</span>
+            <span class="n">stack</span> <span class="o">=</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_stack</span><span class="p">(</span><span class="n">frame</span><span class="p">))</span> <span class="k">if</span> <span class="n">frame</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">'(not available)</span><span class="se">\n</span><span class="s1">'</span>
+            <span class="n">message</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">', current stack:</span><span class="se">\n</span><span class="si">{</span><span class="n">stack</span><span class="si">}</span><span class="s1">'</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
 <div class="viewcode-block" id="Scheduler.run">
 <a class="viewcode-back" href="../../lib/scheduler.html#lib.scheduler.Scheduler.run">[Doku]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -7368,16 +7466,8 @@
                 <span class="k">else</span><span class="p">:</span>  <span class="c1"># put last entry back and break while loop</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_triggerq</span><span class="o">.</span><span class="n">insert</span><span class="p">((</span><span class="n">dt</span><span class="p">,</span> <span class="n">prio</span><span class="p">),</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">by</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
                     <span class="k">break</span>
-            <span class="c1"># For debugging</span>
-            <span class="c1"># task_count = 0</span>
-            <span class="c1"># for name in self._scheduler:</span>
-            <span class="c1">#     task = self._scheduler[name]</span>
-            <span class="c1">#     if task['next'] is not None:</span>
-            <span class="c1">#         task_count += 1</span>
-            <span class="c1"># End for debugging</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-                <span class="c1">#     logger.critical("Scheduler: Deadlock! - Task Count to enter run queue: {}".format(task_count))</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s1">'Scheduler: Deadlock!'</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">_LOCK_TIMEOUT</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log_lock_timeout</span><span class="p">()</span>
                 <span class="k">continue</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">:</span>
@@ -7484,9 +7574,9 @@
 <span class="sd">        :param name: scheduler entry name to remove</span>
 <span class="sd">        :param from_smartplugin:</span>
 <span class="sd">        """</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_caller</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">from_smartplugin</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_caller</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">from_smartplugin</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'remove scheduler entry with name: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">:</span>
                 <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
