@@ -1,0 +1,308 @@
+.. |_| unicode:: 0xA0
+
+
+==========================
+Plugin 'mcp' Konfiguration
+==========================
+
+
+.. index:: Plugins; mcp Konfiguration
+
+.. image:: /_static/img/gateway.svg
+   :alt: plugin type logo
+   :width: 300px
+   :height: 300px
+   :scale: 50%
+   :align: left
+
+.. |br| raw:: html
+
+   <br />
+
+Im folgenden sind etwaige Anforderungen und unterstützte Hardware beschrieben. Danach folgt die               Beschreibung, wie das Plugin **mcp** konfiguriert wird. Außerdem ist im folgenden               beschrieben, wie das Plugin in den Item Definitionen genutzt werden kann. [#f1]_ 
+
+Es handelt sich bei diesem Plugin um ein **gateway Plugin**.
+
+**ACHTUNG**: Dieses Plugin ist als develop gekennzeichnet. Es kann daher sein, dass es                  noch nicht sämtliche Funktionen unterstützt oder noch fehlerhaft ist.
+
+
+
+Beschreibung
+============
+
+MCP-Server (Model Context Protocol): stellt Items und Diagnosedaten für KI-Agenten bereit
+
+
+Anforderungen
+=============
+
+
+
+
+ - Minimum SmartHomeNG Version: **2.1.0-dev.1**
+ - Minimum Python Version: **3.11**
+
+Konfiguration
+=============
+
+
+Im folgenden ist beschrieben, wie das Plugin **mcp** konfiguriert wird. Außerdem ist im folgenden beschrieben, wie das Plugin in den Item Definitionen genutzt werden kann.
+
+
+=========
+Parameter
+=========
+
+
+Das Plugin verfügt über folgende Parameter, die in der Datei ``../etc/plugin.yaml`` konfiguriert werden:
+
+
+allowed_hosts
+=============
+
+
+Zusätzlich zu 127.0.0.1, localhost und ::1 erlaubte Werte des Host-Headers, z.B. shng.example:* (Port als *). Ohne Angabe prüft das Plugin den Host nur bei einer Loopback-Adresse.
+
+ - Datentyp: **list**
+ - Standardwert: **[]**
+
+
+allowed_origins
+===============
+
+
+Zusätzlich erlaubte Werte des Origin-Headers (Browser), z.B. https://app.example. Anfragen ohne Origin sind immer erlaubt.
+
+ - Datentyp: **list**
+ - Standardwert: **[]**
+
+
+auth_failure_limit
+==================
+
+
+Fehlgeschlagene Anmeldungen pro Minute und Adresse, danach antwortet der Server mit 429. Ein gültiges Token wird nie gebremst. 0 schaltet die Begrenzung ab.
+
+ - Datentyp: **int**
+ - Standardwert: **20**
+
+ - Minimalwert: **0**
+
+bind_address
+============
+
+
+Adresse, an die der MCP-Server gebunden wird. Eine andere Adresse als 127.0.0.1 öffnet den Server für das Netzwerk.
+
+ - Datentyp: **ip**
+ - Standardwert: **127.0.0.1**
+
+
+clients
+=======
+
+
+Weitere Clients mit eigenem Token, z.B. ein Client ohne Dateizugriff auf den Host. Name -> Einstellungen: token (mindestens 16 Zeichen, Pflicht), default_access (none|ro, Standard none), inherit_rw_access (Standard false), expose (Standard []), max_access (none|ro|rw, Standard ro), write_rate_limit und write_paths (Pfadmuster, in denen rw erhalten bleibt) elevate_to und elevate_minutes (Ceiling, das im Webinterface zeitweise gewährt werden kann) sowie allowed_networks (Adressen oder Netze, von denen der Client sich verbinden darf). Der Parameter token gilt für den Client "local".
+
+ - Datentyp: **dict**
+ - Standardwert: **OrderedDict()**
+
+
+default_access
+==============
+
+
+Zugriff auf Items ohne Attribut mcp_access in ihrer Hierarchie. "rw" ist als Standard nicht erlaubt.
+
+ - Datentyp: **str**
+ - Standardwert: **none**
+
+ - Mögliche Werte:
+
+   - **none**
+   - **ro**
+
+
+expose
+======
+
+
+Diagnosegruppen, die zusätzlich zu Items bereitgestellt werden: logs, scheduler, plugins, logics, threads, system, history.
+
+ - Datentyp: **list**
+ - Standardwert: **[]**
+
+
+history_max_days
+================
+
+
+Größte Zeitspanne in Tagen, die eine Anfrage von get_item_history lesen darf.
+
+ - Datentyp: **int**
+ - Standardwert: **7**
+
+ - Minimalwert: **1**
+
+history_plugin
+==============
+
+
+Abschnittsname (plugin.yaml) der Instanz des database-Plugins, aus der get_item_history liest. Leer nimmt die erste laufende Instanz.
+
+ - Datentyp: **str**
+
+
+inherit_rw_access
+=================
+
+
+Wenn true, erben Unter-Items den Zugriff "rw" von ihrem Eltern-Item. Nur für Test und Entwicklung; das Plugin warnt bei jedem Start.
+
+ - Datentyp: **bool**
+ - Standardwert: **False**
+
+
+log_redact
+==========
+
+
+Reguläre Ausdrücke; Treffer in Lognachrichten werden durch *** ersetzt. Eingebaute Muster für Passwörter, Tokens und Zugangsdaten in URLs gelten immer.
+
+ - Datentyp: **list**
+ - Standardwert: **[]**
+
+
+max_page_size
+=============
+
+
+Maximale Seitengröße für seitenweise Abfragen.
+
+ - Datentyp: **int**
+ - Standardwert: **200**
+
+ - Minimalwert: **1**
+
+port
+====
+
+
+Port des MCP-Servers (Endpunkt /mcp).
+
+ - Datentyp: **int**
+ - Standardwert: **8765**
+
+ - Minimalwert: **0**
+ - Maximalwert: **65535**
+
+tls_certfile
+============
+
+
+PEM-Datei mit dem Zertifikat (und der Kette) für HTTPS. Nur zusammen mit tls_keyfile; ohne beide spricht der Server unverschlüsseltes HTTP.
+
+ - Datentyp: **str**
+
+
+tls_keyfile
+===========
+
+
+PEM-Datei mit dem privaten Schlüssel zum Zertifikat aus tls_certfile.
+
+ - Datentyp: **str**
+
+
+token
+=====
+
+
+Bearer-Token, das jeder Client senden muss. Ohne Token startet das Plugin nicht. Erzeugen z.B. mit: python -c "import secrets; print(secrets.token_urlsafe(32))"
+
+ - Datentyp: **str**
+
+
+wait_max_seconds
+================
+
+
+Maximale Wartezeit von wait_for_change in Sekunden.
+
+ - Datentyp: **int**
+ - Standardwert: **30**
+
+ - Minimalwert: **1**
+
+write_rate_limit
+================
+
+
+Maximale Schreibzugriffe pro Minute über MCP (global). 0 schaltet die Begrenzung ab.
+
+ - Datentyp: **int**
+ - Standardwert: **30**
+
+ - Minimalwert: **0**
+
+==============
+Item Attribute
+==============
+
+
+Das Plugin unterstützt folgende Item Attribute, die in den Dateien im Verzeichnis  ``../items`` verwendet werden:
+
+
+mcp_access
+==========
+
+
+Zugriff von MCP-Clients auf das Item: none (unsichtbar), ro (lesen) oder rw (lesen und schreiben). "none" und "ro" gelten auch für Unter-Items, "rw" nur für das Item selbst (außer inherit_rw_access ist gesetzt).
+
+ - Datentyp: **str**
+
+ - Mögliche Werte:
+
+   - **none**
+   - **ro**
+   - **rw**
+
+
+mcp_rate_limit
+==============
+
+
+Maximale Schreibzugriffe pro Minute über MCP für dieses Item (0 = unbegrenzt). Ersetzt für dieses Item das globale write_rate_limit.
+
+ - Datentyp: **int**
+
+ - Minimalwert: **0**
+
+============
+Item-Structs
+============
+
+
+Das Plugin stellt die folgenden Item-Structs zur Verfügung. Diese Informationen sind aus der `plugin.yaml` entnommen und möglicherweise nicht vollständig.
+
+**Keine**
+
+===============
+Logik Parameter
+===============
+
+
+Das Plugin verfügt über folgende Parameter, die in der Datei ``../etc/logic.yaml`` konfiguriert werden:
+
+Keine Logik Parameter in den Metadaten beschrieben - **Bitte in der README nachsehen** (siehe Fußnote)
+
+================
+Plugin Functions
+================
+
+
+Das Plugin verfügt über folgende öffentliche Funktionen, die z.B. in Logiken aufgerufen werden können.
+
+**Keine**
+
+.. [#f1] Diese Seite wurde aus den Metadaten des Plugins erzeugt.

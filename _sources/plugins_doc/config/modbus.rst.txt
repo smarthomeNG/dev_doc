@@ -1,0 +1,1439 @@
+.. |_| unicode:: 0xA0
+
+
+=============================
+Plugin 'modbus' Konfiguration
+=============================
+
+
+.. index:: Plugins; modbus Konfiguration
+
+.. image:: /plugins/modbus/webif/static/img/plugin_logo.png
+   :alt: plugin logo
+   :width: 300px
+   :height: 300px
+   :scale: 50%
+   :align: left
+
+.. |br| raw:: html
+
+   <br />
+
+Im folgenden sind etwaige Anforderungen und unterstützte Hardware beschrieben. Danach folgt die               Beschreibung, wie das Plugin **modbus** konfiguriert wird. Außerdem ist im folgenden               beschrieben, wie das Plugin in den Item Definitionen genutzt werden kann. [#f1]_ 
+
+Es handelt sich bei diesem Plugin um ein **gateway Plugin**.
+
+**ACHTUNG**: Dieses Plugin ist als develop gekennzeichnet. Es kann daher sein, dass es                  noch nicht sämtliche Funktionen unterstützt oder noch fehlerhaft ist.
+
+
+
+Beschreibung
+============
+
+Plugin zur Geräte-Anbindung über ModBus an SmartHomeNG
+
+
+Anforderungen
+=============
+
+
+
+
+ - Minimum SmartHomeNG Version: **2.0.0**
+
+Konfiguration
+=============
+
+
+Im folgenden ist beschrieben, wie das Plugin **modbus** konfiguriert wird. Außerdem ist im folgenden beschrieben, wie das Plugin in den Item Definitionen genutzt werden kann.
+
+
+=========
+Parameter
+=========
+
+
+Das Plugin verfügt über folgende Parameter, die in der Datei ``../etc/plugin.yaml`` konfiguriert werden:
+
+
+adapter
+=======
+
+
+Geräte-Logik über reine Register hinaus: pluggit = Betriebsart-Schalter (modBusBit auf Register 168) und Umschalten auf Handbetrieb vor dem Schreiben der Lüfterstufe
+
+ - Datentyp: **str**
+
+ - Mögliche Werte:
+
+   - 
+   - **pluggit**
+
+
+baudrate
+========
+
+
+Baudrate (rtu)
+
+ - Datentyp: **int**
+ - Standardwert: **19200**
+
+ - Mögliche Werte:
+
+   - **1200**
+   - **2400**
+   - **4800**
+   - **9600**
+   - **19200**
+   - **38400**
+   - **57600**
+   - **115200**
+
+
+bytesize
+========
+
+
+Datenbits (rtu)
+
+ - Datentyp: **int**
+ - Standardwert: **8**
+
+ - Mögliche Werte:
+
+   - **7**
+   - **8**
+
+
+crontab
+=======
+
+
+Update mit Festlegung via Crontab
+
+ - Datentyp: **str**
+
+
+cycle
+=====
+
+
+Abfragezyklus in Sekunden: positiv = periodisch, 0 = nur Crontab, -1 = kontinuierlich.
+
+ - Datentyp: **int**
+ - Standardwert: **300**
+
+ - Minimalwert: **-1**
+
+host
+====
+
+
+Hostname oder IP-Adresse des Modbus-Geräts bzw. Gateways (tcp, rtu_over_tcp)
+
+ - Datentyp: **str**
+
+
+invalidate_on_disconnect
+========================
+
+
+Gelesene Items bei Verbindungsverlust im Datenbank-Log als ungültig markieren (Datenlücke)
+
+ - Datentyp: **bool**
+ - Standardwert: **False**
+
+
+parity
+======
+
+
+Parität: N (keine), E (gerade), O (ungerade) (rtu)
+
+ - Datentyp: **str**
+ - Standardwert: **N**
+
+ - Mögliche Werte:
+
+   - **N**
+   - **E**
+   - **O**
+
+
+pause_item
+==========
+
+
+Item, um die Ausführung des Plugins zu steuern
+
+ - Datentyp: **str**
+
+
+port
+====
+
+
+TCP-Port (tcp, rtu_over_tcp)
+
+ - Datentyp: **int**
+ - Standardwert: **502**
+
+ - Minimalwert: **1**
+ - Maximalwert: **65535**
+
+serialport
+==========
+
+
+Serielle Schnittstelle, z.B. /dev/ttyUSB0 (rtu); pyserial-URLs wie socket://host:port sind erlaubt
+
+ - Datentyp: **str**
+
+
+slaveUnit
+=========
+
+
+Slave-Addresse der zu lesenden Modbus-Einheit
+
+ - Datentyp: **int**
+ - Standardwert: **1**
+
+
+stopbits
+========
+
+
+Stoppbits (rtu)
+
+ - Datentyp: **int**
+ - Standardwert: **1**
+
+ - Mögliche Werte:
+
+   - **1**
+   - **2**
+
+
+transport
+=========
+
+
+Verbindung: Modbus TCP, Modbus RTU an einer seriellen Schnittstelle, oder RTU-Telegramme über TCP (serielle Gateways)
+
+ - Datentyp: **str**
+ - Standardwert: **tcp**
+
+ - Mögliche Werte:
+
+   - **tcp**
+   - **rtu**
+   - **rtu_over_tcp**
+
+
+==============
+Item Attribute
+==============
+
+
+Das Plugin unterstützt folgende Item Attribute, die in den Dateien im Verzeichnis  ``../items`` verwendet werden:
+
+
+modBusAddress
+=============
+
+
+Register Adresse welche gelesen werden soll
+
+ - Datentyp: **num**
+
+
+modBusBit
+=========
+
+
+Item-Wert ist dieses Bit (0 = niederwertigstes) des gelesenen Werts, als bool; modBusFactor gilt nicht. Schreiben nur über einen Adapter.
+
+ - Datentyp: **int**
+
+
+modBusByteOrder
+===============
+
+
+Endian.BIG oder Endian.LITTLE
+
+ - Datentyp: **str**
+ - Standardwert: **Endian.BIG**
+
+ - Mögliche Werte:
+
+   - **Endian.BIG**
+   - **Endian.LITTLE**
+
+
+modBusDataType
+==============
+
+
+Datentyp vom zu lesenden Register (bit, int16 uint16 int32 uint32 float32 string16 stringNN)
+
+ - Datentyp: **str**
+ - Standardwert: **uint16**
+
+
+modBusDirection
+===============
+
+
+Datenrichtung
+
+ - Datentyp: **str**
+ - Standardwert: **read**
+
+ - Mögliche Werte:
+
+   - **read**
+   - **read_write**
+   - **write**
+
+
+modBusFactor
+============
+
+
+Faktor mit dem der gelesene Register-Wert multipliziert wird
+
+ - Datentyp: **num**
+ - Standardwert: **1**
+
+
+modBusInvalid
+=============
+
+
+Gelesene Werte (vor modBusFactor), die das Gerät zusätzlich zu den Datentyp-Werten für "kein Wert" verwendet, z.B. [32767]
+
+ - Datentyp: **list**
+
+
+modBusInvalidValue
+==================
+
+
+Item-Wert, wenn das Gerät "kein Wert" meldet (z.B. 0x80000000 bei int32); ohne Angabe bleibt das Item unverändert. Wird ohne modBusFactor übernommen.
+
+ - Datentyp: **foo**
+
+
+modBusLookup
+============
+
+
+Werteliste Gerätewert: Item-Wert, z.B. {0: Standby, 1: Manuell}; Schreiben setzt den Gerätewert des Item-Werts. Nicht gelistete Gerätewerte werden unverändert übernommen.
+
+ - Datentyp: **dict**
+
+
+modBusObjectType
+================
+
+
+Auswahl welcher Objekt-Type gelesen werden soll
+
+ - Datentyp: **str**
+ - Standardwert: **HoldingRegister**
+
+ - Mögliche Werte:
+
+   - **Coil**
+   - **DiscreteInput**
+   - **InputRegister**
+   - **HoldingRegister**
+
+
+modBusRound
+===========
+
+
+Gelesene Werte auf so viele Nachkommastellen runden (0 = ganze Zahl), nach modBusFactor; str-Items erhalten Text mit genau so vielen Nachkommastellen
+
+ - Datentyp: **int**
+
+
+modBusSunSpec
+=============
+
+
+SunSpec-Punkt statt modBusAddress: <Modell>[:<Instanz>].<Punkt>, z.B. 103.W oder 160.module.2.DCW; Adresse und Skalierung liest das Plugin beim Verbinden vom Gerät
+
+ - Datentyp: **str**
+
+
+modBusUnit
+==========
+
+
+Slave-Addresse der zu lesenden Modbus-Einheit (Unit aus der plugin-Konfig wird überschrieben)
+
+ - Datentyp: **num**
+ - Standardwert: **1**
+
+
+modBusWordOrder
+===============
+
+
+Endian.BIG oder Endian.LITTLE
+
+ - Datentyp: **str**
+ - Standardwert: **Endian.BIG**
+
+ - Mögliche Werte:
+
+   - **Endian.BIG**
+   - **Endian.LITTLE**
+
+
+modbusPoll
+==========
+
+
+Bei true am Item eine einmalige Abfrage aller Register auslösen (auch mit cycle: 0).
+
+ - Datentyp: **bool**
+
+
+============
+Item-Structs
+============
+
+
+Das Plugin stellt die folgenden Item-Structs zur Verfügung. Diese Informationen sind aus der `plugin.yaml` entnommen und möglicherweise nicht vollständig.
+
+
+e3dc
+====
+
+
+.. treeview::
+     - :dir:`folder` **e3dc** (`foo`, ---)
+         - :dir:`folder` **s10** (`foo`, ---)
+             - :dir:`folder` **info** (`foo`, Device identification)
+                 - :dir:`file` **magic** (`num`, Identifier, 0xE3DC (58332) when the simple mode is active)
+                 - :dir:`file` **modbus_version** (`num`, Modbus firmware version, major in the high byte)
+                 - :dir:`file` **register_count** (`num`, Number of supported registers)
+                 - :dir:`file` **manufacturer** (`str`, Manufacturer)
+                 - :dir:`file` **model** (`str`, Model)
+                 - :dir:`file` **serial_number** (`str`, Serial number)
+                 - :dir:`file` **firmware** (`str`, Firmware release)
+             - :dir:`folder` **power** (`foo`, Power flows in W)
+                 - :dir:`file` **solar** (`num`, PV production W)
+                 - :dir:`file` **battery** (`num`, Battery power W, positive = charging)
+                 - :dir:`file` **house** (`num`, House consumption W)
+                 - :dir:`file` **grid** (`num`, Grid power W, negative = feed-in)
+                 - :dir:`file` **additional** (`num`, Additional (external) production W)
+                 - :dir:`file` **wallbox** (`num`, Wallbox consumption W)
+                 - :dir:`file` **wallbox_solar** (`num`, Wallbox consumption from solar W)
+             - :dir:`folder` **state** (`foo`, Shares and battery state)
+                 - :dir:`file` **autarky** (`num`, Autarky %)
+                 - :dir:`file` **self_consumption** (`num`, Self consumption %)
+                 - :dir:`file` **state_of_charge** (`num`, Battery state of charge %)
+                 - :dir:`folder` **emergency_power** (`num`, Emergency power status)
+                     - :dir:`file` **text** (`str`, ---)
+                 - :dir:`folder` **ems_status** (`num`, EMS status bits)
+                     - :dir:`file` **charging_locked** (`bool`, Charging the batteries is locked)
+                     - :dir:`file` **discharging_locked** (`bool`, Discharging the batteries is locked)
+                     - :dir:`file` **emergency_possible** (`bool`, Emergency power possible (batteries charged))
+                     - :dir:`file` **weather_based_charging** (`bool`, Charge capacity held back for the forecast sunshine)
+                     - :dir:`file` **curtailed** (`bool`, Output curtailed, maximum feed-in reached)
+                     - :dir:`file` **charge_lock_time** (`bool`, Charge lock time active)
+                     - :dir:`file` **discharge_lock_time** (`bool`, Discharge lock time active)
+                 - :dir:`file` **sg_ready** (`num`, SG Ready status)
+                 - :dir:`file` **power_ready** (`num`, Ready to deliver power (1 = grid connected, DCDC running, battery can discharge))
+             - :dir:`folder` **control** (`foo`, Controls)
+                 - :dir:`file` **feed_in_limit** (`num`, Feed-in limit W as last written (the device accepts writes; a limit holds only when rewritten at least every 30 s))
+             - :dir:`folder` **dc** (`foo`, DC strings)
+                 - :dir:`folder` **string_1** (`foo`, ---)
+                     - :dir:`file` **voltage** (`num`, DC voltage string 1 V)
+                     - :dir:`file` **current** (`num`, DC current string 1 A)
+                     - :dir:`file` **power** (`num`, DC power string 1 W)
+                 - :dir:`folder` **string_2** (`foo`, ---)
+                     - :dir:`file` **voltage** (`num`, DC voltage string 2 V)
+                     - :dir:`file` **current** (`num`, DC current string 2 A)
+                     - :dir:`file` **power** (`num`, DC power string 2 W)
+             - :dir:`folder` **meters** (`foo`, Power meters 0-7, phase power in W)
+                 - :dir:`folder` **meter_0** (`foo`, ---)
+                     - :dir:`folder` **meter_type** (`num`, Type of power meter 0)
+                         - :dir:`file` **text** (`str`, ---)
+                     - :dir:`file` **l1** (`num`, Power meter 0 L1 W)
+                     - :dir:`file` **l2** (`num`, Power meter 0 L2 W)
+                     - :dir:`file` **l3** (`num`, Power meter 0 L3 W)
+                 - :dir:`folder` **meter_1** (`foo`, ---)
+                     - :dir:`folder` **meter_type** (`num`, Type of power meter 1)
+                         - :dir:`file` **text** (`str`, ---)
+                     - :dir:`file` **l1** (`num`, Power meter 1 L1 W)
+                     - :dir:`file` **l2** (`num`, Power meter 1 L2 W)
+                     - :dir:`file` **l3** (`num`, Power meter 1 L3 W)
+                 - :dir:`folder` **meter_2** (`foo`, ---)
+                     - :dir:`folder` **meter_type** (`num`, Type of power meter 2)
+                         - :dir:`file` **text** (`str`, ---)
+                     - :dir:`file` **l1** (`num`, Power meter 2 L1 W)
+                     - :dir:`file` **l2** (`num`, Power meter 2 L2 W)
+                     - :dir:`file` **l3** (`num`, Power meter 2 L3 W)
+                 - :dir:`folder` **meter_3** (`foo`, ---)
+                     - :dir:`folder` **meter_type** (`num`, Type of power meter 3)
+                         - :dir:`file` **text** (`str`, ---)
+                     - :dir:`file` **l1** (`num`, Power meter 3 L1 W)
+                     - :dir:`file` **l2** (`num`, Power meter 3 L2 W)
+                     - :dir:`file` **l3** (`num`, Power meter 3 L3 W)
+                 - :dir:`folder` **meter_4** (`foo`, ---)
+                     - :dir:`folder` **meter_type** (`num`, Type of power meter 4)
+                         - :dir:`file` **text** (`str`, ---)
+                     - :dir:`file` **l1** (`num`, Power meter 4 L1 W)
+                     - :dir:`file` **l2** (`num`, Power meter 4 L2 W)
+                     - :dir:`file` **l3** (`num`, Power meter 4 L3 W)
+                 - :dir:`folder` **meter_5** (`foo`, ---)
+                     - :dir:`folder` **meter_type** (`num`, Type of power meter 5)
+                         - :dir:`file` **text** (`str`, ---)
+                     - :dir:`file` **l1** (`num`, Power meter 5 L1 W)
+                     - :dir:`file` **l2** (`num`, Power meter 5 L2 W)
+                     - :dir:`file` **l3** (`num`, Power meter 5 L3 W)
+                 - :dir:`folder` **meter_6** (`foo`, ---)
+                     - :dir:`folder` **meter_type** (`num`, Type of power meter 6)
+                         - :dir:`file` **text** (`str`, ---)
+                     - :dir:`file` **l1** (`num`, Power meter 6 L1 W)
+                     - :dir:`file` **l2** (`num`, Power meter 6 L2 W)
+                     - :dir:`file` **l3** (`num`, Power meter 6 L3 W)
+                 - :dir:`folder` **meter_7** (`foo`, ---)
+                     - :dir:`folder` **meter_type** (`num`, Type of power meter 7)
+                         - :dir:`file` **text** (`str`, ---)
+                     - :dir:`file` **l1** (`num`, Power meter 7 L1 W)
+                     - :dir:`file` **l2** (`num`, Power meter 7 L2 W)
+                     - :dir:`file` **l3** (`num`, Power meter 7 L3 W)
+             - :dir:`folder` **wallbox** (`foo`, Wallbox control registers 0-7 (read only, bit writes use function 05h))
+                 - :dir:`folder` **wallbox_0** (`num`, Wallbox 0 control bits)
+                     - :dir:`file` **available** (`bool`, Charger present and available)
+                     - :dir:`file` **solar_mode** (`bool`, Solar mode (false = mixed mode))
+                     - :dir:`file` **charging_aborted** (`bool`, Charging aborted (false = enabled))
+                     - :dir:`file` **charging** (`bool`, Car is charging)
+                     - :dir:`file` **plugged** (`bool`, Type 2 plug connected)
+                     - :dir:`file` **one_phase** (`bool`, One phase active (false = three phases))
+                 - :dir:`folder` **wallbox_1** (`num`, Wallbox 1 control bits)
+                     - :dir:`file` **available** (`bool`, Charger present and available)
+                     - :dir:`file` **solar_mode** (`bool`, Solar mode (false = mixed mode))
+                     - :dir:`file` **charging_aborted** (`bool`, Charging aborted (false = enabled))
+                     - :dir:`file` **charging** (`bool`, Car is charging)
+                     - :dir:`file` **plugged** (`bool`, Type 2 plug connected)
+                     - :dir:`file` **one_phase** (`bool`, One phase active (false = three phases))
+                 - :dir:`folder` **wallbox_2** (`num`, Wallbox 2 control bits)
+                     - :dir:`file` **available** (`bool`, Charger present and available)
+                     - :dir:`file` **solar_mode** (`bool`, Solar mode (false = mixed mode))
+                     - :dir:`file` **charging_aborted** (`bool`, Charging aborted (false = enabled))
+                     - :dir:`file` **charging** (`bool`, Car is charging)
+                     - :dir:`file` **plugged** (`bool`, Type 2 plug connected)
+                     - :dir:`file` **one_phase** (`bool`, One phase active (false = three phases))
+                 - :dir:`folder` **wallbox_3** (`num`, Wallbox 3 control bits)
+                     - :dir:`file` **available** (`bool`, Charger present and available)
+                     - :dir:`file` **solar_mode** (`bool`, Solar mode (false = mixed mode))
+                     - :dir:`file` **charging_aborted** (`bool`, Charging aborted (false = enabled))
+                     - :dir:`file` **charging** (`bool`, Car is charging)
+                     - :dir:`file` **plugged** (`bool`, Type 2 plug connected)
+                     - :dir:`file` **one_phase** (`bool`, One phase active (false = three phases))
+                 - :dir:`folder` **wallbox_4** (`num`, Wallbox 4 control bits)
+                     - :dir:`file` **available** (`bool`, Charger present and available)
+                     - :dir:`file` **solar_mode** (`bool`, Solar mode (false = mixed mode))
+                     - :dir:`file` **charging_aborted** (`bool`, Charging aborted (false = enabled))
+                     - :dir:`file` **charging** (`bool`, Car is charging)
+                     - :dir:`file` **plugged** (`bool`, Type 2 plug connected)
+                     - :dir:`file` **one_phase** (`bool`, One phase active (false = three phases))
+                 - :dir:`folder` **wallbox_5** (`num`, Wallbox 5 control bits)
+                     - :dir:`file` **available** (`bool`, Charger present and available)
+                     - :dir:`file` **solar_mode** (`bool`, Solar mode (false = mixed mode))
+                     - :dir:`file` **charging_aborted** (`bool`, Charging aborted (false = enabled))
+                     - :dir:`file` **charging** (`bool`, Car is charging)
+                     - :dir:`file` **plugged** (`bool`, Type 2 plug connected)
+                     - :dir:`file` **one_phase** (`bool`, One phase active (false = three phases))
+                 - :dir:`folder` **wallbox_6** (`num`, Wallbox 6 control bits)
+                     - :dir:`file` **available** (`bool`, Charger present and available)
+                     - :dir:`file` **solar_mode** (`bool`, Solar mode (false = mixed mode))
+                     - :dir:`file` **charging_aborted** (`bool`, Charging aborted (false = enabled))
+                     - :dir:`file` **charging** (`bool`, Car is charging)
+                     - :dir:`file` **plugged** (`bool`, Type 2 plug connected)
+                     - :dir:`file` **one_phase** (`bool`, One phase active (false = three phases))
+                 - :dir:`folder` **wallbox_7** (`num`, Wallbox 7 control bits)
+                     - :dir:`file` **available** (`bool`, Charger present and available)
+                     - :dir:`file` **solar_mode** (`bool`, Solar mode (false = mixed mode))
+                     - :dir:`file` **charging_aborted** (`bool`, Charging aborted (false = enabled))
+                     - :dir:`file` **charging** (`bool`, Car is charging)
+                     - :dir:`file` **plugged** (`bool`, Type 2 plug connected)
+                     - :dir:`file` **one_phase** (`bool`, One phase active (false = three phases))
+             - :dir:`folder` **inverter** (`foo`, Inverter (index 0), from 40999)
+                 - :dir:`file` **apparent_l1** (`num`, Apparent power L1 W)
+                 - :dir:`file` **apparent_l2** (`num`, Apparent power L2 W)
+                 - :dir:`file` **apparent_l3** (`num`, Apparent power L3 W)
+                 - :dir:`file` **active_l1** (`num`, Active power L1 W)
+                 - :dir:`file` **active_l2** (`num`, Active power L2 W)
+                 - :dir:`file` **active_l3** (`num`, Active power L3 W)
+                 - :dir:`file` **reactive_l1** (`num`, Reactive power L1 W)
+                 - :dir:`file` **reactive_l2** (`num`, Reactive power L2 W)
+                 - :dir:`file` **reactive_l3** (`num`, Reactive power L3 W)
+                 - :dir:`file` **voltage_l1** (`num`, AC voltage L1 V)
+                 - :dir:`file` **voltage_l2** (`num`, AC voltage L2 V)
+                 - :dir:`file` **voltage_l3** (`num`, AC voltage L3 V)
+                 - :dir:`file` **current_l1** (`num`, AC current L1 A)
+                 - :dir:`file` **current_l2** (`num`, AC current L2 A)
+                 - :dir:`file` **current_l3** (`num`, AC current L3 A)
+                 - :dir:`file` **frequency** (`num`, Frequency Hz)
+                 - :dir:`file` **dc_power_1** (`num`, DC power string 1 W)
+                 - :dir:`file` **dc_power_2** (`num`, DC power string 2 W)
+                 - :dir:`file` **dc_voltage_1** (`num`, DC voltage string 1 V)
+                 - :dir:`file` **dc_voltage_2** (`num`, DC voltage string 2 V)
+                 - :dir:`file` **dc_current_1** (`num`, DC current string 1 A)
+                 - :dir:`file` **dc_current_2** (`num`, DC current string 2 A)
+
+
+huawei
+======
+
+
+.. treeview::
+     - :dir:`folder` **huawei** (`foo`, ---)
+         - :dir:`folder` **emma** (`foo`, ---)
+             - :dir:`folder` **general** (`foo`, ---)
+                 - :dir:`folder` **system** (`foo`, ---)
+                     - :dir:`file` **software_version** (`str`, ---)
+                     - :dir:`file` **model** (`str`, ---)
+                     - :dir:`file` **number_of_inverters_found** (`num`, ---)
+                     - :dir:`file` **number_of_chargers_found** (`num`, ---)
+                     - :dir:`file` **backup_time_notification_threshold** (`num`, ---)
+                     - :dir:`file` **local_time_year** (`num`, writable (modBusDirection: read_write))
+                 - :dir:`folder` **energy** (`foo`, ---)
+                     - :dir:`folder` **total** (`foo`, ---)
+                         - :dir:`file` **absorbed** (`num`, ---)
+                         - :dir:`file` **consumption** (`num`, ---)
+                         - :dir:`file` **grid_export** (`num`, ---)
+                         - :dir:`file` **grid_import** (`num`, ---)
+                         - :dir:`file` **inverter_yield** (`num`, ---)
+                         - :dir:`file` **pv_yield** (`num`, ---)
+                     - :dir:`folder` **today** (`foo`, ---)
+                         - :dir:`file` **consumption** (`num`, ---)
+                         - :dir:`file` **grid_export** (`num`, ---)
+                         - :dir:`file` **grid_import** (`num`, ---)
+                         - :dir:`file` **inverter_yield** (`num`, ---)
+                         - :dir:`file` **pv_yield** (`num`, ---)
+                     - :dir:`folder` **monthly** (`foo`, ---)
+                         - :dir:`file` **pv_yield** (`num`, ---)
+                         - :dir:`file` **consumption** (`num`, ---)
+                         - :dir:`file` **grid_export** (`num`, ---)
+                         - :dir:`file` **grid_import** (`num`, ---)
+                     - :dir:`folder` **yearly** (`foo`, ---)
+                         - :dir:`file` **pv_yield** (`num`, ---)
+                         - :dir:`file` **consumption** (`num`, ---)
+                         - :dir:`file` **grid_export** (`num`, ---)
+                         - :dir:`file` **grid_import** (`num`, ---)
+                 - :dir:`folder` **power** (`foo`, ---)
+                     - :dir:`file` **pv_output** (`num`, ---)
+                     - :dir:`file` **load** (`num`, ---)
+                     - :dir:`file` **feed_in** (`num`, ---)
+                     - :dir:`folder` **inverter** (`foo`, ---)
+                         - :dir:`file` **active** (`num`, ---)
+                         - :dir:`file` **rated** (`num`, ---)
+                 - :dir:`folder` **configuration** (`foo`, ---)
+                     - :dir:`folder` **threephase_imbalance_control** (`bool`, ---)
+                         - :dir:`file` **register** (`num`, writable (modBusDirection: read_write))
+                     - :dir:`folder` **power_control_mode_at_grid_connection_point** (`str`, ---)
+                         - :dir:`file` **config** (`dict`, ---)
+                         - :dir:`file` **config_reverse** (`dict`, ---)
+                         - :dir:`file` **register** (`num`, writable (modBusDirection: read_write))
+                     - :dir:`folder` **power_supply_configuration** (`str`, ---)
+                         - :dir:`file` **config** (`dict`, ---)
+                         - :dir:`file` **config_reverse** (`dict`, ---)
+                         - :dir:`file` **register** (`num`, writable (modBusDirection: read_write))
+                     - :dir:`file` **tou_preferred_surplus_pv_use** (`num`, writable (modBusDirection: read_write))
+                     - :dir:`file` **tou_max_grid_charge_power** (`num`, writable (modBusDirection: read_write))
+                     - :dir:`file` **limitation_mode** (`num`, writable (modBusDirection: read_write))
+                     - :dir:`file` **max_feed_in_power_watt** (`num`, writable (modBusDirection: read_write))
+                     - :dir:`file` **max_feed_in_power_percent** (`num`, writable (modBusDirection: read_write))
+             - :dir:`folder` **storage** (`foo`, ---)
+                 - :dir:`folder` **energy** (`foo`, ---)
+                     - :dir:`file` **chargeable** (`num`, ---)
+                     - :dir:`file` **dischargeable** (`num`, ---)
+                     - :dir:`folder` **capacity** (`foo`, ---)
+                         - :dir:`file` **chargeable** (`num`, ---)
+                         - :dir:`file` **dischargeable** (`num`, ---)
+                         - :dir:`file` **rated** (`num`, ---)
+                     - :dir:`folder` **charged** (`foo`, ---)
+                         - :dir:`file` **today** (`num`, ---)
+                         - :dir:`file` **monthly** (`num`, ---)
+                         - :dir:`file` **total** (`num`, ---)
+                     - :dir:`folder` **discharged** (`foo`, ---)
+                         - :dir:`file` **today** (`num`, ---)
+                         - :dir:`file` **monthly** (`num`, ---)
+                         - :dir:`file` **total** (`num`, ---)
+                 - :dir:`file` **charge_discharge_power** (`num`, ---)
+                 - :dir:`folder` **state_of_charge** (`foo`, ---)
+                     - :dir:`file` **primary** (`num`, ---)
+                     - :dir:`file` **backup** (`num`, ---)
+                 - :dir:`folder` **ess_control_mode** (`str`, ---)
+                     - :dir:`file` **config** (`dict`, ---)
+                     - :dir:`file` **config_reverse** (`dict`, ---)
+                     - :dir:`file` **register** (`num`, writable (modBusDirection: read_write))
+             - :dir:`folder` **built_in_energy_sensor** (`foo`, ---)
+                 - :dir:`folder` **voltage** (`foo`, ---)
+                     - :dir:`file` **phase_a** (`num`, ---)
+                     - :dir:`file` **phase_b** (`num`, ---)
+                     - :dir:`file` **phase_c** (`num`, ---)
+                     - :dir:`file` **line_ab** (`num`, ---)
+                     - :dir:`file` **line_bc** (`num`, ---)
+                     - :dir:`file` **line_ca** (`num`, ---)
+                 - :dir:`folder` **current** (`foo`, ---)
+                     - :dir:`file` **phase_a** (`num`, ---)
+                     - :dir:`file` **phase_b** (`num`, ---)
+                     - :dir:`file` **phase_c** (`num`, ---)
+                 - :dir:`folder` **power** (`foo`, ---)
+                     - :dir:`file` **active** (`num`, ---)
+                     - :dir:`file` **factor** (`num`, ---)
+                     - :dir:`file` **apparent** (`num`, ---)
+                     - :dir:`file` **phase_a** (`num`, ---)
+                     - :dir:`file` **phase_b** (`num`, ---)
+                     - :dir:`file` **phase_c** (`num`, ---)
+                 - :dir:`folder` **energy** (`foo`, ---)
+                     - :dir:`file` **active** (`num`, ---)
+                     - :dir:`file` **negative** (`num`, ---)
+                     - :dir:`file` **positive** (`num`, ---)
+             - :dir:`folder` **external_energy_sensor** (`foo`, ---)
+                 - :dir:`folder` **voltage** (`foo`, ---)
+                     - :dir:`file` **phase_a** (`num`, ---)
+                     - :dir:`file` **phase_b** (`num`, ---)
+                     - :dir:`file` **phase_c** (`num`, ---)
+                     - :dir:`file` **line_ab** (`num`, ---)
+                     - :dir:`file` **line_bc** (`num`, ---)
+                     - :dir:`file` **line_ca** (`num`, ---)
+                 - :dir:`folder` **current** (`foo`, ---)
+                     - :dir:`file` **phase_a** (`num`, ---)
+                     - :dir:`file` **phase_b** (`num`, ---)
+                     - :dir:`file` **phase_c** (`num`, ---)
+                 - :dir:`folder` **power** (`foo`, ---)
+                     - :dir:`file` **active** (`num`, ---)
+                     - :dir:`file` **factor** (`num`, ---)
+                     - :dir:`file` **apparent** (`num`, ---)
+                     - :dir:`file` **phase_a** (`num`, ---)
+                     - :dir:`file` **phase_b** (`num`, ---)
+                     - :dir:`file` **phase_c** (`num`, ---)
+                 - :dir:`folder` **energy** (`foo`, ---)
+                     - :dir:`file` **active** (`num`, ---)
+                     - :dir:`file` **negative** (`num`, ---)
+                     - :dir:`file` **positive** (`num`, ---)
+             - :dir:`folder` **external_meter** (`foo`, ---)
+                 - :dir:`file` **status** (`num`, ---)
+                 - :dir:`folder` **voltage** (`foo`, ---)
+                     - :dir:`file` **phase_a** (`num`, ---)
+                     - :dir:`file` **phase_b** (`num`, ---)
+                     - :dir:`file` **phase_c** (`num`, ---)
+                     - :dir:`file` **line_ab** (`num`, ---)
+                     - :dir:`file` **line_bc** (`num`, ---)
+                     - :dir:`file` **line_ca** (`num`, ---)
+                 - :dir:`folder` **current** (`foo`, ---)
+                     - :dir:`file` **phase_a** (`num`, ---)
+                     - :dir:`file` **phase_b** (`num`, ---)
+                     - :dir:`file` **phase_c** (`num`, ---)
+                 - :dir:`folder` **power** (`foo`, ---)
+                     - :dir:`file` **active** (`num`, ---)
+                     - :dir:`file` **apparent** (`num`, ---)
+                     - :dir:`file` **factor** (`num`, ---)
+                     - :dir:`file` **phase_a** (`num`, ---)
+                     - :dir:`file` **phase_b** (`num`, ---)
+                     - :dir:`file` **phase_c** (`num`, ---)
+                 - :dir:`folder` **energy** (`foo`, ---)
+                     - :dir:`file` **total** (`num`, ---)
+                     - :dir:`file` **positive** (`num`, ---)
+                     - :dir:`file` **negative** (`num`, ---)
+         - :dir:`folder` **inverter** (`foo`, ---)
+             - :dir:`folder` **hardware** (`foo`, ---)
+                 - :dir:`file` **model_name** (`str`, ---)
+                 - :dir:`file` **serial_number** (`str`, ---)
+                 - :dir:`file` **part_number** (`str`, ---)
+                 - :dir:`file` **model_id** (`num`, ---)
+                 - :dir:`file` **product_sales_area** (`str`, ---)
+                 - :dir:`file` **grid_standard_code_protocol_version** (`num`, ---)
+                 - :dir:`file` **status** (`num`, ---)
+                 - :dir:`folder` **capability** (`foo`, ---)
+                     - :dir:`file` **nb_pv_strings** (`num`, ---)
+                     - :dir:`file` **nb_mpp_tracks** (`num`, ---)
+                 - :dir:`file` **startup** (`num`, writable (modBusDirection: write))
+                 - :dir:`file` **shutdown** (`num`, writable (modBusDirection: write))
+             - :dir:`folder` **software** (`foo`, ---)
+                 - :dir:`file` **firmware_version** (`str`, ---)
+                 - :dir:`file` **software_version** (`str`, ---)
+                 - :dir:`file` **protocol_version_modbus** (`num`, ---)
+             - :dir:`folder` **limits** (`foo`, ---)
+                 - :dir:`file` **rated_power** (`num`, ---)
+                 - :dir:`file` **p_max** (`num`, ---)
+                 - :dir:`file` **s_max** (`num`, ---)
+                 - :dir:`file` **q_max_out** (`num`, ---)
+                 - :dir:`file` **q_max_in** (`num`, ---)
+                 - :dir:`file` **p_max_real** (`num`, ---)
+                 - :dir:`file` **s_max_real** (`num`, ---)
+             - :dir:`folder` **features** (`foo`, ---)
+                 - :dir:`file` **feature_mask_1** (`num`, ---)
+                 - :dir:`file` **feature_mask_2** (`num`, ---)
+                 - :dir:`file` **feature_mask_3** (`num`, ---)
+                 - :dir:`file` **feature_mask_4** (`num`, ---)
+             - :dir:`file` **frequency** (`num`, ---)
+             - :dir:`file` **efficiency** (`num`, ---)
+             - :dir:`file` **temperature** (`num`, ---)
+             - :dir:`folder` **power** (`foo`, ---)
+                 - :dir:`file` **input** (`num`, ---)
+                 - :dir:`file` **active** (`num`, ---)
+                 - :dir:`file` **reactive** (`num`, ---)
+                 - :dir:`file` **factor** (`num`, ---)
+         - :dir:`folder` **meter** (`foo`, ---)
+             - :dir:`file` **status** (`num`, ---)
+             - :dir:`file` **frequency** (`num`, ---)
+             - :dir:`folder` **voltage** (`foo`, ---)
+                 - :dir:`file` **phase_a** (`num`, ---)
+                 - :dir:`file` **phase_b** (`num`, ---)
+                 - :dir:`file` **phase_c** (`num`, ---)
+                 - :dir:`file` **line_ab** (`num`, ---)
+                 - :dir:`file` **line_bc** (`num`, ---)
+                 - :dir:`file` **line_ca** (`num`, ---)
+             - :dir:`folder` **current** (`foo`, ---)
+                 - :dir:`file` **phase_a** (`num`, ---)
+                 - :dir:`file` **phase_b** (`num`, ---)
+                 - :dir:`file` **phase_c** (`num`, ---)
+             - :dir:`folder` **power** (`foo`, ---)
+                 - :dir:`file` **active** (`num`, ---)
+                 - :dir:`file` **reactive** (`num`, ---)
+                 - :dir:`file` **factor** (`num`, ---)
+                 - :dir:`file` **phase_a** (`num`, ---)
+                 - :dir:`file` **phase_b** (`num`, ---)
+                 - :dir:`file` **phase_c** (`num`, ---)
+             - :dir:`folder` **energy** (`foo`, ---)
+                 - :dir:`file` **exported** (`num`, ---)
+                 - :dir:`file` **accumulated** (`num`, ---)
+                 - :dir:`file` **reactive_accumulated** (`num`, ---)
+             - :dir:`folder` **meter_type** (`foo`, ---)
+                 - :dir:`file` **meter** (`num`, ---)
+                 - :dir:`file` **check** (`num`, ---)
+         - :dir:`folder` **sdongle** (`foo`, ---)
+             - :dir:`folder` **energy** (`foo`, ---)
+                 - :dir:`file` **input_power** (`num`, ---)
+                 - :dir:`file` **load_power** (`num`, ---)
+                 - :dir:`file` **grid_power** (`num`, ---)
+                 - :dir:`file` **battery_power** (`num`, ---)
+                 - :dir:`file` **active_power** (`num`, ---)
+         - :dir:`folder` **smartlogger** (`foo`, ---)
+             - :dir:`folder` **system** (`foo`, ---)
+                 - :dir:`file` **date_time** (`num`, writable (modBusDirection: read_write))
+                 - :dir:`file` **time_zone** (`num`, ---)
+                 - :dir:`file` **local_time** (`num`, ---)
+             - :dir:`folder` **pv** (`foo`, ---)
+                 - :dir:`file` **active_power** (`num`, ---)
+                 - :dir:`file` **reactive_power** (`num`, ---)
+             - :dir:`folder` **storage** (`foo`, ---)
+                 - :dir:`file` **active_power** (`num`, ---)
+                 - :dir:`file` **soc** (`num`, ---)
+             - :dir:`folder` **inverter** (`foo`, ---)
+                 - :dir:`file` **efficiency** (`num`, ---)
+             - :dir:`folder` **external_meter** (`foo`, ---)
+                 - :dir:`folder` **voltage** (`foo`, ---)
+                     - :dir:`file` **phase_a** (`num`, ---)
+                     - :dir:`file` **phase_b** (`num`, ---)
+                     - :dir:`file` **phase_c** (`num`, ---)
+                 - :dir:`folder` **current** (`foo`, ---)
+                     - :dir:`file` **phase_a** (`num`, ---)
+                     - :dir:`file` **phase_b** (`num`, ---)
+                     - :dir:`file` **phase_c** (`num`, ---)
+                 - :dir:`folder` **power** (`foo`, ---)
+                     - :dir:`file` **active** (`num`, ---)
+                     - :dir:`file` **power_factor** (`num`, ---)
+                 - :dir:`folder` **energy** (`foo`, ---)
+                     - :dir:`file` **total_active** (`num`, ---)
+                     - :dir:`file` **total_reactive** (`num`, ---)
+         - :dir:`folder` **storage** (`foo`, ---)
+             - :dir:`folder` **power** (`foo`, ---)
+                 - :dir:`folder` **charge** (`foo`, ---)
+                     - :dir:`file` **max** (`num`, ---)
+                     - :dir:`file` **max_set** (`num`, writable (modBusDirection: read_write))
+                     - :dir:`folder` **forced** (`foo`, ---)
+                         - :dir:`file` **charge** (`num`, writable (modBusDirection: read_write))
+                         - :dir:`file` **discharge** (`num`, writable (modBusDirection: read_write))
+                 - :dir:`folder` **discharge** (`foo`, ---)
+                     - :dir:`file` **max** (`num`, ---)
+                     - :dir:`file` **max_set** (`num`, writable (modBusDirection: read_write))
+                 - :dir:`folder` **grid_charge** (`foo`, ---)
+                     - :dir:`file` **current** (`num`, writable (modBusDirection: read_write))
+                     - :dir:`file` **max** (`num`, writable (modBusDirection: read_write))
+             - :dir:`folder` **capacity** (`foo`, ---)
+                 - :dir:`file` **rated** (`num`, ---)
+                 - :dir:`file` **state_of_charge** (`num`, ---)
+                 - :dir:`folder` **cutoff** (`foo`, ---)
+                     - :dir:`file` **charge** (`num`, writable (modBusDirection: read_write))
+                     - :dir:`file` **discharge** (`num`, writable (modBusDirection: read_write))
+                 - :dir:`file` **forced_soc** (`num`, writable (modBusDirection: read_write))
+                 - :dir:`file` **backup_soc** (`num`, writable (modBusDirection: read_write))
+                 - :dir:`file` **grid_charge_cutoff** (`num`, writable (modBusDirection: read_write))
+             - :dir:`folder` **energy** (`foo`, ---)
+                 - :dir:`folder` **total** (`foo`, ---)
+                     - :dir:`file` **charge** (`num`, ---)
+                     - :dir:`file` **discharge** (`num`, ---)
+                 - :dir:`folder` **daily** (`foo`, ---)
+                     - :dir:`file` **charge** (`num`, ---)
+                     - :dir:`file` **discharge** (`num`, ---)
+             - :dir:`folder` **electrical** (`foo`, ---)
+                 - :dir:`folder` **bus** (`foo`, ---)
+                     - :dir:`file` **voltage** (`num`, ---)
+                     - :dir:`file` **current** (`num`, ---)
+             - :dir:`folder` **status** (`foo`, ---)
+                 - :dir:`file` **running** (`num`, ---)
+                 - :dir:`file` **forced_mode** (`num`, writable (modBusDirection: read_write))
+                 - :dir:`file` **power_limit_grid** (`num`, ---)
+                 - :dir:`file` **working_mode_a** (`num`, ---)
+                 - :dir:`file` **working_mode_settings** (`num`, writable (modBusDirection: read_write))
+                 - :dir:`file` **control_mode** (`num`, writable (modBusDirection: read_write))
+             - :dir:`folder` **operation** (`foo`, ---)
+                 - :dir:`file` **charge_from_grid** (`bool`, writable (modBusDirection: read_write))
+                 - :dir:`file` **excess_pv_use_tou** (`num`, writable (modBusDirection: read_write))
+             - :dir:`folder` **pricing** (`foo`, ---)
+                 - :dir:`file` **time_of_use_price** (`num`, ---)
+                 - :dir:`file` **luna_price_periods** (`num`, writable (modBusDirection: read_write))
+                 - :dir:`file` **lg_resu_price_periods** (`num`, writable (modBusDirection: read_write))
+                 - :dir:`file` **fixed_charging_and_discharging_periods** (`num`, writable (modBusDirection: read_write))
+                 - :dir:`file` **lcoe** (`num`, ---)
+
+
+kostal
+======
+
+
+.. treeview::
+     - :dir:`folder` **kostal** (`foo`, ---)
+         - :dir:`folder` **ksem** (`foo`, ---)
+             - :dir:`folder` **power** (`foo`, ---)
+                 - :dir:`file` **active_plus** (`num`, Active Power + W)
+                 - :dir:`file` **active_minus** (`num`, Active Power - W)
+                 - :dir:`file` **reactive_plus** (`num`, Reactive Power + var)
+                 - :dir:`file` **reactive_minus** (`num`, Reactive Power - var)
+                 - :dir:`file` **apparent_plus** (`num`, Apparent power + VA)
+                 - :dir:`file` **apparent_minus** (`num`, Apparent power - VA)
+                 - :dir:`file` **factor** (`num`, Power Factor)
+             - :dir:`folder` **energy** (`foo`, ---)
+                 - :dir:`file` **active_plus** (`num`, Active energy+ Wh)
+                 - :dir:`file` **active_minus** (`num`, Active energy- Wh)
+                 - :dir:`file` **reactive_plus** (`num`, Reactive energy+ varh)
+                 - :dir:`file` **reactive_minus** (`num`, Reactive energy- varh)
+                 - :dir:`file` **apparent_plus** (`num`, Apparent energy+ VAh)
+                 - :dir:`file` **apparent_minus** (`num`, Apparent energy- VAh)
+         - :dir:`folder` **plenticore** (`foo`, ---)
+             - :dir:`folder` **info** (`foo`, ---)
+                 - :dir:`file` **article_number** (`str`, Inverter article number)
+                 - :dir:`file` **serial_number** (`str`, Inverter serial number)
+                 - :dir:`file` **bidirectional_converters** (`num`, Number of bidirectional converter)
+                 - :dir:`file` **ac_phases** (`num`, Number of AC phases)
+                 - :dir:`file` **pv_strings** (`num`, Number of PV strings)
+                 - :dir:`file` **hardware_version** (`num`, Hardware-Version)
+                 - :dir:`file` **software_version_mc** (`str`, Software-Version Maincontroller (MC))
+                 - :dir:`file` **software_version_ioc** (`str`, Software-Version IO-Controller (IOC))
+                 - :dir:`file` **power_id** (`num`, Power-ID)
+                 - :dir:`file` **network_name** (`str`, Inverter Network Name)
+                 - :dir:`folder` **network** (`foo`, ---)
+                     - :dir:`file` **ip_address** (`str`, IP-address)
+                     - :dir:`file` **subnet_mask** (`str`, IP-subnetmask)
+                     - :dir:`file` **gateway** (`str`, IP-gateway)
+                     - :dir:`file` **dns1** (`str`, IP-DNS1)
+                     - :dir:`file` **dns2** (`str`, IP-DNS2)
+                 - :dir:`file` **firmware_mc** (`num`, Firmware Maincontroller (MC))
+                 - :dir:`file` **max_power** (`num`, Inverter Max Power W)
+                 - :dir:`file` **manufacturer** (`str`, Inverter Manufacturer)
+                 - :dir:`file` **serial_number_long** (`str`, Inverter Serial Number)
+                 - :dir:`file` **product_name** (`str`, Productname)
+                 - :dir:`file` **power_class** (`str`, Power class)
+             - :dir:`folder` **state** (`foo`, ---)
+                 - :dir:`file` **inverter_state** (`num`, Inverter state2)
+                 - :dir:`file` **controller_temperature** (`num`, Temperature of controller PCB °C)
+                 - :dir:`file` **energy_manager_state** (`num`, State of energy manager3)
+                 - :dir:`file` **isolation_resistance** (`num`, Isolation resistance Ohm)
+                 - :dir:`file` **power_limit_evu** (`num`, Power limit from EVU %)
+                 - :dir:`file` **home_consumption_rate** (`num`, Total home consumption rate %)
+                 - :dir:`file` **worktime** (`num`, Worktime s Float Seconds)
+                 - :dir:`file` **cos_phi** (`num`, Actual cos)
+                 - :dir:`file` **grid_frequency** (`num`, Grid frequency Hz)
+             - :dir:`folder` **power** (`foo`, ---)
+                 - :dir:`file` **dc_total** (`num`, Total DC power W)
+                 - :dir:`file` **home_from_battery** (`num`, Home own consumption from battery W)
+                 - :dir:`file` **home_from_grid** (`num`, Home own consumption from grid W)
+                 - :dir:`file` **home_from_pv** (`num`, Home own consumption from PV W)
+                 - :dir:`file` **ac_active** (`num`, Total AC active power W)
+                 - :dir:`file` **ac_reactive** (`num`, Total AC reactive power Var)
+                 - :dir:`file` **ac_apparent** (`num`, Total AC apparent power VA)
+                 - :dir:`file` **generation** (`num`, Inverter Generation Power (actual) W)
+                 - :dir:`file` **dc_total_sum** (`num`, Total DC power (sum of all PV inputs) W)
+             - :dir:`folder` **energy** (`foo`, ---)
+                 - :dir:`file` **home_from_battery** (`num`, Total home consumption Battery Wh)
+                 - :dir:`file` **home_from_grid** (`num`, Total home consumption Grid Wh)
+                 - :dir:`file` **home_from_pv** (`num`, Total home consumption PV Wh)
+                 - :dir:`file` **home_total** (`num`, Total home consumption Wh)
+                 - :dir:`file` **yield_total** (`num`, Total yield Wh)
+                 - :dir:`file` **yield_daily** (`num`, Daily yield Wh)
+                 - :dir:`file` **yield_yearly** (`num`, Yearly yield Wh)
+                 - :dir:`file` **yield_monthly** (`num`, Monthly yield Wh)
+                 - :dir:`file` **generation** (`num`, Generation Energy Wh)
+                 - :dir:`file` **dc_pv_total** (`num`, Total DC PV energy (sum of all PV inputs) Wh)
+                 - :dir:`file` **dc_pv1** (`num`, Total DC energy from PV1 Wh)
+                 - :dir:`file` **dc_pv2** (`num`, Total DC energy from PV2 Wh)
+                 - :dir:`file` **dc_pv3** (`num`, Total DC energy from PV3 Wh)
+                 - :dir:`file` **ac_to_grid** (`num`, Total energy AC-side to grid Wh)
+             - :dir:`folder` **phases** (`foo`, ---)
+                 - :dir:`folder` **l1** (`foo`, ---)
+                     - :dir:`file` **current** (`num`, Current Phase 1 A)
+                     - :dir:`file` **power** (`num`, Active power Phase 1 W)
+                     - :dir:`file` **voltage** (`num`, Voltage Phase 1 V)
+                 - :dir:`folder` **l2** (`foo`, ---)
+                     - :dir:`file` **current** (`num`, Current Phase 2 A)
+                     - :dir:`file` **power** (`num`, Active power Phase 2 W)
+                     - :dir:`file` **voltage** (`num`, Voltage Phase 2 V)
+                 - :dir:`folder` **l3** (`foo`, ---)
+                     - :dir:`file` **current** (`num`, Current Phase 3 A)
+                     - :dir:`file` **power** (`num`, Active power Phase 3 W)
+                     - :dir:`file` **voltage** (`num`, Voltage Phase 3 V)
+             - :dir:`folder` **battery** (`foo`, ---)
+                 - :dir:`file` **charge_current** (`num`, Battery charge current A)
+                 - :dir:`file` **cycles** (`num`, Number of battery cycles)
+                 - :dir:`file` **current** (`num`, Actual battery charge (-) / discharge (+) current A)
+                 - :dir:`file` **fuse_state** (`num`, PSSB fuse state5)
+                 - :dir:`file` **ready** (`num`, Battery ready flag)
+                 - :dir:`file` **state_of_charge** (`num`, Act. state of charge %)
+                 - :dir:`file` **temperature** (`num`, Battery temperature °C)
+                 - :dir:`file` **voltage** (`num`, Battery voltage V)
+                 - :dir:`file` **gross_capacity** (`num`, Battery gross capacity Ah)
+                 - :dir:`file` **state_of_charge_actual** (`num`, Battery actual SOC %)
+                 - :dir:`file` **manufacturer** (`str`, Battery Manufacturer)
+                 - :dir:`file` **model_id** (`num`, Battery Model ID)
+                 - :dir:`file` **work_capacity** (`num`, Work Capacity Wh)
+                 - :dir:`file` **power** (`num`, Actual battery charge/discharge power W)
+                 - :dir:`file` **firmware** (`num`, Battery Firmware)
+                 - :dir:`file` **battery_type** (`num`, Battery Type6)
+             - :dir:`folder` **powermeter** (`foo`, ---)
+                 - :dir:`file` **cos_phi** (`num`, Cos φ (powermeter) cos)
+                 - :dir:`file` **frequency** (`num`, Frequency (powermeter) Hz)
+                 - :dir:`folder` **l1** (`foo`, ---)
+                     - :dir:`file` **current** (`num`, Current phase 1 (powermeter) A)
+                     - :dir:`file` **active_power** (`num`, Active power phase 1 (powermeter) W)
+                     - :dir:`file` **reactive_power** (`num`, Reactive power phase 1 (powermeter) Var)
+                     - :dir:`file` **apparent_power** (`num`, Apparent power phase 1 (powermeter) VA)
+                     - :dir:`file` **voltage** (`num`, Voltage phase 1 (powermeter) V)
+                 - :dir:`folder` **l2** (`foo`, ---)
+                     - :dir:`file` **current** (`num`, Current phase 2 (powermeter) A)
+                     - :dir:`file` **active_power** (`num`, Active power phase 2 (powermeter) W)
+                     - :dir:`file` **reactive_power** (`num`, Reactive power phase 2 (powermeter) Var)
+                     - :dir:`file` **apparent_power** (`num`, Apparent power phase 2 (powermeter) VA)
+                     - :dir:`file` **voltage** (`num`, Voltage phase 2 (powermeter) V)
+                 - :dir:`folder` **l3** (`foo`, ---)
+                     - :dir:`file` **current** (`num`, Current phase 3 (powermeter) A)
+                     - :dir:`file` **active_power** (`num`, Active power phase 3 (powermeter) W)
+                     - :dir:`file` **reactive_power** (`num`, Reactive power phase 3 (powermeter) Var)
+                     - :dir:`file` **apparent_power** (`num`, Apparent power phase 3 (powermeter) VA)
+                     - :dir:`file` **voltage** (`num`, Voltage phase 3 (powermeter) V)
+                 - :dir:`folder` **total** (`foo`, ---)
+                     - :dir:`file` **active_power** (`num`, Total active power (powermeter) W)
+                     - :dir:`file` **reactive_power** (`num`, Total reactive power (powermeter) Var)
+                     - :dir:`file` **apparent_power** (`num`, Total apparent power (powermeter) VA)
+             - :dir:`folder` **dc** (`foo`, ---)
+                 - :dir:`folder` **string1** (`foo`, ---)
+                     - :dir:`file` **current** (`num`, Current DC1 A)
+                     - :dir:`file` **power** (`num`, Power DC1 W)
+                     - :dir:`file` **voltage** (`num`, Voltage DC1 V)
+                 - :dir:`folder` **string2** (`foo`, ---)
+                     - :dir:`file` **current** (`num`, Current DC2 A)
+                     - :dir:`file` **power** (`num`, Power DC2 W)
+                     - :dir:`file` **voltage** (`num`, Voltage DC2 V)
+                 - :dir:`folder` **string3** (`foo`, ---)
+                     - :dir:`file` **current** (`num`, Current DC3 A)
+                     - :dir:`file` **power** (`num`, Power DC3 W)
+                     - :dir:`file` **voltage** (`num`, Voltage DC3 V)
+
+
+pluggit
+=======
+
+
+.. treeview::
+     - :dir:`folder` **pluggit** (`foo`, ---)
+         - :dir:`folder` **ap310** (`foo`, ---)
+             - :dir:`file` **DHCPEnabled** (`bool`, ---)
+             - :dir:`file` **IPAdress** (`str`, ---)
+             - :dir:`file` **IPMask** (`str`, ---)
+             - :dir:`file` **IPGateway** (`str`, ---)
+             - :dir:`file` **MACAdress** (`str`, ---)
+             - :dir:`folder` **SystemComponents** (`num`, ---)
+                 - :dir:`file` **FP1** (`bool`, ---)
+                 - :dir:`file` **Week** (`bool`, ---)
+                 - :dir:`file` **Bypass** (`bool`, ---)
+                 - :dir:`file` **LRSwitch** (`bool`, ---)
+                 - :dir:`file` **InternalPreheater** (`bool`, ---)
+                 - :dir:`file` **ServoFlow** (`bool`, ---)
+                 - :dir:`file` **RHSensor** (`bool`, ---)
+                 - :dir:`file` **VOCSensor** (`bool`, ---)
+                 - :dir:`file` **ExtOverride** (`bool`, ---)
+                 - :dir:`file` **HAC1** (`bool`, ---)
+                 - :dir:`file` **HRC2** (`bool`, ---)
+                 - :dir:`file` **PCTool** (`bool`, ---)
+                 - :dir:`file` **Apps** (`bool`, ---)
+                 - :dir:`file` **ZeegBee** (`bool`, ---)
+                 - :dir:`file` **DI1Override** (`bool`, ---)
+                 - :dir:`file` **DI2Override** (`bool`, ---)
+             - :dir:`file` **SystemSerialNum** (`num`, ---)
+             - :dir:`file` **SystemName** (`str`, writable (modBusDirection: read_write))
+             - :dir:`file` **SwitchInBPosition** (`bool`, ---)
+             - :dir:`file` **SwitchInAPosition** (`bool`, ---)
+             - :dir:`file` **FirmwareVersion** (`str`, ---)
+             - :dir:`file` **HACFirmwareVersion** (`str`, ---)
+             - :dir:`folder` **SystemTime** (`num`, Device clock, seconds since 1970)
+                 - :dir:`file` **DateTime** (`datetime`, ---)
+                 - :dir:`file` **Date** (`foo`, ---)
+                 - :dir:`file` **Time** (`foo`, ---)
+                 - :dir:`file` **Set** (`num`, Sets the device clock, seconds since 1970)
+             - :dir:`file` **WorkTime** (`num`, ---)
+             - :dir:`folder` **ExploitationDate** (`foo`, ---)
+                 - :dir:`file` **Date** (`foo`, ---)
+             - :dir:`folder` **BLState** (`num`, ---)
+                 - :dir:`file` **Text** (`str`, ---)
+             - :dir:`folder` **CurrentUnitMode** (`num`, writable (modBusDirection: read_write))
+                 - :dir:`file` **DemandMode** (`bool`, writable (modBusDirection: read_write))
+                 - :dir:`file` **ManualMode** (`bool`, writable (modBusDirection: read_write))
+                 - :dir:`file` **WeekProgramMode** (`bool`, writable (modBusDirection: read_write))
+                 - :dir:`file` **AwayMode** (`bool`, writable (modBusDirection: read_write))
+                 - :dir:`file` **FireplaceMode** (`bool`, writable (modBusDirection: read_write))
+                 - :dir:`file` **SummerMode** (`bool`, writable (modBusDirection: read_write))
+                 - :dir:`folder` **NightMode** (`bool`, writable (modBusDirection: read_write))
+                     - :dir:`file` **NightMode_StartHour** (`num`, writable (modBusDirection: read_write))
+                     - :dir:`file` **NightMode_StartMin** (`num`, writable (modBusDirection: read_write))
+                     - :dir:`file` **NightMode_EndHour** (`num`, writable (modBusDirection: read_write))
+                     - :dir:`file` **NightMode_EndMin** (`num`, writable (modBusDirection: read_write))
+                 - :dir:`file` **ManualBypass** (`bool`, writable (modBusDirection: read_write))
+             - :dir:`file` **FanSpeedLevel** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Fan1rpm** (`num`, ---)
+             - :dir:`file` **Fan2rpm** (`num`, ---)
+             - :dir:`file` **OutdoorTemperature** (`num`, Frischluft)
+             - :dir:`file` **SupplyTemperature** (`num`, Zuluft)
+             - :dir:`file` **ExtractTemperature** (`num`, Abluft)
+             - :dir:`file` **ExhaustTemperature** (`num`, Fortluft)
+             - :dir:`file` **RoomTemperature** (`num`, Raumtemperatur, kabellos)
+             - :dir:`file` **FilterRemainingLifetime** (`num`, ---)
+             - :dir:`file` **FilterDefaultTime** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **FilterReset** (`bool`, writable (modBusDirection: read_write))
+             - :dir:`folder` **Alarm** (`num`, ---)
+                 - :dir:`file` **Text** (`str`, ---)
+                 - :dir:`file` **ClearAlarm** (`num`, writable (modBusDirection: write))
+             - :dir:`file` **WeekProgram** (`num`, ---)
+             - :dir:`folder` **Bypass** (`num`, ---)
+                 - :dir:`file` **Text** (`str`, ---)
+                 - :dir:`file` **Open** (`bool`, ---)
+                 - :dir:`file` **Tmin** (`num`, ---)
+                 - :dir:`file` **Tmax** (`num`, ---)
+                 - :dir:`file` **ManualMode** (`bool`, writable (modBusDirection: read_write))
+                 - :dir:`file` **ManualTimeout** (`num`, ---)
+             - :dir:`file` **PreheaterPower** (`num`, ---)
+             - :dir:`file` **ReferenceExtractFanSpeed** (`num`, ---)
+             - :dir:`file` **ReferenceSupplyFanSpeed** (`num`, ---)
+             - :dir:`file` **FireplacePresent** (`bool`, ---)
+             - :dir:`folder` **VOC_Sensor** (`foo`, ---)
+                 - :dir:`file` **SensorValue** (`num`, ---)
+                 - :dir:`file` **LowTreshold** (`num`, writable (modBusDirection: read_write))
+                 - :dir:`file` **MiddleTreshold** (`num`, writable (modBusDirection: read_write))
+                 - :dir:`file` **HighTreshold** (`num`, writable (modBusDirection: read_write))
+             - :dir:`folder` **RH_Sensor** (`foo`, ---)
+                 - :dir:`file` **SensorValue** (`num`, ---)
+                 - :dir:`file` **SetPoint** (`num`, ---)
+             - :dir:`folder` **HAC_Parts** (`foo`, ---)
+                 - :dir:`file` **SystemIDComponents** (`num`, ---)
+                 - :dir:`file` **CO2_Level** (`num`, ---)
+                 - :dir:`file` **CO2_LowTreshold** (`num`, writable (modBusDirection: read_write))
+                 - :dir:`file` **CO2_MiddleTreshold** (`num`, writable (modBusDirection: read_write))
+                 - :dir:`file` **CO2_HighTreshold** (`num`, writable (modBusDirection: read_write))
+                 - :dir:`file` **IdxHac1Components** (`num`, ---)
+                 - :dir:`file` **SetpointT2** (`num`, writable (modBusDirection: read_write))
+                 - :dir:`file` **SetpointT3** (`num`, writable (modBusDirection: read_write))
+                 - :dir:`file` **SetpointT5** (`num`, writable (modBusDirection: read_write))
+
+
+systemair
+=========
+
+
+.. treeview::
+     - :dir:`folder` **systemair** (`foo`, ---)
+         - :dir:`folder` **residential** (`foo`, ---)
+             - :dir:`file` **Lueftergeschwindigkeit** (`num`, 0: Aus; 1: Langsame Geschwindigkeit; 2: Mittlere Geschwindigkeit; 3: Schnelle Geschwindigkeit)
+             - :dir:`file` **Luftstrom_Zuluft_Langsam** (`num`, Luftstrom Zuluft bei Geschwindigkeitsmodus 'Langsam')
+             - :dir:`file` **Luftstrom_Abluft_Langsam** (`num`, Luftstrom Abluft bei Geschwindigkeitsmodus 'Langsam')
+             - :dir:`file` **Luftstrom_Zuluft_Mittel** (`num`, Luftstrom Zuluft bei Geschwindigkeitsmodus 'Mittel')
+             - :dir:`file` **Luftstrom_Abluft_Mittel** (`num`, Luftstrom Abluft bei Geschwindigkeitsmodus 'Mittel')
+             - :dir:`file` **Luftstrom_Zuluft_Schnell** (`num`, Luftstrom Zuluft bei Geschwindigkeitsmodus 'Schnell')
+             - :dir:`file` **Luftstrom_Abluft_Schnell** (`num`, Luftstrom Abluft bei Geschwindigkeitsmodus 'Schnell')
+             - :dir:`file` **Masseinheit_Luftstrom** (`num`, 0: Liter pro Sekunde; 1: m3 pro Sekunde)
+             - :dir:`file` **Luefter_Zuluft_PWM** (`num`, 0-10v [0-100])
+             - :dir:`file` **Luefter_Abluft_PWM** (`num`, 0-10v [0-100])
+             - :dir:`file` **Luefterdrehzahl_Zuluft** (`num`, in Umdrehung pro Minute)
+             - :dir:`file` **Luefterdrehzahl_Abluft** (`num`, in Umdrehung pro Minute)
+             - :dir:`file` **Lueftergeschwindigkeit_Display** (`num`, Anzeige Lueftergeschwindigkeit auf Display KWL)
+             - :dir:`file` **Display_AUS_erlaubt** (`num`, Lüfter aus per Display KWL erlaubt?)
+             - :dir:`file` **Luefter_Geschwindigkeit_Log_Zuluft_LVL1** (`num`, Anzahl Logeintraege)
+             - :dir:`file` **Luefter_Geschwindigkeit_Log_Zuluft_LVL2** (`num`, Anzahl Logeintraege)
+             - :dir:`file` **Luefter_Geschwindigkeit_Log_Zuluft_LVL3** (`num`, Anzahl Logeintraege)
+             - :dir:`file` **Luefter_Geschwindigkeit_Log_Zuluft_LVL4** (`num`, Anzahl Logeintraege)
+             - :dir:`file` **Luefter_Geschwindigkeit_Log_Zuluft_LVL5** (`num`, Anzahl Logeintraege)
+             - :dir:`file` **Luefter_Geschwindigkeit_Log_Abluft_LVL1** (`num`, Anzahl Logeintraege)
+             - :dir:`file` **Luefter_Geschwindigkeit_Log_Abluft_LVL2** (`num`, Anzahl Logeintraege)
+             - :dir:`file` **Luefter_Geschwindigkeit_Log_Abluft_LVL3** (`num`, Anzahl Logeintraege)
+             - :dir:`file` **Luefter_Geschwindigkeit_Log_Abluft_LVL4** (`num`, Anzahl Logeintraege)
+             - :dir:`file` **Luefter_Geschwindigkeit_Log_Abluft_LVL5** (`num`, Anzahl Logeintraege)
+             - :dir:`file` **Luefter_Geschwindigkeit_Log_Zuluft_LVL1_NR** (`num`, Anzahl Logeintraege, non-resettable)
+             - :dir:`file` **Luefter_Geschwindigkeit_Log_Zuluft_LVL2_NR** (`num`, Anzahl Logeintraege, non-resettable)
+             - :dir:`file` **Luefter_Geschwindigkeit_Log_Zuluft_LVL3_NR** (`num`, Anzahl Logeintraege, non-resettable)
+             - :dir:`file` **Luefter_Geschwindigkeit_Log_Zuluft_LVL4_NR** (`num`, Anzahl Logeintraege, non-resettable)
+             - :dir:`file` **Luefter_Geschwindigkeit_Log_Zuluft_LVL5_NR** (`num`, Anzahl Logeintraege, non-resettable)
+             - :dir:`file` **Luefter_Geschwindigkeit_Log_Abluft_LVL1_NR** (`num`, Anzahl Logeintraege, non-resettable)
+             - :dir:`file` **Luefter_Geschwindigkeit_Log_Abluft_LVL2_NR** (`num`, Anzahl Logeintraege, non-resettable)
+             - :dir:`file` **Luefter_Geschwindigkeit_Log_Abluft_LVL3_NR** (`num`, Anzahl Logeintraege, non-resettable)
+             - :dir:`file` **Luefter_Geschwindigkeit_Log_Abluft_LVL4_NR** (`num`, Anzahl Logeintraege, non-resettable)
+             - :dir:`file` **Luefter_Geschwindigkeit_Log_Abluft_LVL5_NR** (`num`, Anzahl Logeintraege, non-resettable)
+             - :dir:`file` **Luefter_Systemkurve_Zuluft** (`num`, erlaubte Werte: 1-20)
+             - :dir:`file` **Luefter_Systemkurve_Abluft** (`num`, erlaubte Werte: 1-20)
+             - :dir:`file` **Luefter_Kontrolltyp** (`num`, erlaubte Werte:; 0: Luftfluss, 1: Geschwindigkeit)
+             - :dir:`file` **Heizregister_Typ** (`num`, 0: kein Heizregister, 1: Wasser, 2: Elektrisch, 3: Schütz (Contactor)?)
+             - :dir:`file` **Kuehler_Typ** (`num`, 0: kein Kuehler, 1: Wasser)
+             - :dir:`file` **Status_Heizregister_Kuehler** (`num`, keine Beschreibung, Wert default 0)
+             - :dir:`file` **Signal_Wasserheizregister_Kuehler** (`num`, keine Beschreibung, Wert default 0)
+             - :dir:`file` **Signal_Kuehler** (`num`, keine Beschreibung, Wert default 0)
+             - :dir:`file` **Frostschutzlevel** (`num`, Frotschutzlevel, erlaubte Werte: 70,80,90,100,110,120 = 7,8,9,10,11,12°C)
+             - :dir:`file` **Sollwerttemperatur_Heizregister** (`num`, Sollwerttemperatur des Heizregisters; Werte 0 - 5 beziehen sich auf die Temperaturen von Temperaturlevel1_Heizregister bis Temperaturlevel5_Heizregister; anders als die offizielle Beschreibung: Wert 0 ist die Temp. von Temperaturlevel1_Heizregister, 1 von Temperaturlevel2_Heizregister usw.; Weitere Werte je nach Gerät (6-29) möglich; in Grad Celsius 0:0, 1:12, 2:13, 3:14, 4:15, 5:16, 6:17, 7:18, 8:19, 9:20, 10:21, 11:22 usw.)
+             - :dir:`file` **Isttemperatur_Heizregister** (`num`, ---)
+             - :dir:`file` **Temperaturlevel1_Heizregister** (`num`, ---)
+             - :dir:`file` **Temperaturlevel2_Heizregister** (`num`, ---)
+             - :dir:`file` **Temperaturlevel3_Heizregister** (`num`, ---)
+             - :dir:`file` **Temperaturlevel4_Heizregister** (`num`, ---)
+             - :dir:`file` **Temperaturlevel5_Heizregister** (`num`, ---)
+             - :dir:`file` **Temperatursensor_1** (`num`, ---)
+             - :dir:`file` **Temperatursensor_2** (`num`, ---)
+             - :dir:`file` **Temperatursensor_3** (`num`, ---)
+             - :dir:`file` **Temperatursensor_4** (`num`, ---)
+             - :dir:`file` **Temperatursensor_5** (`num`, ---)
+             - :dir:`file` **Status_Temperatursensor_Input1** (`num`, 0: kein Fehler, 1: Fehler)
+             - :dir:`file` **Status_Temperatursensor_Input2** (`num`, 0: kein Fehler, 1: Fehler)
+             - :dir:`file` **Status_Temperatursensor_Input3** (`num`, 0: kein Fehler, 1: Fehler)
+             - :dir:`file` **Status_Temperatursensor_Input4** (`num`, 0: kein Fehler, 1: Fehler)
+             - :dir:`file` **Status_Temperatursensor_Input5** (`num`, 0: kein Fehler, 1: Fehler)
+             - :dir:`file` **Vorheizregister_Typ** (`num`, erlaubte Werte:; 0: kein Heizregister; 1: Elektrisches Heizregister)
+             - :dir:`file` **Heizregister_Sollwert_LeaveHome_Funktion** (`num`, Sollwert des Heizregister während der \"Home/Leave\"-Funktion)
+             - :dir:`file` **Luftklappe_PWM** (`num`, 0-10v [0-100])
+             - :dir:`file` **Status_Rotor** (`num`, 0: keine Fehler, 1: Fehler)
+             - :dir:`file` **Rotor_Relais_Aktiv** (`num`, 0: nicht aktiv, 1: aktiv)
+             - :dir:`file` **Wochenprogramm_Aktiv** (`num`, 0: aus, 1: ein)
+             - :dir:`file` **Lueftergeschwindigkeit_Wochenprogramm_An** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Lueftergeschwindigkeit_Wochenprogramm_Aus** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Start_Wochenprogramm_Tag1_Periode1_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Start_Wochenprogramm_Tag1_Periode1_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Ende_Wochenprogramm_Tag1_Periode1_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Ende_Wochenprogramm_Tag1_Periode1_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Start_Wochenprogramm_Tag1_Periode2_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Start_Wochenprogramm_Tag1_Periode2_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Ende_Wochenprogramm_Tag1_Periode2_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Ende_Wochenprogramm_Tag1_Periode2_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Start_Wochenprogramm_Tag2_Periode1_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Start_Wochenprogramm_Tag2_Periode1_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Ende_Wochenprogramm_Tag2_Periode1_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Ende_Wochenprogramm_Tag2_Periode1_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Start_Wochenprogramm_Tag2_Periode2_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Start_Wochenprogramm_Tag2_Periode2_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Ende_Wochenprogramm_Tag2_Periode2_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Ende_Wochenprogramm_Tag2_Periode2_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Start_Wochenprogramm_Tag3_Periode1_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Ende_Wochenprogramm_Tag3_Periode1_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Ende_Wochenprogramm_Tag3_Periode1_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Start_Wochenprogramm_Tag3_Periode2_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Start_Wochenprogramm_Tag3_Periode2_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Ende_Wochenprogramm_Tag3_Periode2_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Ende_Wochenprogramm_Tag3_Periode2_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Start_Wochenprogramm_Tag4_Periode1_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Ende_Wochenprogramm_Tag4_Periode1_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Ende_Wochenprogramm_Tag4_Periode1_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Start_Wochenprogramm_Tag4_Periode2_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Start_Wochenprogramm_Tag4_Periode2_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Ende_Wochenprogramm_Tag4_Periode2_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Ende_Wochenprogramm_Tag4_Periode2_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Start_Wochenprogramm_Tag5_Periode1_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Start_Wochenprogramm_Tag5_Periode1_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Ende_Wochenprogramm_Tag5_Periode1_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Ende_Wochenprogramm_Tag5_Periode1_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Start_Wochenprogramm_Tag5_Periode2_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Start_Wochenprogramm_Tag5_Periode2_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Ende_Wochenprogramm_Tag5_Periode2_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Ende_Wochenprogramm_Tag5_Periode2_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Start_Wochenprogramm_Tag6_Periode1_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Start_Wochenprogramm_Tag6_Periode1_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Ende_Wochenprogramm_Tag6_Periode1_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Ende_Wochenprogramm_Tag6_Periode1_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Start_Wochenprogramm_Tag6_Periode2_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Start_Wochenprogramm_Tag6_Periode2_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Ende_Wochenprogramm_Tag6_Periode2_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Ende_Wochenprogramm_Tag6_Periode2_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Start_Wochenprogramm_Tag7_Periode1_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Start_Wochenprogramm_Tag7_Periode1_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Ende_Wochenprogramm_Tag7_Periode1_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Ende_Wochenprogramm_Tag7_Periode1_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Start_Wochenprogramm_Tag7_Periode2_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Start_Wochenprogramm_Tag7_Periode2_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Ende_Wochenprogramm_Tag7_Periode2_Stunde** (`num`, writable (modBusDirection: read_write))
+             - :dir:`file` **Ende_Wochenprogramm_Tag7_Periode2_Minute** (`num`, erlaubte Werte: 0,10,15,20,30,40,45,50)
+             - :dir:`file` **Sytem_Typ** (`num`, erlaubte Werte:; 0: VR400, 1: VR700, 2: VR700DK, 3: VR400DE, 4: VC300, 5: VC700,; 8: VR400, 9: VR700, 12: VTR150K, 13: VTR200B, 14: VSR300, 15: VSR500; 16: VSR150, 17: VTR300, 18: VTR500, 19: VSR300DE, 20: VTC200)
+             - :dir:`file` **System_Programmversion_High** (`num`, ---)
+             - :dir:`file` **System_Programmversion_Mid** (`num`, ---)
+             - :dir:`file` **System_Programmversion_Low** (`num`, ---)
+             - :dir:`file` **System_Bootversion_High** (`num`, ---)
+             - :dir:`file` **System_Bootversion_Mid** (`num`, ---)
+             - :dir:`file` **System_Bootversion_Low** (`num`, ---)
+             - :dir:`file` **Uhr_Sekunden** (`num`, erlaubte Werte: 0-60)
+             - :dir:`file` **Uhr_Minuten** (`num`, erlaubte Werte: 0-60)
+             - :dir:`file` **Uhr_Stunden** (`num`, erlaubte Werte: 0-24)
+             - :dir:`file` **Uhr_Tag** (`num`, erlaubte Werte: 1-31)
+             - :dir:`file` **Uhr_Monat** (`num`, erlaubte Werte: 1-12)
+             - :dir:`file` **Uhr_Jahr** (`num`, Wert 0 = 2000)
+             - :dir:`file` **Uhr_Wochentag** (`num`, Werte: 0-6 (Montag bis Sonntag))
+             - :dir:`file` **Filter_Wechselzeitraum** (`num`, Wert in Monaten)
+             - :dir:`file` **Filter_Verbrauchte_Zeit** (`num`, Wert in Tagen)
+             - :dir:`file` **Defroster_VTC_Status** (`num`, Werte:; 0: No defrosting ongoing, 1: Reduced flow defrosting, 2: Bypass defrosting, 3: Stop defrosting)
+             - :dir:`file` **Defroster_VTC_Konfiguration** (`num`, Werte:; 0: A, 1: B, 2: C, 3: D)
+             - :dir:`file` **Defroster_VTC__UNBAL_ALLOWED** (`num`, Werte:; 0: Unbalance not allowed, 1: Unbalance allowed ?)
+             - :dir:`file` **Defroster_VTC__Modus** (`num`, erlaubte Werte: 1-5, keine Beschreibung)
+             - :dir:`file` **Defroster_VTR_Status** (`num`, Werte:; 0: Inactive, 1: niedrige Temperatur, 2: Defrosting)
+             - :dir:`file` **Defroster_VTR__Modus** (`num`, erlaubte Werte: 1-5, keine Beschreibung)
+             - :dir:`file` **DigitalInput_D1_Aktiv** (`num`, Werte:; 0: inaktiv, 1: aktiv)
+             - :dir:`file` **DigitalInput_DI2_Aktiv** (`num`, Werte:; 0: inaktiv, 1: aktiv)
+             - :dir:`file` **DigitalInput_DI3_Aktiv** (`num`, Werte:; 0: inaktiv, 1: aktiv)
+             - :dir:`file` **DigitalInput_DI4_Aktiv** (`num`, Werte:; 0: inaktiv, 1: aktiv)
+             - :dir:`file` **DigitalInput_DI5_Aktiv** (`num`, Werte:; 0: inaktiv, 1: aktiv)
+             - :dir:`file` **DigitalInput_DI6_Aktiv** (`num`, Werte:; 0: inaktiv, 1: aktiv)
+             - :dir:`file` **DigitalInput_DI7_Aktiv** (`num`, Werte:; 0: inaktiv, 1: aktiv)
+             - :dir:`file` **DigitalInput_EXT_RUNNING_M** (`num`, Extended running time in minutes)
+             - :dir:`file` **DigitalInput_EXT_RUNNING_SPEED_LVL** (`num`, Fan speed level during extended running:; 0: Off, 1: Low speed, 2: Normal speed, 3: High speed)
+             - :dir:`file` **DigitalInput_DI1_SF_LVL** (`num`, Supply fan speed level at activated digital input 1)
+             - :dir:`file` **DigitalInput_DI1_EF_LVL** (`num`, Extract fan speed level at activated digital input 1)
+             - :dir:`file` **DigitalInput_DI2_SF_LVL** (`num`, Supply fan speed level at activated digital input 2)
+             - :dir:`file` **DigitalInput_DI2_EF_LVL** (`num`, Extract fan speed level at activated digital input 2)
+             - :dir:`file` **DigitalInput_DI3_SF_LVL** (`num`, Supply fan speed level at activated digital input 3)
+             - :dir:`file` **DigitalInput_DI3_EF_LVL** (`num`, Extract fan speed level at activated digital input 3)
+             - :dir:`file` **PCU_Relay_Preheater** (`num`, ---)
+             - :dir:`file` **PCU_Relay_Reheater** (`num`, ---)
+             - :dir:`file` **PCU_Relay_Common_Heater_Preheater** (`num`, ---)
+             - :dir:`file` **Alarm_Filter** (`num`, Werte:; 0: Alarm nicht aktiv, 1: Alarm aktiv)
+             - :dir:`file` **Alarm_Luefter** (`num`, Werte; 0: Alarm nicht aktiv, 1: Alarm aktiv)
+             - :dir:`file` **Alarm_Rotor** (`num`, Werte; 0: Alarm nicht aktiv, 1: Alarm aktiv)
+             - :dir:`file` **Alarm_Frost** (`num`, Werte; 0: Alarm nicht aktiv, 1: Alarm aktiv)
+             - :dir:`file` **Alarm_PCU** (`num`, Werte; 0: Alarm nicht aktiv, 1: Alarm aktiv)
+             - :dir:`file` **Alarm_Temperatursensor** (`num`, Werte; 0: Alarm nicht aktiv, 1: Alarm aktiv)
+             - :dir:`file` **Alarm_Notfallthermostat** (`num`, Werte; 0: Alarm nicht aktiv, 1: Alarm aktiv)
+             - :dir:`file` **Alarm_Lueftungsklappe** (`num`, Werte; 0: Alarm nicht aktiv, 1: Alarm aktiv)
+             - :dir:`file` **Alarm_Relais_Aktiv** (`num`, Werte; 0: Relais nicht aktiv, 1: Relais aktiv)
+             - :dir:`file` **REG_DEMC_CO2_SP** (`num`, Werte:; 0-2000, 0: off)
+             - :dir:`file` **REG_DEMC_CO2_P_BAND** (`num`, Werte:; 1-1200)
+             - :dir:`file` **REG_DEMC_CO2_I_TIME** (`num`, Werte:; 1-120, 0: no integration)
+             - :dir:`file` **REG_DEMC_RH_SP** (`num`, Werte:; 0-100, 0: off)
+             - :dir:`file` **REG_DEMC_RH_P_BAND** (`num`, Werte:; 1-100)
+             - :dir:`file` **REG_DEMC_RH_I_TIME** (`num`, Werte: 1-120, 0: no integration)
+             - :dir:`file` **REG_DEMC_STATE** (`num`, Werte: 0: Start up, 1: Waiting for sensor network,  2: Waiting for sensor data, 3: Auto mode, 4: normal mode,)
+             - :dir:`file` **REG_DEMC_MODBUS_CO2_VALUE** (`num`, Werte: 0-2000 (in ppm))
+             - :dir:`file` **REG_DEMC_MODBUS_RH_VALUE** (`num`, Werte: 0-100 (in %))
+             - :dir:`file` **REG_WL_NODE_1_TYPE** (`num`, Werte:; 0: No connected, 1: CO2 sensor, 2: RH sensor, 3: DI module, 4: User interface)
+             - :dir:`file` **REG_WL_NODE_1_VALUE_T** (`num`, Value depending on node type:; REG_WL_NODE_1_TYPE = 1: CO2 value; REG_WL_NODE_1_TYPE = 2: RH value; REG_WL_NODE_1_TYPE = 3: Coil Address 14417: input 1, Coil Address 14418: input 2; All other node types: 0)
+             - :dir:`file` **REG_WL_NODE_1_STATUS** (`num`, Node-Status:; 0: not bound, 1: OK, 2: Battery failure, 3: Communication failure, 4: No network, 5: Sensor failure)
+             - :dir:`file` **REG_WL_NODE_1_VALUE_T_D1** (`num`, Wert: nur wenn REG_WL_NODE_xx_TYPE = 3)
+             - :dir:`file` **REG_WL_NODE_1_VALUE_T_D2** (`num`, Wert: nur wenn REG_WL_NODE_xx_TYPE = 3)
+             - :dir:`file` **REG_WL_NODE_2_TYPE** (`num`, Werte:; 0: No connected, 1: CO2 sensor, 2: RH sensor, 3: DI module, 4: User interface)
+             - :dir:`file` **REG_WL_NODE_2_VALUE_T** (`num`, Value depending on node type:; REG_WL_NODE_2_TYPE = 1: CO2 value; REG_WL_NODE_2_TYPE = 2: RH value; REG_WL_NODE_2_TYPE = 3: Coil Address 14577: input 1, Coil Address 14578: input 2; All other node types: 0)
+             - :dir:`file` **REG_WL_NODE_2_STATUS** (`num`, Node-Status:; 0: not bound, 1: OK, 2: Battery failure, 3: Communication failure, 4: No network, 5: Sensor failure)
+             - :dir:`file` **REG_WL_NODE_2_VALUE_T_D1** (`num`, Wert: nur wenn REG_WL_NODE_2_TYPE = 3)
+             - :dir:`file` **REG_WL_NODE_2_VALUE_T_D2** (`num`, Wert: nur wenn REG_WL_NODE_2_TYPE = 3)
+             - :dir:`file` **REG_WL_NODE_3_TYPE** (`num`, Werte:; 0: No connected, 1: CO2 sensor, 2: RH sensor, 3: DI module, 4: User interface)
+             - :dir:`file` **REG_WL_NODE_3_VALUE_T** (`num`, Value depending on node type:; REG_WL_NODE_3_TYPE = 1: CO2 value; REG_WL_NODE_3_TYPE = 2: RH value; REG_WL_NODE_3_TYPE = 3: Coil Address 14737: input 1, Coil Address 14738: input 2; All other node types: 0)
+             - :dir:`file` **REG_WL_NODE_3_STATUS** (`num`, Node-Status:; 0: not bound, 1: OK, 2: Battery failure, 3: Communication failure, 4: No network, 5: Sensor failure)
+             - :dir:`file` **REG_WL_NODE_3_VALUE_T_D1** (`num`, Wert: nur wenn REG_WL_NODE_3_TYPE = 3)
+             - :dir:`file` **REG_WL_NODE_3_VALUE_T_D2** (`num`, Wert: nur wenn REG_WL_NODE_3_TYPE = 3)
+             - :dir:`file` **REG_WL_NODE_4_TYPE** (`num`, Werte:; 0: No connected, 1: CO2 sensor, 2: RH sensor, 3: DI module, 4: User interface)
+             - :dir:`file` **REG_WL_NODE_4_VALUE_T** (`num`, Value depending on node type:; REG_WL_NODE_4_TYPE = 1: CO2 value; REG_WL_NODE_4_TYPE = 2: RH value; REG_WL_NODE_4_TYPE = 3: Coil Address 14897: input 1, Coil Address 14898: input 2; All other node types: 0)
+             - :dir:`file` **REG_WL_NODE_4_STATUS** (`num`, Node-Status:; 0: not bound, 1: OK, 2: Battery failure, 3: Communication failure, 4: No network, 5: Sensor failure)
+             - :dir:`file` **REG_WL_NODE_4_VALUE_T_D1** (`num`, Wert: nur wenn REG_WL_NODE_4_TYPE = 3)
+             - :dir:`file` **REG_WL_NODE_4_VALUE_T_D2** (`num`, Wert: nur wenn REG_WL_NODE_4_TYPE = 3)
+             - :dir:`file` **REG_WL_NODE_5_TYPE** (`num`, Werte:; 0: No connected, 1: CO2 sensor, 2: RH sensor, 3: DI module, 4: User interface)
+             - :dir:`file` **REG_WL_NODE_5_VALUE_T** (`num`, Value depending on node type:; REG_WL_NODE_5_TYPE = 1: CO2 value; REG_WL_NODE_5_TYPE = 2: RH value; REG_WL_NODE_5_TYPE = 3: Coil Address 15057: input 1, Coil Address 15058: input 2; All other node types: 0)
+             - :dir:`file` **REG_WL_NODE_5_STATUS** (`num`, Node-Status:; 0: not bound, 1: OK, 2: Battery failure, 3: Communication failure, 4: No network, 5: Sensor failure)
+             - :dir:`file` **REG_WL_NODE_5_VALUE_T_D1** (`num`, Wert: nur wenn REG_WL_NODE_5_TYPE = 3)
+             - :dir:`file` **REG_WL_NODE_5_VALUE_T_D2** (`num`, Wert: nur wenn REG_WL_NODE_5_TYPE = 3)
+             - :dir:`file` **REG_WL_NODE_6_TYPE** (`num`, Werte:; 0: No connected, 1: CO2 sensor, 2: RH sensor, 3: DI module, 4: User interface)
+             - :dir:`file` **REG_WL_NODE_6_VALUE_T** (`num`, Value depending on node type:; REG_WL_NODE_6_TYPE = 1: CO2 value; REG_WL_NODE_6_TYPE = 2: RH value; REG_WL_NODE_6_TYPE = 3: Coil Address 15217: input 1, Coil Address 15218: input 2; All other node types: 0)
+             - :dir:`file` **REG_WL_NODE_6_STATUS** (`num`, Node-Status:; 0: not bound, 1: OK, 2: Battery failure, 3: Communication failure, 4: No network, 5: Sensor failure)
+             - :dir:`file` **REG_WL_NODE_6_VALUE_T_D1** (`num`, Wert: nur wenn REG_WL_NODE_6_TYPE = 3)
+             - :dir:`file` **REG_WL_NODE_6_VALUE_T_D2** (`num`, Wert: nur wenn REG_WL_NODE_6_TYPE = 3)
+             - :dir:`file` **REG_WL_NODE_7_TYPE** (`num`, Werte:; 0: No connected, 1: CO2 sensor, 2: RH sensor, 3: DI module, 4: User interface)
+             - :dir:`file` **REG_WL_NODE_7_VALUE_T** (`num`, Value depending on node type:; REG_WL_NODE_7_TYPE = 1: CO2 value; REG_WL_NODE_7_TYPE = 2: RH value; REG_WL_NODE_7_TYPE = 3: Coil Address 15377: input 1, Coil Address 15378: input 2; All other node types: 0)
+             - :dir:`file` **REG_WL_NODE_7_STATUS** (`num`, Node-Status:; 0: not bound, 1: OK, 2: Battery failure, 3: Communication failure, 4: No network, 5: Sensor failure)
+             - :dir:`file` **REG_WL_NODE_7_VALUE_T_D1** (`num`, Wert: nur wenn REG_WL_NODE_7_TYPE = 3)
+             - :dir:`file` **REG_WL_NODE_7_VALUE_T_D2** (`num`, Wert: nur wenn REG_WL_NODE_7_TYPE = 3)
+             - :dir:`file` **REG_WL_NODE_8_TYPE** (`num`, Werte:; 0: No connected, 1: CO2 sensor, 2: RH sensor, 3: DI module, 4: User interface)
+             - :dir:`file` **REG_WL_NODE_8_VALUE_T** (`num`, Value depending on node type:; REG_WL_NODE_8_TYPE = 1: CO2 value; REG_WL_NODE_8_TYPE = 2: RH value; REG_WL_NODE_8_TYPE = 3: Coil Address 15537: input 1, Coil Address 15538: input 2; All other node types: 0)
+             - :dir:`file` **REG_WL_NODE_8_STATUS** (`num`, Node-Status:; 0: not bound, 1: OK, 2: Battery failure, 3: Communication failure, 4: No network, 5: Sensor failure)
+             - :dir:`file` **REG_WL_NODE_8_VALUE_T_D1** (`num`, Wert: nur wenn REG_WL_NODE_8_TYPE = 3)
+             - :dir:`file` **REG_WL_NODE_8_VALUE_T_D2** (`num`, Wert: nur wenn REG_WL_NODE_8_TYPE = 3)
+             - :dir:`file` **REG_WL_NODE_9_TYPE** (`num`, Werte:; 0: No connected, 1: CO2 sensor, 2: RH sensor, 3: DI module, 4: User interface)
+             - :dir:`file` **REG_WL_NODE_9_VALUE_T** (`num`, Value depending on node type:; REG_WL_NODE_9_TYPE = 1: CO2 value; REG_WL_NODE_9_TYPE = 2: RH value; REG_WL_NODE_9_TYPE = 3: Coil Address 15697: input 1, Coil Address 15698: input 2; All other node types: 0)
+             - :dir:`file` **REG_WL_NODE_9_STATUS** (`num`, Node-Status:; 0: not bound, 1: OK, 2: Battery failure, 3: Communication failure, 4: No network, 5: Sensor failure)
+             - :dir:`file` **REG_WL_NODE_9_VALUE_T_D1** (`num`, Wert: nur wenn REG_WL_NODE_9_TYPE = 3)
+             - :dir:`file` **REG_WL_NODE_9_VALUE_T_D2** (`num`, Wert: nur wenn REG_WL_NODE_9_TYPE = 3)
+             - :dir:`file` **REG_WL_NODE_10_TYPE** (`num`, Werte:; 0: No connected, 1: CO2 sensor, 2: RH sensor, 3: DI module, 4: User interface)
+             - :dir:`file` **REG_WL_NODE_10_VALUE_T** (`num`, Value depending on node type:; REG_WL_NODE_10_TYPE = 1: CO2 value; REG_WL_NODE_10_TYPE = 2: RH value; REG_WL_NODE_10_TYPE = 3: Coil Address 15857: input 1, Coil Address 15858: input 2; All other node types: 0)
+             - :dir:`file` **REG_WL_NODE_10_STATUS** (`num`, Node-Status:; 0: not bound, 1: OK, 2: Battery failure, 3: Communication failure, 4: No network, 5: Sensor failure)
+             - :dir:`file` **REG_WL_NODE_10_VALUE_T_D1** (`num`, Wert: nur wenn REG_WL_NODE_10_TYPE = 3)
+             - :dir:`file` **REG_WL_NODE_10_VALUE_T_D2** (`num`, Wert: nur wenn REG_WL_NODE_10_TYPE = 3)
+             - :dir:`file` **REG_WL_DI_CONNECTION_1** (`num`, read / write? (schlechte Beschreibung); Werte: 0: Not connected, 1: DI1, 2: DI2, 3: DI3, 4: DI4, 5: DI5, 6: not acctepted, 7: DI7, Other values: not accepted)
+             - :dir:`file` **REG_WL_DI_CONNECTION_2** (`num`, read / write? (schlechte Beschreibung); Werte: 0: Not connected, 1: DI1, 2: DI2, 3: DI3, 4: DI4, 5: DI5, 6: not acctepted, 7: DI7, Other values: not accepted)
+             - :dir:`file` **REG_WL_DI_CONNECTION_3** (`num`, read / write? (schlechte Beschreibung); Werte: 0: Not connected, 1: DI1, 2: DI2, 3: DI3, 4: DI4, 5: DI5, 6: not acctepted, 7: DI7, Other values: not accepted)
+             - :dir:`file` **REG_WL_DI_CONNECTION_4** (`num`, read / write? (schlechte Beschreibung); Werte: 0: Not connected, 1: DI1, 2: DI2, 3: DI3, 4: DI4, 5: DI5, 6: not acctepted, 7: DI7, Other values: not accepted)
+             - :dir:`file` **REG_WL_DI_CONNECTION_5** (`num`, read / write? (schlechte Beschreibung); Werte: 0: Not connected, 1: DI1, 2: DI2, 3: DI3, 4: DI4, 5: DI5, 6: not acctepted, 7: DI7, Other values: not accepted)
+             - :dir:`file` **REG_WL_DI_CONNECTION_6** (`num`, read / write? (schlechte Beschreibung); Werte: 0: Not connected, 1: DI1, 2: DI2, 3: DI3, 4: DI4, 5: DI5, 6: not acctepted, 7: DI7, Other values: not accepted)
+             - :dir:`file` **REG_WL_DI_CONNECTION_7** (`num`, read / write? (schlechte Beschreibung); Werte: 0: Not connected, 1: DI1, 2: DI2, 3: DI3, 4: DI4, 5: DI5, 6: not acctepted, 7: DI7, Other values: not accepted)
+             - :dir:`file` **REG_WL_DI_CONNECTION_8** (`num`, read / write? (schlechte Beschreibung); Werte: 0: Not connected, 1: DI1, 2: DI2, 3: DI3, 4: DI4, 5: DI5, 6: not acctepted, 7: DI7, Other values: not accepted)
+             - :dir:`file` **REG_WL_DI_CONNECTION_9** (`num`, read / write? (schlechte Beschreibung); Werte: 0: Not connected, 1: DI1, 2: DI2, 3: DI3, 4: DI4, 5: DI5, 6: not acctepted, 7: DI7, Other values: not accepted)
+             - :dir:`file` **REG_WL_DI_CONNECTION_10** (`num`, read / write? (schlechte Beschreibung); Werte: 0: Not connected, 1: DI1, 2: DI2, 3: DI3, 4: DI4, 5: DI5, 6: not acctepted, 7: DI7, Other values: not accepted)
+             - :dir:`file` **REG_WL_DI_CONNECTION_11** (`num`, read / write? (schlechte Beschreibung); Werte: 0: Not connected, 1: DI1, 2: DI2, 3: DI3, 4: DI4, 5: DI5, 6: not acctepted, 7: DI7, Other values: not accepted)
+             - :dir:`file` **REG_WL_DI_CONNECTION_12** (`num`, read / write? (schlechte Beschreibung); Werte: 0: Not connected, 1: DI1, 2: DI2, 3: DI3, 4: DI4, 5: DI5, 6: not acctepted, 7: DI7, Other values: not accepted)
+             - :dir:`file` **REG_WL_DI_CONNECTION_13** (`num`, read / write? (schlechte Beschreibung); Werte: 0: Not connected, 1: DI1, 2: DI2, 3: DI3, 4: DI4, 5: DI5, 6: not acctepted, 7: DI7, Other values: not accepted)
+             - :dir:`file` **REG_WL_DI_CONNECTION_14** (`num`, read / write? (schlechte Beschreibung); Werte: 0: Not connected, 1: DI1, 2: DI2, 3: DI3, 4: DI4, 5: DI5, 6: not acctepted, 7: DI7, Other values: not accepted)
+             - :dir:`file` **REG_WL_DI_CONNECTION_15** (`num`, read / write? (schlechte Beschreibung); Werte: 0: Not connected, 1: DI1, 2: DI2, 3: DI3, 4: DI4, 5: DI5, 6: not acctepted, 7: DI7, Other values: not accepted)
+             - :dir:`file` **REG_WL_DI_CONNECTION_16** (`num`, read / write? (schlechte Beschreibung); Werte: 0: Not connected, 1: DI1, 2: DI2, 3: DI3, 4: DI4, 5: DI5, 6: not acctepted, 7: DI7, Other values: not accepted)
+             - :dir:`file` **REG_WL_DI_CONNECTION_17** (`num`, read / write? (schlechte Beschreibung); Werte: 0: Not connected, 1: DI1, 2: DI2, 3: DI3, 4: DI4, 5: DI5, 6: not acctepted, 7: DI7, Other values: not accepted)
+             - :dir:`file` **REG_WL_DI_CONNECTION_18** (`num`, read / write? (schlechte Beschreibung); Werte: 0: Not connected, 1: DI1, 2: DI2, 3: DI3, 4: DI4, 5: DI5, 6: not acctepted, 7: DI7, Other values: not accepted)
+             - :dir:`file` **REG_WL_DI_CONNECTION_19** (`num`, read / write? (schlechte Beschreibung); Werte: 0: Not connected, 1: DI1, 2: DI2, 3: DI3, 4: DI4, 5: DI5, 6: not acctepted, 7: DI7, Other values: not accepted)
+             - :dir:`file` **REG_WL_DI_CONNECTION_20** (`num`, read / write? (schlechte Beschreibung); Werte: 0: Not connected, 1: DI1, 2: DI2, 3: DI3, 4: DI4, 5: DI5, 6: not acctepted, 7: DI7, Other values: not accepted)
+
+
+===============
+Logik Parameter
+===============
+
+
+Das Plugin verfügt über folgende Parameter, die in der Datei ``../etc/logic.yaml`` konfiguriert werden:
+
+Keine Logik Parameter in den Metadaten beschrieben - **Bitte in der README nachsehen** (siehe Fußnote)
+
+================
+Plugin Functions
+================
+
+
+Das Plugin verfügt über folgende öffentliche Funktionen, die z.B. in Logiken aufgerufen werden können.
+
+**Keine**
+
+.. [#f1] Diese Seite wurde aus den Metadaten des Plugins erzeugt.
