@@ -203,6 +203,29 @@ Einrichtung
    Ohne gesetzten ``server_bluetooth_adapter`` bleibt BLE deaktiviert und ein neues
    Thread-Gerät kann nicht kommissioniert werden, selbst mit korrekt funktionierender Hardware.
 
+Bluetooth-Status im Webinterface
+-----------------------------------
+
+.. index:: matter; Bluetooth Status
+
+Ist ``server_bluetooth_adapter`` gesetzt, zeigt der Devices-Tab einen Block
+"Bluetooth-Kommissionierung" mit drei Prüfungen (nur unter Linux, sonst "?"):
+
+- **Adapter**: ``/sys/class/bluetooth/hci<N>`` existiert und ist nicht per rfkill blockiert.
+- **Sidecar-Prozess: CAP_NET_RAW**: der laufende matter-server-Prozess hat die Capability
+  tatsächlich (``CapEff`` in ``/proc/<pid>/status``).
+- **Node-Binary: Capability**: das tatsächlich verwendete Node.js-Binary trägt
+  ``cap_net_raw+ep`` als File-Capability, damit auch jeder Neustart sie bekommt. Entfällt, wenn
+  der Sidecar als root läuft.
+
+Fehlgeschlagene Prüfungen zeigen den nötigen Befehl (z.B. ``setcap`` mit dem echten Binary-Pfad)
+und werden bei jedem Start des Sidecars zusätzlich als Warnung geloggt. Ein Node.js-Update, das
+das Binary ersetzt, entfernt die File-Capability wieder - die Warnung macht das sichtbar.
+
+Der Button "Sidecar neu starten" im Tabellenkopf beendet den matter-server-Prozess und startet
+ihn sofort neu, z.B. nach einem ``setcap``. Ein ``kill`` aus einer Shell scheitert dagegen, wenn
+shng unter einem anderen Benutzer läuft.
+
 Bekannte Bluetooth-Stolperfallen unter Linux
 -----------------------------------------------
 

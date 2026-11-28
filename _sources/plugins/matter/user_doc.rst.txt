@@ -185,7 +185,8 @@ Aktueller Umfang
 
 **server-Rolle**:
 
-- Sidecar-Prozessüberwachung (automatischer Neustart mit Backoff)
+- Sidecar-Prozessüberwachung (automatischer Neustart mit Backoff), Neustart per Button im
+  Webinterface
 - WebSocket-Client zu matter-server (Kommissionierung, Attribut-Lesen/Schreiben, Befehle,
   Subscriptions)
 - Item-Mapping: generische ``matter_attribute``/``matter_command``-Attribute sowie die
@@ -198,6 +199,8 @@ Aktueller Umfang
 - ``item_structs`` mit generischen Cluster-Vorlagen (``switch``, ``electrical_power_measurement``,
   ``contact``, ``temperature_sensor``, ``humidity_sensor``, ``battery``) sowie fertigen
   Geräte-Vorlagen (``shelly_plug_m_3gen``/``_simple``)
+- Bluetooth-Status im Webinterface (Adapter, CAP_NET_RAW von Sidecar-Prozess und Node-Binary)
+  mit Behebungshinweisen, Warnung im Log bei jedem Sidecar-Start
 - Matter-over-Thread: Bluetooth-basierte Erstkopplung, Verwaltung der Thread
   Netzwerk-Zugangsdaten im Webinterface (manuell oder automatisch von der Border-Router-REST-API
   abgerufen)
